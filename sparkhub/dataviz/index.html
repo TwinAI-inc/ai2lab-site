@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Visualization Projects | SparkHub — AI2Lab</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #000;
+            --w100: #fff;
+            --w90: #ffffffe6;
+            --w80: #fffc;
+            --w60: #fff9;
+            --w40: #ffffff99;
+            --w30: #ffffff73;
+            --w20: #ffffff4d;
+            --w15: #ffffff26;
+            --w10: #ffffff1a;
+            --w8: #ffffff14;
+            --w6: #ffffff0f;
+            --w3: #ffffff08;
+            --accent: #2dd4a8;
+            --accent2: #3b82f6;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+        body { font-family: 'Outfit', system-ui, sans-serif; background: var(--black); color: var(--w80); overflow-x: hidden; }
+        a { color: inherit; text-decoration: none; }
+
+        /* ---- Navbar ---- */
+        .navbar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            padding: 20px 40px;
+            display: flex; align-items: center; justify-content: space-between;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.9), rgba(0,0,0,0.4), transparent);
+        }
+        .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 1.2rem; font-weight: 600; color: var(--w100); }
+        .nav-logo svg { width: 28px; height: 28px; }
+        .nav-logo span { font-weight: 300; color: var(--w30); }
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a { font-size: 0.8rem; font-weight: 400; color: var(--w40); letter-spacing: 0.04em; text-transform: uppercase; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--w100); }
+        .nav-links a.active { color: var(--accent); }
+
+        /* ---- Hero ---- */
+        .hero {
+            position: relative;
+            min-height: 50vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 0 60px 60px;
+            overflow: hidden;
+        }
+        .hero .bg {
+            position: absolute; inset: 0; z-index: 0;
+            background:
+                radial-gradient(ellipse 50% 50% at 60% 40%, rgba(59,130,246,0.3), transparent 70%),
+                radial-gradient(ellipse 40% 50% at 30% 60%, rgba(45,212,168,0.2), transparent 70%),
+                linear-gradient(135deg, #000a18, #001020 40%, #000a14);
+        }
+        .hero .overlay {
+            position: absolute; inset: 0; z-index: 1;
+            background: linear-gradient(to top, #000 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.2) 100%);
+        }
+        .hero-content { position: relative; z-index: 2; max-width: 700px; }
+        .hero-label {
+            font-size: 0.65rem; font-weight: 400; text-transform: uppercase;
+            letter-spacing: 0.15em; color: rgba(45,212,168,0.7); margin-bottom: 12px;
+        }
+        .hero h1 {
+            font-size: 3.5rem; font-weight: 200; letter-spacing: -0.02em;
+            line-height: 1.1; color: var(--w100); margin-bottom: 16px;
+        }
+        .hero p { font-size: 1rem; font-weight: 300; color: var(--w40); line-height: 1.6; }
+
+        /* ---- Projects ---- */
+        .projects-section { max-width: 1200px; margin: 0 auto; padding: 60px 40px 100px; }
+        .section-header {
+            display: flex; align-items: baseline; justify-content: space-between;
+            margin-bottom: 40px; padding-bottom: 16px; border-bottom: 1px solid var(--w6);
+        }
+        .section-header h2 { font-size: 0.75rem; font-weight: 400; text-transform: uppercase; letter-spacing: 0.1em; color: var(--w30); }
+        .section-header .count { font-size: 0.75rem; color: var(--w20); }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 100px 40px;
+            border: 1px solid var(--w6);
+            border-radius: 16px;
+        }
+        .empty-icon { font-size: 2.5rem; margin-bottom: 20px; opacity: 0.2; }
+        .empty-state h3 { font-size: 1.3rem; font-weight: 300; color: var(--w60); margin-bottom: 8px; }
+        .empty-state p { font-size: 0.9rem; font-weight: 300; color: var(--w30); margin-bottom: 28px; line-height: 1.6; }
+        .empty-cta {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-size: 0.85rem; font-weight: 500; color: var(--black);
+            background: var(--w100); padding: 10px 28px; border-radius: 999px;
+            transition: all 0.3s;
+        }
+        .empty-cta:hover { box-shadow: 0 0 30px rgba(255,255,255,0.15); transform: translateY(-2px); }
+
+        /* ---- Footer ---- */
+        footer {
+            border-top: 1px solid var(--w6);
+            padding: 40px; text-align: center;
+            font-size: 0.75rem; color: var(--w20);
+        }
+        footer a { color: var(--w40); }
+
+        /* ---- Animations ---- */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .hero-content { opacity: 0; animation: fadeUp 1s cubic-bezier(0.22,1,0.36,1) 0.2s forwards; }
+        .empty-state { opacity: 0; animation: fadeUp 0.8s cubic-bezier(0.22,1,0.36,1) 0.3s forwards; }
+
+        @media (max-width: 768px) {
+            .hero { min-height: 40vh; padding: 0 24px 40px; }
+            .hero h1 { font-size: 2.2rem; }
+            .projects-section { padding: 40px 16px 80px; }
+            .navbar { padding: 16px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="/sparkhub/" class="nav-logo">
+            <svg viewBox="0 0 24 24" fill="url(#sg)">
+                <defs><linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#a855f7"/><stop offset="100%" style="stop-color:#3b82f6"/></linearGradient></defs>
+                <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/>
+            </svg>
+            SparkHub <span>| AI2Lab</span>
+        </a>
+        <div class="nav-links">
+            <a href="/sparkhub/genai/">GenAI</a>
+            <a href="/sparkhub/dataviz/" class="active">Data Viz</a>
+            <a href="/sparkhub/">Home</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="bg"></div>
+        <div class="overlay"></div>
+        <div class="hero-content">
+            <div class="hero-label">Collection 02</div>
+            <h1>Data Visualization Projects</h1>
+            <p>Interactive dashboards, storytelling with data, D3.js visualizations, and creative data art — built by AI2Lab members at Northeastern University.</p>
+        </div>
+    </section>
+
+    <!-- Projects -->
+    <section class="projects-section">
+        <div class="section-header">
+            <h2>Featured Projects</h2>
+            <span class="count">Coming soon</span>
+        </div>
+
+        <div class="empty-state">
+            <div class="empty-icon">&#9733;</div>
+            <h3>Projects coming soon</h3>
+            <p>Data Visualization projects from AI2Lab members will be featured here.<br>Have a project to showcase? Get in touch.</p>
+            <a href="mailto:m.dehghani@northeastern.edu?subject=SparkHub%20DataViz%20Submission" class="empty-cta">
+                Submit your project &rarr;
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>SparkHub is part of <a href="/">AI2Lab</a> &mdash; Dr. Mohammad Dehghani, Northeastern University</p>
+    </footer>
+
+</body>
+</html>

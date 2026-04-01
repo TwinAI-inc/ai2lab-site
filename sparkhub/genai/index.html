@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenAI Projects | SparkHub — AI2Lab</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #000;
+            --w100: #fff;
+            --w90: #ffffffe6;
+            --w80: #fffc;
+            --w60: #fff9;
+            --w40: #ffffff99;
+            --w30: #ffffff73;
+            --w20: #ffffff4d;
+            --w15: #ffffff26;
+            --w10: #ffffff1a;
+            --w8: #ffffff14;
+            --w6: #ffffff0f;
+            --w3: #ffffff08;
+            --accent: #a855f7;
+            --accent2: #3b82f6;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+        body { font-family: 'Outfit', system-ui, sans-serif; background: var(--black); color: var(--w80); overflow-x: hidden; }
+        a { color: inherit; text-decoration: none; }
+
+        /* ---- Navbar ---- */
+        .navbar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            padding: 20px 40px;
+            display: flex; align-items: center; justify-content: space-between;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.9), rgba(0,0,0,0.4), transparent);
+        }
+        .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 1.2rem; font-weight: 600; color: var(--w100); }
+        .nav-logo svg { width: 28px; height: 28px; }
+        .nav-logo span { font-weight: 300; color: var(--w30); }
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a { font-size: 0.8rem; font-weight: 400; color: var(--w40); letter-spacing: 0.04em; text-transform: uppercase; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--w100); }
+        .nav-links a.active { color: var(--accent); }
+
+        /* ---- Hero ---- */
+        .hero {
+            position: relative;
+            min-height: 50vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 0 60px 60px;
+            overflow: hidden;
+        }
+        .hero .bg {
+            position: absolute; inset: 0; z-index: 0;
+            background:
+                radial-gradient(ellipse 60% 50% at 30% 40%, rgba(168,85,247,0.3), transparent 70%),
+                radial-gradient(ellipse 40% 60% at 70% 60%, rgba(59,130,246,0.2), transparent 70%),
+                linear-gradient(135deg, #0a0014, #0c0020 40%, #080018);
+        }
+        .hero .overlay {
+            position: absolute; inset: 0; z-index: 1;
+            background: linear-gradient(to top, #000 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.2) 100%);
+        }
+        .hero-content { position: relative; z-index: 2; max-width: 700px; }
+        .hero-label {
+            font-size: 0.65rem; font-weight: 400; text-transform: uppercase;
+            letter-spacing: 0.15em; color: rgba(168,85,247,0.7); margin-bottom: 12px;
+        }
+        .hero h1 {
+            font-size: 3.5rem; font-weight: 200; letter-spacing: -0.02em;
+            line-height: 1.1; color: var(--w100); margin-bottom: 16px;
+        }
+        .hero p { font-size: 1rem; font-weight: 300; color: var(--w40); line-height: 1.6; }
+
+        /* ---- Project Cards Grid ---- */
+        .projects-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 40px 100px;
+        }
+        .section-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--w6);
+        }
+        .section-header h2 { font-size: 0.75rem; font-weight: 400; text-transform: uppercase; letter-spacing: 0.1em; color: var(--w30); }
+        .section-header .count { font-size: 0.75rem; color: var(--w20); }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1px;
+            background: var(--w6);
+            border: 1px solid var(--w6);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .project-card {
+            background: var(--black);
+            padding: 36px;
+            display: flex;
+            flex-direction: column;
+            transition: background 0.3s;
+        }
+        .project-card:hover { background: rgba(168,85,247,0.03); }
+
+        .card-number {
+            font-size: 0.7rem;
+            font-weight: 400;
+            color: var(--w20);
+            margin-bottom: 16px;
+        }
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 300;
+            color: var(--w100);
+            letter-spacing: -0.01em;
+            line-height: 1.3;
+            margin-bottom: 10px;
+        }
+        .card-desc {
+            font-size: 0.85rem;
+            font-weight: 300;
+            color: var(--w40);
+            line-height: 1.6;
+            margin-bottom: 20px;
+            flex: 1;
+        }
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+        .card-tag {
+            font-size: 0.68rem;
+            padding: 4px 12px;
+            border-radius: 999px;
+            border: 1px solid var(--w10);
+            color: var(--w40);
+            font-weight: 400;
+        }
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 16px;
+            border-top: 1px solid var(--w6);
+        }
+        .card-authors {
+            font-size: 0.78rem;
+            font-weight: 400;
+            color: var(--w30);
+        }
+        .card-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: var(--w100);
+            padding: 6px 16px;
+            border-radius: 999px;
+            border: 1px solid var(--w20);
+            transition: all 0.3s;
+        }
+        .card-link:hover {
+            background: var(--w100);
+            color: var(--black);
+            border-color: var(--w100);
+        }
+        .card-link svg {
+            width: 10px; height: 10px; fill: none;
+            stroke: currentColor; stroke-width: 2;
+        }
+
+        /* ---- Footer ---- */
+        footer {
+            border-top: 1px solid var(--w6);
+            padding: 40px;
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--w20);
+        }
+        footer a { color: var(--w40); }
+
+        /* ---- Animations ---- */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .hero-content { opacity: 0; animation: fadeUp 1s cubic-bezier(0.22,1,0.36,1) 0.2s forwards; }
+        .project-card {
+            opacity: 0;
+            animation: fadeUp 0.6s cubic-bezier(0.22,1,0.36,1) forwards;
+        }
+        .project-card:nth-child(1) { animation-delay: 0.1s; }
+        .project-card:nth-child(2) { animation-delay: 0.2s; }
+        .project-card:nth-child(3) { animation-delay: 0.3s; }
+        .project-card:nth-child(4) { animation-delay: 0.4s; }
+
+        /* ---- Responsive ---- */
+        @media (max-width: 768px) {
+            .hero { min-height: 40vh; padding: 0 24px 40px; }
+            .hero h1 { font-size: 2.2rem; }
+            .projects-section { padding: 40px 16px 80px; }
+            .project-grid { grid-template-columns: 1fr; }
+            .navbar { padding: 16px 20px; }
+            .nav-links { gap: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="/sparkhub/" class="nav-logo">
+            <svg viewBox="0 0 24 24" fill="url(#sg)">
+                <defs><linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#a855f7"/><stop offset="100%" style="stop-color:#3b82f6"/></linearGradient></defs>
+                <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/>
+            </svg>
+            SparkHub <span>| AI2Lab</span>
+        </a>
+        <div class="nav-links">
+            <a href="/sparkhub/genai/" class="active">GenAI</a>
+            <a href="/sparkhub/dataviz/">Data Viz</a>
+            <a href="/sparkhub/">Home</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="bg"></div>
+        <div class="overlay"></div>
+        <div class="hero-content">
+            <div class="hero-label">Collection 01</div>
+            <h1>Generative AI Projects</h1>
+            <p>LLMs, agentic AI, RAG systems, prompt engineering, and applied generative intelligence — built by AI2Lab members at Northeastern University.</p>
+        </div>
+    </section>
+
+    <!-- Projects -->
+    <section class="projects-section">
+        <div class="section-header">
+            <h2>Featured Projects</h2>
+            <span class="count">3 projects</span>
+        </div>
+
+        <div class="project-grid">
+
+            <!-- Project 1: NeedGen -->
+            <div class="project-card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">NeedGen: Product Requirements Simulator</h3>
+                <p class="card-desc">An AI-powered simulator that generates and validates product requirements through intelligent stakeholder simulation, helping teams identify gaps and conflicts before development begins.</p>
+                <div class="card-tags">
+                    <span class="card-tag">GenAI</span>
+                    <span class="card-tag">Product Management</span>
+                    <span class="card-tag">Simulation</span>
+                    <span class="card-tag">Vercel</span>
+                </div>
+                <div class="card-footer">
+                    <span class="card-authors">Jahangir &amp; Aashutosh</span>
+                    <a href="https://product-requirements-simulator-sigma.vercel.app/" target="_blank" class="card-link">
+                        View project
+                        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Project 2: GenAI World Cup Builder -->
+            <div class="project-card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">GenAI World Cup Squad Builder</h3>
+                <p class="card-desc">A generative AI application that helps users build and optimize World Cup squads using intelligent player analysis, formation suggestions, and team chemistry evaluation powered by LLMs.</p>
+                <div class="card-tags">
+                    <span class="card-tag">GenAI</span>
+                    <span class="card-tag">Sports Analytics</span>
+                    <span class="card-tag">LLM</span>
+                    <span class="card-tag">Vercel</span>
+                </div>
+                <div class="card-footer">
+                    <span class="card-authors">Jahangir &amp; Aashutosh</span>
+                    <a href="https://worldcup-squad-builder-genai.vercel.app/" target="_blank" class="card-link">
+                        View project
+                        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Project 3: PromptBud -->
+            <div class="project-card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">PromptBud — Chrome Extension</h3>
+                <p class="card-desc">A Chrome extension that enhances prompt engineering workflows, helping users craft, organize, and optimize prompts for better AI interactions across any LLM platform.</p>
+                <div class="card-tags">
+                    <span class="card-tag">Chrome Extension</span>
+                    <span class="card-tag">Prompt Engineering</span>
+                    <span class="card-tag">Developer Tools</span>
+                </div>
+                <div class="card-footer">
+                    <span class="card-authors">Rakshith Dharmappa, Sayam Khatri &amp; Hari Krishna Kancharla</span>
+                    <a href="https://chromewebstore.google.com/detail/promptbud/nlablchghipjcomoacflekgiloolchen" target="_blank" class="card-link">
+                        View project
+                        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>SparkHub is part of <a href="/">AI2Lab</a> &mdash; Dr. Mohammad Dehghani, Northeastern University</p>
+    </footer>
+
+</body>
+</html>
