@@ -112,6 +112,26 @@
         }
         .project-card:hover { background: rgba(168,85,247,0.03); }
 
+        .card-img {
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .card-img img {
+            max-width: 85%;
+            max-height: 160px;
+            object-fit: contain;
+            opacity: 0.6;
+            transition: opacity 0.5s, transform 0.6s cubic-bezier(0.22,1,0.36,1);
+        }
+        .project-card:hover .card-img img {
+            opacity: 0.85;
+            transform: translateY(-3px) scale(1.02);
+        }
         .card-number {
             font-size: 0.7rem;
             font-weight: 400;
@@ -152,13 +172,18 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 12px;
             padding-top: 16px;
             border-top: 1px solid var(--w6);
         }
         .card-authors {
-            font-size: 0.78rem;
+            font-size: 0.75rem;
             font-weight: 400;
             color: var(--w30);
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         .card-link {
             display: inline-flex;
@@ -171,6 +196,8 @@
             border-radius: 999px;
             border: 1px solid var(--w20);
             transition: all 0.3s;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
         .card-link:hover {
             background: var(--w100);
@@ -258,6 +285,7 @@
 
             <!-- Project 1: NeedGen -->
             <div class="project-card">
+                <div class="card-img"><img src="/images/proj-needgen.png" alt=""></div>
                 <div class="card-number">01</div>
                 <h3 class="card-title">NeedGen: Product Requirements Simulator</h3>
                 <p class="card-desc">An AI-powered simulator that generates and validates product requirements through intelligent stakeholder simulation, helping teams identify gaps and conflicts before development begins.</p>
@@ -278,6 +306,7 @@
 
             <!-- Project 2: GenAI World Cup Builder -->
             <div class="project-card">
+                <div class="card-img"><img src="/images/proj-worldcup.png" alt=""></div>
                 <div class="card-number">02</div>
                 <h3 class="card-title">GenAI World Cup Squad Builder</h3>
                 <p class="card-desc">A generative AI application that helps users build and optimize World Cup squads using intelligent player analysis, formation suggestions, and team chemistry evaluation powered by LLMs.</p>
@@ -298,6 +327,7 @@
 
             <!-- Project 3: PromptBud -->
             <div class="project-card">
+                <div class="card-img"><img src="/images/proj-promptbud.png" alt=""></div>
                 <div class="card-number">03</div>
                 <h3 class="card-title">PromptBud — Chrome Extension</h3>
                 <p class="card-desc">A Chrome extension that enhances prompt engineering workflows, helping users craft, organize, and optimize prompts for better AI interactions across any LLM platform.</p>
@@ -317,6 +347,7 @@
 
             <!-- Project 4: GenBI -->
             <div class="project-card">
+                <div class="card-img"><img src="/images/proj-genbi.png" alt=""></div>
                 <div class="card-number">04</div>
                 <h3 class="card-title">GenBI — Generative Business Intelligence</h3>
                 <p class="card-desc">An AI-powered business intelligence platform that transforms natural language queries into interactive charts, dashboards, and data stories — 19 chart types, 4 themes, real-time Canvas 2D rendering.</p>
