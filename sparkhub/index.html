@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SparkHub | AI2Lab — Student Project Showcase</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a1a;
+            --surface: #12122a;
+            --surface-hover: #1a1a3a;
+            --border: #1e1e3e;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent-purple: #a855f7;
+            --accent-blue: #3b82f6;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --gradient-main: linear-gradient(135deg, #a855f7, #3b82f6);
+            --gradient-genai: linear-gradient(135deg, #a855f7, #ec4899);
+            --gradient-dataviz: linear-gradient(135deg, #3b82f6, #10b981);
+            --radius: 16px;
+            --radius-sm: 10px;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ---- Background Glows ---- */
+        .bg-glow {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(150px);
+            opacity: 0.12;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .glow-1 { width: 600px; height: 600px; top: -200px; left: -100px; background: var(--accent-purple); }
+        .glow-2 { width: 500px; height: 500px; bottom: -200px; right: -100px; background: var(--accent-blue); }
+        .glow-3 { width: 400px; height: 400px; top: 40%; left: 50%; background: var(--accent-emerald); opacity: 0.06; }
+
+        /* ---- Header ---- */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            background: rgba(10, 10, 26, 0.8);
+            border-bottom: 1px solid var(--border);
+        }
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text);
+        }
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--gradient-main);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        .logo-text { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em; }
+        .logo-text span { opacity: 0.5; font-weight: 400; }
+        nav { display: flex; gap: 8px; }
+        nav a {
+            padding: 8px 16px;
+            border-radius: 999px;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        nav a:hover, nav a.active {
+            color: var(--text);
+            background: var(--surface);
+        }
+
+        /* ---- Hero ---- */
+        .hero {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 24px 60px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 16px;
+            border-radius: 999px;
+            background: rgba(168, 85, 247, 0.1);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            color: var(--accent-purple);
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            letter-spacing: 0.03em;
+        }
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            margin-bottom: 16px;
+        }
+        .hero h1 .gradient-text {
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero p {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            max-width: 640px;
+            margin: 0 auto 40px;
+            line-height: 1.6;
+        }
+
+        /* ---- Stats ---- */
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+            margin-bottom: 60px;
+        }
+        .stat { text-align: center; }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .stat-label { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+        /* ---- Category Tabs ---- */
+        .tabs-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            position: relative;
+            z-index: 1;
+        }
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 40px;
+            justify-content: center;
+        }
+        .tab {
+            padding: 12px 28px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-muted);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .tab:hover { border-color: rgba(168, 85, 247, 0.3); color: var(--text); }
+        .tab.active-genai {
+            background: rgba(168, 85, 247, 0.12);
+            border-color: var(--accent-purple);
+            color: var(--accent-purple);
+        }
+        .tab.active-dataviz {
+            background: rgba(59, 130, 246, 0.12);
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+        .tab .count {
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.06);
+        }
+
+        /* ---- Project Grid ---- */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px 80px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .project-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .project-card.genai::before { background: var(--gradient-genai); }
+        .project-card.dataviz::before { background: var(--gradient-dataviz); }
+        .project-card:hover {
+            border-color: rgba(168, 85, 247, 0.3);
+            transform: translateY(-2px);
+            background: var(--surface-hover);
+        }
+        .project-card:hover::before { opacity: 1; }
+
+        .card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        .card-category {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 999px;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+        .card-category.genai {
+            background: rgba(168, 85, 247, 0.12);
+            color: var(--accent-purple);
+        }
+        .card-category.dataviz {
+            background: rgba(59, 130, 246, 0.12);
+            color: var(--accent-blue);
+        }
+        .card-semester {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        .card-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+        .card-desc {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+        .card-tag {
+            font-size: 0.72rem;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.04);
+            color: var(--text-muted);
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
+        }
+        .card-authors {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .author-avatars {
+            display: flex;
+        }
+        .author-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--gradient-main);
+            border: 2px solid var(--surface);
+            margin-left: -8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: 600;
+        }
+        .author-avatar:first-child { margin-left: 0; }
+        .author-names { font-size: 0.78rem; color: var(--text-muted); }
+        .card-link {
+            font-size: 0.8rem;
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: gap 0.2s;
+        }
+        .card-link:hover { gap: 8px; }
+
+        /* ---- Empty State ---- */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 80px 24px;
+        }
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+        .empty-state h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .empty-state p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ---- CTA ---- */
+        .cta-section {
+            max-width: 800px;
+            margin: 0 auto 80px;
+            padding: 0 24px;
+            position: relative;
+            z-index: 1;
+        }
+        .cta-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 48px;
+            text-align: center;
+        }
+        .cta-card h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .cta-card p {
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            font-size: 0.95rem;
+        }
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 32px;
+            border-radius: 999px;
+            background: var(--gradient-main);
+            color: #fff;
+            text-decoration: none;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .cta-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 30px rgba(168, 85, 247, 0.25);
+        }
+
+        /* ---- Footer ---- */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 32px 24px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            position: relative;
+            z-index: 1;
+        }
+        footer a { color: var(--accent-blue); text-decoration: none; }
+
+        /* ---- Responsive ---- */
+        @media (max-width: 768px) {
+            .hero { padding: 48px 20px 40px; }
+            .stats { gap: 24px; }
+            .stat-value { font-size: 1.5rem; }
+            .projects-grid { grid-template-columns: 1fr; padding: 0 16px 60px; }
+            .tabs { flex-wrap: wrap; }
+            nav { display: none; }
+            .cta-card { padding: 32px 24px; }
+        }
+
+        /* ---- Animations ---- */
+        .project-card {
+            animation: fadeUp 0.4s ease both;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-glow glow-1"></div>
+    <div class="bg-glow glow-2"></div>
+    <div class="bg-glow glow-3"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="header-inner">
+            <a href="/sparkhub/" class="logo">
+                <div class="logo-icon">&#9889;</div>
+                <div class="logo-text">SparkHub <span>| AI2Lab</span></div>
+            </a>
+            <nav>
+                <a href="#projects" class="active">Projects</a>
+                <a href="#submit">Submit</a>
+                <a href="/">AI2Lab</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-badge">Student Project Showcase</div>
+        <h1>Where Student Ideas<br><span class="gradient-text">Come Alive</span></h1>
+        <p>A curated collection of outstanding student projects in Generative AI and Data Visualization from Northeastern University courses.</p>
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value" id="total-count">0</div>
+                <div class="stat-label">Projects</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="genai-count">0</div>
+                <div class="stat-label">GenAI</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="dataviz-count">0</div>
+                <div class="stat-label">Data Viz</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tabs -->
+    <div class="tabs-container" id="projects">
+        <div class="tabs">
+            <button class="tab active-genai" data-filter="all" id="tab-all">All Projects <span class="count" id="count-all">0</span></button>
+            <button class="tab" data-filter="genai" id="tab-genai">GenAI <span class="count" id="count-genai">0</span></button>
+            <button class="tab" data-filter="dataviz" id="tab-dataviz">Data Visualization <span class="count" id="count-dataviz">0</span></button>
+        </div>
+    </div>
+
+    <!-- Projects Grid -->
+    <div class="projects-grid" id="projects-grid"></div>
+
+    <!-- Submit CTA -->
+    <section class="cta-section" id="submit">
+        <div class="cta-card">
+            <h2>Have a project to showcase?</h2>
+            <p>If you're a Northeastern student who built something amazing in your GenAI or Data Visualization course, we'd love to feature it here.</p>
+            <a href="mailto:m.dehghani@northeastern.edu?subject=SparkHub%20Submission" class="cta-btn">
+                Submit Your Project &rarr;
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>SparkHub is part of <a href="/">AI2Lab</a> &mdash; Dr. Mohammad Dehghani, Northeastern University</p>
+    </footer>
+
+    <script>
+    // ---- Project Data ----
+    // Add real student projects here. Each object = one card.
+    const PROJECTS = [
+        {
+            title: "Multi-Agent Supply Chain Optimizer",
+            desc: "An agentic AI system using LangGraph and CrewAI to simulate and optimize multi-echelon supply chains with autonomous negotiation agents.",
+            category: "genai",
+            tags: ["LangGraph", "CrewAI", "GPT-4", "SimPy"],
+            authors: ["Sample Student A", "Sample Student B"],
+            semester: "Spring 2026",
+            link: "#"
+        },
+        {
+            title: "RAG-Powered Code Review Assistant",
+            desc: "A retrieval-augmented generation system that reviews pull requests against project-specific coding standards and past reviewer feedback.",
+            category: "genai",
+            tags: ["RAG", "ChromaDB", "Claude API", "GitHub Actions"],
+            authors: ["Sample Student C"],
+            semester: "Spring 2026",
+            link: "#"
+        },
+        {
+            title: "Boston Housing Crisis — Interactive Story",
+            desc: "A scrollytelling data visualization exploring 20 years of Boston housing data, rent burden, and displacement patterns across neighborhoods.",
+            category: "dataviz",
+            tags: ["D3.js", "Scrollama", "Census API", "MapboxGL"],
+            authors: ["Sample Student D", "Sample Student E"],
+            semester: "Spring 2026",
+            link: "#"
+        },
+        {
+            title: "Climate Migration Flow Map",
+            desc: "Interactive flow visualization showing climate-driven migration patterns using UNHCR data, animated particle flows, and predictive modeling.",
+            category: "dataviz",
+            tags: ["D3.js", "Canvas API", "Python", "UNHCR Data"],
+            authors: ["Sample Student F"],
+            semester: "Spring 2026",
+            link: "#"
+        },
+        {
+            title: "Fine-Tuned Sentiment Analyzer for Earnings Calls",
+            desc: "A fine-tuned LLM that analyzes quarterly earnings call transcripts to predict stock movement direction with 72% accuracy.",
+            category: "genai",
+            tags: ["Fine-Tuning", "LoRA", "HuggingFace", "SEC EDGAR"],
+            authors: ["Sample Student G", "Sample Student H"],
+            semester: "Spring 2026",
+            link: "#"
+        },
+        {
+            title: "NBA Shot Chart Explorer",
+            desc: "An interactive dashboard visualizing every NBA shot from 2015-2025 with player comparisons, heat maps, and shot probability surfaces.",
+            category: "dataviz",
+            tags: ["React", "D3.js", "NBA API", "KDE"],
+            authors: ["Sample Student I"],
+            semester: "Spring 2026",
+            link: "#"
+        }
+    ];
+
+    // ---- Render ----
+    const grid = document.getElementById('projects-grid');
+    let activeFilter = 'all';
+
+    function getInitials(name) {
+        return name.split(' ').map(w => w[0]).join('').slice(0, 2);
+    }
+
+    function renderProjects(filter) {
+        const filtered = filter === 'all' ? PROJECTS : PROJECTS.filter(p => p.category === filter);
+        grid.innerHTML = '';
+
+        if (filtered.length === 0) {
+            grid.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">&#128640;</div>
+                    <h3>No projects yet</h3>
+                    <p>Projects in this category will appear here soon.</p>
+                </div>`;
+            return;
+        }
+
+        filtered.forEach((p, i) => {
+            const card = document.createElement('div');
+            card.className = `project-card ${p.category}`;
+            card.style.animationDelay = `${i * 0.06}s`;
+            card.innerHTML = `
+                <div class="card-header">
+                    <span class="card-category ${p.category}">${p.category === 'genai' ? 'GenAI' : 'Data Viz'}</span>
+                    <span class="card-semester">${p.semester}</span>
+                </div>
+                <div class="card-title">${p.title}</div>
+                <div class="card-desc">${p.desc}</div>
+                <div class="card-tags">${p.tags.map(t => `<span class="card-tag">${t}</span>`).join('')}</div>
+                <div class="card-footer">
+                    <div class="card-authors">
+                        <div class="author-avatars">
+                            ${p.authors.map(a => `<div class="author-avatar">${getInitials(a)}</div>`).join('')}
+                        </div>
+                        <span class="author-names">${p.authors.join(', ')}</span>
+                    </div>
+                    ${p.link !== '#' ? `<a href="${p.link}" class="card-link" target="_blank">View &rarr;</a>` : ''}
+                </div>`;
+            if (p.link !== '#') card.onclick = () => window.open(p.link, '_blank');
+            grid.appendChild(card);
+        });
+    }
+
+    function updateCounts() {
+        const genai = PROJECTS.filter(p => p.category === 'genai').length;
+        const dataviz = PROJECTS.filter(p => p.category === 'dataviz').length;
+        document.getElementById('total-count').textContent = PROJECTS.length;
+        document.getElementById('genai-count').textContent = genai;
+        document.getElementById('dataviz-count').textContent = dataviz;
+        document.getElementById('count-all').textContent = PROJECTS.length;
+        document.getElementById('count-genai').textContent = genai;
+        document.getElementById('count-dataviz').textContent = dataviz;
+    }
+
+    // Tab switching
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.tab').forEach(t => t.className = 'tab');
+            const filter = tab.dataset.filter;
+            if (filter === 'all') tab.classList.add('active-genai');
+            else if (filter === 'genai') tab.classList.add('active-genai');
+            else tab.classList.add('active-dataviz');
+            activeFilter = filter;
+            renderProjects(filter);
+        });
+    });
+
+    updateCounts();
+    renderProjects('all');
+    </script>
+</body>
+</html>
