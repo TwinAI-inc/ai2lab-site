@@ -9,13 +9,11 @@
         :root {
             --black: #000;
             --w100: #fff;
-            --w90: #ffffffe6;
             --w80: #fffc;
             --w60: #fff9;
             --w40: #ffffff99;
             --w30: #ffffff73;
             --w20: #ffffff4d;
-            --w15: #ffffff26;
             --w10: #ffffff1a;
             --w8: #ffffff14;
             --w6: #ffffff0f;
@@ -32,135 +30,201 @@
             position: fixed; top: 0; left: 0; right: 0; z-index: 100;
             padding: 20px 40px;
             display: flex; align-items: center; justify-content: space-between;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
         }
-        .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 1.2rem; font-weight: 600; color: var(--w100); }
-        .nav-logo svg { width: 28px; height: 28px; }
+        .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 1.15rem; font-weight: 600; color: var(--w100); }
+        .nav-logo svg { width: 26px; height: 26px; }
         .nav-logo span { font-weight: 300; color: var(--w30); }
         .nav-links { display: flex; gap: 32px; }
-        .nav-links a { font-size: 0.8rem; font-weight: 400; color: var(--w40); letter-spacing: 0.04em; text-transform: uppercase; transition: color 0.3s; }
+        .nav-links a { font-size: 0.78rem; font-weight: 400; color: var(--w40); letter-spacing: 0.04em; text-transform: uppercase; transition: color 0.3s; }
         .nav-links a:hover { color: var(--w100); }
 
-        /* ---- Hero Split ---- */
-        .hero { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; position: relative; }
+        /* ---- Hero ---- */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 120px 40px 60px;
+        }
 
-        .hero-panel {
+        .hero-title {
+            font-size: clamp(3.5rem, 8vw, 6.5rem);
+            font-weight: 200;
+            letter-spacing: -0.04em;
+            color: var(--w100);
+            text-align: center;
+            line-height: 1.05;
+            margin-bottom: 16px;
+        }
+        .hero-title em {
+            font-style: italic;
+            font-weight: 200;
+            background: linear-gradient(135deg, #a855f7, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-sub {
+            font-size: 1.05rem;
+            font-weight: 300;
+            color: var(--w30);
+            text-align: center;
+            margin-bottom: 70px;
+            letter-spacing: 0.01em;
+        }
+
+        /* ---- Cards Grid ---- */
+        .cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        .card {
             position: relative;
-            display: flex; flex-direction: column; justify-content: flex-end;
-            padding: 80px 60px;
-            overflow: hidden; cursor: pointer;
+            background: var(--w3);
+            border: 1px solid var(--w6);
+            border-radius: 24px;
+            min-height: 400px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 60px;
+            cursor: pointer;
+            transition: border-color 0.4s, background 0.4s;
+        }
+        .card:hover {
+            border-color: var(--w10);
+            background: var(--w6);
         }
 
-        .hero-panel img.bg-img {
-            position: absolute; inset: 0; width: 100%; height: 100%;
-            object-fit: cover; z-index: 0;
-            transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1), filter 0.6s;
-            filter: brightness(0.55) saturate(1.2);
+        /* Card image — bottom-right peek */
+        .card-img {
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            width: 300px;
+            height: 300px;
+            object-fit: contain;
+            opacity: 0.7;
+            transition: opacity 0.6s, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+            pointer-events: none;
         }
-        .hero-panel:hover img.bg-img {
-            transform: scale(1.05);
-            filter: brightness(0.7) saturate(1.3);
-        }
-
-        .hero-panel .overlay {
-            position: absolute; inset: 0; z-index: 1;
-            background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.5) 35%, rgba(0,0,0,0.15) 60%, rgba(0,0,0,0.3) 100%);
-        }
-
-        /* Divider */
-        .hero::after {
-            content: ''; position: absolute;
-            top: 12%; bottom: 12%; left: 50%; width: 1px;
-            background: linear-gradient(to bottom, transparent, var(--w10), transparent);
-            z-index: 5;
+        .card:hover .card-img {
+            opacity: 1;
+            transform: translate(-10px, -10px) scale(1.05);
         }
 
-        .hero-content { position: relative; z-index: 2; }
-
-        .panel-label {
-            font-size: 0.6rem; font-weight: 400; text-transform: uppercase;
-            letter-spacing: 0.18em; margin-bottom: 14px;
+        .card-label {
+            font-size: 0.6rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 20px;
         }
-        .panel-genai .panel-label { color: rgba(168, 85, 247, 0.8); }
-        .panel-dataviz .panel-label { color: rgba(45, 212, 168, 0.8); }
+        .card-genai .card-label { color: rgba(168, 85, 247, 0.8); }
+        .card-dataviz .card-label { color: rgba(45, 212, 168, 0.8); }
 
-        .panel-title {
-            font-size: 2.75rem; font-weight: 200; letter-spacing: -0.02em;
-            line-height: 1.12; color: var(--w100); margin-bottom: 12px;
-        }
-        .panel-desc {
-            font-size: 0.88rem; font-weight: 300; color: var(--w40);
-            line-height: 1.6; max-width: 400px; margin-bottom: 24px;
+        .card-title {
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            font-weight: 200;
+            letter-spacing: -0.02em;
+            color: var(--w100);
+            line-height: 1.15;
+            margin-bottom: 14px;
+            max-width: 60%;
         }
 
-        /* Student name chips */
+        .card-desc {
+            font-size: 0.88rem;
+            font-weight: 300;
+            color: var(--w30);
+            line-height: 1.6;
+            max-width: 55%;
+            margin-bottom: 28px;
+        }
+
+        /* Student chips */
         .student-chips {
-            display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 24px;
+            display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 28px;
+            max-width: 60%;
         }
         .chip {
-            font-size: 0.65rem; font-weight: 400; padding: 4px 12px;
+            font-size: 0.62rem; font-weight: 400; padding: 4px 12px;
             border-radius: 999px; border: 1px solid var(--w10);
             color: var(--w30); letter-spacing: 0.02em;
             transition: border-color 0.3s, color 0.3s;
         }
-        .hero-panel:hover .chip { border-color: var(--w20); color: var(--w40); }
+        .card:hover .chip { border-color: var(--w20); color: var(--w40); }
 
-        .panel-cta {
+        /* Pill CTA */
+        .card-cta {
             display: inline-flex; align-items: center; gap: 10px;
-            font-size: 0.88rem; font-weight: 500; color: var(--black);
-            background: var(--w100); padding: 10px 28px 10px 10px;
-            border-radius: 999px; transition: all 0.3s;
+            font-size: 0.85rem; font-weight: 500;
+            color: var(--black); background: var(--w100);
+            padding: 10px 26px 10px 10px;
+            border-radius: 999px;
+            transition: all 0.3s;
+            width: fit-content;
         }
-        .panel-cta:hover {
-            box-shadow: 0 0 30px rgba(255,255,255,0.15);
-            transform: translateY(-2px);
+        .card-cta:hover {
+            box-shadow: 0 0 30px rgba(255,255,255,0.12);
+            transform: translateY(-1px);
         }
-        .panel-cta .icon {
-            width: 32px; height: 32px; background: var(--black);
+        .card-cta .icon {
+            width: 30px; height: 30px; background: var(--black);
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
         }
-        .panel-cta .icon svg { width: 12px; height: 12px; fill: #fff; }
+        .card-cta .icon svg { width: 10px; height: 10px; }
 
-        .panel-count {
-            font-size: 0.72rem; font-weight: 400; color: var(--w20);
-            margin-top: 18px; letter-spacing: 0.03em;
+        .card-count {
+            font-size: 0.7rem; font-weight: 400; color: var(--w20);
+            margin-top: 16px; letter-spacing: 0.03em;
         }
-        .panel-count strong { color: var(--w60); font-weight: 600; }
+        .card-count strong { color: var(--w60); font-weight: 600; }
 
-        /* ---- Center badge ---- */
-        .hero-header {
-            position: absolute; top: 100px; left: 50%; transform: translateX(-50%);
-            z-index: 10; text-align: center;
+        /* ---- Footer ---- */
+        footer {
+            padding: 40px;
+            text-align: center;
+            font-size: 0.72rem;
+            color: var(--w20);
         }
-        .hero-header h1 {
-            font-size: 1rem; font-weight: 600; color: var(--w100);
-            letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px;
-        }
-        .hero-header p { font-size: 0.72rem; font-weight: 300; color: var(--w30); }
+        footer a { color: var(--w40); }
 
         /* ---- Animations ---- */
         @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(30px); }
+            from { opacity: 0; transform: translateY(40px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .hero-content { opacity: 0; animation: fadeUp 1s cubic-bezier(0.22,1,0.36,1) forwards; }
-        .panel-genai .hero-content { animation-delay: 0.3s; }
-        .panel-dataviz .hero-content { animation-delay: 0.5s; }
-        .hero-header { opacity: 0; animation: fadeUp 1s cubic-bezier(0.22,1,0.36,1) 0.1s forwards; }
+        .hero-title { opacity: 0; animation: fadeUp 1.2s cubic-bezier(0.22,1,0.36,1) 0.1s forwards; }
+        .hero-sub { opacity: 0; animation: fadeUp 1s cubic-bezier(0.22,1,0.36,1) 0.3s forwards; }
+        .card { opacity: 0; animation: fadeUp 0.8s cubic-bezier(0.22,1,0.36,1) forwards; }
+        .card:nth-child(1) { animation-delay: 0.4s; }
+        .card:nth-child(2) { animation-delay: 0.55s; }
 
         /* ---- Responsive ---- */
         @media (max-width: 900px) {
-            .hero { grid-template-columns: 1fr; min-height: auto; }
-            .hero-panel { min-height: 55vh; padding: 100px 32px 50px; }
-            .hero::after { display: none; }
-            .hero-header { top: 80px; }
-            .panel-title { font-size: 2rem; }
+            .cards { grid-template-columns: 1fr; max-width: 600px; }
+            .hero { padding: 100px 20px 40px; }
+            .card { min-height: 340px; padding: 40px; }
+            .card-title { max-width: 70%; }
+            .card-desc { max-width: 70%; }
+            .card-img { width: 220px; height: 220px; }
             .navbar { padding: 16px 20px; }
             .nav-links { gap: 20px; }
         }
         @media (max-width: 480px) {
-            .hero-panel { padding: 80px 20px 36px; min-height: 50vh; }
-            .panel-title { font-size: 1.6rem; }
+            .card { padding: 32px; min-height: 300px; }
+            .card-img { width: 160px; height: 160px; bottom: -10px; right: -10px; }
+            .card-title { max-width: 80%; }
+            .card-desc { max-width: 80%; }
+            .student-chips { max-width: 80%; }
         }
     </style>
 </head>
@@ -184,20 +248,17 @@
 
     <!-- Hero -->
     <section class="hero">
+        <h1 class="hero-title"><em>SparkHub</em></h1>
+        <p class="hero-sub">Student Project Showcase &mdash; Northeastern University</p>
 
-        <div class="hero-header">
-            <h1>SparkHub</h1>
-            <p>Student Project Showcase &mdash; Northeastern University</p>
-        </div>
+        <div class="cards">
 
-        <!-- LEFT: GenAI -->
-        <a href="/genai/" class="hero-panel panel-genai">
-            <img src="/images/genai-hero.png" alt="Generative AI" class="bg-img" loading="eager">
-            <div class="overlay"></div>
-            <div class="hero-content">
-                <div class="panel-label">Collection 01</div>
-                <h2 class="panel-title">Generative AI<br>Projects</h2>
-                <p class="panel-desc">LLMs, agentic AI, RAG systems, prompt engineering, and applied generative intelligence.</p>
+            <!-- GenAI Card -->
+            <a href="/genai/" class="card card-genai">
+                <img src="/images/genai-hero.png" alt="" class="card-img">
+                <div class="card-label">Collection 01</div>
+                <h2 class="card-title">Generative AI Projects</h2>
+                <p class="card-desc">LLMs, agentic AI, RAG systems, and applied generative intelligence.</p>
                 <div class="student-chips">
                     <span class="chip">Jahangir</span>
                     <span class="chip">Aashutosh</span>
@@ -205,33 +266,35 @@
                     <span class="chip">Sayam</span>
                     <span class="chip">Hari Krishna</span>
                 </div>
-                <div class="panel-cta">
-                    <span class="icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                <div class="card-cta">
+                    <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
                     Explore projects
                 </div>
-                <div class="panel-count"><strong>4</strong> projects</div>
-            </div>
-        </a>
+                <div class="card-count"><strong>4</strong> projects</div>
+            </a>
 
-        <!-- RIGHT: Data Viz -->
-        <a href="/dataviz/" class="hero-panel panel-dataviz">
-            <img src="/images/dataviz-hero.png" alt="Data Visualization" class="bg-img" loading="eager">
-            <div class="overlay"></div>
-            <div class="hero-content">
-                <div class="panel-label">Collection 02</div>
-                <h2 class="panel-title">Data<br>Visualization</h2>
-                <p class="panel-desc">Interactive dashboards, storytelling with data, D3.js visualizations, and creative data art.</p>
+            <!-- Data Viz Card -->
+            <a href="/dataviz/" class="card card-dataviz">
+                <img src="/images/dataviz-hero.png" alt="" class="card-img">
+                <div class="card-label">Collection 02</div>
+                <h2 class="card-title">Data Visualization</h2>
+                <p class="card-desc">Interactive dashboards, storytelling with data, and creative data art.</p>
                 <div class="student-chips">
                     <span class="chip">Coming soon</span>
                 </div>
-                <div class="panel-cta">
-                    <span class="icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                <div class="card-cta">
+                    <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
                     Explore projects
                 </div>
-                <div class="panel-count"><strong>0</strong> projects</div>
-            </div>
-        </a>
+                <div class="card-count"><strong>0</strong> projects</div>
+            </a>
+
+        </div>
     </section>
+
+    <footer>
+        <p>SparkHub is part of <a href="https://ai2lab.ai">AI2Lab</a> &mdash; Dr. Mohammad Dehghani, Northeastern University</p>
+    </footer>
 
 </body>
 </html>
