@@ -59,12 +59,16 @@
 
         .card {
             position: relative;
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 18px; overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 20px; overflow: hidden;
             display: flex; flex-direction: column;
-            cursor: pointer; transition: border-color 0.5s;
+            cursor: pointer; transition: border-color 0.5s, background 0.5s;
         }
-        .card:hover { border-color: rgba(255,255,255,0.1); }
+        .card:hover { border-color: rgba(255,255,255,0.12); }
+        .card-genai { background: linear-gradient(160deg, rgba(120,60,200,0.04) 0%, transparent 50%); }
+        .card-genai:hover { background: linear-gradient(160deg, rgba(120,60,200,0.07) 0%, transparent 50%); }
+        .card-dataviz { background: linear-gradient(160deg, rgba(40,180,160,0.04) 0%, transparent 50%); }
+        .card-dataviz:hover { background: linear-gradient(160deg, rgba(40,180,160,0.07) 0%, transparent 50%); }
 
         .c-top { padding: 36px 40px 20px; }
         .c-top h2 {
@@ -83,15 +87,15 @@
         }
 
         .c-img {
-            flex: 1; display: flex; align-items: center; justify-content: center;
-            padding: 10px 40px 30px; min-height: 220px;
+            flex: 1; display: flex; align-items: flex-start; justify-content: center;
+            padding: 0 30px 60px; min-height: 260px;
         }
         .c-img img {
-            max-width: 100%; max-height: 200px; object-fit: contain;
-            opacity: 0.6;
+            max-width: 100%; max-height: 260px; object-fit: contain;
+            opacity: 0.75;
             transition: opacity 0.5s, transform 0.7s cubic-bezier(0.22,1,0.36,1);
         }
-        .card:hover .c-img img { opacity: 0.85; transform: translateY(-4px) scale(1.02); }
+        .card:hover .c-img img { opacity: 1; transform: translateY(-5px) scale(1.03); }
 
         /* Hover CTA */
         .c-cta {
@@ -100,10 +104,9 @@
             font-size: 0.78rem; font-weight: 500;
             color: #000; background: #fff;
             padding: 8px 22px 8px 8px; border-radius: 999px;
-            opacity: 0; transform: translateY(6px);
-            transition: opacity 0.35s, transform 0.35s;
+            transition: box-shadow 0.35s, transform 0.35s;
         }
-        .card:hover .c-cta { opacity: 1; transform: translateY(0); }
+        .card:hover .c-cta { box-shadow: 0 0 24px rgba(255,255,255,0.15); transform: translateY(-1px); }
         .c-cta .d {
             width: 26px; height: 26px; background: #000;
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
@@ -152,7 +155,7 @@
             <p>Student Project Showcase &mdash; Northeastern University</p>
         </div>
         <div class="cards">
-            <a href="/genai/" class="card">
+            <a href="/genai/" class="card card-genai">
                 <div class="c-top">
                     <h2>Generative AI</h2>
                     <p>LLMs, agentic AI, RAG systems, prompt engineering, and applied generative intelligence.</p>
@@ -162,7 +165,7 @@
                 <div class="c-cta"><span class="d"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>Explore projects</div>
                 <div class="c-n"><strong>4</strong> projects</div>
             </a>
-            <a href="/dataviz/" class="card">
+            <a href="/dataviz/" class="card card-dataviz">
                 <div class="c-top">
                     <h2>Data Visualization</h2>
                     <p>Interactive dashboards, storytelling with data, and creative data art.</p>
