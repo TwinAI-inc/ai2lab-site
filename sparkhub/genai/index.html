@@ -168,12 +168,19 @@
             border-top: 1px solid var(--w6);
         }
         .card-authors {
-            font-size: 0.65rem;
-            font-weight: 400;
-            color: var(--w30);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
             min-width: 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        }
+        .card-authors .author-chip {
+            font-size: 0.6rem;
+            font-weight: 400;
+            color: rgba(168,140,255,0.85);
+            padding: 3px 10px;
+            border-radius: 999px;
+            background: rgba(140,70,230,0.08);
+            border: 1px solid rgba(140,70,230,0.12);
             white-space: nowrap;
         }
         .card-link {
@@ -241,9 +248,10 @@
     <!-- Navbar -->
     <nav class="navbar">
         <a href="/" class="nav-logo">
-            <svg viewBox="0 0 24 24" fill="url(#sg)">
-                <defs><linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#a855f7"/><stop offset="100%" style="stop-color:#3b82f6"/></linearGradient></defs>
-                <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/>
+            <svg viewBox="0 0 24 24" fill="none">
+                <defs><linearGradient id="sg" x1="0" y1="0" x2="24" y2="24"><stop stop-color="#d8d8e8"/><stop offset="1" stop-color="#9090a8"/></linearGradient></defs>
+                <path d="M14 1 C14 7.5, 17 10.5, 23 10.5 C17 10.5, 14 13.5, 14 20 C14 13.5, 11 10.5, 5 10.5 C11 10.5, 14 7.5, 14 1Z" fill="url(#sg)"/>
+                <path d="M7 17 C7 19.2, 8 20.2, 10.2 20.2 C8 20.2, 7 21.2, 7 23.4 C7 21.2, 6 20.2, 3.8 20.2 C6 20.2, 7 19.2, 7 17Z" fill="rgba(180,180,200,0.6)"/>
             </svg>
             SparkHub <span>| AI2Lab</span>
         </a>
@@ -276,7 +284,7 @@
 
             <!-- Project 1: GenBI -->
             <div class="project-card">
-                <div class="card-img"><img src="/images/proj-genbi.png" alt=""></div>
+                <div class="card-img"><img src="../images/proj-genbi.png" alt=""></div>
                 <div class="card-number">01</div>
                 <h3 class="card-title">GenBI — Generative Business Intelligence</h3>
                 <p class="card-desc">An AI-powered business intelligence platform that transforms natural language queries into interactive charts, dashboards, and data stories — 19 chart types, 4 themes, real-time Canvas 2D rendering.</p>
@@ -288,7 +296,7 @@
                     <span class="card-tag">Canvas 2D</span>
                 </div>
                 <div class="card-footer">
-                    <span class="card-authors">AI2Lab</span>
+                    <div class="card-authors"><span class="author-chip">Jahangir Babar</span><span class="author-chip">Aashutosh Agrawal</span></div>
                     <a href="https://genbi.co/" target="_blank" class="card-link">
                         View project
                         <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -298,7 +306,7 @@
 
             <!-- Project 2: NeedGen -->
             <div class="project-card">
-                <div class="card-img"><img src="/images/proj-needgen.png" alt=""></div>
+                <div class="card-img"><img src="../images/proj-needgen.png" alt=""></div>
                 <div class="card-number">02</div>
                 <h3 class="card-title">NeedGen: Product Requirements Simulator</h3>
                 <p class="card-desc">An AI-powered simulator that generates and validates product requirements through intelligent stakeholder simulation, helping teams identify gaps and conflicts before development begins.</p>
@@ -309,7 +317,7 @@
                     <span class="card-tag">Vercel</span>
                 </div>
                 <div class="card-footer">
-                    <span class="card-authors">Jahangir &amp; Aashutosh</span>
+                    <div class="card-authors"><span class="author-chip">Jahangir Babar</span><span class="author-chip">Aashutosh Agrawal</span></div>
                     <a href="https://product-requirements-simulator-sigma.vercel.app/" target="_blank" class="card-link">
                         View project
                         <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -319,7 +327,7 @@
 
             <!-- Project 3: GenAI World Cup Builder -->
             <div class="project-card">
-                <div class="card-img"><img src="/images/proj-worldcup.png" alt=""></div>
+                <div class="card-img"><img src="../images/proj-worldcup.png" alt=""></div>
                 <div class="card-number">03</div>
                 <h3 class="card-title">GenAI World Cup Squad Builder</h3>
                 <p class="card-desc">A generative AI application that helps users build and optimize World Cup squads using intelligent player analysis, formation suggestions, and team chemistry evaluation powered by LLMs.</p>
@@ -330,7 +338,7 @@
                     <span class="card-tag">Vercel</span>
                 </div>
                 <div class="card-footer">
-                    <span class="card-authors">Jahangir &amp; Aashutosh</span>
+                    <div class="card-authors"><span class="author-chip">Jahangir Babar</span><span class="author-chip">Aashutosh Agrawal</span></div>
                     <a href="https://worldcup-squad-builder-genai.vercel.app/" target="_blank" class="card-link">
                         View project
                         <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -340,7 +348,7 @@
 
             <!-- Project 4: PromptBud -->
             <div class="project-card">
-                <div class="card-img"><img src="/images/proj-promptbud.png" alt=""></div>
+                <div class="card-img"><img src="../images/proj-promptbud.png" alt=""></div>
                 <div class="card-number">04</div>
                 <h3 class="card-title">PromptBud — Chrome Extension</h3>
                 <p class="card-desc">A Chrome extension that enhances prompt engineering workflows, helping users craft, organize, and optimize prompts for better AI interactions across any LLM platform.</p>
@@ -350,7 +358,7 @@
                     <span class="card-tag">Developer Tools</span>
                 </div>
                 <div class="card-footer">
-                    <span class="card-authors">Rakshith Dharmappa, Sayam Khatri &amp; Hari Krishna Kancharla</span>
+                    <div class="card-authors"><span class="author-chip">Rakshith Dharmappa</span><span class="author-chip">Sayam Khatri</span><span class="author-chip">Hari Krishna Kancharla</span></div>
                     <a href="https://chromewebstore.google.com/detail/promptbud/nlablchghipjcomoacflekgiloolchen" target="_blank" class="card-link">
                         View project
                         <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
