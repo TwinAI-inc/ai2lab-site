@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SparkHub — Image Picker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Outfit', sans-serif; background: #0a0a0a; color: #fff; padding: 40px; }
+        h1 { font-size: 1.8rem; font-weight: 300; margin-bottom: 8px; }
+        .subtitle { font-size: 0.8rem; color: rgba(255,255,255,0.35); margin-bottom: 40px; }
+
+        .section { margin-bottom: 60px; }
+        .section h2 {
+            font-size: 0.7rem; font-weight: 500; text-transform: uppercase;
+            letter-spacing: 0.12em; color: rgba(255,255,255,0.4); margin-bottom: 20px;
+            padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+        .option {
+            position: relative; cursor: pointer;
+            border: 2px solid rgba(255,255,255,0.08);
+            border-radius: 12px; overflow: hidden;
+            transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+        }
+        .option:hover { border-color: rgba(255,255,255,0.2); transform: translateY(-2px); }
+        .option.selected { border-color: #a855f7; box-shadow: 0 0 20px rgba(168,85,247,0.2); }
+
+        .option img { width: 100%; display: block; aspect-ratio: 16/9; object-fit: cover; }
+
+        .option .label {
+            position: absolute; top: 10px; left: 10px;
+            font-size: 0.6rem; font-weight: 500; padding: 3px 10px;
+            background: rgba(0,0,0,0.7); border-radius: 999px;
+            color: rgba(255,255,255,0.6); backdrop-filter: blur(8px);
+        }
+        .option .check {
+            position: absolute; top: 10px; right: 10px;
+            width: 24px; height: 24px; border-radius: 50%;
+            background: #a855f7; display: none;
+            align-items: center; justify-content: center;
+        }
+        .option.selected .check { display: flex; }
+        .option .check svg { width: 14px; height: 14px; }
+
+        /* Preview */
+        .preview-section {
+            margin-top: 60px; padding-top: 40px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+        .preview-section h2 {
+            font-size: 0.7rem; font-weight: 500; text-transform: uppercase;
+            letter-spacing: 0.12em; color: rgba(255,255,255,0.4); margin-bottom: 24px;
+        }
+
+        .preview-frame {
+            position: relative;
+            width: 100%; max-width: 900px; margin: 0 auto;
+            border-radius: 16px; overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: #000;
+        }
+
+        .preview-hero {
+            position: relative;
+            min-height: 340px;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 60px 40px 40px;
+            overflow: hidden;
+        }
+        .preview-hero .bg-img {
+            position: absolute; inset: 0; z-index: 0;
+            width: 100%; height: 100%; object-fit: cover;
+            opacity: 0.5;
+        }
+        .preview-hero .overlay {
+            position: absolute; inset: 0; z-index: 1;
+            background: radial-gradient(ellipse at center top, transparent 20%, rgba(0,0,0,0.7) 70%);
+        }
+        .preview-hero .text {
+            position: relative; z-index: 2; text-align: center;
+        }
+        .preview-hero .text h3 {
+            font-size: 2.2rem; font-weight: 200; letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #fff 30%, rgba(168,130,255,0.7) 70%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+        }
+        .preview-hero .text p { font-size: 0.72rem; color: rgba(255,255,255,0.3); }
+
+        .preview-cards {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 12px; padding: 0 24px 24px;
+            position: relative; z-index: 2;
+        }
+        .preview-card {
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px; overflow: hidden;
+            background: rgba(255,255,255,0.02);
+        }
+        .preview-card .card-img {
+            width: 100%; height: 140px; overflow: hidden;
+            position: relative;
+        }
+        .preview-card .card-img img {
+            width: 100%; height: 100%; object-fit: cover; opacity: 0.85;
+        }
+        .preview-card .card-img::after {
+            content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 50px;
+            background: linear-gradient(to top, #000, transparent);
+        }
+        .preview-card .card-text {
+            padding: 14px 16px;
+        }
+        .preview-card .card-text h4 { font-size: 0.9rem; font-weight: 400; margin-bottom: 4px; }
+        .preview-card .card-text p { font-size: 0.62rem; color: rgba(255,255,255,0.35); }
+
+        .none-label { font-size: 0.65rem; color: rgba(255,255,255,0.25); text-align: center; padding: 30px; }
+    </style>
+</head>
+<body>
+
+    <h1>SparkHub Image Picker</h1>
+    <p class="subtitle">Click to select images for each slot. Preview updates live below.</p>
+
+    <!-- Background -->
+    <div class="section">
+        <h2>Hero Background (gentle dome/glow)</h2>
+        <div class="options" data-group="bg">
+            <div class="option" data-src="/images/pick-bg-1.png" onclick="pick(this,'bg')">
+                <img src="/images/pick-bg-1.png" alt="">
+                <span class="label">BG 1 — Warm peach</span>
+                <span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>
+            </div>
+            <div class="option" data-src="/images/pick-bg-2.png" onclick="pick(this,'bg')">
+                <img src="/images/pick-bg-2.png" alt="">
+                <span class="label">BG 2 — Blue-purple</span>
+                <span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>
+            </div>
+            <div class="option" data-src="/images/pick-bg-3.png" onclick="pick(this,'bg')">
+                <img src="/images/pick-bg-3.png" alt="">
+                <span class="label">BG 3 — Mesh dots</span>
+                <span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- GenAI Card -->
+    <div class="section">
+        <h2>GenAI Card Image (wireframe, object on left)</h2>
+        <div class="options" data-group="genai">
+            <div class="option" data-src="/images/pick-genai-1.png" onclick="pick(this,'genai')">
+                <img src="/images/pick-genai-1.png" alt="">
+                <span class="label">GenAI 1 — Brain wireframe</span>
+                <span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>
+            </div>
+            <div class="option" data-src="/images/pick-genai-2.png" onclick="pick(this,'genai')">
+                <img src="/images/pick-genai-2.png" alt="">
+                <span class="label">GenAI 2 — Neural network</span>
+                <span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>
+            </div>
+            <div class="option" data-src="/images/pick-genai-3.png" onclick="pick(this,'genai')">
+                <img src="/images/pick-genai-3.png" alt="">
+                <span class="label">GenAI 3 — Head profile</span>
+                <span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- DataViz Card -->
+    <div class="section">
+        <h2>Data Visualization Card Image (wireframe, object on left)</h2>
+        <div class="options" data-group="dataviz">
+            <div class="option" data-src="/images/pick-dataviz-1.png" onclick="pick(this,'dataviz')">
+                <img src="/images/pick-dataviz-1.png" alt="">
+                <span class="label">DataViz 1 — Charts</span>
+                <span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>
+            </div>
+            <div class="option" data-src="/images/pick-dataviz-2.png" onclick="pick(this,'dataviz')">
+                <img src="/images/pick-dataviz-2.png" alt="">
+                <span class="label">DataViz 2 — Dashboard panels</span>
+                <span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>
+            </div>
+            <div class="option" data-src="/images/pick-dataviz-3.png" onclick="pick(this,'dataviz')">
+                <img src="/images/pick-dataviz-3.png" alt="">
+                <span class="label">DataViz 3 — Wave data</span>
+                <span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Preview -->
+    <div class="preview-section">
+        <h2>Live Preview</h2>
+        <div class="preview-frame">
+            <div class="preview-hero">
+                <img id="prev-bg" class="bg-img" src="" alt="" style="display:none;">
+                <div class="overlay"></div>
+                <div class="text">
+                    <h3>SparkHub</h3>
+                    <p>Northeastern University — AI2Lab</p>
+                </div>
+            </div>
+            <div class="preview-cards">
+                <div class="preview-card">
+                    <div class="card-img"><img id="prev-genai" src="" alt="" style="display:none;"></div>
+                    <div class="card-text">
+                        <h4>Generative AI</h4>
+                        <p>LLMs, agentic AI, RAG systems</p>
+                    </div>
+                </div>
+                <div class="preview-card">
+                    <div class="card-img"><img id="prev-dataviz" src="" alt="" style="display:none;"></div>
+                    <div class="card-text">
+                        <h4>Data Visualization</h4>
+                        <p>Interactive dashboards, data stories</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const selections = { bg: null, genai: null, dataviz: null };
+
+        function pick(el, group) {
+            // Deselect siblings
+            el.parentElement.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+            // Select this
+            el.classList.add('selected');
+            selections[group] = el.dataset.src;
+            updatePreview();
+        }
+
+        function updatePreview() {
+            const bgEl = document.getElementById('prev-bg');
+            const genaiEl = document.getElementById('prev-genai');
+            const datavizEl = document.getElementById('prev-dataviz');
+
+            if (selections.bg) { bgEl.src = selections.bg; bgEl.style.display = 'block'; }
+            else { bgEl.style.display = 'none'; }
+
+            if (selections.genai) { genaiEl.src = selections.genai; genaiEl.style.display = 'block'; }
+            else { genaiEl.style.display = 'none'; }
+
+            if (selections.dataviz) { datavizEl.src = selections.dataviz; datavizEl.style.display = 'block'; }
+            else { datavizEl.style.display = 'none'; }
+        }
+    </script>
+
+</body>
+</html>
