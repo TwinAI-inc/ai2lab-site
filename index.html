@@ -3527,6 +3527,19 @@
             flex-shrink: 0;
         }
 
+        .polaroid .pol-chip--outline {
+            background: linear-gradient(135deg, rgba(196,18,48,0.85), rgba(255,77,109,0.75));
+            color: #fff;
+            border-color: rgba(255,255,255,0.3);
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(196,18,48,0.25);
+        }
+        .polaroid .pol-chip--outline:hover {
+            background: linear-gradient(135deg, rgba(196,18,48,1), rgba(255,77,109,0.9));
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(196,18,48,0.4);
+        }
+
         .polaroid .tape {
             position: absolute;
             width: 50px;
@@ -6246,7 +6259,12 @@
             { code:'IE5200', title:'Project Management',
               desc:'Project planning, scheduling, resource allocation, and execution strategies for engineering teams. Covers work breakdown structures, critical path methods, and risk management.',
               goals:['Understand project lifecycle and planning methodologies','Apply scheduling techniques including CPM and PERT','Manage resources, budgets, and project constraints','Assess and mitigate project risks effectively','Lead engineering teams through structured project execution'],
-              img:'IE5200_project_mgmt.svg', pdf:null, pin:'#475569', rot:3, tape:false, award:false, pinX:40 }
+              img:'IE5200_project_mgmt.svg', pdf:null, pin:'#475569', rot:3, tape:false, award:false, pinX:40 },
+            { code:'IE6400', title:'Foundations of Data Analytics',
+              desc:'Probability theory, common distributions, statistical inference, confidence intervals, and hypothesis testing for engineering applications. Hands-on with interactive simulators (Poisson PMF Explorer, CI Explorer, HT Simulator) and real-world worked examples including Tesla batteries, coffee dispensers, and hospital ER capacity.',
+              goals:['Master discrete and continuous distributions (Bernoulli, Binomial, Normal, Poisson)','Apply Six Sigma quality control principles','Build confidence intervals for engineering data','Conduct hypothesis tests with p-values and Type I/II error analysis','Use interactive simulators to develop statistical intuition'],
+              img:'IE6200_probability.svg', pdf:null, link:'courses/IE6400/course-outline.html',
+              pin:'#C41230', rot:1.5, tape:false, award:false, pinX:42 }
         ];
 
         function buildCourseCards() {
@@ -6264,7 +6282,9 @@
                     + '</div>'
                     : '';
                 const tape = c.tape ? '<div class="tape"></div>' : '';
-                const chip = '<span class="pol-chip" onclick="event.stopPropagation();openCourseModal(' + i + ')"><i data-lucide="arrow-up-right"></i> Syllabus</span>';
+                const chip = c.link
+                    ? '<span class="pol-chip pol-chip--outline" onclick="event.stopPropagation();window.open(\'' + c.link + '\',\'_blank\')"><i data-lucide="layout-list"></i> View Outline</span>'
+                    : '<span class="pol-chip" onclick="event.stopPropagation();openCourseModal(' + i + ')"><i data-lucide="arrow-up-right"></i> Syllabus</span>';
 
                 html += '<div class="polaroid" style="transform:rotate(' + c.rot + 'deg)" onclick="openCourseModal(' + i + ')">'
                     + '<div class="pin" style="background:' + c.pin + ';left:' + c.pinX + '%"></div>'
@@ -6304,9 +6324,12 @@
                 html += '</ul>';
             }
 
+            if (c.link) {
+                html += '<a class="cm-download" href="' + c.link + '" target="_blank" style="background:linear-gradient(135deg,#C41230,#ff4d6d);color:#fff;border-color:#C41230"><i data-lucide="layout-list"></i> View Course Outline</a>';
+            }
             if (c.pdf) {
                 html += '<a class="cm-download" href="' + c.pdf + '" target="_blank"><i data-lucide="download"></i> Download Syllabus</a>';
-            } else {
+            } else if (!c.link) {
                 html += '<div class="cm-no-download"><i data-lucide="lock"></i> Core Course</div>';
             }
 

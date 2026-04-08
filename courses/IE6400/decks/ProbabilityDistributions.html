@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Probability Distributions — IE 6400</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+    --bg:#F0F4FA;--surface:rgba(255,255,255,0.52);--border:rgba(255,255,255,0.7);
+    --text:#111827;--text-m:rgba(17,24,39,0.6);--text-d:rgba(17,24,39,0.38);
+    --pri:#2563EB;--pri-light:#60A5FA;--pri-dark:#1E40AF;
+    --pri-glass:linear-gradient(135deg,rgba(37,99,235,0.12),rgba(96,165,250,0.08),rgba(37,99,235,0.06));
+    --accent:#1D4ED8;--accent-glass:linear-gradient(135deg,rgba(29,78,216,0.1),rgba(96,165,250,0.06));
+    --teal:#0369A1;--teal-glass:linear-gradient(135deg,rgba(3,105,161,0.1),rgba(125,211,252,0.06));
+    --red:#DC2626;--red-glass:linear-gradient(135deg,rgba(220,38,38,0.08),rgba(252,165,165,0.06));
+    --green:#059669;--green-glass:linear-gradient(135deg,rgba(5,150,105,0.1),rgba(110,231,183,0.06));
+    --amber:#D97706;--amber-glass:linear-gradient(135deg,rgba(217,119,6,0.1),rgba(252,211,77,0.06));
+    --R:24px;--shadow:0 8px 32px rgba(0,0,0,0.07),0 2px 8px rgba(0,0,0,0.03);
+    --shadow-lg:0 20px 60px rgba(0,0,0,0.1),0 4px 16px rgba(0,0,0,0.04);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;scroll-snap-type:y mandatory;height:100vh;overflow-y:scroll}
+.slide{width:100vw;height:100vh;scroll-snap-align:start;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;padding:70px 90px}
+.g{background:var(--surface);border:1px solid var(--border);border-radius:var(--R);backdrop-filter:blur(28px) saturate(1.5);-webkit-backdrop-filter:blur(28px) saturate(1.5);padding:32px;box-shadow:var(--shadow);position:relative}
+.g::before{content:'';position:absolute;top:0;left:8%;right:8%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.9),rgba(180,200,255,0.5),transparent);border-radius:1px}
+.g-blue{background:var(--pri-glass)}.g-purple{background:var(--accent-glass)}.g-teal{background:var(--teal-glass)}.g-red{background:var(--red-glass)}.g-green{background:var(--green-glass)}.g-amber{background:var(--amber-glass)}
+.gx{background:linear-gradient(135deg,var(--pri),var(--pri-dark));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.gx-p{background:linear-gradient(135deg,#3B82F6,#1D4ED8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.gx-t{background:linear-gradient(135deg,#38BDF8,#0369A1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.gx-a{background:linear-gradient(135deg,#F59E0B,#D97706);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.gx-g{background:linear-gradient(135deg,#10B981,#059669);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.orb{position:absolute;border-radius:50%;pointer-events:none;animation:fl 20s ease-in-out infinite}
+.orb-b{background:radial-gradient(circle,rgba(96,165,250,0.18) 0%,transparent 70%)}
+.orb-p{background:radial-gradient(circle,rgba(96,165,250,0.15) 0%,transparent 70%)}
+@keyframes fl{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(25px,-35px) scale(1.04)}66%{transform:translate(-20px,20px) scale(0.96)}}
+.nav-dots{position:fixed;right:28px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px;z-index:100}
+.nav-dot{width:8px;height:8px;border-radius:50%;background:rgba(17,24,39,0.12);cursor:pointer;transition:all .3s;border:1px solid rgba(255,255,255,0.5);padding:0;box-shadow:0 2px 6px rgba(0,0,0,0.06)}
+.nav-dot.active{background:var(--pri);border-color:rgba(255,255,255,0.8);box-shadow:0 0 14px rgba(37,99,235,0.4);transform:scale(1.4)}
+.ft{position:absolute;bottom:20px;left:0;right:0;padding:0 90px;display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--text-d)}
+.ft-n{background:rgba(255,255,255,0.45);backdrop-filter:blur(10px);border:1px solid var(--border);padding:4px 14px;border-radius:20px;font-weight:500;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.rv{opacity:0;transform:translateY(28px);transition:all .7s cubic-bezier(.22,1,.36,1)}.rv.vis{opacity:1;transform:translateY(0)}
+.d1{transition-delay:.15s}.d2{transition-delay:.3s}.d3{transition-delay:.45s}.d4{transition-delay:.6s}.d5{transition-delay:.75s}
+.step{opacity:0;transform:translateY(20px) scale(.97);transition:all .5s cubic-bezier(.22,1,.36,1);pointer-events:none}.step.shown{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:7px 18px;border-radius:20px;font-size:13px;font-weight:500;background:rgba(255,255,255,0.5);backdrop-filter:blur(12px);border:1px solid var(--border);color:var(--text-m);text-decoration:none;transition:all .3s;box-shadow:0 2px 8px rgba(0,0,0,0.04);cursor:pointer}
+.chip:hover{background:rgba(255,255,255,0.7);color:var(--text);transform:translateY(-1px)}
+.timer{font-size:56px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--pri);text-align:center}
+.tbtn{padding:10px 24px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,0.4);backdrop-filter:blur(10px);color:var(--pri);font-family:'Outfit',sans-serif;font-size:15px;font-weight:500;cursor:pointer;transition:all .3s;box-shadow:0 2px 8px rgba(0,0,0,0.04)}
+.tbtn:hover{background:rgba(255,255,255,0.6)}
+.wb{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.45);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:30px;padding:8px 22px;font-size:14px;font-weight:600;color:var(--pri);letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;box-shadow:var(--shadow)}
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--pri),var(--accent));z-index:200;transition:width .4s ease-out;border-radius:0 2px 2px 0;box-shadow:0 0 12px rgba(37,99,235,0.3)}
+.fs{position:fixed;bottom:24px;right:24px;z-index:100;width:44px;height:44px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,0.4);backdrop-filter:blur(20px);color:var(--pri);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s;box-shadow:var(--shadow)}
+.fs:hover{background:rgba(255,255,255,0.6)}
+.dm{position:fixed;bottom:24px;right:76px;z-index:100;width:44px;height:44px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,0.4);backdrop-filter:blur(20px);color:var(--pri);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s;box-shadow:var(--shadow)}
+.dm:hover{background:rgba(255,255,255,0.6)}
+/* Math */
+.math{font-family:'Outfit',monospace;font-size:24px;font-weight:600;color:var(--pri);background:rgba(37,99,235,0.06);padding:16px 24px;border-radius:16px;border:1px solid rgba(37,99,235,0.12);text-align:center;letter-spacing:0.02em}
+.math-sm{font-size:18px;padding:10px 18px}
+/* Bar chart for PMF */
+.bar-chart{display:flex;align-items:flex-end;gap:12px;padding:0 20px}
+.bar{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1}
+.bar-fill{width:100%;border-radius:10px 10px 4px 4px;transition:all .6s cubic-bezier(.22,1,.36,1);background:linear-gradient(180deg,var(--pri-light),var(--pri));min-height:4px}
+.bar-label{font-size:13px;font-weight:600;color:var(--text-d)}
+.bar-val{font-size:12px;font-weight:700;color:var(--pri)}
+/* Gamification */
+.quiz-opt{padding:16px 24px;border-radius:16px;background:rgba(255,255,255,0.5);border:2px solid var(--border);cursor:pointer;transition:all .3s;font-size:17px;color:var(--text-m);text-align:left}
+.quiz-opt:hover{border-color:rgba(37,99,235,0.3);background:rgba(37,99,235,0.04)}
+.quiz-opt.correct{border-color:var(--green);background:rgba(5,150,105,0.08);color:var(--green)}
+.quiz-opt.wrong{border-color:var(--red);background:rgba(220,38,38,0.06);color:var(--red)}
+/* Handwriting submit badge */
+.hw-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;background:rgba(245,158,11,0.1);color:#D97706;border:1px solid rgba(245,158,11,0.2);position:absolute;top:20px;right:20px;z-index:2}
+.hw-badge svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* KaTeX overrides */
+.katex{font-size:1.1em!important}
+.math-block{padding:16px 24px;border-radius:16px;background:rgba(37,99,235,0.06);border:1px solid rgba(37,99,235,0.12);text-align:center;margin:12px 0}
+.math-block-purple{background:rgba(29,78,216,0.06);border-color:rgba(29,78,216,0.12)}
+/* CDF interactive */
+.cdf-explorer{position:relative;background:rgba(255,255,255,0.5);border:1px solid var(--border);border-radius:var(--R);padding:20px;backdrop-filter:blur(20px)}
+.cdf-canvas{width:100%;border-radius:12px;display:block}
+.cdf-slider{width:100%;margin-top:8px;accent-color:var(--pri);height:6px;cursor:pointer}
+.cdf-readout{display:flex;justify-content:center;gap:24px;margin-top:10px;font-size:15px;font-weight:600}
+.cdf-readout span{padding:6px 16px;border-radius:12px;background:rgba(37,99,235,0.06);color:var(--pri)}
+/* Hamburger menu */
+.hm-btn{position:fixed;top:20px;left:20px;z-index:300;width:36px;height:36px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,0.4);backdrop-filter:blur(20px);color:var(--pri);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:all .3s;box-shadow:var(--shadow);padding:0}
+.hm-btn:hover{background:rgba(255,255,255,0.6)}
+.hm-btn span{display:block;width:16px;height:2px;background:var(--pri);border-radius:2px;transition:all .3s}
+.hm-btn.open span:nth-child(1){transform:rotate(45deg) translate(2px,2px)}
+.hm-btn.open span:nth-child(2){opacity:0}
+.hm-btn.open span:nth-child(3){transform:rotate(-45deg) translate(3px,-3px)}
+.hm-panel{position:fixed;top:0;left:-260px;width:240px;height:100vh;z-index:250;background:var(--surface);backdrop-filter:blur(28px) saturate(1.5);-webkit-backdrop-filter:blur(28px) saturate(1.5);border-right:1px solid var(--border);box-shadow:var(--shadow-lg);transition:left .35s cubic-bezier(.22,1,.36,1);overflow-y:auto;padding:60px 10px 20px}
+.hm-panel.open{left:0}
+.hm-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:500;color:var(--text-m);cursor:pointer;transition:all .2s;text-decoration:none;border:none;background:none;width:100%;text-align:left;font-family:'Outfit',sans-serif}
+.hm-item:hover{background:rgba(37,99,235,0.06);color:var(--text)}
+.hm-item.active{background:rgba(37,99,235,0.1);color:var(--pri);font-weight:600}
+.hm-item .hm-num{font-size:11px;font-weight:700;color:var(--text-d);min-width:24px;text-align:right}
+.hm-divider{height:1px;background:rgba(148,163,184,0.15);margin:8px 0}
+/* Dark mode */
+body.dark{--bg:#0F1117;--surface:rgba(30,33,45,0.72);--border:rgba(255,255,255,0.1);--text:#E5E7EB;--text-m:rgba(229,231,235,0.65);--text-d:rgba(229,231,235,0.35);--shadow:0 8px 32px rgba(0,0,0,0.3)}
+body.dark .g::before{background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),rgba(180,200,255,0.06),transparent)}
+body.dark .chip,.dark .tbtn{background:rgba(30,33,45,0.5);border-color:rgba(255,255,255,0.1);color:#93C5FD}
+body.dark .ft-n,.dark .wb{background:rgba(30,33,45,0.6);border-color:rgba(255,255,255,0.08)}
+body.dark .dm,.dark .fs{background:rgba(30,33,45,0.6);color:#93C5FD}
+body.dark .hm-btn{background:rgba(30,33,45,0.6);border-color:rgba(255,255,255,0.08);color:#93C5FD}
+body.dark .hm-btn span{background:#93C5FD}
+body.dark .hm-panel{background:rgba(15,17,23,0.95);border-color:rgba(255,255,255,0.08)}
+body.dark .math{background:rgba(37,99,235,0.12);border-color:rgba(37,99,235,0.2)}
+body.dark .quiz-opt{background:rgba(30,33,45,0.5);border-color:rgba(255,255,255,0.08)}
+/* Print */
+@media print{body{scroll-snap-type:none!important;overflow:visible!important;height:auto!important;background:#fff!important}.slide{height:auto!important;scroll-snap-align:none!important;page-break-after:always;padding:40px 60px!important;display:flex!important;flex-direction:column!important}.nav-dots,.fs,.dm,.progress-bar,.tbtn,.hm-btn,.hm-panel{display:none!important}.rv,.step{opacity:1!important;transform:none!important}.orb{display:none!important}.g{backdrop-filter:none!important;background:rgba(240,244,250,0.5)!important;border:1px solid #ddd!important;box-shadow:none!important}.g::before{display:none!important}@page{margin:0.5in;size:landscape}}
+@media(max-width:950px){.slide{padding:30px 24px}.ft{padding:0 24px}.nav-dots{right:12px}}
+</style>
+</head>
+<body>
+<div class="progress-bar" id="progressBar" style="width:0%"></div>
+<nav class="nav-dots" id="navDots"></nav>
+<button class="fs" onclick="toggleFullscreen()" title="Fullscreen"><i data-lucide="maximize" style="width:20px;height:20px"></i></button>
+<button class="dm" onclick="toggleDark()" title="Dark mode"><i data-lucide="moon" style="width:20px;height:20px" id="dmIcon"></i></button>
+
+<!-- Hamburger menu -->
+<button class="hm-btn" id="hmBtn" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+<div class="hm-panel" id="hmPanel"></div>
+
+<!-- ━━━ 1 — COVER ━━━ -->
+<div class="slide" data-slide="1" style="padding:0;display:grid;grid-template-columns:1fr 1fr;gap:0">
+    <div class="orb orb-b" style="width:500px;height:500px;top:-120px;right:-100px;animation-delay:-3s"></div>
+    <div class="orb orb-p" style="width:400px;height:400px;bottom:-80px;left:-60px;animation-delay:-10s"></div>
+    <div style="position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(ellipse at 40% 50%,rgba(37,99,235,0.05) 0%,transparent 60%)">
+        <img src="img/prob-cover.png" alt="" class="rv" style="width:88%;height:auto;object-fit:contain;filter:drop-shadow(0 20px 60px rgba(37,99,235,0.15))">
+        <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent 50%,var(--bg) 95%);pointer-events:none"></div>
+        <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 40% 50%,transparent 40%,var(--bg) 90%);pointer-events:none;opacity:0.4"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:80px 70px">
+        <div style="font-size:15px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--pri);margin-bottom:16px" class="rv">IE 6400 — Foundations of Data Analytics</div>
+        <h1 style="font-size:64px;font-weight:800;line-height:1.05" class="rv d1">Probability<br><span class="gx">Distributions</span></h1>
+        <p style="font-size:20px;color:var(--text-m);margin-top:20px;font-weight:300;line-height:1.5" class="rv d2">PMF, PDF, CDF &amp; Expected Values<br>with real-world applications</p>
+        <div style="margin-top:36px" class="rv d3"></div>
+    </div>
+    <div class="ft" style="padding:0 60px"><span class="ft-n">1 / 34</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ 2 — AGENDA ━━━ -->
+<div class="slide" data-slide="2" style="align-items:center;text-align:center">
+    <div class="orb orb-b" style="width:400px;height:400px;top:-80px;right:-80px;animation-delay:-5s"></div>
+    <div style="font-size:16px;font-weight:600;letter-spacing:4px;color:var(--pri)" class="rv">TODAY'S AGENDA</div>
+    <h2 style="font-size:48px;font-weight:700;margin:12px 0 32px" class="rv d1">What We'll <span class="gx">Cover</span></h2>
+    <div style="display:flex;flex-direction:column;gap:12px;max-width:750px;width:100%">
+        <div class="g step" style="padding:16px 24px;display:flex;align-items:center;gap:16px">
+            <div style="width:36px;height:36px;border-radius:12px;background:rgba(37,99,235,0.1);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:var(--pri);flex-shrink:0">1</div>
+            <span style="font-size:17px;color:var(--text-m)"><strong style="color:var(--text)">Random Variables</strong> — discrete vs continuous</span>
+        </div>
+        <div class="g step" style="padding:16px 24px;display:flex;align-items:center;gap:16px">
+            <div style="width:36px;height:36px;border-radius:12px;background:rgba(37,99,235,0.1);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:var(--pri);flex-shrink:0">2</div>
+            <span style="font-size:17px;color:var(--text-m)"><strong style="color:var(--text)">PMF &amp; PDF</strong> — how probability works for each</span>
+        </div>
+        <div class="g step" style="padding:16px 24px;display:flex;align-items:center;gap:16px">
+            <div style="width:36px;height:36px;border-radius:12px;background:rgba(37,99,235,0.1);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:var(--pri);flex-shrink:0">3</div>
+            <span style="font-size:17px;color:var(--text-m)"><strong style="color:var(--text)">CDF</strong> — cumulative probability + interactive tool</span>
+        </div>
+        <div class="g step" style="padding:16px 24px;display:flex;align-items:center;gap:16px">
+            <div style="width:36px;height:36px;border-radius:12px;background:rgba(37,99,235,0.1);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:var(--pri);flex-shrink:0">4</div>
+            <span style="font-size:17px;color:var(--text-m)"><strong style="color:var(--text)">Expected Value &amp; Variance</strong></span>
+        </div>
+        <div class="g step" style="padding:16px 24px;display:flex;align-items:center;gap:16px">
+            <div style="width:36px;height:36px;border-radius:12px;background:rgba(37,99,235,0.1);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:var(--pri);flex-shrink:0">5</div>
+            <span style="font-size:17px;color:var(--text-m)"><strong style="color:var(--text)">Practice</strong> — real-world problems</span>
+        </div>
+    </div>
+    <div class="g g-amber step" style="max-width:750px;padding:14px 24px;margin-top:20px;display:flex;align-items:center;gap:12px">
+        <svg style="width:20px;height:20px;stroke:var(--amber);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+        <span style="font-size:14px;color:var(--text-m)"><strong style="color:var(--amber)">Handwritten work</strong> — problems marked with <span style="color:var(--amber)">&#9998;</span> must be submitted</span>
+    </div>
+    <div class="ft"><span class="ft-n">2 / 34</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ 3 — ORIGIN STORY (CINEMATIC) ━━━ -->
+<div class="slide" data-slide="3" style="padding:0;position:relative">
+    <!-- Full-bleed image -->
+    <img src="img/prob-pascal-fermat.png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(0.6) contrast(1.1) saturate(1.2)">
+    <!-- Dark overlay -->
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.3) 0%,rgba(0,0,0,0.55) 50%,rgba(0,0,0,0.8) 100%);pointer-events:none"></div>
+    <!-- Content -->
+    <div style="position:relative;z-index:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%;padding:0 90px 100px;max-width:750px">
+        <div style="font-size:14px;font-weight:600;letter-spacing:4px;color:#FCD34D;margin-bottom:16px" class="rv">PARIS, 1654</div>
+        <h2 style="font-size:52px;font-weight:800;color:white;line-height:1.15;margin-bottom:24px" class="rv d1">It Started with a<br><span style="color:#FCD34D">Gambling Problem</span></h2>
+        <p style="font-size:20px;color:rgba(255,255,255,0.85);line-height:1.7" class="step">A wealthy gambler named <strong style="color:white">Chevalier de Mere</strong> has a question that no one can answer.</p>
+        <div class="step" style="border-left:4px solid #FCD34D;padding:16px 24px;margin:20px 0;border-radius:0 16px 16px 0;background:rgba(255,255,255,0.06);backdrop-filter:blur(8px)">
+            <p style="font-size:22px;font-style:italic;color:rgba(255,255,255,0.95);line-height:1.5">"If a dice game is interrupted halfway... how do we split the pot <em>fairly</em>?"</p>
+        </div>
+        <p style="font-size:18px;color:rgba(255,255,255,0.8);line-height:1.7" class="step">He takes it to <strong style="color:white">Blaise Pascal</strong>. Pascal writes to <strong style="color:white">Pierre de Fermat</strong>. Their letters back and forth accidentally invent an entirely new branch of mathematics.</p>
+        <p style="font-size:24px;font-weight:700;color:#FCD34D;margin-top:20px" class="step">Probability theory is born.</p>
+        <a href="PascalStory.html" target="_blank" class="step" style="display:inline-flex;align-items:center;gap:10px;margin-top:20px;padding:12px 28px;border-radius:30px;background:rgba(252,211,77,0.15);border:1px solid rgba(252,211,77,0.3);color:#FCD34D;text-decoration:none;font-size:15px;font-weight:600;cursor:pointer;backdrop-filter:blur(8px);transition:all .3s" onmouseover="this.style.background='rgba(252,211,77,0.25)'" onmouseout="this.style.background='rgba(252,211,77,0.15)'">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#FCD34D"><polygon points="8,5 20,12 8,19"/></svg>
+            Watch the Full Story
+        </a>
+    </div>
+    <div class="ft" style="padding:0 60px"><span class="ft-n" style="background:rgba(0,0,0,0.4);color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.15)">3 / 34</span><span style="color:rgba(255,255,255,0.5)">Prof. Mohammad Dehghani</span><span style="color:rgba(255,255,255,0.5)">Northeastern University</span></div>
+</div>
+
+<!-- SECTION COVER: RANDOM VARIABLES -->
+<div class="slide" data-slide="4" style="padding:0;display:grid;grid-template-columns:1fr 1fr;gap:0;align-items:center">
+    <div style="position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(ellipse at 40% 50%,rgba(37,99,235,0.05),transparent 60%)">
+        <img src="img/sec-rv.png" alt="" style="width:85%;height:auto;object-fit:contain;filter:drop-shadow(0 16px 48px rgba(0,0,0,0.08))">
+        <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent 55%,var(--bg) 95%);pointer-events:none"></div>
+    </div>
+    <div style="padding:60px 70px">
+        <h2 style="font-size:64px;font-weight:800;line-height:1.1">Random Variables</h2>
+        <p style="font-size:22px;color:var(--text-m);margin-top:16px;font-weight:300">The building block of probability</p>
+    </div>
+    <div class="ft" style="padding:0 60px"><span class="ft-n">4 / 34</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ 4 — RANDOM VARIABLES ━━━ -->
+<div class="slide" data-slide="5" style="align-items:center;text-align:center">
+    <div class="orb orb-b" style="width:400px;height:400px;top:-80px;left:-80px;animation-delay:-6s"></div>
+    <div style="font-size:16px;font-weight:600;letter-spacing:4px;color:var(--pri)" class="rv">FOUNDATION</div>
+    <h2 style="font-size:56px;font-weight:700;margin:12px 0 24px" class="rv d1">Random <span class="gx">Variables</span></h2>
+    <div class="g g-blue step" style="max-width:950px;padding:24px 32px;text-align:center;margin-bottom:12px">
+        <p style="font-size:22px;color:var(--text)"><i data-lucide="help-circle" style="width:22px;height:22px;display:inline;vertical-align:middle;color:var(--pri);margin-right:8px"></i>What do you think a "random variable" is?</p>
+    </div>
+    <div class="g step" style="max-width:950px;padding:20px 28px;text-align:center;margin-bottom:24px">
+        <p style="font-size:20px;color:var(--text-m)">A variable whose value is determined by the <strong style="color:var(--pri)">outcome of a random process</strong>.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;max-width:950px;width:100%">
+        <div class="g g-blue step" style="padding:32px;text-align:center">
+            <i data-lucide="dice-3" style="width:40px;height:40px;color:var(--pri);margin-bottom:14px"></i>
+            <div style="font-size:22px;font-weight:700;margin-bottom:8px">Discrete</div>
+            <div style="font-size:16px;color:var(--text-m);line-height:1.6;margin-bottom:12px">Countable outcomes</div>
+            <div style="display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--text-d);text-align:left">
+                <span>Number of defects in a batch</span>
+                <span>Customers arriving per hour</span>
+                <span>Stars in a product review (1-5)</span>
+            </div>
+        </div>
+        <div class="g g-purple step" style="padding:32px;text-align:center">
+            <i data-lucide="waves" style="width:40px;height:40px;color:var(--accent);margin-bottom:14px"></i>
+            <div style="font-size:22px;font-weight:700;margin-bottom:8px">Continuous</div>
+            <div style="font-size:16px;color:var(--text-m);line-height:1.6;margin-bottom:12px">Any value in a range</div>
+            <div style="display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--text-d);text-align:left">
+                <span>Time between Amazon deliveries</span>
+                <span>Height of students in this room</span>
+                <span>Temperature sensor readings</span>
+            </div>
+        </div>
+    </div>
+    <div class="ft"><span class="ft-n">5 / 34</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ 4 — DISCRETE OR CONTINUOUS? GAME ━━━ -->
+<div class="slide" data-slide="6" style="padding:0;display:grid;grid-template-columns:1fr 1fr;gap:0;align-items:center">
+    <div style="position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(ellipse at 40% 50%,rgba(29,78,216,0.05) 0%,transparent 60%)">
+        <img src="img/prob-discrete-continuous.png" alt="" class="rv" style="width:90%;height:auto;object-fit:contain;filter:drop-shadow(0 16px 48px rgba(29,78,216,0.12))">
+        <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent 55%,var(--bg) 95%);pointer-events:none"></div>
+    </div>
+    <div style="padding:60px 70px">
+        <div class="wb rv"><i data-lucide="zap" style="width:18px;height:18px"></i> QUICK FIRE</div>
+        <h2 style="font-size:44px;font-weight:700;margin-bottom:24px" class="rv d1">Discrete or <span class="gx-p">Continuous</span>?</h2>
+        <div style="display:flex;flex-direction:column;gap:12px">
+            <div class="g step" style="padding:16px 24px;display:flex;align-items:center;justify-content:space-between">
+                <span style="font-size:17px;color:var(--text-m)">Number of emails you get today</span>
+                <span class="step" style="font-size:14px;font-weight:700;color:var(--pri);padding:4px 14px;border-radius:12px;background:rgba(37,99,235,0.08)">Discrete</span>
+            </div>
+            <div class="g step" style="padding:16px 24px;display:flex;align-items:center;justify-content:space-between">
+                <span style="font-size:17px;color:var(--text-m)">Time until your next coffee</span>
+                <span class="step" style="font-size:14px;font-weight:700;color:var(--accent);padding:4px 14px;border-radius:12px;background:rgba(29,78,216,0.08)">Continuous</span>
+            </div>
+            <div class="g step" style="padding:16px 24px;display:flex;align-items:center;justify-content:space-between">
+                <span style="font-size:17px;color:var(--text-m)">Number of Uber rides this week</span>
+                <span class="step" style="font-size:14px;font-weight:700;color:var(--pri);padding:4px 14px;border-radius:12px;background:rgba(37,99,235,0.08)">Discrete</span>
+            </div>
+            <div class="g step" style="padding:16px 24px;display:flex;align-items:center;justify-content:space-between">
+                <span style="font-size:17px;color:var(--text-m)">Weight of a package from Amazon</span>
+                <span class="step" style="font-size:14px;font-weight:700;color:var(--accent);padding:4px 14px;border-radius:12px;background:rgba(29,78,216,0.08)">Continuous</span>
+            </div>
+            <div class="g step" style="padding:16px 24px;display:flex;align-items:center;justify-content:space-between">
+                <span style="font-size:17px;color:var(--text-m)">Stars in a Yelp review (1-5)</span>
+                <span class="step" style="font-size:14px;font-weight:700;color:var(--pri);padding:4px 14px;border-radius:12px;background:rgba(37,99,235,0.08)">Discrete</span>
+            </div>
+            <div class="g step" style="padding:16px 24px;display:flex;align-items:center;justify-content:space-between">
+                <span style="font-size:17px;color:var(--text-m)">Temperature in this room right now</span>
+                <span class="step" style="font-size:14px;font-weight:700;color:var(--accent);padding:4px 14px;border-radius:12px;background:rgba(29,78,216,0.08)">Continuous</span>
+            </div>
+        </div>
+    </div>
+    <div class="ft" style="padding:0 60px"><span class="ft-n">6 / 34</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- SECTION COVER: PMF -->
+<div class="slide" data-slide="7" style="padding:0;display:grid;grid-template-columns:1fr 1fr;gap:0;align-items:center">
+    <div style="position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(ellipse at 40% 50%,rgba(37,99,235,0.05),transparent 60%)">
+        <img src="img/sec-pmf.png" alt="" style="width:85%;height:auto;object-fit:contain;filter:drop-shadow(0 16px 48px rgba(0,0,0,0.08))">
+        <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent 55%,var(--bg) 95%);pointer-events:none"></div>
+    </div>
+    <div style="padding:60px 70px">
+        <h2 style="font-size:64px;font-weight:800;line-height:1.1">PMF</h2>
+        <p style="font-size:22px;color:var(--text-m);margin-top:16px;font-weight:300">Probability Mass Function</p>
+    </div>
+    <div class="ft" style="padding:0 60px"><span class="ft-n">7 / 34</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ 5 — PMF ━━━ -->
+<div class="slide" data-slide="8" style="padding:0;display:grid;grid-template-columns:1fr 1fr;gap:0;align-items:center">
+    <div class="hw-badge"><svg viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>SUBMIT</div>
+    <div style="padding:60px 50px 60px 90px">
+        <div style="font-size:16px;font-weight:600;letter-spacing:4px;color:var(--pri)" class="rv">DISCRETE DISTRIBUTIONS</div>
+        <h2 style="font-size:52px;font-weight:700;margin:12px 0 20px" class="rv d1">PMF</h2>
+        <div class="g g-blue step" style="padding:18px 24px;margin-bottom:14px">
+            <p style="font-size:17px;color:var(--text)"><i data-lucide="help-circle" style="width:18px;height:18px;display:inline;vertical-align:middle;color:var(--pri);margin-right:6px"></i>If I roll a die, what's the probability of getting exactly a 4? How would you express that as a function?</p>
+        </div>
+        <p style="font-size:16px;color:var(--text-m);margin-bottom:4px" class="step"><em>Probability Mass Function</em></p>
+        <p style="font-size:17px;color:var(--text-m);line-height:1.7;margin-bottom:16px" class="step">Gives the probability that a <strong style="color:var(--text)">discrete</strong> random variable equals a specific value.</p>
+        <div class="math step">$$P(X = x)$$ for each value of $x$</div>
+        <div class="g g-blue step" style="padding:20px 24px;margin-top:20px">
+            <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--pri);margin-bottom:8px">RULES</div>
+            <div style="font-size:16px;color:var(--text-m);line-height:2.2">
+                1. $0 \le P(X{=}x) \le 1$ for all $x$<br>
+                2. $\sum_{\text{all } x} P(X{=}x) = 1$
+            </div>
+        </div>
+    </div>
+    <div style="padding:60px 70px 60px 20px">
+        <div class="g rv d2" style="padding:28px">
+            <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--pri);margin-bottom:12px">EXAMPLE: ROLL A FAIR DIE</div>
+            <p style="font-size:16px;color:var(--text-m);margin-bottom:12px">Let $X \triangleq$ outcome of rolling a fair die. $\;x \in \{1, 2, 3, 4, 5, 6\}$</p>
+            <div class="bar-chart">
+                <div class="bar"><div class="bar-val">1/6</div><div class="bar-fill" style="height:120px"></div><div class="bar-label">1</div></div>
+                <div class="bar"><div class="bar-val">1/6</div><div class="bar-fill" style="height:120px"></div><div class="bar-label">2</div></div>
+                <div class="bar"><div class="bar-val">1/6</div><div class="bar-fill" style="height:120px"></div><div class="bar-label">3</div></div>
+                <div class="bar"><div class="bar-val">1/6</div><div class="bar-fill" style="height:120px"></div><div class="bar-label">4</div></div>
+                <div class="bar"><div class="bar-val">1/6</div><div class="bar-fill" style="height:120px"></div><div class="bar-label">5</div></div>
+                <div class="bar"><div class="bar-val">1/6</div><div class="bar-fill" style="height:120px"></div><div class="bar-label">6</div></div>
+            </div>
+            <p style="font-size:14px;color:var(--text-d);text-align:center;margin-top:12px">Each bar = P(X = x). All bars sum to 1.</p>
+        </div>
+    </div>
+    <div class="ft" style="padding:0 60px"><span class="ft-n">8 / 34</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ 5 — PMF REAL EXAMPLE ━━━ -->
+<div class="slide" data-slide="9" style="align-items:center;text-align:center">
+    <div class="hw-badge"><svg viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>SUBMIT</div>
+    <div class="orb orb-p" style="width:350px;height:350px;bottom:-60px;right:-60px;animation-delay:-8s"></div>
+    <div style="font-size:16px;font-weight:600;letter-spacing:4px;color:var(--teal)" class="rv">APPLIED EXAMPLE</div>
+    <h2 style="font-size:48px;font-weight:700;margin:12px 0 32px" class="rv d1">Uber Surge: How Many Rides <span class="gx-t">Per Hour</span>?</h2>
+    <p style="font-size:18px;color:var(--text-m);max-width:950px;margin-bottom:28px" class="rv d2">A Uber hub in Boston gets ride requests. Data shows this PMF for requests per minute during peak hours:</p>
+    <div class="g rv d3" style="padding:28px;max-width:950px;width:100%">
+        <div class="bar-chart">
+            <div class="bar step"><div class="bar-val">0.10</div><div class="bar-fill" style="height:36px;background:linear-gradient(180deg,rgba(125,211,252,0.6),var(--teal))"></div><div class="bar-label">0</div></div>
+            <div class="bar step"><div class="bar-val">0.25</div><div class="bar-fill" style="height:90px;background:linear-gradient(180deg,rgba(125,211,252,0.6),var(--teal))"></div><div class="bar-label">1</div></div>
+            <div class="bar step"><div class="bar-val">0.35</div><div class="bar-fill" style="height:126px;background:linear-gradient(180deg,rgba(125,211,252,0.6),var(--teal))"></div><div class="bar-label">2</div></div>
+            <div class="bar step"><div class="bar-val">0.20</div><div class="bar-fill" style="height:72px;background:linear-gradient(180deg,rgba(125,211,252,0.6),var(--teal))"></div><div class="bar-label">3</div></div>
+            <div class="bar step"><div class="bar-val">0.10</div><div class="bar-fill" style="height:36px;background:linear-gradient(180deg,rgba(125,211,252,0.6),var(--teal))"></div><div class="bar-label">4+</div></div>
+        </div>
+        <p style="font-size:14px;color:var(--text-d);text-align:center;margin-top:8px"><strong>X</strong> ≜ number of ride requests per minute</p>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:950px;width:100%;margin-top:20px">
+        <div class="g g-teal step" style="padding:20px 24px;text-align:left">
+            <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--teal);margin-bottom:8px">THE MATH</div>
+            <p style="font-size:16px;color:var(--text-m)">$P(X = 2) = ?$</p>
+            <div class="step" style="margin-top:8px;padding:10px 14px;border-radius:12px;background:rgba(3,105,161,0.06)">
+                <p style="font-size:16px;font-weight:700;color:var(--teal)">$= 0.35$</p>
+                <p style="font-size:14px;color:var(--text-d)">Read directly from the bar chart</p>
+            </div>
+        </div>
+        <div class="g step" style="padding:20px 24px;text-align:left">
+            <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--pri);margin-bottom:8px">CRUNCH IT</div>
+            <p style="font-size:16px;color:var(--text-m)">$P(X \ge 2) = ?$</p>
+            <div class="step" style="margin-top:8px;padding:10px 14px;border-radius:12px;background:rgba(37,99,235,0.04)">
+                <p style="font-size:16px;color:var(--text-m)">$= P(2) + P(3) + P(4+)$</p>
+                <p style="font-size:15px;font-weight:700;color:var(--pri)">$= 0.35 + 0.20 + 0.10 = \boxed{0.65}$</p>
+            </div>
+        </div>
+    </div>
+    <div class="g step" style="max-width:950px;margin-top:16px;padding:16px 24px;text-align:left">
+        <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--amber);margin-bottom:6px">VERIFY: DO THEY SUM TO 1?</div>
+        <p style="font-size:16px;color:var(--text-m)">$0.10 + 0.25 + 0.35 + 0.20 + 0.10 = \boxed{1.00}$ &#10003;</p>
+    </div>
+    <div class="ft"><span class="ft-n">9 / 34</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ 5b — PMF: QUALITY CONTROL ━━━ -->
+<div class="slide" data-slide="10" style="align-items:center;text-align:center">
+    <div class="hw-badge"><svg viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>SUBMIT</div>
+    <div class="orb orb-b" style="width:350px;height:350px;top:-60px;left:-60px;animation-delay:-10s"></div>
+    <div style="font-size:16px;font-weight:600;letter-spacing:4px;color:var(--pri)" class="rv">PMF — APPLIED</div>
+    <h2 style="font-size:44px;font-weight:700;margin:12px 0 24px" class="rv d1">Factory QC: Defective <span class="gx">Chips Per Batch</span></h2>
+    <p style="font-size:17px;color:var(--text-m);max-width:950px;margin-bottom:20px" class="rv d2">A chip factory inspects batches of 100. <strong>X</strong> ≜ number of defective chips per batch. $\;x \in \{0, 1, 2, 3, 4+\}$</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:950px;width:100%">
+        <div class="g rv d3" style="padding:24px">
+            <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--pri);margin-bottom:12px">PMF TABLE</div>
+            <table style="width:100%;font-size:16px;color:var(--text-m);border-collapse:collapse">
+                <tr style="border-bottom:2px solid rgba(37,99,235,0.15)"><td style="padding:8px 0;font-weight:700">x (defects)</td><td style="text-align:center;font-weight:700">0</td><td style="text-align:center;font-weight:700">1</td><td style="text-align:center;font-weight:700">2</td><td style="text-align:center;font-weight:700">3</td><td style="text-align:center;font-weight:700">4+</td></tr>
+                <tr><td style="padding:8px 0;font-weight:600;color:var(--pri)">P(X=x)</td><td style="text-align:center">0.60</td><td style="text-align:center">0.20</td><td style="text-align:center">0.10</td><td style="text-align:center">0.05</td><td style="text-align:center">0.05</td></tr>
+            </table>
+            <div class="bar-chart" style="margin-top:16px">
+                <div class="bar"><div class="bar-val">0.60</div><div class="bar-fill" style="height:120px"></div><div class="bar-label">0</div></div>
+                <div class="bar"><div class="bar-val">0.20</div><div class="bar-fill" style="height:40px"></div><div class="bar-label">1</div></div>
+                <div class="bar"><div class="bar-val">0.10</div><div class="bar-fill" style="height:20px"></div><div class="bar-label">2</div></div>
+                <div class="bar"><div class="bar-val">0.05</div><div class="bar-fill" style="height:10px"></div><div class="bar-label">3</div></div>
+                <div class="bar"><div class="bar-val">0.05</div><div class="bar-fill" style="height:10px"></div><div class="bar-label">4+</div></div>
+            </div>
+        </div>
+        <div class="g g-blue rv d4" style="padding:24px">
+            <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--pri);margin-bottom:12px">THE MATH</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+                <div style="font-size:16px;color:var(--text-m)"><strong style="color:var(--text)">Q1:</strong> $P(X \ge 1) = ?$</div>
+                <div class="step" style="padding:8px 14px;border-radius:10px;background:rgba(37,99,235,0.04);font-size:15px">$1 - P(X{=}0) = 1 - 0.60 = \boxed{0.40}$</div>
+                <div class="step" style="font-size:16px;color:var(--text-m)"><strong style="color:var(--text)">Q2:</strong> $P(X \le 2) = ?$</div>
+                <div class="step" style="padding:8px 14px;border-radius:10px;background:rgba(37,99,235,0.04);font-size:15px">$P(0)+P(1)+P(2) = 0.60+0.20+0.10 = \boxed{0.90}$</div>
+                <div class="step" style="font-size:16px;color:var(--text-m)"><strong style="color:var(--text)">Q3:</strong> E[X] = ?</div>
+                <div class="step" style="padding:8px 14px;border-radius:10px;background:rgba(37,99,235,0.04);font-size:14px">$0(0.60)+1(0.20)+2(0.10)+3(0.05)+4(0.05)$<br>$= 0+0.20+0.20+0.15+0.20 = \boxed{0.75}$ defects/batch</div>
+            </div>
+        </div>
+    </div>
+    <div class="ft"><span class="ft-n">10 / 34</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- SECTION COVER: PDF -->
+<div class="slide" data-slide="11" style="padding:0;display:grid;grid-template-columns:1fr 1fr;gap:0;align-items:center">
+    <div style="position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(ellipse at 40% 50%,rgba(29,78,216,0.05),transparent 60%)">
+        <img src="img/sec-pdf.png" alt="" style="width:85%;height:auto;object-fit:contain;filter:drop-shadow(0 16px 48px rgba(0,0,0,0.08))">
+        <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent 55%,var(--bg) 95%);pointer-events:none"></div>
+    </div>
+    <div style="padding:60px 70px">
+        <h2 style="font-size:64px;font-weight:800;line-height:1.1">PDF</h2>
+        <p style="font-size:22px;color:var(--text-m);margin-top:16px;font-weight:300">Probability Density Function</p>
+    </div>
+    <div class="ft" style="padding:0 60px"><span class="ft-n">11 / 34</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ 7 — PDF ━━━ -->
+<div class="slide" data-slide="12" style="align-items:center;text-align:center">
+    <div class="orb orb-b" style="width:400px;height:400px;top:-80px;right:-80px;animation-delay:-5s"></div>
+    <div style="font-size:16px;font-weight:600;letter-spacing:4px;color:var(--accent)" class="rv">CONTINUOUS DISTRIBUTIONS</div>
+    <h2 style="font-size:52px;font-weight:700;margin:12px 0 20px" class="rv d1">PDF</h2>
+    <div class="g g-purple step" style="max-width:950px;padding:20px 28px;text-align:center;margin-bottom:20px">
+        <p style="font-size:18px;color:var(--text)"><i data-lucide="help-circle" style="width:18px;height:18px;display:inline;vertical-align:middle;color:var(--accent);margin-right:6px"></i>What's the probability that your Uber arrives in <em>exactly</em> 4.000... minutes? Why is that a weird question?</p>
+    </div>
+    <p style="font-size:16px;color:var(--text-m);margin-bottom:24px" class="step"><em>Probability Density Function</em></p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;max-width:950px;width:100%">
+        <div class="g g-purple step" style="padding:28px">
+            <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--accent);margin-bottom:12px">KEY IDEA</div>
+            <p style="font-size:17px;color:var(--text-m);line-height:1.7">For continuous variables, P(X = exact value) = <strong style="color:var(--accent)">0</strong>. Always.</p>
+            <p style="font-size:17px;color:var(--text-m);line-height:1.7;margin-top:8px">Instead, we find probability of a <strong style="color:var(--text)">range</strong>:</p>
+            <div class="math" style="margin-top:12px;font-size:22px;background:rgba(29,78,216,0.08);border-color:rgba(29,78,216,0.15);color:var(--accent)">$$P(a \le X \le b) = \int_a^b f(x)\,dx$$</div>
+        </div>
+        <div class="g rv d3" style="padding:28px">
+            <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--pri);margin-bottom:12px">RULES</div>
+            <div style="font-size:16px;color:var(--text-m);line-height:2.2">
+                1. $f(x) \ge 0$ everywhere<br>
+                2. $\int_{-\infty}^{\infty} f(x)\,dx = 1$<br>
+                3. $P(X = \text{exact}) = 0$
+            </div>
+        </div>
+    </div>
+    <div class="g g-blue step" style="max-width:950px;margin-top:28px;padding:24px 28px;text-align:center">
+        <p style="font-size:20px;color:var(--text-m)"><strong style="color:var(--pri)">PMF = heights of bars.</strong> &nbsp; <strong style="color:var(--accent)">PDF = area under the curve.</strong></p>
+        <p style="font-size:14px;color:var(--text-d);margin-top:6px">That's the key difference. Discrete counts. Continuous measures.</p>
+    </div>
+    <div class="ft"><span class="ft-n">12 / 34</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ 7 — PDF APPLIED: AMAZON ━━━ -->
+<div class="slide" data-slide="13" style="align-items:center;text-align:center">
+    <div class="hw-badge"><svg viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>SUBMIT</div>
+    <div style="font-size:16px;font-weight:600;letter-spacing:4px;color:var(--green)" class="rv">APPLIED EXAMPLE</div>
+    <h2 style="font-size:44px;font-weight:700;margin:12px 0 28px" class="rv d1">Amazon Delivery Time Is <span class="gx-g">Continuous</span></h2>
+    <p style="font-size:18px;color:var(--text-m);max-width:950px;margin-bottom:24px" class="rv d2">Amazon promises delivery between 2-5 days. Let <strong>X</strong> $\triangleq$ delivery time (days). Every delivery time between 2 and 5 days is equally likely. $\;x \in [2, 5]$</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;max-width:950px;width:100%">
+        <div class="g rv d3" style="padding:28px">
+            <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--green);margin-bottom:12px">THE PDF</div>
+            <div class="math math-sm" style="background:rgba(5,150,105,0.08);border-color:rgba(5,150,105,0.15);color:var(--green)">$$f(x) = \frac{1}{5-2} = \frac{1}{3}$$</div>
+            <svg width="100%" height="160" viewBox="0 0 300 160" style="margin-top:16px">
+                <!-- Axes -->
+                <line x1="40" y1="130" x2="280" y2="130" stroke="rgba(17,24,39,0.15)" stroke-width="2"/>
+                <line x1="40" y1="10" x2="40" y2="130" stroke="rgba(17,24,39,0.15)" stroke-width="2"/>
+                <!-- Axis ticks -->
+                <line x1="40" y1="130" x2="40" y2="135" stroke="rgba(17,24,39,0.15)" stroke-width="2"/>
+                <line x1="100" y1="130" x2="100" y2="135" stroke="rgba(17,24,39,0.15)" stroke-width="2"/>
+                <line x1="160" y1="130" x2="160" y2="135" stroke="rgba(17,24,39,0.15)" stroke-width="2"/>
+                <line x1="220" y1="130" x2="220" y2="135" stroke="rgba(17,24,39,0.15)" stroke-width="2"/>
+                <line x1="280" y1="130" x2="280" y2="135" stroke="rgba(17,24,39,0.15)" stroke-width="2"/>
+                <!-- Filled area -->
+                <rect x="100" y="30" width="180" height="100" rx="4" fill="rgba(5,150,105,0.12)"/>
+                <!-- PDF line: flat at 1/3 between x=2 and x=5, zero elsewhere -->
+                <polyline points="40,130 100,130 100,30 280,30 280,130" fill="none" stroke="#059669" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                <!-- Labels -->
+                <text x="190" y="70" fill="#059669" font-family="Outfit" font-size="20" text-anchor="middle" font-weight="700">f(x) = 1/3</text>
+                <text x="190" y="90" fill="rgba(17,24,39,0.35)" font-family="Outfit" font-size="12" text-anchor="middle">area = 1</text>
+                <text x="40" y="150" fill="rgba(17,24,39,0.4)" font-family="Outfit" font-size="13" text-anchor="middle">0</text>
+                <text x="100" y="150" fill="#059669" font-family="Outfit" font-size="14" text-anchor="middle" font-weight="700">2</text>
+                <text x="160" y="150" fill="rgba(17,24,39,0.4)" font-family="Outfit" font-size="13" text-anchor="middle">3</text>
+                <text x="220" y="150" fill="rgba(17,24,39,0.4)" font-family="Outfit" font-size="13" text-anchor="middle">4</text>
+                <text x="280" y="150" fill="#059669" font-family="Outfit" font-size="14" text-anchor="middle" font-weight="700">5</text>
+                <!-- Y-axis label -->
+                <text x="30" y="34" fill="#059669" font-family="Outfit" font-size="12" text-anchor="end" font-weight="600">1/3</text>
+                <line x1="38" y1="30" x2="42" y2="30" stroke="rgba(17,24,39,0.15)" stroke-width="2"/>
+            </svg>
+        </div>
+        <div class="g g-green rv d4" style="padding:24px">
+            <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--green);margin-bottom:10px">THE MATH</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+                <div class="step" style="font-size:16px;color:var(--text-m)"><strong style="color:var(--text)">Q1:</strong> P(X = 3 exactly)?</div>
+                <div class="step" style="padding:8px 14px;border-radius:10px;background:rgba(5,150,105,0.06);font-size:15px">$= 0$ (continuous — no mass at a point)</div>
+                <div class="step" style="font-size:16px;color:var(--text-m)"><strong style="color:var(--text)">Q2:</strong> $P(2 \le X \le 3) = ?$</div>
+                <div class="step" style="padding:8px 14px;border-radius:10px;background:rgba(5,150,105,0.06);font-size:15px">$$= (3-2) \times \frac{1}{3} = \boxed{\frac{1}{3}}\approx 0.333$$</div>
+                <div class="step" style="font-size:16px;color:var(--text-m)"><strong style="color:var(--text)">Q3:</strong> $P(X > 4) = ?$</div>
+                <div class="step" style="padding:8px 14px;border-radius:10px;background:rgba(5,150,105,0.06);font-size:15px">$$= (5-4) \times \frac{1}{3} = \boxed{\frac{1}{3}}\approx 0.333$$</div>
+            </div>
+        </div>
+    </div>
+    <div class="g g-purple step" style="max-width:950px;margin-top:16px;padding:20px 28px;text-align:left;width:100%">
+        <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--accent);margin-bottom:8px">IDENTIFY THE DISTRIBUTION</div>
+        <div style="font-size:20px;font-weight:700;color:var(--accent)">$X \sim \text{Uniform}(a{=}2,\; b{=}5)$</div>
+        <div style="font-size:15px;color:var(--text-m);margin-top:8px"><strong>Why?</strong> All values in [2, 5] are equally likely — constant density $f(x) = \frac{1}{b-a}$.</div>
+    </div>
+    <div class="ft"><span class="ft-n">13 / 34</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ 8b — PDF: INTEGRATION EXAMPLE ━━━ -->
+<div class="slide" data-slide="14" style="align-items:center;text-align:center">
+    <div class="hw-badge"><svg viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>SUBMIT</div>
+    <div class="orb orb-p" style="width:350px;height:350px;bottom:-60px;left:-60px;animation-delay:-7s"></div>
+    <div style="font-size:16px;font-weight:600;letter-spacing:4px;color:var(--accent)" class="rv">PDF — INTEGRATION</div>
+    <h2 style="font-size:44px;font-weight:700;margin:12px 0 24px" class="rv d1">Call Center: Wait Time <span class="gx-p">f(x) = 2x</span></h2>
+    <p style="font-size:17px;color:var(--text-m);max-width:950px;margin-bottom:20px" class="rv d2">Let <strong>X</strong> $\triangleq$ wait time (minutes). $\;x \in [0, 1]$. The PDF is: $f(x) = 2x$ for $0 \le x \le 1$, and 0 otherwise.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:950px;width:100%">
+        <div class="g rv d3" style="padding:24px">
+            <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--accent);margin-bottom:12px">THE GRAPH</div>
+            <svg width="100%" height="180" viewBox="0 0 300 180" style="margin-bottom:8px">
+                <!-- Axes -->
+                <line x1="40" y1="150" x2="280" y2="150" stroke="rgba(17,24,39,0.15)" stroke-width="2"/>
+                <line x1="40" y1="10" x2="40" y2="150" stroke="rgba(17,24,39,0.15)" stroke-width="2"/>
+                <!-- Filled triangle area -->
+                <polygon points="40,150 260,150 260,10" fill="rgba(29,78,216,0.1)"/>
+                <!-- PDF line: f(x) = 2x from (0,0) to (1,2) -->
+                <line x1="40" y1="150" x2="260" y2="10" stroke="#7C3AED" stroke-width="3" stroke-linecap="round"/>
+                <!-- Shaded region for P(0.5 <= X <= 1) -->
+                <polygon points="150,80 260,10 260,150 150,150" fill="rgba(29,78,216,0.2)" stroke="rgba(29,78,216,0.4)" stroke-width="1"/>
+                <!-- Labels -->
+                <text x="40" y="168" fill="rgba(17,24,39,0.4)" font-family="Outfit" font-size="13" text-anchor="middle">0</text>
+                <text x="150" y="168" fill="rgba(17,24,39,0.4)" font-family="Outfit" font-size="13" text-anchor="middle">0.5</text>
+                <text x="260" y="168" fill="#7C3AED" font-family="Outfit" font-size="14" text-anchor="middle" font-weight="700">1</text>
+                <text x="28" y="155" fill="rgba(17,24,39,0.4)" font-family="Outfit" font-size="12" text-anchor="end">0</text>
+                <text x="28" y="15" fill="#7C3AED" font-family="Outfit" font-size="12" text-anchor="end" font-weight="600">2</text>
+                <text x="28" y="85" fill="rgba(17,24,39,0.4)" font-family="Outfit" font-size="12" text-anchor="end">1</text>
+                <!-- Annotation -->
+                <text x="210" y="110" fill="#7C3AED" font-family="Outfit" font-size="13" text-anchor="middle" font-weight="600">shaded area</text>
+            </svg>
+            <p style="font-size:14px;color:var(--text-d);text-align:center">f(x) = 2x is a straight line from (0,0) to (1,2)</p>
+        </div>
+        <div class="g g-purple rv d4" style="padding:24px">
+            <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--accent);margin-bottom:12px">THE MATH</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+                <div style="font-size:16px;color:var(--text-m)"><strong style="color:var(--text)">Q1:</strong> Verify it's a valid PDF</div>
+                <div class="step" style="padding:8px 14px;border-radius:10px;background:rgba(29,78,216,0.06);font-size:14px">$\int_0^1 2x\,dx = [x^2]_0^1 = 1 - 0 = \mathbf{1}$ &#10003;</div>
+                <div class="step" style="font-size:16px;color:var(--text-m)"><strong style="color:var(--text)">Q2:</strong> P(wait &gt; 0.5 min)?</div>
+                <div class="step" style="padding:8px 14px;border-radius:10px;background:rgba(29,78,216,0.06);font-size:14px">$\int_{0.5}^1 2x\,dx = [x^2]_{0.5}^1 = 1 - 0.25 = \boxed{0.75}$</div>
+                <div class="step" style="font-size:16px;color:var(--text-m)"><strong style="color:var(--text)">Q3:</strong> E[X] = ?</div>
+                <div class="step" style="padding:8px 14px;border-radius:10px;background:rgba(29,78,216,0.06);font-size:14px">$\int_0^1 x \cdot 2x\,dx = \left[\frac{2x^3}{3}\right]_0^1 = \boxed{\frac{2}{3}}\approx 40\text{s}$</div>
+
+            </div>
+        </div>
+    </div>
+    <div class="ft"><span class="ft-n">14 / 34</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ 10 — PMF vs PDF ━━━ -->
+<div class="slide" data-slide="15" style="align-items:center;text-align:center">
+    <div style="font-size:16px;font-weight:600;letter-spacing:4px;color:var(--pri)" class="rv">HEAD TO HEAD</div>
+    <h2 style="font-size:52px;font-weight:700;margin:12px 0 36px" class="rv d1">PMF vs. <span class="gx">PDF</span></h2>
+    <div style="display:grid;grid-template-columns:1fr 60px 1fr;gap:24px;max-width:950px;width:100%;align-items:start">
+        <div class="g g-blue rv d2" style="padding:28px;text-align:left">
+            <div style="font-size:20px;font-weight:700;color:var(--pri);margin-bottom:16px">PMF</div>
+            <div style="font-size:16px;color:var(--text-m);line-height:2">
+                <strong style="color:var(--text)">Type:</strong> Discrete<br>
+                <strong style="color:var(--text)">Gives:</strong> P(X = x) directly<br>
+                <strong style="color:var(--text)">Visual:</strong> Bar chart<br>
+                <strong style="color:var(--text)">Sum:</strong> All bars = 1<br>
+                <strong style="color:var(--text)">Example:</strong> # of emails/day
+            </div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:center;padding-top:60px"><span style="font-size:28px;font-weight:800;color:var(--text-d)">vs</span></div>
+        <div class="g g-purple rv d3" style="padding:28px;text-align:left">
+            <div style="font-size:20px;font-weight:700;color:var(--accent);margin-bottom:16px">PDF</div>
+            <div style="font-size:16px;color:var(--text-m);line-height:2">
+                <strong style="color:var(--text)">Type:</strong> Continuous<br>
+                <strong style="color:var(--text)">Gives:</strong> Density (not probability)<br>
+                <strong style="color:var(--text)">Visual:</strong> Smooth curve<br>
+                <strong style="color:var(--text)">Integral:</strong> Area under curve = 1<br>
+                <strong style="color:var(--text)">Example:</strong> Delivery time
+            </div>
+        </div>
+    </div>
+    <div class="g step" style="max-width:750px;margin-top:28px;padding:20px 28px;text-align:center">
+        <p style="font-size:18px"><strong class="gx">Key insight:</strong> PMF gives probability at a point. PDF needs an <em>interval</em>.</p>
+    </div>
+    <div class="ft"><span class="ft-n">15 / 34</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ 12 — FLORENCE NIGHTINGALE STORY ━━━ -->
+<div class="slide" data-slide="16" style="padding:0;position:relative">
+    <!-- Full-bleed image -->
+    <img src="img/prob-nightingale.png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(0.55) contrast(1.1) saturate(1.1)">
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.2) 0%,rgba(0,0,0,0.6) 50%,rgba(0,0,0,0.85) 100%);pointer-events:none"></div>
+    <div style="position:relative;z-index:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%;padding:0 90px 100px;max-width:950px">
+        <div style="font-size:14px;font-weight:600;letter-spacing:4px;color:#F9A8D4;margin-bottom:16px" class="rv">CRIMEAN WAR, 1854</div>
+        <h2 style="font-size:48px;font-weight:800;color:white;line-height:1.15;margin-bottom:20px" class="rv d1">The Nurse Who <span style="color:#F9A8D4">Weaponized Data</span></h2>
+        <p style="font-size:19px;color:rgba(255,255,255,0.85);line-height:1.7" class="step"><strong style="color:white">Florence Nightingale</strong> arrived at a British military hospital in Turkey. Soldiers were dying — not from wounds, but from <em>infections</em>.</p>
+        <p style="font-size:19px;color:rgba(255,255,255,0.85);line-height:1.7;margin-top:12px" class="step">She didn't just clean the wards. She <strong style="color:white">collected data</strong>. She counted every death. She categorized every cause.</p>
+        <div class="step" style="border-left:4px solid #F9A8D4;padding:14px 24px;margin:16px 0;border-radius:0 16px 16px 0;background:rgba(255,255,255,0.06);backdrop-filter:blur(8px)">
+            <p style="font-size:20px;color:rgba(255,255,255,0.95);line-height:1.5">Then she invented the <strong style="color:#F9A8D4">Rose Diagram</strong> — a radial chart that made the data impossible to ignore. Parliament saw it. The death rate dropped from <strong style="color:#F9A8D4">40% to 2%</strong>.</p>
+        </div>
+        <p style="font-size:22px;font-weight:700;color:#F9A8D4;margin-top:16px" class="step">Probability + visualization = lives saved.</p>
+        <p style="font-size:14px;color:rgba(255,255,255,0.5);margin-top:8px" class="step">She was the first female member of the Royal Statistical Society.</p>
+    </div>
+    <div class="ft" style="padding:0 60px"><span class="ft-n" style="background:rgba(0,0,0,0.4);color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.15)">16 / 34</span><span style="color:rgba(255,255,255,0.5)">Prof. Mohammad Dehghani</span><span style="color:rgba(255,255,255,0.5)">Northeastern University</span></div>
+</div>
+
+<!-- SECTION COVER: CDF -->
+<div class="slide" data-slide="17" style="padding:0;display:grid;grid-template-columns:1fr 1fr;gap:0;align-items:center">
+    <div style="position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(ellipse at 40% 50%,rgba(3,105,161,0.05),transparent 60%)">
+        <img src="img/sec-cdf.png" alt="" style="width:85%;height:auto;object-fit:contain;filter:drop-shadow(0 16px 48px rgba(0,0,0,0.08))">
+        <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent 55%,var(--bg) 95%);pointer-events:none"></div>
+    </div>
+    <div style="padding:60px 70px">
+        <h2 style="font-size:64px;font-weight:800;line-height:1.1">CDF</h2>
+        <p style="font-size:22px;color:var(--text-m);margin-top:16px;font-weight:300">Cumulative Distribution Function</p>
+    </div>
+    <div class="ft" style="padding:0 60px"><span class="ft-n">17 / 34</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ CDF DEFINITION ━━━ -->
+<div class="slide" data-slide="18" style="align-items:center;text-align:center">
+    <div class="orb orb-b" style="width:400px;height:400px;top:-80px;left:-80px;animation-delay:-6s"></div>
+    <div style="font-size:16px;font-weight:600;letter-spacing:4px;color:var(--pri)" class="rv">CUMULATIVE</div>
+    <h2 style="font-size:56px;font-weight:700;margin:12px 0 24px" class="rv d1">CDF: <span class="gx">Cumulative Distribution Function</span></h2>
+    <div class="math-block rv d2" style="max-width:500px;margin:0 auto 28px;font-size:22px">$$F(x) = P(X \le x)$$</div>
+    <p style="font-size:20px;color:var(--text-m);max-width:950px;margin-bottom:32px" class="rv d3">"What's the probability that X is <strong style="color:var(--text)">at most</strong> x?"</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;max-width:950px;width:100%">
+        <div class="g g-blue step" style="padding:28px;text-align:left">
+            <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--pri);margin-bottom:12px">DISCRETE</div>
+            <div style="font-size:18px;margin-bottom:12px">$$F(x) = \sum_{k \le x} P(X = k)$$</div>
+            <div style="font-size:16px;color:var(--text-m);line-height:1.8">
+                Step function — jumps at each value<br>
+                Add up all probabilities up to $x$
+            </div>
+        </div>
+        <div class="g g-purple step" style="padding:28px;text-align:left">
+            <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--accent);margin-bottom:12px">CONTINUOUS</div>
+            <div style="font-size:18px;margin-bottom:12px">$$F(x) = \int_{-\infty}^{x} f(t)\,dt$$</div>
+            <div style="font-size:16px;color:var(--text-m);line-height:1.8">
+                Smooth curve from 0 to 1<br>
+                Area under PDF up to $x$
+            </div>
+        </div>
+    </div>
+    <div style="display:flex;gap:20px;max-width:950px;width:100%;margin-top:24px">
+        <div class="g step" style="flex:1;padding:16px;text-align:center"><i data-lucide="trending-up" style="width:24px;height:24px;color:var(--pri);margin-bottom:6px"></i><div style="font-size:15px;font-weight:700">Always increasing</div><div style="font-size:13px;color:var(--text-d)">0 to 1, never decreases</div></div>
+        <div class="g step" style="flex:1;padding:16px;text-align:center"><i data-lucide="calculator" style="width:24px;height:24px;color:var(--accent);margin-bottom:6px"></i><div style="font-size:15px;font-weight:700">Key trick</div><div style="font-size:13px;color:var(--text-d)">$P(a < X \le b) = F(b) - F(a)$</div></div>
+        <div class="g step" style="flex:1;padding:16px;text-align:center"><i data-lucide="infinity" style="width:24px;height:24px;color:var(--teal);margin-bottom:6px"></i><div style="font-size:15px;font-weight:700">Boundaries</div><div style="font-size:13px;color:var(--text-d)">$F(-\infty)=0$, $F(\infty)=1$</div></div>
+    </div>
+    <div class="ft"><span class="ft-n">18 / 34</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ CDF DISCRETE EXAMPLE ━━━ -->
+<div class="slide" data-slide="19" style="align-items:center;text-align:center">
+    <div class="hw-badge"><svg viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>SUBMIT</div>
+    <div style="font-size:16px;font-weight:600;letter-spacing:4px;color:var(--pri)" class="rv">CDF — DISCRETE EXAMPLE</div>
+    <h2 style="font-size:44px;font-weight:700;margin:12px 0 24px" class="rv d1">Customer Complaints <span class="gx">Per Day</span></h2>
+    <p style="font-size:18px;color:var(--text-m);max-width:950px;margin-bottom:20px" class="rv d2">Let <strong>X</strong> ≜ complaints per day. with this PMF:</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:950px;width:100%">
+        <div class="g rv d3" style="padding:24px">
+            <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--pri);margin-bottom:12px">PMF &amp; CDF TABLE</div>
+            <table style="width:100%;font-size:16px;color:var(--text-m);border-collapse:collapse">
+                <tr style="border-bottom:2px solid rgba(37,99,235,0.15)"><td style="padding:8px 0;font-weight:700">x</td><td style="text-align:center;font-weight:700">0</td><td style="text-align:center;font-weight:700">1</td><td style="text-align:center;font-weight:700">2</td><td style="text-align:center;font-weight:700">3</td></tr>
+                <tr style="border-bottom:1px solid rgba(0,0,0,0.06)"><td style="padding:8px 0;font-weight:600;color:var(--pri)">P(X=x)</td><td style="text-align:center">0.30</td><td style="text-align:center">0.40</td><td style="text-align:center">0.20</td><td style="text-align:center">0.10</td></tr>
+                <tr><td style="padding:8px 0;font-weight:600;color:var(--accent)">F(x)</td><td style="text-align:center" class="step">0.30</td><td style="text-align:center" class="step">0.70</td><td style="text-align:center" class="step">0.90</td><td style="text-align:center" class="step">1.00</td></tr>
+            </table>
+            <p style="font-size:14px;color:var(--text-d);margin-top:10px">Each F(x) = sum of all P(X=k) for $k \le x$</p>
+        </div>
+        <div class="g g-blue rv d4" style="padding:24px">
+            <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--pri);margin-bottom:12px">THE MATH</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+                <div style="font-size:16px;color:var(--text-m)"><strong style="color:var(--text)">Q1:</strong> $P(X \le 1) = ?$</div>
+                <div class="step" style="padding:10px 14px;border-radius:10px;background:rgba(37,99,235,0.04);font-size:16px">$F(1) = 0.30 + 0.40 = \boxed{0.70}$</div>
+                <div class="step" style="font-size:16px;color:var(--text-m)"><strong style="color:var(--text)">Q2:</strong> $P(1 < X \le 3) = ?$</div>
+                <div class="step" style="padding:10px 14px;border-radius:10px;background:rgba(37,99,235,0.04);font-size:16px">$$= F(3) - F(1) = 1.00 - 0.70 = \boxed{0.30}$$</div>
+            </div>
+        </div>
+    </div>
+    <div class="ft"><span class="ft-n">19 / 34</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ CDF CONTINUOUS EXAMPLE ━━━ -->
+<div class="slide" data-slide="20" style="align-items:center;text-align:center">
+    <div class="hw-badge"><svg viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>SUBMIT</div>
+    <div style="font-size:16px;font-weight:600;letter-spacing:4px;color:var(--accent)" class="rv">CDF — CONTINUOUS EXAMPLE</div>
+    <h2 style="font-size:44px;font-weight:700;margin:12px 0 24px" class="rv d1">Battery Life: <span class="gx-p">$f(x) = 2x$</span> on [0,1]</h2>
+    <p style="font-size:18px;color:var(--text-m);max-width:950px;margin-bottom:20px" class="rv d2">Let <strong>X</strong> ≜ battery life (hours, scaled). PDF: $f(x) = 2x$ for $0 \le x \le 1$.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:950px;width:100%">
+        <div class="g rv d3" style="padding:24px">
+            <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--accent);margin-bottom:12px">FIND THE CDF</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+                <div style="font-size:16px;color:var(--text-m)">$F(x) = \int_0^x 2t\,dt$</div>
+                <div class="step" style="padding:10px 14px;border-radius:10px;background:rgba(29,78,216,0.06);font-size:18px">$$F(x) = [t^2]_0^x = x^2$$</div>
+                <p style="font-size:14px;color:var(--text-d);margin-top:6px">So $F(x) = x^2$ for $0 \le x \le 1$</p>
+                <p class="step" style="font-size:14px;color:var(--text-d)">Check: $F(0)=0$, $F(1)=1$ &#10003;</p>
+            </div>
+        </div>
+        <div class="g g-purple rv d4" style="padding:24px">
+            <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--accent);margin-bottom:12px">CRUNCH IT</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+                <div style="font-size:16px;color:var(--text-m)"><strong style="color:var(--text)">Q1:</strong> $P(X \le 0.5) = ?$</div>
+                <div class="step" style="padding:10px 14px;border-radius:10px;background:rgba(29,78,216,0.06);font-size:16px">$F(0.5) = 0.5^2 = \boxed{0.25}$</div>
+                <div class="step" style="font-size:16px;color:var(--text-m)"><strong style="color:var(--text)">Q2:</strong> $P(0.5 < X \le 0.8) = ?$</div>
+                <div class="step" style="padding:10px 14px;border-radius:10px;background:rgba(29,78,216,0.06);font-size:16px">$$= F(0.8)-F(0.5) = 0.64-0.25 = \boxed{0.39}$$</div>
+            </div>
+        </div>
+    </div>
+    <div class="ft"><span class="ft-n">20 / 34</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ WHY CDF MATTERS (BRIDGE — FULL BLEED) ━━━ -->
+<div class="slide" data-slide="21" style="padding:0;position:relative">
+    <!-- Full-bleed bridge image -->
+    <img src="img/prob-bridge.jpg" alt="Mario Cuomo Bridge (Tappan Zee)" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(0.55) contrast(1.1)">
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.15) 0%,rgba(0,0,0,0.5) 40%,rgba(0,0,0,0.85) 100%);pointer-events:none"></div>
+    <!-- Content -->
+    <div style="position:relative;z-index:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%;padding:0 90px 90px;max-width:950px">
+        <div style="font-size:14px;font-weight:600;letter-spacing:4px;color:#93C5FD;margin-bottom:14px" class="rv">TAPPAN ZEE BRIDGE, NEW YORK</div>
+        <h2 style="font-size:52px;font-weight:800;color:white;line-height:1.15;margin-bottom:20px" class="rv d1">The CDF That Saved<br>a <span style="color:#93C5FD">Bridge</span></h2>
+        <p style="font-size:19px;color:rgba(255,255,255,0.85);line-height:1.7" class="step">Engineers needed to answer one question:</p>
+        <div class="step" style="border-left:4px solid #93C5FD;padding:14px 24px;margin:16px 0;border-radius:0 16px 16px 0;background:rgba(255,255,255,0.06);backdrop-filter:blur(8px)">
+            <p style="font-size:22px;font-style:italic;color:rgba(255,255,255,0.95);line-height:1.5">"What's the probability that wind speed stays below 95 mph over the next 100 years?"</p>
+        </div>
+        <p style="font-size:18px;color:rgba(255,255,255,0.8);line-height:1.7" class="step">They modeled wind speed as a continuous RV. The CDF gave the answer:</p>
+        <div class="step" style="display:flex;gap:32px;margin:16px 0">
+            <div><div style="font-size:40px;font-weight:800;color:#93C5FD">$$F(95) = 0.9987$$</div></div>
+        </div>
+        <p style="font-size:18px;color:rgba(255,255,255,0.8);line-height:1.7" class="step">That <strong style="color:#FCD34D">0.13% risk</strong> over 100 years? They reinforced the cables. The bridge opened in 2017 and stands today.</p>
+        <p style="font-size:24px;font-weight:700;color:#93C5FD;margin-top:16px" class="step">$$F(x) = P(X \le x)$$</p>
+    </div>
+    <div class="ft" style="padding:0 60px"><span class="ft-n" style="background:rgba(0,0,0,0.4);color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.15)">21 / 34</span><span style="color:rgba(255,255,255,0.5)">Prof. Mohammad Dehghani</span><span style="color:rgba(255,255,255,0.5)">Northeastern University</span></div>
+</div>
+
+<!-- ━━━ 13 — INTERACTIVE CDF EXPLORER ━━━ -->
+<div class="slide" data-slide="22" style="align-items:center;text-align:center">
+    <div style="font-size:16px;font-weight:600;letter-spacing:4px;color:var(--pri)" class="rv">INTERACTIVE</div>
+    <h2 style="font-size:44px;font-weight:700;margin:12px 0 20px" class="rv d1">CDF <span class="gx">Explorer</span></h2>
+    <p style="font-size:16px;color:var(--text-m);margin-bottom:20px" class="rv d2">Drag the slider to change x — watch the CDF update in real time</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:950px;width:100%">
+        <!-- Discrete CDF -->
+        <div class="cdf-explorer rv d3">
+            <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--pri);margin-bottom:10px;text-align:left">DISCRETE — ROLL A DIE</div>
+            <canvas id="cdfDiscrete" class="cdf-canvas" width="400" height="200" style="background:rgba(37,99,235,0.02);border:1px solid rgba(37,99,235,0.08);border-radius:12px"></canvas>
+            <input type="range" class="cdf-slider" id="cdfDiscreteSlider" min="0" max="7" step="0.1" value="3.5" oninput="drawDiscreteCDF(this.value)">
+            <div class="cdf-readout"><span id="cdfDiscreteX">x = 3.5</span><span id="cdfDiscreteF">F(3.5) = 0.50</span></div>
+        </div>
+        <!-- Continuous CDF -->
+        <div class="cdf-explorer rv d4">
+            <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--accent);margin-bottom:10px;text-align:left">CONTINUOUS — UNIFORM [2, 5]</div>
+            <canvas id="cdfContinuous" class="cdf-canvas" width="400" height="200" style="background:rgba(29,78,216,0.02);border:1px solid rgba(29,78,216,0.08);border-radius:12px"></canvas>
+            <input type="range" class="cdf-slider" id="cdfContinuousSlider" min="0" max="7" step="0.05" value="3.5" style="accent-color:var(--accent)" oninput="drawContinuousCDF(this.value)">
+            <div class="cdf-readout"><span id="cdfContinuousX" style="color:var(--accent)">x = 3.5</span><span id="cdfContinuousF" style="color:var(--accent)">F(3.5) = 0.50</span></div>
+        </div>
+    </div>
+    <div class="ft"><span class="ft-n">22 / 34</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ 14 — INVERSE CDF CHALLENGE ━━━ -->
+<div class="slide" data-slide="23" style="align-items:center;text-align:center">
+    <div class="hw-badge"><svg viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>SUBMIT</div>
+    <div class="orb orb-p" style="width:350px;height:350px;top:-60px;right:-60px;animation-delay:-7s"></div>
+    <div class="wb rv"><i data-lucide="brain" style="width:18px;height:18px"></i> CHALLENGE</div>
+    <h2 style="font-size:44px;font-weight:700;margin-bottom:24px" class="rv d1">What is the <span class="gx-p">Inverse</span> of a CDF?</h2>
+    <p style="font-size:18px;color:var(--text-m);max-width:950px;margin-bottom:24px" class="rv d2">CDF: "Given $x$, what's the probability?" Inverse: "Given a probability, what's $x$?"</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:950px;width:100%">
+        <div class="g rv d3" style="padding:24px">
+            <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--pri);margin-bottom:12px">SVG: CDF vs INVERSE</div>
+            <svg width="100%" height="220" viewBox="0 0 350 220">
+                <!-- Axes -->
+                <line x1="40" y1="190" x2="320" y2="190" stroke="rgba(17,24,39,0.12)" stroke-width="1.5"/>
+                <line x1="40" y1="10" x2="40" y2="190" stroke="rgba(17,24,39,0.12)" stroke-width="1.5"/>
+                <!-- CDF curve: S-shape -->
+                <path d="M40,185 Q80,183 120,170 Q160,140 200,100 Q240,50 280,25 Q300,18 320,15" fill="none" stroke="#2563EB" stroke-width="3" stroke-linecap="round"/>
+                <!-- Horizontal dashed line at p=0.75 -->
+                <line x1="40" y1="55" x2="260" y2="55" stroke="#7C3AED" stroke-width="1.5" stroke-dasharray="6 4"/>
+                <!-- Vertical dashed line down from intersection -->
+                <line x1="260" y1="55" x2="260" y2="190" stroke="#7C3AED" stroke-width="1.5" stroke-dasharray="6 4"/>
+                <!-- Dots -->
+                <circle cx="260" cy="55" r="5" fill="#7C3AED"/>
+                <!-- Arrow: p → x (inverse direction) -->
+                <text x="30" y="58" fill="#7C3AED" font-family="Outfit" font-size="13" text-anchor="end" font-weight="700">p</text>
+                <text x="260" y="207" fill="#7C3AED" font-family="Outfit" font-size="13" text-anchor="middle" font-weight="700">x</text>
+                <!-- Labels -->
+                <text x="300" y="40" fill="#2563EB" font-family="Outfit" font-size="12" font-weight="600">F(x)</text>
+                <text x="30" y="198" fill="rgba(17,24,39,0.3)" font-family="Outfit" font-size="11" text-anchor="end">0</text>
+                <text x="30" y="18" fill="rgba(17,24,39,0.3)" font-family="Outfit" font-size="11" text-anchor="end">1</text>
+                <!-- Annotation arrows -->
+                <path d="M50,55 L250,55" stroke="#D97706" stroke-width="2" marker-end="url(#arrowA)" opacity="0.6"/>
+                <path d="M260,180 L260,65" stroke="#D97706" stroke-width="2" marker-end="url(#arrowA)" opacity="0.6"/>
+                <defs><marker id="arrowA" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#D97706"/></marker></defs>
+                <text x="150" y="48" fill="#D97706" font-family="Outfit" font-size="11" text-anchor="middle" font-weight="600">given p = 0.75</text>
+                <text x="275" y="130" fill="#D97706" font-family="Outfit" font-size="11" font-weight="600">find x</text>
+            </svg>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:16px">
+            <div class="g g-blue step" style="padding:20px 24px;text-align:center">
+                <div style="font-size:14px;font-weight:700;color:var(--pri);margin-bottom:6px">CDF (forward)</div>
+                <p style="font-size:16px;color:var(--text-m)">$$F(3) = P(X \le 3) = 0.75$$</p>
+            </div>
+            <div class="g g-purple step" style="padding:20px 24px;text-align:center">
+                <div style="font-size:14px;font-weight:700;color:var(--accent);margin-bottom:6px">INVERSE CDF</div>
+                <p style="font-size:16px;color:var(--text-m)">$$F^{-1}(0.75) = 3$$</p>
+            </div>
+            <div class="g g-amber step" style="padding:20px 24px;text-align:left">
+                <div style="font-size:14px;font-weight:700;color:var(--amber);margin-bottom:6px">REAL USE: PERCENTILES</div>
+                <p style="font-size:15px;color:var(--text-m);line-height:1.7">95th percentile of exam scores = $F^{-1}(0.95)$<br>Doctor says "90th percentile cholesterol" = inverse CDF</p>
+            </div>
+        </div>
+    </div>
+    <div class="ft"><span class="ft-n">23 / 34</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- SECTION COVER: E[X] &AMP; VAR(X) -->
+<div class="slide" data-slide="24" style="padding:0;display:grid;grid-template-columns:1fr 1fr;gap:0;align-items:center">
+    <div style="position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(ellipse at 40% 50%,rgba(217,119,6,0.05),transparent 60%)">
+        <img src="img/sec-ev.png" alt="" style="width:85%;height:auto;object-fit:contain;filter:drop-shadow(0 16px 48px rgba(0,0,0,0.08))">
+        <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent 55%,var(--bg) 95%);pointer-events:none"></div>
+    </div>
+    <div style="padding:60px 70px">
+        <h2 style="font-size:64px;font-weight:800;line-height:1.1">E[X] &amp; Var(X)</h2>
+        <p style="font-size:22px;color:var(--text-m);margin-top:16px;font-weight:300">Expected Value &amp; Variance</p>
+    </div>
+    <div class="ft" style="padding:0 60px"><span class="ft-n">24 / 34</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ 16 — EXPECTED VALUE ━━━ -->
+<div class="slide" data-slide="25" style="align-items:center;text-align:center">
+    <div class="hw-badge"><svg viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>SUBMIT</div>
+    <div style="font-size:16px;font-weight:600;letter-spacing:4px;color:var(--pri)" class="rv">THE MOST IMPORTANT NUMBER</div>
+    <h2 style="font-size:56px;font-weight:700;margin:12px 0 20px" class="rv d1">Expected <span class="gx">Value</span></h2>
+    <div class="g g-blue step" style="max-width:950px;padding:20px 28px;text-align:center;margin-bottom:16px">
+        <p style="font-size:19px;color:var(--text)"><i data-lucide="help-circle" style="width:18px;height:18px;display:inline;vertical-align:middle;color:var(--pri);margin-right:6px"></i>If you roll a die 1,000 times, what do you <em>expect</em> the average roll to be? Why?</p>
+    </div>
+    <p style="font-size:20px;color:var(--text-m);max-width:950px;margin-bottom:24px" class="step">If you repeated this experiment forever, what would the <strong style="color:var(--text)">average</strong> outcome be?</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;max-width:950px;width:100%">
+        <div class="g g-blue rv d3" style="padding:28px;text-align:center">
+            <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--pri);margin-bottom:12px">DISCRETE</div>
+            <div class="math" style="font-size:22px">$$E[X] = \sum_x x \cdot P(X{=}x)$$</div>
+            <p style="font-size:14px;color:var(--text-d);margin-top:10px">Multiply each value by its probability, then sum</p>
+        </div>
+        <div class="g g-purple rv d4" style="padding:28px;text-align:center">
+            <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--accent);margin-bottom:12px">CONTINUOUS</div>
+            <div class="math" style="font-size:22px;background:rgba(29,78,216,0.08);border-color:rgba(29,78,216,0.15);color:var(--accent)">$$E[X] = \int_{-\infty}^{\infty} x \cdot f(x)\,dx$$</div>
+            <p style="font-size:14px;color:var(--text-d);margin-top:10px">Same idea, but integrate instead of sum</p>
+        </div>
+    </div>
+    <div class="g g-amber step" style="max-width:950px;margin-top:24px;padding:24px 28px;text-align:center">
+        <p style="font-size:20px;color:var(--text-m)"><strong style="color:var(--amber)">Intuition:</strong> E[X] is the "balance point" of the distribution. Where it would balance on a seesaw.</p>
+    </div>
+    <div class="ft"><span class="ft-n">25 / 34</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ 17 — E[X] PROBLEM ━━━ -->
+<div class="slide" data-slide="26" style="align-items:center;text-align:center">
+    <div class="hw-badge"><svg viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>SUBMIT</div>
+    <div style="font-size:16px;font-weight:600;letter-spacing:4px;color:var(--amber)" class="rv">APPLIED PROBLEM</div>
+    <h2 style="font-size:44px;font-weight:700;margin:12px 0 24px" class="rv d1">Should You Buy the <span class="gx-a">Extended Warranty</span>?</h2>
+    <p style="font-size:18px;color:var(--text-m);max-width:950px;margin-bottom:28px" class="rv d2">A laptop costs <strong>$1,200</strong>. The extended warranty costs <strong>$150</strong>. Let $X \triangleq$ repair cost (\$). $\;x \in \{0, 200, 500, 1200\}$. Repair data shows:</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;max-width:950px;width:100%">
+        <div class="g rv d3" style="padding:24px">
+            <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--pri);margin-bottom:12px">REPAIR COST DATA</div>
+            <table style="width:100%;font-size:16px;color:var(--text-m);border-collapse:collapse">
+                <tr style="border-bottom:1px solid rgba(148,163,184,0.2)"><td style="padding:8px 0;font-weight:700">Repair Cost</td><td style="text-align:right;font-weight:700">Probability</td></tr>
+                <tr style="border-bottom:1px solid rgba(148,163,184,0.1)"><td style="padding:8px 0">$0 (no issues)</td><td style="text-align:right">0.70</td></tr>
+                <tr style="border-bottom:1px solid rgba(148,163,184,0.1)"><td style="padding:8px 0">$200 (minor)</td><td style="text-align:right">0.15</td></tr>
+                <tr style="border-bottom:1px solid rgba(148,163,184,0.1)"><td style="padding:8px 0">$500 (major)</td><td style="text-align:right">0.10</td></tr>
+                <tr><td style="padding:8px 0">$1,200 (replace)</td><td style="text-align:right">0.05</td></tr>
+            </table>
+        </div>
+        <div class="g g-amber rv d4" style="padding:24px">
+            <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--amber);margin-bottom:10px">THE MATH</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+                <div class="step" style="font-size:16px;color:var(--text-m)">E[X] = &Sigma; x &middot; P(x)</div>
+                <div class="step" style="font-size:14px;color:var(--text-m);padding:6px 12px;border-radius:10px;background:rgba(217,119,6,0.06)">
+                    $= 0(0.70) + 200(0.15) + 500(0.10) + 1200(0.05)$<br>
+                    $= 0 + 30 + 50 + 60$<br>
+                    $= \boxed{140}$ dollars
+                </div>
+                <div class="step" style="font-size:16px;color:var(--text-m);margin-top:4px">Warranty costs <strong>150</strong>, E[repair] = <strong>140</strong></div>
+                <div class="step" style="padding:8px 14px;border-radius:10px;background:rgba(220,38,38,0.06);font-size:15px;font-weight:600;color:var(--red)">Warranty is NOT worth it (150 &gt; 140)</div>
+            </div>
+        </div>
+    </div>
+    <div class="ft"><span class="ft-n">26 / 34</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ E[X] INTERPRETATION ━━━ -->
+<div class="slide" data-slide="27" style="align-items:center;text-align:center">
+    <div style="font-size:16px;font-weight:600;letter-spacing:4px;color:var(--pri)" class="rv">INTERPRETATION</div>
+    <h2 style="font-size:48px;font-weight:700;margin:12px 0 28px" class="rv d1">What E[X] <span class="gx">Really Means</span></h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;max-width:950px;width:100%">
+        <div class="g step" style="padding:28px;text-align:center">
+            <div style="font-size:40px;margin-bottom:12px"><i data-lucide="scale" style="width:36px;height:36px;color:var(--pri)"></i></div>
+            <div style="font-size:18px;font-weight:700;margin-bottom:8px">Balance Point</div>
+            <p style="font-size:16px;color:var(--text-m);line-height:1.6">If you placed the distribution on a seesaw, $E[X]$ is where it balances perfectly.</p>
+        </div>
+        <div class="g g-blue step" style="padding:28px;text-align:center">
+            <div style="font-size:40px;margin-bottom:12px"><i data-lucide="repeat" style="width:36px;height:36px;color:var(--pri)"></i></div>
+            <div style="font-size:18px;font-weight:700;margin-bottom:8px">Long-Run Average</div>
+            <p style="font-size:16px;color:var(--text-m);line-height:1.6">Repeat the experiment 10,000 times. The average of all outcomes converges to $E[X]$.</p>
+        </div>
+        <div class="g g-purple step" style="padding:28px;text-align:center">
+            <div style="font-size:40px;margin-bottom:12px"><i data-lucide="banknote" style="width:36px;height:36px;color:var(--amber)"></i></div>
+            <div style="font-size:18px;font-weight:700;margin-bottom:8px">Fair Price</div>
+            <p style="font-size:16px;color:var(--text-m);line-height:1.6">In gambling/insurance, $E[X]$ is the "fair" amount to charge — the break-even point.</p>
+        </div>
+    </div>
+    <div class="g g-amber step" style="max-width:950px;margin-top:28px;padding:24px;text-align:center">
+        <p style="font-size:20px;color:var(--text-m)"><strong style="color:var(--amber)">Key insight:</strong> $E[X]$ is NOT the most likely outcome. A die has $E[X] = 3.5$ — but you can never roll 3.5.</p>
+    </div>
+    <div class="ft"><span class="ft-n">27 / 34</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ FUN FACT: EXPECTED VALUE ━━━ -->
+<div class="slide" data-slide="28" style="align-items:center">
+    <div class="orb orb-b" style="width:400px;height:400px;top:-80px;right:-60px;animation-delay:-4s"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;max-width:1000px;margin:0 auto">
+        <div class="rv" style="display:flex;align-items:center;justify-content:center">
+            <svg viewBox="0 0 400 300" style="width:100%;max-width:400px">
+                <rect x="50" y="40" width="300" height="180" rx="20" fill="rgba(37,99,235,0.06)" stroke="rgba(37,99,235,0.15)" stroke-width="1.5"/>
+                <circle cx="200" cy="130" r="65" fill="none" stroke="#2563EB" stroke-width="2"/>
+                <circle cx="200" cy="130" r="55" fill="none" stroke="rgba(37,99,235,0.2)" stroke-width="1"/>
+                <line x1="200" y1="65" x2="200" y2="75" stroke="#DC2626" stroke-width="2"/>
+                <line x1="256" y1="97" x2="248" y2="104" stroke="#111827" stroke-width="2"/>
+                <line x1="265" y1="130" x2="255" y2="130" stroke="#DC2626" stroke-width="2"/>
+                <line x1="256" y1="163" x2="248" y2="156" stroke="#111827" stroke-width="2"/>
+                <line x1="200" y1="195" x2="200" y2="185" stroke="#DC2626" stroke-width="2"/>
+                <line x1="144" y1="163" x2="152" y2="156" stroke="#111827" stroke-width="2"/>
+                <line x1="135" y1="130" x2="145" y2="130" stroke="#DC2626" stroke-width="2"/>
+                <line x1="144" y1="97" x2="152" y2="104" stroke="#111827" stroke-width="2"/>
+                <circle cx="200" cy="75" r="5" fill="#DC2626"/>
+                <text x="200" y="135" text-anchor="middle" font-family="Outfit" font-size="18" font-weight="700" fill="#2563EB">E[X]</text>
+                <text x="100" y="260" text-anchor="middle" font-family="Outfit" font-size="24" fill="rgba(5,150,105,0.3)">$</text>
+                <text x="200" y="270" text-anchor="middle" font-family="Outfit" font-size="32" fill="rgba(5,150,105,0.4)">$</text>
+                <text x="300" y="260" text-anchor="middle" font-family="Outfit" font-size="24" fill="rgba(5,150,105,0.3)">$</text>
+                <text x="200" y="30" text-anchor="middle" font-family="Outfit" font-size="12" fill="rgba(17,24,39,0.3)">The House Always Wins — Thanks to E[X]</text>
+            </svg>
+        </div>
+        <div>
+            <div class="wb rv"><i data-lucide="sparkles" style="width:16px;height:16px"></i> DID YOU KNOW?</div>
+            <h2 style="font-size:36px;font-weight:700;margin-bottom:16px" class="rv d1">The House <span class="gx">Always Wins</span></h2>
+            <div class="g g-amber rv d2" style="padding:24px">
+                <p style="font-size:17px;color:var(--text-m);line-height:1.7">Every casino game is designed so that <strong style="color:var(--text)">E[X] &lt; 0</strong> for the player. In American roulette, E[X] = -$0.053 per dollar bet. Over millions of spins, the casino is <em>mathematically guaranteed</em> to profit. Insurance companies use the exact same math — they set premiums so E[payout] &lt; E[premium].</p>
+            </div>
+            <div class="g rv d3" style="padding:16px 20px;margin-top:12px">
+                <div style="font-size:14px;font-weight:600;color:var(--pri)">Industry Uses</div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
+                    <span class="chip">Casino Design</span>
+                    <span class="chip">Insurance Pricing</span>
+                    <span class="chip">Stock Valuation</span>
+                    <span class="chip">Warranty Pricing</span>
+                    <span class="chip">Decision Analysis</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="ft"><span class="ft-n">28 / 34</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ 18 — VARIANCE ━━━ -->
+<div class="slide" data-slide="29" style="align-items:center;text-align:center">
+    <div class="hw-badge"><svg viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>SUBMIT</div>
+    <div class="orb orb-b" style="width:350px;height:350px;bottom:-60px;right:-60px;animation-delay:-9s"></div>
+    <div style="font-size:16px;font-weight:600;letter-spacing:4px;color:var(--pri)" class="rv">SPREAD</div>
+    <h2 style="font-size:52px;font-weight:700;margin:12px 0 28px" class="rv d1">Variance &amp; <span class="gx">Standard Deviation</span></h2>
+    <p style="font-size:20px;color:var(--text-m);max-width:750px;margin-bottom:28px" class="rv d2">E[X] tells you the center. Variance tells you how <strong style="color:var(--text)">spread out</strong> things are.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;max-width:950px;width:100%">
+        <div class="g g-blue rv d3" style="padding:28px;text-align:center">
+            <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--pri);margin-bottom:12px">VARIANCE</div>
+            <div class="math" style="font-size:22px">$$\text{Var}(X) = E[(X - \mu)^2]$$</div>
+            <p style="font-size:14px;color:var(--text-d);margin-top:10px">Average squared distance from the mean</p>
+        </div>
+        <div class="g g-purple rv d4" style="padding:28px;text-align:center">
+            <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--accent);margin-bottom:12px">STANDARD DEVIATION</div>
+            <div class="math" style="font-size:22px;background:rgba(29,78,216,0.08);border-color:rgba(29,78,216,0.15);color:var(--accent)">$$\sigma = \sqrt{\text{Var}(X)}$$</div>
+            <p style="font-size:14px;color:var(--text-d);margin-top:10px">Same units as X — easier to interpret</p>
+        </div>
+    </div>
+    <div class="g step" style="max-width:950px;margin-top:24px;padding:20px 28px;text-align:center">
+        <p style="font-size:18px;color:var(--text-m)"><strong style="color:var(--pri)">Two factories</strong> both produce bolts averaging 10mm. Factory A: &sigma;=0.1mm. Factory B: &sigma;=2mm. Which would you trust?</p>
+    </div>
+    <div class="ft"><span class="ft-n">29 / 34</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ FUN FACT: VARIANCE ━━━ -->
+<div class="slide" data-slide="30" style="align-items:center">
+    <div class="orb orb-p" style="width:400px;height:400px;bottom:-80px;left:-60px;animation-delay:-6s"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;max-width:1000px;margin:0 auto">
+        <div class="rv" style="display:flex;align-items:center;justify-content:center">
+            <svg viewBox="0 0 400 300" style="width:100%;max-width:400px">
+                <circle cx="200" cy="140" r="100" fill="none" stroke="rgba(220,38,38,0.15)" stroke-width="2"/>
+                <circle cx="200" cy="140" r="70" fill="none" stroke="rgba(220,38,38,0.2)" stroke-width="2"/>
+                <circle cx="200" cy="140" r="40" fill="none" stroke="rgba(220,38,38,0.3)" stroke-width="2"/>
+                <circle cx="200" cy="140" r="10" fill="#DC2626" opacity="0.5"/>
+                <!-- Low variance cluster (tight group) -->
+                <circle cx="195" cy="135" r="4" fill="#059669"/><circle cx="205" cy="138" r="4" fill="#059669"/>
+                <circle cx="198" cy="145" r="4" fill="#059669"/><circle cx="202" cy="132" r="4" fill="#059669"/>
+                <circle cx="200" cy="140" r="4" fill="#059669"/>
+                <text x="200" y="270" text-anchor="middle" font-family="Outfit" font-size="14" font-weight="600" fill="#059669">Low Variance = Precise</text>
+                <text x="200" y="30" text-anchor="middle" font-family="Outfit" font-size="12" fill="rgba(17,24,39,0.3)">Variance measures consistency, not accuracy</text>
+                <text x="200" y="290" text-anchor="middle" font-family="Outfit" font-size="11" fill="rgba(17,24,39,0.25)">Taguchi Loss Function: Every deviation from target costs money</text>
+            </svg>
+        </div>
+        <div>
+            <div class="wb rv"><i data-lucide="sparkles" style="width:16px;height:16px"></i> DID YOU KNOW?</div>
+            <h2 style="font-size:36px;font-weight:700;margin-bottom:16px" class="rv d1">Toyota's <span class="gx-p">Secret Weapon</span></h2>
+            <div class="g g-amber rv d2" style="padding:24px">
+                <p style="font-size:17px;color:var(--text-m);line-height:1.7">Genichi Taguchi showed Toyota that <strong style="color:var(--text)">reducing variance</strong> matters more than hitting the exact target. His <em>Loss Function</em> proved that even small deviations cost money. This led to Six Sigma — processes so precise that defects are fewer than <strong style="color:var(--accent)">3.4 per million</strong>.</p>
+            </div>
+            <div class="g rv d3" style="padding:16px 20px;margin-top:12px">
+                <div style="font-size:14px;font-weight:600;color:var(--pri)">Industry Uses</div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
+                    <span class="chip">Six Sigma</span>
+                    <span class="chip">Manufacturing QC</span>
+                    <span class="chip">Portfolio Risk</span>
+                    <span class="chip">Process Control</span>
+                    <span class="chip">Taguchi Methods</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="ft"><span class="ft-n">30 / 34</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ VARIANCE EXAMPLE ━━━ -->
+<div class="slide" data-slide="31" style="align-items:center;text-align:center">
+    <div class="hw-badge"><svg viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>SUBMIT</div>
+    <div style="font-size:16px;font-weight:600;letter-spacing:4px;color:var(--accent)" class="rv">VARIANCE — APPLIED</div>
+    <h2 style="font-size:44px;font-weight:700;margin:12px 0 24px" class="rv d1">Two Coffee Machines: <span class="gx-p">Which Is Better?</span></h2>
+    <p style="font-size:18px;color:var(--text-m);max-width:750px;margin-bottom:20px" class="rv d2">Both machines target 8 oz per cup. Let $X_A \triangleq$ oz poured by Machine A, $X_B \triangleq$ oz poured by Machine B. $\;x \in (0, \infty)$</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:950px;width:100%">
+        <div class="g rv d3" style="padding:24px">
+            <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--pri);margin-bottom:12px">MACHINE A</div>
+            <div style="font-size:16px;color:var(--text-m);line-height:1.8">
+                $E[X_A] = 8$ oz<br>$\text{Var}(X_A) = 0.01$ &nbsp; $\sigma_A = 0.1$ oz
+            </div>
+            <div class="step" style="margin-top:12px;padding:10px 14px;border-radius:10px;background:rgba(37,99,235,0.04);font-size:15px">
+                Range: $8 \pm 0.2$ oz (95%)<br>
+                <strong style="color:var(--green)">Consistent, reliable</strong>
+            </div>
+        </div>
+        <div class="g g-purple rv d4" style="padding:24px">
+            <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--accent);margin-bottom:12px">MACHINE B</div>
+            <div style="font-size:16px;color:var(--text-m);line-height:1.8">
+                $E[X_B] = 8$ oz<br>$\text{Var}(X_B) = 1.0$ &nbsp; $\sigma_B = 1.0$ oz
+            </div>
+            <div class="step" style="margin-top:12px;padding:10px 14px;border-radius:10px;background:rgba(29,78,216,0.04);font-size:15px">
+                Range: $8 \pm 2$ oz (95%)<br>
+                <strong style="color:var(--red)">Wildly inconsistent</strong>
+            </div>
+        </div>
+    </div>
+    <div class="g step" style="max-width:950px;margin-top:20px;padding:20px 28px;text-align:center">
+        <p style="font-size:18px"><strong style="color:var(--pri)">Same mean. Different variance.</strong> Variance is why Machine A wins.</p>
+    </div>
+    <div class="ft"><span class="ft-n">31 / 34</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ PRACTICE: 3 REAL + 1 CONCEPTUAL ━━━ -->
+<div class="slide" data-slide="32" style="align-items:center;text-align:center">
+    <div class="hw-badge"><svg viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>SUBMIT</div>
+    <div class="wb rv"><i data-lucide="brain" style="width:18px;height:18px"></i> FINAL PRACTICE</div>
+    <h2 style="font-size:44px;font-weight:700;margin-bottom:24px" class="rv d1">4 Problems to <span class="gx">Submit</span></h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:950px;width:100%">
+        <div class="g step" style="padding:22px;text-align:left">
+            <div style="font-size:14px;font-weight:700;color:var(--pri);margin-bottom:8px">Q1 — PMF</div>
+            <p style="font-size:16px;color:var(--text-m);line-height:1.7">A website gets 0, 1, 2, or 3 orders/hour with probabilities 0.1, 0.3, 0.4, 0.2.<br><em style="font-size:14px;color:var(--pri)">Let $X \triangleq$ orders per hour. $\;x \in \{0,1,2,3\}$</em><br>Find $E[X]$, $\text{Var}(X)$, and $P(X \ge 2)$.</p>
+        </div>
+        <div class="g g-blue step" style="padding:22px;text-align:left">
+            <div style="font-size:14px;font-weight:700;color:var(--pri);margin-bottom:8px">Q2 — PDF + CDF</div>
+            <p style="font-size:16px;color:var(--text-m);line-height:1.7">$f(x) = 3x^2$ for $0 \le x \le 1$.<br><em style="font-size:14px;color:var(--pri)">Let $X \triangleq$ the continuous R.V. $\;x \in [0, 1]$</em><br>Find the CDF $F(x)$. Then compute $P(0.5 \le X \le 0.8)$ and $E[X]$.</p>
+        </div>
+        <div class="g g-purple step" style="padding:22px;text-align:left">
+            <div style="font-size:14px;font-weight:700;color:var(--accent);margin-bottom:8px">Q3 — CDF APPLICATION</div>
+            <p style="font-size:16px;color:var(--text-m);line-height:1.7">A machine's failure time has CDF $F(t) = 1 - e^{-0.5t}$ for $t \ge 0$.<br><em style="font-size:14px;color:var(--accent)">Let $T \triangleq$ time until failure (hours). $\;t \in [0, \infty)$</em><br>What's $P(T \le 2)$? What's $P(1 \le T \le 4)$? Find the median failure time.</p>
+        </div>
+        <div class="g g-amber step" style="padding:22px;text-align:left">
+            <div style="font-size:14px;font-weight:700;color:var(--amber);margin-bottom:8px">Q4 — CONCEPTUAL</div>
+            <p style="font-size:16px;color:var(--text-m);line-height:1.7">Explain in your own words: Why is $P(X = 3) = 0$ for a continuous RV, but the PDF $f(3)$ can be nonzero? Use a diagram.</p>
+        </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;margin-top:20px" class="rv d4">
+        <div class="timer" id="timer1" style="font-size:42px">15:00</div>
+        <button class="tbtn" onclick="startTimer('timer1',900)">Start</button>
+        <button class="tbtn" onclick="pauseTimer('timer1')">Pause</button>
+        <button class="tbtn" onclick="resetTimer('timer1',900)">Reset</button>
+    </div>
+    <div class="ft"><span class="ft-n">32 / 34</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ NOTATION REFERENCE ━━━ -->
+<div class="slide" data-slide="33" style="align-items:center;text-align:center">
+    <div style="font-size:16px;font-weight:600;letter-spacing:4px;color:var(--pri)" class="rv">QUICK REFERENCE</div>
+    <h2 style="font-size:48px;font-weight:700;margin:12px 0 28px" class="rv d1">Notation <span class="gx">Guide</span></h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:950px;width:100%">
+        <div class="g rv d2" style="padding:24px;text-align:left">
+            <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--pri);margin-bottom:14px">UPPERCASE = FUNCTION</div>
+            <div style="display:flex;flex-direction:column;gap:10px;font-size:17px;color:var(--text-m);line-height:1.8">
+                <div>$X$ — random variable (uppercase)</div>
+                <div>$F(x)$ — CDF (uppercase F)</div>
+                <div>$P(X = x)$ — probability (uppercase P)</div>
+                <div>$E[X]$ — expected value (uppercase E)</div>
+            </div>
+        </div>
+        <div class="g g-purple rv d3" style="padding:24px;text-align:left">
+            <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--accent);margin-bottom:14px">LOWERCASE = VALUE / DENSITY</div>
+            <div style="display:flex;flex-direction:column;gap:10px;font-size:17px;color:var(--text-m);line-height:1.8">
+                <div>$x$ — a specific value (lowercase)</div>
+                <div>$f(x)$ — PDF / PMF (lowercase f)</div>
+                <div>$p$ — probability parameter</div>
+                <div>$\mu, \sigma$ — mean, std dev</div>
+            </div>
+        </div>
+    </div>
+    <div class="g g-blue step" style="max-width:950px;margin-top:20px;padding:20px 28px;text-align:center">
+        <div style="font-size:14px;font-weight:700;letter-spacing:2px;color:var(--pri);margin-bottom:10px">KEY RELATIONSHIPS</div>
+        <div style="font-size:18px;line-height:2">
+            $f(x)$ <span style="color:var(--text-d)">(density)</span> $\xrightarrow{\text{integrate}}$ $F(x)$ <span style="color:var(--text-d)">(cumulative)</span> $\xrightarrow{\text{invert}}$ $F^{-1}(p)$ <span style="color:var(--text-d)">(quantile)</span>
+        </div>
+    </div>
+    <div class="ft"><span class="ft-n">33 / 34</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ CLOSING ━━━ -->
+<div class="slide" data-slide="34" style="justify-content:center;align-items:center;text-align:center">
+    <div class="orb orb-b" style="width:500px;height:500px;top:-100px;left:-100px;animation-delay:-7s"></div>
+    <div class="orb orb-p" style="width:400px;height:400px;bottom:-80px;right:-80px;animation-delay:-14s"></div>
+    <img src="img/prob-cover.png" alt="" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:500px;height:500px;object-fit:contain;opacity:0.05;pointer-events:none">
+    <h2 style="font-size:48px;font-weight:700;margin-bottom:36px" class="rv">What You Now <span class="gx">Know</span></h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px;max-width:950px;width:100%">
+        <div class="g step" style="padding:20px;text-align:center"><div style="font-size:28px;margin-bottom:8px"><i data-lucide="bar-chart-3" style="width:28px;height:28px;color:var(--pri)"></i></div><div style="font-size:16px;font-weight:700">PMF</div><div style="font-size:14px;color:var(--text-d)">$P(X=x)$ discrete</div></div>
+        <div class="g g-blue step" style="padding:20px;text-align:center"><div style="font-size:28px;margin-bottom:8px"><i data-lucide="trending-up" style="width:28px;height:28px;color:var(--pri)"></i></div><div style="font-size:16px;font-weight:700">PDF</div><div style="font-size:14px;color:var(--text-d)">$f(x)$ continuous</div></div>
+        <div class="g g-purple step" style="padding:20px;text-align:center"><div style="font-size:28px;margin-bottom:8px"><i data-lucide="arrow-down-right" style="width:28px;height:28px;color:var(--accent)"></i></div><div style="font-size:16px;font-weight:700">CDF</div><div style="font-size:14px;color:var(--text-d)">$F(x) = P(X \le x)$</div></div>
+        <div class="g g-amber step" style="padding:20px;text-align:center"><div style="font-size:28px;margin-bottom:8px"><i data-lucide="target" style="width:28px;height:28px;color:var(--amber)"></i></div><div style="font-size:16px;font-weight:700">E[X]</div><div style="font-size:14px;color:var(--text-d)">Long-run average</div></div>
+    </div>
+    <p style="font-size:20px;color:var(--text-m);margin-top:32px;font-weight:300" class="rv d3">Next: Probability Distributions — Binomial, Normal, Poisson</p>
+    <div class="ft"><span class="ft-n">34 / 34</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<script>
+lucide.createIcons();
+const slides=document.querySelectorAll('.slide'),navDots=document.getElementById('navDots');
+slides.forEach((s,i)=>{const d=document.createElement('button');d.className='nav-dot';d.addEventListener('click',()=>s.scrollIntoView({behavior:'smooth'}));navDots.appendChild(d)});
+const dots=navDots.querySelectorAll('.nav-dot');
+const pbar=document.getElementById('progressBar');
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const i=Array.from(slides).indexOf(e.target);dots.forEach((d,j)=>d.classList.toggle('active',j===i));e.target.querySelectorAll('.rv').forEach(el=>el.classList.add('vis'));pbar.style.width=((i+1)/slides.length*100)+'%';}})},{threshold:.5});
+slides.forEach(s=>obs.observe(s));
+(function(){const h=location.hash.match(/^#slide-(\d+)$/);if(h){const n=parseInt(h[1])-1;if(slides[n])setTimeout(()=>slides[n].scrollIntoView(),100)}})();
+function gci(){return Array.from(slides).findIndex(s=>{const r=s.getBoundingClientRect();return r.top>=-100&&r.top<window.innerHeight/2})}
+function advS(){const i=gci();if(i<0)return false;const st=slides[i].querySelectorAll('.step:not(.shown)');if(st.length>0){st[0].classList.add('shown');return true}return false}
+document.addEventListener('keydown',e=>{
+    if(e.key==='f'||e.key==='F'){if(!e.target.closest('input,textarea')){e.preventDefault();toggleFullscreen();return}}
+    if(e.key==='d'||e.key==='D'){if(!e.target.closest('input,textarea')){e.preventDefault();toggleDark();return}}
+    const c=gci();
+    if(['ArrowDown','ArrowRight',' ','PageDown'].includes(e.key)){e.preventDefault();if(!advS()){if(c<slides.length-1)slides[c+1].scrollIntoView({behavior:'smooth'})}}
+    if(['ArrowUp','ArrowLeft','Backspace','PageUp'].includes(e.key)){e.preventDefault();if(c>0)slides[c-1].scrollIntoView({behavior:'smooth'})}
+});
+document.addEventListener('click',e=>{if(e.target.closest('a,button,input,.tbtn,.chip,.nav-dot,.fs,.dm,.quiz-opt'))return;advS()});
+function toggleFullscreen(){if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()}
+function toggleDark(){document.body.classList.toggle('dark');const isDark=document.body.classList.contains('dark');localStorage.setItem('pd-dark',isDark?'1':'0');document.getElementById('dmIcon').setAttribute('data-lucide',isDark?'sun':'moon');lucide.createIcons()}
+(function(){if(localStorage.getItem('pd-dark')==='1'){document.body.classList.add('dark');document.getElementById('dmIcon').setAttribute('data-lucide','sun');lucide.createIcons()}})();
+const timers={};
+function formatTime(s){return`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`}
+function startTimer(id,t){if(timers[id]?.running)return;const el=document.getElementById(id);if(!timers[id])timers[id]={remaining:t,running:false,interval:null};timers[id].running=true;timers[id].interval=setInterval(()=>{timers[id].remaining--;el.textContent=formatTime(timers[id].remaining);if(timers[id].remaining<=0){clearInterval(timers[id].interval);timers[id].running=false;el.textContent="00:00";el.style.color='#DC2626';let f=0;const fi=setInterval(()=>{el.style.opacity=el.style.opacity==='0.3'?'1':'0.3';if(++f>=10){clearInterval(fi);el.style.opacity='1'}},400)}},1000)}
+function pauseTimer(id){if(timers[id]){clearInterval(timers[id].interval);timers[id].running=false}}
+function resetTimer(id,t){pauseTimer(id);const el=document.getElementById(id);timers[id]={remaining:t,running:false,interval:null};el.textContent=formatTime(t);el.style.color=''}
+function quizCheck(el,correct){
+    if(el.classList.contains('correct')||el.classList.contains('wrong'))return;
+    el.classList.add(correct?'correct':'wrong');
+    const fb=document.getElementById('quizFeedback1');
+    if(correct){fb.textContent='Correct! F(x) = P(X \u2264 x)';fb.style.color='var(--green)'}
+    else{fb.textContent='Not quite \u2014 try again!';fb.style.color='var(--red)'}
+}
+
+/* ── Interactive CDF Explorer ── */
+function drawDiscreteCDF(xVal){
+    const c=document.getElementById('cdfDiscrete');if(!c)return;
+    const ctx=c.getContext('2d');const W=c.width,H=c.height;
+    ctx.clearRect(0,0,W,H);
+    const pad={l:50,r:20,t:20,b:35};
+    const pw=W-pad.l-pad.r,ph=H-pad.t-pad.b;
+    // PMF: P(X=k)=1/6 for k=1..6
+    const pmf=[0,1/6,1/6,1/6,1/6,1/6,1/6];
+    const cdf=[0,1/6,2/6,3/6,4/6,5/6,1];
+    // Axes
+    ctx.strokeStyle='rgba(17,24,39,0.12)';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,H-pad.b);ctx.lineTo(W-pad.r,H-pad.b);ctx.stroke();
+    // Grid + labels
+    ctx.font='11px Outfit';ctx.fillStyle='rgba(17,24,39,0.35)';ctx.textAlign='center';
+    for(let k=0;k<=7;k++){const x=pad.l+k/7*pw;ctx.fillText(k,x,H-pad.b+16)}
+    ctx.textAlign='right';
+    for(let v=0;v<=1;v+=0.25){const y=H-pad.b-v*ph;ctx.fillText(v.toFixed(2),pad.l-8,y+4);
+        ctx.strokeStyle='rgba(17,24,39,0.05)';ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke()}
+    // CDF step function
+    ctx.strokeStyle='#2563EB';ctx.lineWidth=2.5;ctx.beginPath();
+    let prevY=H-pad.b;
+    ctx.moveTo(pad.l,prevY);
+    for(let k=1;k<=6;k++){
+        const x=pad.l+k/7*pw;const y=H-pad.b-cdf[k]*ph;
+        ctx.lineTo(x,prevY);ctx.lineTo(x,y);prevY=y;
+        // dot
+        ctx.fillStyle='#2563EB';ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.moveTo(x,y);
+    }
+    ctx.lineTo(W-pad.r,prevY);ctx.strokeStyle='#2563EB';ctx.lineWidth=2.5;ctx.stroke();
+    // Highlight current x
+    const xv=parseFloat(xVal);const xPx=pad.l+xv/7*pw;
+    let fv=0;for(let k=1;k<=6;k++)if(xv>=k)fv=cdf[k];
+    // Vertical line
+    ctx.strokeStyle='rgba(220,38,38,0.5)';ctx.lineWidth=1.5;ctx.setLineDash([6,4]);
+    ctx.beginPath();ctx.moveTo(xPx,pad.t);ctx.lineTo(xPx,H-pad.b);ctx.stroke();ctx.setLineDash([]);
+    // Horizontal to y-axis
+    const yPx=H-pad.b-fv*ph;
+    ctx.strokeStyle='rgba(220,38,38,0.5)';ctx.setLineDash([6,4]);
+    ctx.beginPath();ctx.moveTo(pad.l,yPx);ctx.lineTo(xPx,yPx);ctx.stroke();ctx.setLineDash([]);
+    // Red dot
+    ctx.fillStyle='#DC2626';ctx.beginPath();ctx.arc(xPx,yPx,6,0,Math.PI*2);ctx.fill();
+    // Shaded area
+    ctx.fillStyle='rgba(37,99,235,0.08)';ctx.fillRect(pad.l,yPx,xPx-pad.l,H-pad.b-yPx);
+    // Update readouts
+    document.getElementById('cdfDiscreteX').textContent='x = '+xv.toFixed(1);
+    document.getElementById('cdfDiscreteF').textContent='F('+xv.toFixed(1)+') = '+fv.toFixed(4);
+}
+
+function drawContinuousCDF(xVal){
+    const c=document.getElementById('cdfContinuous');if(!c)return;
+    const ctx=c.getContext('2d');const W=c.width,H=c.height;
+    ctx.clearRect(0,0,W,H);
+    const pad={l:50,r:20,t:20,b:35};
+    const pw=W-pad.l-pad.r,ph=H-pad.t-pad.b;
+    // Uniform[2,5]: F(x)=0 if x<2, (x-2)/3 if 2<=x<=5, 1 if x>5
+    function cdf(x){if(x<2)return 0;if(x>5)return 1;return(x-2)/3}
+    // Axes
+    ctx.strokeStyle='rgba(17,24,39,0.12)';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,H-pad.b);ctx.lineTo(W-pad.r,H-pad.b);ctx.stroke();
+    ctx.font='11px Outfit';ctx.fillStyle='rgba(17,24,39,0.35)';ctx.textAlign='center';
+    for(let k=0;k<=7;k++){const x=pad.l+k/7*pw;ctx.fillText(k,x,H-pad.b+16)}
+    ctx.textAlign='right';
+    for(let v=0;v<=1;v+=0.25){const y=H-pad.b-v*ph;ctx.fillText(v.toFixed(2),pad.l-8,y+4);
+        ctx.strokeStyle='rgba(17,24,39,0.05)';ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke()}
+    // CDF curve
+    ctx.strokeStyle='#7C3AED';ctx.lineWidth=2.5;ctx.beginPath();
+    for(let px=0;px<=pw;px++){const xv=px/pw*7;const y=H-pad.b-cdf(xv)*ph;if(px===0)ctx.moveTo(pad.l+px,y);else ctx.lineTo(pad.l+px,y)}
+    ctx.stroke();
+    // Highlight
+    const xv=parseFloat(xVal);const fv=cdf(xv);
+    const xPx=pad.l+xv/7*pw;const yPx=H-pad.b-fv*ph;
+    // Shaded area under CDF
+    ctx.fillStyle='rgba(29,78,216,0.08)';
+    ctx.beginPath();ctx.moveTo(pad.l,H-pad.b);
+    for(let px=0;px<=xPx-pad.l;px++){const xv2=px/pw*7;ctx.lineTo(pad.l+px,H-pad.b-cdf(xv2)*ph)}
+    ctx.lineTo(xPx,H-pad.b);ctx.closePath();ctx.fill();
+    // Vertical + horizontal dashed
+    ctx.strokeStyle='rgba(220,38,38,0.5)';ctx.lineWidth=1.5;ctx.setLineDash([6,4]);
+    ctx.beginPath();ctx.moveTo(xPx,pad.t);ctx.lineTo(xPx,H-pad.b);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(pad.l,yPx);ctx.lineTo(xPx,yPx);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#DC2626';ctx.beginPath();ctx.arc(xPx,yPx,6,0,Math.PI*2);ctx.fill();
+    document.getElementById('cdfContinuousX').textContent='x = '+xv.toFixed(2);
+    document.getElementById('cdfContinuousF').textContent='F('+xv.toFixed(2)+') = '+fv.toFixed(4);
+}
+
+// Init CDF explorers when slide becomes visible
+const cdfObs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){drawDiscreteCDF(3.5);drawContinuousCDF(3.5)}})},{threshold:0.3});
+document.querySelectorAll('[data-slide]').forEach(s=>{if(s.querySelector('#cdfDiscrete'))cdfObs.observe(s)});
+
+/* ── Hamburger Menu ── */
+// Slide metadata: [name, type] — types: cover, agenda, story, define, example, game, compare, interactive, challenge, closing
+const slideMeta=[
+    ['Cover','cover'],['Agenda','agenda'],['The Gambling Problem','story'],
+    ['--- RV ---','cover'],['Random Variables','define'],['Discrete or Continuous?','game'],
+    ['--- PMF ---','cover'],['PMF','define'],['PMF: Uber','example'],['PMF: Factory QC','example'],
+    ['--- PDF ---','cover'],['PDF','define'],['PDF: Amazon','example'],['PDF: Integration','example'],
+    ['PMF vs PDF','compare'],['Nightingale','story'],
+    ['--- CDF ---','cover'],['CDF Definition','define'],['CDF: Discrete','example'],['CDF: Continuous','example'],
+    ['CDF: The Bridge','story'],['CDF Explorer','interactive'],['Inverse CDF','challenge'],
+    ['--- E[X] & Var ---','cover'],['Expected Value','define'],['E[X]: Warranty','example'],['E[X] Interpretation','define'],
+    ['E[X]: Fun Fact','story'],
+    ['Variance','define'],['Var: Fun Fact','story'],['Var: Coffee Machines','example'],
+    ['4 Practice Problems','challenge'],['Notation Guide','define'],['Closing','closing']
+];
+const typeIcons={
+    cover:'<svg viewBox="0 0 24 24" style="width:12px;height:12px"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" fill="none" stroke-width="2"/></svg>',
+    agenda:'<svg viewBox="0 0 24 24" style="width:12px;height:12px"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke="currentColor" fill="none" stroke-width="2"/></svg>',
+    story:'<svg viewBox="0 0 24 24" style="width:12px;height:12px"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" stroke="currentColor" fill="none" stroke-width="2"/></svg>',
+    define:'<svg viewBox="0 0 24 24" style="width:12px;height:12px"><circle cx="12" cy="12" r="9" stroke="currentColor" fill="none" stroke-width="2"/><path d="M12 8v4M12 16h.01" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"/></svg>',
+    example:'<svg viewBox="0 0 24 24" style="width:12px;height:12px"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z" stroke="currentColor" fill="none" stroke-width="2"/></svg>',
+    game:'<svg viewBox="0 0 24 24" style="width:12px;height:12px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10" stroke="currentColor" fill="none" stroke-width="2"/></svg>',
+    compare:'<svg viewBox="0 0 24 24" style="width:12px;height:12px"><path d="M8 3v18M16 3v18M3 12h18" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"/></svg>',
+    interactive:'<svg viewBox="0 0 24 24" style="width:12px;height:12px"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zM2 12h20" stroke="currentColor" fill="none" stroke-width="2"/></svg>',
+    challenge:'<svg viewBox="0 0 24 24" style="width:12px;height:12px"><path d="M6 9H4.5a2.5 2.5 0 010-5C7 4 7 7 7 7M18 9h1.5a2.5 2.5 0 000-5C17 4 17 7 17 7M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20 17 22M18 2H6v7a6 6 0 1012 0V2z" stroke="currentColor" fill="none" stroke-width="2"/></svg>',
+    closing:'<svg viewBox="0 0 24 24" style="width:12px;height:12px"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke="currentColor" fill="none" stroke-width="2"/><path d="M22 4L12 14.01l-3-3" stroke="currentColor" fill="none" stroke-width="2"/></svg>'
+};
+const typeColors={cover:'var(--pri)',agenda:'var(--pri)',story:'var(--amber)',define:'var(--pri)',example:'var(--teal)',game:'var(--accent)',compare:'var(--pri)',interactive:'var(--green)',challenge:'var(--red)',closing:'var(--pri)'};
+function buildMenu(){
+    const panel=document.getElementById('hmPanel');
+    let html='';
+    slides.forEach((s,i)=>{
+        const m=slideMeta[i]||['Slide '+(i+1),'define'];
+        const icon=typeIcons[m[1]]||'';
+        const clr=typeColors[m[1]]||'var(--pri)';
+        const hw=s.querySelector('.hw-badge')?'<span style="color:var(--amber);font-size:9px;margin-left:auto">&#9998;</span>':'';
+        html+='<button class="hm-item" onclick="goSlide('+i+')" style="padding:7px 12px;gap:8px"><span class="hm-num" style="font-size:10px;min-width:18px">'+(i+1)+'</span><span style="color:'+clr+';display:flex;align-items:center;flex-shrink:0">'+icon+'</span><span style="flex:1;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+m[0]+'</span>'+hw+'</button>';
+    });
+    panel.innerHTML=html;
+}
+function toggleMenu(){
+    document.getElementById('hmBtn').classList.toggle('open');
+    document.getElementById('hmPanel').classList.toggle('open');
+}
+function goSlide(i){
+    slides[i].scrollIntoView({behavior:'smooth'});
+    toggleMenu();
+}
+function updateMenuActive(idx){
+    document.querySelectorAll('.hm-item').forEach((el,i)=>{el.classList.toggle('active',i===idx)});
+}
+// Update menu when slide changes
+const menuObs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const i=Array.from(slides).indexOf(e.target);updateMenuActive(i)}})},{threshold:.5});
+slides.forEach(s=>menuObs.observe(s));
+buildMenu();
+
+// Render KaTeX
+document.addEventListener('DOMContentLoaded',function(){
+    if(typeof renderMathInElement!=='undefined'){
+        renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});
+    }else{
+        setTimeout(function(){if(typeof renderMathInElement!=='undefined')renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})},1000);
+    }
+});
+</script>
+</body>
+</html>

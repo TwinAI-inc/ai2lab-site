@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Gambling Problem That Changed Everything</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Outfit',sans-serif;background:#0a0a0f;color:#fff;overflow:hidden;height:100vh;width:100vw}
+
+/* Scene container */
+.cinema{position:relative;width:100vw;height:100vh;overflow:hidden}
+
+/* Scene */
+.scene{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 1.2s ease}
+.scene.active{opacity:1;pointer-events:auto}
+.scene-bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:brightness(0.4) saturate(1.2);transform:scale(1.05);transition:transform 8s ease-out}
+.scene.active .scene-bg{transform:scale(1)}
+.scene-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.3) 0%,rgba(0,0,0,0.1) 30%,rgba(0,0,0,0.6) 70%,rgba(0,0,0,0.9) 100%)}
+
+/* Text content */
+.scene-content{position:relative;z-index:2;max-width:700px;padding:0 60px}
+.scene-content.center{text-align:center;display:flex;flex-direction:column;align-items:center}
+.scene-content.bottom{position:absolute;bottom:80px;left:60px;right:60px}
+
+.scene-label{font-size:13px;font-weight:600;letter-spacing:6px;text-transform:uppercase;color:#FCD34D;margin-bottom:16px;opacity:0;transform:translateY(20px);transition:all 1s ease 0.5s}
+.scene.active .scene-label{opacity:1;transform:translateY(0)}
+
+.scene-title{font-family:'Playfair Display',serif;font-size:56px;font-weight:700;line-height:1.15;margin-bottom:20px;opacity:0;transform:translateY(30px);transition:all 1s ease 0.8s}
+.scene.active .scene-title{opacity:1;transform:translateY(0)}
+.scene-title em{font-style:italic;color:#FCD34D}
+
+.scene-text{font-size:20px;font-weight:300;line-height:1.7;color:rgba(255,255,255,0.8);opacity:0;transform:translateY(20px);transition:all 1s ease 1.2s}
+.scene.active .scene-text{opacity:1;transform:translateY(0)}
+
+.scene-quote{font-family:'Playfair Display',serif;font-size:28px;font-style:italic;line-height:1.5;color:#FCD34D;border-left:3px solid rgba(252,211,77,0.4);padding:16px 28px;margin:24px 0;opacity:0;transform:translateX(-20px);transition:all 1s ease 1.5s}
+.scene.active .scene-quote{opacity:1;transform:translateX(0)}
+
+.scene-subtext{font-size:16px;color:rgba(255,255,255,0.5);margin-top:16px;opacity:0;transition:all 1s ease 1.8s}
+.scene.active .scene-subtext{opacity:1}
+
+/* Big number reveal */
+.big-num{font-family:'Playfair Display',serif;font-size:120px;font-weight:700;color:#FCD34D;opacity:0;transform:scale(0.8);transition:all 1.2s cubic-bezier(.22,1,.36,1) 1s}
+.scene.active .big-num{opacity:1;transform:scale(1)}
+
+.split-coins{display:flex;gap:60px;margin-top:24px;opacity:0;transition:all 1s ease 1.4s}
+.scene.active .split-coins{opacity:1}
+.coin-pile{text-align:center}
+.coin-pile .num{font-family:'Playfair Display',serif;font-size:64px;font-weight:700}
+.coin-pile .label{font-size:14px;color:rgba(255,255,255,0.5);margin-top:4px}
+
+/* Controls */
+.controls{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);z-index:100;display:flex;align-items:center;gap:16px;opacity:0;transition:opacity .4s}
+.controls:hover,.controls.show{opacity:1}
+body:hover .controls{opacity:0.6}
+.ctrl-btn{width:48px;height:48px;border-radius:50%;border:2px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);backdrop-filter:blur(10px);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s;font-size:18px}
+.ctrl-btn:hover{background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.4)}
+.ctrl-btn.play{width:56px;height:56px;background:rgba(252,211,77,0.15);border-color:rgba(252,211,77,0.4)}
+.ctrl-btn.play:hover{background:rgba(252,211,77,0.3)}
+.progress-dots{display:flex;gap:8px}
+.pdot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.15);transition:all .4s}
+.pdot.active{background:#FCD34D;box-shadow:0 0 12px rgba(252,211,77,0.4);transform:scale(1.3)}
+.pdot.done{background:rgba(252,211,77,0.4)}
+
+/* Start screen */
+.start-screen{position:absolute;inset:0;z-index:200;background:#0a0a0f;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:opacity 1s ease}
+.start-screen.hidden{opacity:0;pointer-events:none}
+.start-title{font-family:'Playfair Display',serif;font-size:48px;text-align:center;margin-bottom:12px;line-height:1.2}
+.start-sub{font-size:16px;color:rgba(255,255,255,0.4);margin-bottom:40px}
+.start-play{width:80px;height:80px;border-radius:50%;border:2px solid rgba(252,211,77,0.4);background:rgba(252,211,77,0.1);display:flex;align-items:center;justify-content:center;animation:pulse 2s ease-in-out infinite}
+.start-play svg{margin-left:4px}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(252,211,77,0.2)}50%{box-shadow:0 0 0 20px rgba(252,211,77,0)}}
+
+/* Particles */
+.particles{position:fixed;inset:0;z-index:1;pointer-events:none}
+.particle{position:absolute;width:3px;height:3px;background:rgba(252,211,77,0.3);border-radius:50%;animation:drift 15s linear infinite}
+@keyframes drift{0%{transform:translateY(100vh) translateX(0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-10vh) translateX(40px);opacity:0}}
+</style>
+</head>
+<body>
+
+<!-- Particles -->
+<div class="particles" id="particles"></div>
+
+<!-- Start Screen -->
+<div class="start-screen" id="startScreen" onclick="startStory()">
+    <div class="start-title">The Gambling Problem<br>That <span style="color:#FCD34D">Changed Everything</span></div>
+    <div class="start-sub">Paris, 1654</div>
+    <div class="start-play">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="#FCD34D"><polygon points="8,5 20,12 8,19"/></svg>
+    </div>
+</div>
+
+<div class="cinema" id="cinema">
+
+    <!-- Scene 1: The Tavern -->
+    <div class="scene" id="s1">
+        <div class="scene-bg" style="background-image:url('img/scene1.png')"></div>
+        <div class="scene-overlay"></div>
+        <div class="scene-content bottom">
+            <div class="scene-label">Paris, 1654</div>
+            <div class="scene-title">A tavern in the heart of Paris.</div>
+            <div class="scene-text">Two men sit across from each other. Between them: a pile of <strong style="color:#FCD34D">100 gold coins</strong>, a pair of dice, and a deal.</div>
+            <div class="scene-subtext">First to win 3 rounds takes everything.</div>
+        </div>
+    </div>
+
+    <!-- Scene 2: The Interruption -->
+    <div class="scene" id="s2">
+        <div class="scene-bg" style="background-image:url('img/scene2.png')"></div>
+        <div class="scene-overlay"></div>
+        <div class="scene-content bottom">
+            <div class="scene-label">The score: 2 - 1</div>
+            <div class="scene-title">Then the game <em>stops</em>.</div>
+            <div class="scene-text">Player A has won 2 rounds. Player B has won 1. But something forces them to leave — the game can't continue.</div>
+            <div class="scene-quote">"How do we split the 100 coins fairly?"</div>
+        </div>
+    </div>
+
+    <!-- Scene 3: The Argument -->
+    <div class="scene" id="s3">
+        <div class="scene-bg" style="background-image:url('img/scene3.png');background-position:center 30%"></div>
+        <div class="scene-overlay"></div>
+        <div class="scene-content bottom">
+            <div class="scene-label">The Debate</div>
+            <div class="scene-title">Nobody can agree.</div>
+            <div class="scene-text">Player A says: <em>"I was winning — give me everything!"</em><br>Player B says: <em>"I still had a chance — split it 50/50!"</em></div>
+            <div class="scene-subtext">A wealthy gambler named <strong style="color:#FCD34D">Chevalier de Mere</strong> takes this unsolved puzzle to the smartest man he knows.</div>
+        </div>
+    </div>
+
+    <!-- Scene 4: Pascal -->
+    <div class="scene" id="s4">
+        <div class="scene-bg" style="background-image:url('img/scene4.png')"></div>
+        <div class="scene-overlay"></div>
+        <div class="scene-content bottom">
+            <div class="scene-label">The Mathematician</div>
+            <div class="scene-title"><em>Blaise Pascal</em> picks up his quill.</div>
+            <div class="scene-text">He's intrigued — but he can't solve it alone. So he writes a letter to the only other person in the world who might understand.</div>
+        </div>
+    </div>
+
+    <!-- Scene 5: The Letters -->
+    <div class="scene" id="s5">
+        <div class="scene-bg" style="background-image:url('img/scene5.png')"></div>
+        <div class="scene-overlay"></div>
+        <div class="scene-content bottom">
+            <div class="scene-label">The Correspondence</div>
+            <div class="scene-title">Pascal writes to <em>Fermat</em>.</div>
+            <div class="scene-text">Pierre de Fermat — a lawyer by day, mathematician by night. For months, they exchange letters about dice, cards, and fairness. They argue. They calculate. They invent.</div>
+        </div>
+    </div>
+
+    <!-- Scene 6: The Answer -->
+    <div class="scene" id="s6">
+        <div class="scene-bg" style="background-image:url('img/scene6.png')"></div>
+        <div class="scene-overlay"></div>
+        <div class="scene-content center" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column">
+            <div class="scene-label">The Breakthrough</div>
+            <div class="scene-title">They find the answer.</div>
+            <div class="scene-text" style="max-width:550px;text-align:center">Look at every possible way the game <em>could</em> end. Count how many go to each player.</div>
+            <div class="split-coins">
+                <div class="coin-pile"><div class="num" style="color:#FCD34D">75</div><div class="label">coins to Player A</div></div>
+                <div class="coin-pile"><div class="num" style="color:rgba(255,255,255,0.5)">25</div><div class="label">coins to Player B</div></div>
+            </div>
+            <div class="scene-subtext">Not 100-0. Not 50-50. The mathematically <em>fair</em> split.</div>
+        </div>
+    </div>
+
+    <!-- Scene 7: Legacy -->
+    <div class="scene" id="s7">
+        <div class="scene-bg" style="background-image:url('img/scene7.png')"></div>
+        <div class="scene-overlay" style="background:linear-gradient(180deg,rgba(0,0,0,0.5) 0%,rgba(0,0,0,0.7) 100%)"></div>
+        <div class="scene-content center" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column">
+            <div class="scene-label">What they invented</div>
+            <div class="scene-title" style="font-size:64px"><em>Probability theory</em> is born.</div>
+            <div class="scene-text" style="max-width:600px;text-align:center;margin-top:16px">From those letters came: insurance, statistics, machine learning, quantum physics, weather forecasting, finance, medicine, AI.</div>
+            <div class="scene-subtext" style="margin-top:24px">All because a gambler wanted his money.</div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Minimal controls — just dots + mute, hidden until hover -->
+<div class="controls" id="controls">
+    <div class="progress-dots" id="dots"></div>
+    <button class="ctrl-btn" id="muteBtn" onclick="event.stopPropagation();toggleNarration()" title="Toggle narration">&#128264;</button>
+</div>
+
+<!-- Click overlay for play/pause -->
+<div id="clickLayer" style="position:fixed;inset:0;z-index:50;cursor:pointer;display:none" onclick="handleClick()"></div>
+
+<!-- Pause indicator -->
+<div id="pauseIcon" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:60;width:100px;height:100px;border-radius:50%;background:rgba(0,0,0,0.5);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;pointer-events:none">
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+</div>
+
+<script>
+const totalScenes=7;
+let current=0;
+let autoplayInterval=null;
+let playing=false;
+
+// Build dots
+const dotsEl=document.getElementById('dots');
+for(let i=0;i<totalScenes;i++){
+    const d=document.createElement('div');
+    d.className='pdot'+(i===0?' active':'');
+    d.onclick=()=>goScene(i);
+    dotsEl.appendChild(d);
+}
+
+// Build particles
+const pEl=document.getElementById('particles');
+for(let i=0;i<30;i++){
+    const p=document.createElement('div');
+    p.className='particle';
+    p.style.left=Math.random()*100+'%';
+    p.style.animationDelay=Math.random()*15+'s';
+    p.style.animationDuration=(10+Math.random()*10)+'s';
+    p.style.width=p.style.height=(1+Math.random()*3)+'px';
+    pEl.appendChild(p);
+}
+
+// Audio voiceover (OpenAI TTS HD — onyx voice)
+const audioFiles=[];
+for(let i=1;i<=7;i++){
+    const a=new Audio('img/voice-scene'+i+'.mp3');
+    a.preload='auto';
+    audioFiles.push(a);
+}
+let currentAudio=null;
+let narrationEnabled=true;
+
+function speak(idx){
+    if(currentAudio){currentAudio.pause();currentAudio.currentTime=0}
+    if(!narrationEnabled)return;
+    currentAudio=audioFiles[idx];
+    currentAudio.currentTime=0;
+    currentAudio.play().catch(()=>{});
+    // When audio ends, wait 1.5s then advance
+    currentAudio.onended=()=>{if(playing)setTimeout(()=>{if(playing)nextScene()},1500)};
+}
+
+function goScene(idx){
+    if(idx<0||idx>=totalScenes)return;
+    document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+    document.getElementById('s'+(idx+1)).classList.add('active');
+    document.querySelectorAll('.pdot').forEach((d,i)=>{
+        d.classList.remove('active','done');
+        if(i===idx)d.classList.add('active');
+        else if(i<idx)d.classList.add('done');
+    });
+    current=idx;
+    // Play voiceover after visual transition
+    setTimeout(()=>speak(idx),800);
+}
+
+function nextScene(){if(current<totalScenes-1)goScene(current+1);else stopAutoplay()}
+function prevScene(){if(currentAudio){currentAudio.pause();currentAudio.currentTime=0}if(current>0)goScene(current-1)}
+
+function toggleAutoplay(){
+    if(playing)stopAutoplay();
+    else{playing=true;document.getElementById('playBtn').innerHTML='&#10074;&#10074;';
+        // Don't use interval — narration onend handles advancing
+    }
+}
+function stopAutoplay(){playing=false;document.getElementById('playBtn').innerHTML='&#9654;';if(currentAudio){currentAudio.pause();currentAudio.currentTime=0}}
+
+function toggleNarration(){
+    narrationEnabled=!narrationEnabled;
+    const btn=document.getElementById('muteBtn');
+    btn.innerHTML=narrationEnabled?'&#128264;':'&#128263;';
+    if(!narrationEnabled&&currentAudio){currentAudio.pause();currentAudio.currentTime=0}
+}
+
+function startStory(){
+    document.getElementById('startScreen').classList.add('hidden');
+    document.getElementById('clickLayer').style.display='block';
+    // Go fullscreen
+    document.documentElement.requestFullscreen?.().catch(()=>{});
+    goScene(0);
+    playing=true;
+}
+
+function handleClick(){
+    if(playing){
+        // Pause
+        playing=false;
+        if(currentAudio)currentAudio.pause();
+        const pi=document.getElementById('pauseIcon');
+        pi.style.display='flex';
+        setTimeout(()=>{pi.style.display='none'},1000);
+    }else{
+        // Resume
+        playing=true;
+        if(currentAudio&&currentAudio.paused&&currentAudio.currentTime>0){
+            currentAudio.play().catch(()=>{});
+        }else{
+            // If audio finished, go next
+            nextScene();
+        }
+    }
+}
+
+// Keyboard
+document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();nextScene()}
+    if(e.key==='ArrowLeft'){e.preventDefault();prevScene()}
+    if(e.key==='Enter'){e.preventDefault();if(document.getElementById('startScreen').classList.contains('hidden'))toggleAutoplay();else startStory()}
+});
+</script>
+</body>
+</html>
