@@ -6264,7 +6264,12 @@
               desc:'Probability theory, common distributions, statistical inference, confidence intervals, and hypothesis testing for engineering applications. Hands-on with interactive simulators (Poisson PMF Explorer, CI Explorer, HT Simulator) and real-world worked examples including Tesla batteries, coffee dispensers, and hospital ER capacity.',
               goals:['Master discrete and continuous distributions (Bernoulli, Binomial, Normal, Poisson)','Apply Six Sigma quality control principles','Build confidence intervals for engineering data','Conduct hypothesis tests with p-values and Type I/II error analysis','Use interactive simulators to develop statistical intuition'],
               img:'IE6200_probability.svg', pdf:null, link:'courses/IE6400/course-outline.html',
-              pin:'#C41230', rot:1.5, tape:false, award:false, pinX:42 }
+              pin:'#C41230', rot:1.5, tape:false, award:false, pinX:42 },
+            { code:'IE5374', title:'Tableau Workshop',
+              desc:'Three-session hands-on Tableau workshop for Storytelling with Data. Students build their first dashboards from raw data using the Global Superstore 2016 dataset, then explore visual analytics techniques: marks, hierarchies, parameters, sets, drill-downs, and calculated fields. Interactive outline with task checkboxes and direct dataset downloads.',
+              goals:['Load, clean, and join data from Excel and CSV in Tableau','Build core chart types: bar, line, crosstab, symbol map, scatter','Apply dimensions, measures, and data type conversions','Create hierarchies, groups, filters, and parameters','Use Show Me, highlighters, annotations, and trend lines','Tell a clear data story with interactive dashboards'],
+              img:'IE6600_data_viz.svg', pdf:null, link:'https://mdehghani86.github.io/tableau-workshop/',
+              pin:'#2563EB', rot:-2, tape:true, award:false, pinX:38 }
         ];
 
         function buildCourseCards() {
@@ -6325,7 +6330,7 @@
             }
 
             if (c.link) {
-                html += '<a class="cm-download" href="' + c.link + '" target="_blank" style="background:linear-gradient(135deg,#C41230,#ff4d6d);color:#fff;border-color:#C41230"><i data-lucide="layout-list"></i> View Course Outline</a>';
+                html += '<a class="cm-download" href="' + c.link + '" target="_blank" style="background:linear-gradient(135deg,' + c.pin + ',' + c.pin + 'cc);color:#fff;border-color:' + c.pin + '"><i data-lucide="layout-list"></i> View Course Outline</a>';
             }
             if (c.pdf) {
                 html += '<a class="cm-download" href="' + c.pdf + '" target="_blank"><i data-lucide="download"></i> Download Syllabus</a>';
