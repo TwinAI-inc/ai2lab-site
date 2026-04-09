@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IE 5374 — Storytelling with Data | AI² Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+    --accent:#16a34a;
+    --accent-dark:#15803d;
+    --accent-light:#4ade80;
+    --accent2:#0f766e;
+    --text-primary:#1a1a2e;
+    --text-secondary:#64748b;
+    --text-muted:#94a3b8;
+    --bg-light:#fafbfc;
+    --bg-soft:#f1f5f9;
+    --card-bg:#ffffff;
+    --border-color:#e2e8f0;
+    --emerald:#059669;
+    --shadow-sm:0 2px 8px rgba(0,0,0,0.04);
+    --shadow-md:0 8px 28px rgba(0,0,0,0.06);
+    --shadow-lg:0 20px 60px rgba(0,0,0,0.1);
+    --sidebar-w:280px;
+}
+
+html{scroll-behavior:smooth}
+body{
+    font-family:'Outfit',-apple-system,BlinkMacSystemFont,sans-serif;
+    background:var(--bg-light);
+    color:var(--text-primary);
+    line-height:1.6;min-height:100vh;
+    position:relative;overflow-x:hidden;
+}
+
+/* Hero bg (optional — page works without image) */
+.hero-bg{
+    position:fixed;top:0;left:0;right:0;height:480px;
+    background:url('img/ie5374_storytelling_hero.png') center/cover no-repeat;
+    opacity:0.22;z-index:0;pointer-events:none;
+    mask-image:linear-gradient(180deg,#000 0%,#000 55%,transparent 100%);
+    -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 55%,transparent 100%);
+}
+.hero-bg::after{
+    content:'';position:absolute;inset:0;
+    background:linear-gradient(180deg,rgba(250,251,252,0.2) 0%,rgba(250,251,252,0.6) 60%,var(--bg-light) 100%);
+}
+
+/* Orbs */
+body::before{
+    content:'';position:fixed;top:40%;right:-200px;
+    width:560px;height:560px;
+    background:radial-gradient(circle,rgba(22,163,74,0.05) 0%,transparent 70%);
+    border-radius:50%;pointer-events:none;z-index:0;
+}
+body::after{
+    content:'';position:fixed;bottom:-180px;left:-120px;
+    width:480px;height:480px;
+    background:radial-gradient(circle,rgba(15,118,110,0.05) 0%,transparent 70%);
+    border-radius:50%;pointer-events:none;z-index:0;
+}
+
+/* Header */
+header{
+    background:linear-gradient(135deg,rgba(255,255,255,0.95) 0%,rgba(250,251,252,0.92) 100%);
+    backdrop-filter:blur(20px) saturate(1.4);
+    -webkit-backdrop-filter:blur(20px) saturate(1.4);
+    border-bottom:1px solid rgba(255,255,255,0.8);
+    box-shadow:0 2px 24px rgba(0,0,0,0.05);
+    padding:14px 0;position:sticky;top:0;z-index:1000;
+}
+.header-container{
+    max-width:1400px;margin:0 auto;padding:0 30px;
+    display:flex;justify-content:space-between;align-items:center;gap:18px;
+}
+.logo-section{display:flex;align-items:center;gap:14px}
+.ai2-logo-wrap{display:flex;flex-direction:column;align-items:center;text-decoration:none;transition:all .25s ease}
+.ai2-logo-wrap:hover{transform:translateY(-1px)}
+.ai2-logo{
+    display:inline-flex;align-items:center;
+    background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);
+    border:1px solid rgba(0,0,0,0.08);border-radius:50px;
+    padding:6px 12px;box-shadow:0 2px 12px rgba(0,0,0,0.05);
+}
+.ai2-logo .bracket{font-family:'JetBrains Mono',monospace;font-size:16px;color:#ddd;font-weight:300}
+.ai2-logo .text{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:800;color:#1a1a2e;padding:0 3px}
+.ai2-logo .text sup{font-size:7px;color:#C41230}
+.ai2-logo-line{height:2px;width:40px;background:linear-gradient(90deg,#C41230,#1a1a2e);border-radius:2px;margin-top:4px}
+.course-tag{font-size:0.78rem;color:var(--text-secondary);font-weight:500;letter-spacing:.04em}
+.sidebar-toggle{
+    display:none;background:rgba(255,255,255,0.85);
+    border:1px solid var(--border-color);border-radius:10px;
+    width:40px;height:40px;align-items:center;justify-content:center;
+    cursor:pointer;color:var(--text-primary);
+}
+.sidebar-toggle svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2}
+.back-link{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:0.85rem;font-weight:600;color:var(--accent);
+    text-decoration:none;padding:8px 16px;border-radius:99px;
+    background:rgba(22,163,74,0.06);border:1px solid rgba(22,163,74,0.15);
+    transition:all .25s ease;
+}
+.back-link:hover{background:rgba(22,163,74,0.12);transform:translateX(-2px)}
+.back-link svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5}
+
+/* Layout */
+.page-wrap{
+    display:grid;grid-template-columns:var(--sidebar-w) 1fr;
+    max-width:1400px;margin:0 auto;gap:0;
+    position:relative;z-index:1;
+}
+
+/* Sidebar */
+.sidebar{
+    position:sticky;top:72px;height:calc(100vh - 72px);
+    padding:28px 20px 28px 30px;overflow-y:auto;
+    border-right:1px solid var(--border-color);
+    background:rgba(255,255,255,0.55);backdrop-filter:blur(18px);
+}
+.sidebar::-webkit-scrollbar{width:6px}
+.sidebar::-webkit-scrollbar-thumb{background:rgba(148,163,184,0.3);border-radius:3px}
+.sb-title{font-size:0.68rem;font-weight:800;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-muted);margin-bottom:14px;padding:0 8px}
+.sb-group{margin-bottom:14px}
+.sb-group-header{
+    display:flex;align-items:center;gap:8px;
+    width:100%;padding:10px 12px;border:none;background:transparent;
+    border-radius:10px;cursor:pointer;font-family:inherit;
+    font-size:0.82rem;font-weight:700;color:var(--text-primary);
+    text-align:left;transition:background .2s ease;
+    text-transform:uppercase;letter-spacing:0.05em;
+}
+.sb-group-header:hover{background:rgba(22,163,74,0.05)}
+.sb-group-header .sb-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sb-group.tableau .sb-dot{background:var(--accent)}
+.sb-group.coming .sb-dot{background:var(--text-muted)}
+.sb-group-header .sb-count{
+    margin-left:auto;font-size:0.68rem;font-weight:600;
+    color:var(--text-muted);background:rgba(148,163,184,0.12);
+    padding:2px 8px;border-radius:99px;text-transform:none;letter-spacing:0;
+}
+.sb-group-header .sb-chevron{
+    width:14px;height:14px;stroke:var(--text-muted);fill:none;
+    stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;
+    transition:transform .25s ease;margin-left:4px;
+}
+.sb-group.collapsed .sb-chevron{transform:rotate(-90deg)}
+.sb-group.collapsed .sb-items{display:none}
+.sb-items{
+    margin-top:4px;padding-left:12px;
+    border-left:1.5px dashed rgba(148,163,184,0.25);margin-left:16px;
+}
+.sb-item{
+    display:flex;align-items:flex-start;gap:8px;
+    padding:8px 10px;font-size:0.82rem;
+    color:var(--text-secondary);text-decoration:none;
+    border-radius:8px;transition:all .2s ease;
+    margin-bottom:2px;line-height:1.4;
+}
+.sb-item:hover{background:rgba(22,163,74,0.06);color:var(--text-primary)}
+.sb-item.active{background:rgba(22,163,74,0.09);color:var(--accent);font-weight:600}
+.sb-item .sb-num{
+    flex-shrink:0;width:20px;height:20px;border-radius:6px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:0.62rem;font-weight:800;
+    background:rgba(22,163,74,0.08);color:var(--accent);
+    font-family:'JetBrains Mono',monospace;margin-top:1px;
+}
+.sb-group.coming .sb-item{opacity:0.5;pointer-events:none}
+.sb-group.coming .sb-item .sb-num{background:rgba(148,163,184,0.12);color:var(--text-muted)}
+.sb-item .sb-label{flex:1;min-width:0}
+.sb-item .sb-meta{font-size:0.68rem;color:var(--text-muted);margin-top:1px}
+
+/* Content */
+.content{padding:48px 40px 80px;max-width:980px}
+
+/* Hero */
+.hero{text-align:center;margin-bottom:36px}
+.hero .eyebrow{
+    display:inline-block;font-size:0.72rem;font-weight:700;
+    text-transform:uppercase;letter-spacing:0.18em;
+    color:var(--accent);background:rgba(22,163,74,0.08);
+    padding:6px 16px;border-radius:99px;
+    border:1px solid rgba(22,163,74,0.2);
+    margin-bottom:14px;backdrop-filter:blur(8px);
+}
+.hero h1{
+    font-size:3rem;font-weight:800;color:var(--text-primary);
+    letter-spacing:-0.025em;line-height:1.08;margin-bottom:14px;
+}
+.hero h1 .accent{
+    background:linear-gradient(135deg,var(--accent),var(--accent-light));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    background-clip:text;
+}
+.hero .tagline{
+    font-size:1.1rem;font-weight:400;color:var(--text-secondary);
+    max-width:680px;margin:0 auto;line-height:1.6;
+}
+.hero .instructor{
+    display:inline-flex;align-items:center;gap:8px;
+    margin-top:16px;padding:8px 18px;border-radius:99px;
+    background:rgba(255,255,255,0.9);border:1px solid var(--border-color);
+    font-size:0.85rem;font-weight:600;color:var(--text-primary);
+    box-shadow:var(--shadow-sm);backdrop-filter:blur(10px);
+}
+.hero .instructor svg{width:14px;height:14px;stroke:var(--accent);fill:none;stroke-width:2}
+
+/* Stat cards */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:36px}
+.stat-card{
+    position:relative;background:var(--card-bg);
+    border:1px solid var(--border-color);border-radius:18px;
+    padding:22px 20px;box-shadow:var(--shadow-sm);
+    transition:transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s ease;
+    overflow:hidden;
+}
+.stat-card::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:3px;
+    background:linear-gradient(90deg,var(--accent),var(--accent2));opacity:0.7;
+}
+.stat-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(22,163,74,0.1)}
+.stat-card .stat-icon{
+    width:36px;height:36px;border-radius:10px;
+    background:linear-gradient(135deg,rgba(22,163,74,0.08),rgba(15,118,110,0.04));
+    display:flex;align-items:center;justify-content:center;margin-bottom:10px;
+}
+.stat-card .stat-icon svg{width:18px;height:18px;stroke:var(--accent);fill:none;stroke-width:2.2}
+.stat-card:nth-child(2) .stat-icon svg{stroke:var(--accent2)}
+.stat-card:nth-child(3) .stat-icon svg{stroke:var(--accent)}
+.stat-card:nth-child(4) .stat-icon svg{stroke:var(--emerald)}
+.stat-card .stat-value{
+    font-size:1.85rem;font-weight:800;color:var(--text-primary);
+    letter-spacing:-0.02em;line-height:1;margin-bottom:4px;
+    font-variant-numeric:tabular-nums;display:flex;align-items:baseline;gap:4px;
+}
+.stat-card .stat-value .total{font-size:0.95rem;color:var(--text-muted);font-weight:600}
+.stat-card .stat-label{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted)}
+
+/* Module accordion */
+.modules-section{margin-bottom:36px}
+.section-label{
+    font-size:0.7rem;font-weight:800;text-transform:uppercase;
+    letter-spacing:0.12em;color:var(--text-muted);
+    margin-bottom:16px;margin-left:4px;
+}
+.phase-header{
+    display:flex;align-items:center;gap:12px;
+    padding:11px 18px;margin-top:20px;margin-bottom:8px;
+    border-radius:10px;font-size:0.85rem;font-weight:800;
+    color:var(--text-primary);text-transform:uppercase;letter-spacing:0.06em;
+}
+.phase-header:first-child{margin-top:0}
+.phase-header .phase-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.phase-header .phase-count{
+    font-size:0.72rem;font-weight:600;color:var(--text-muted);
+    margin-left:auto;text-transform:none;letter-spacing:0;
+}
+.phase-header.tableau{
+    background:linear-gradient(135deg,rgba(22,163,74,0.07),rgba(22,163,74,0.02));
+    border-left:3px solid var(--accent);
+}
+.phase-header.tableau .phase-dot{background:var(--accent)}
+.phase-header.coming{
+    background:linear-gradient(135deg,rgba(148,163,184,0.08),rgba(148,163,184,0.02));
+    border-left:3px solid var(--text-muted);
+}
+.phase-header.coming .phase-dot{background:var(--text-muted)}
+
+.mod-row{
+    background:var(--card-bg);border:1px solid var(--border-color);
+    border-radius:14px;margin-bottom:10px;
+    transition:box-shadow .25s ease,transform .25s ease;
+    overflow:visible;box-shadow:var(--shadow-sm);position:relative;
+}
+.mod-row:hover{box-shadow:0 6px 22px rgba(22,163,74,0.08);transform:translateY(-1px)}
+.mod-row.expanded{box-shadow:0 8px 28px rgba(22,163,74,0.10)}
+.mod-header{
+    display:flex;align-items:center;gap:14px;
+    padding:18px 22px;cursor:pointer;user-select:none;position:relative;
+}
+.mod-border{
+    position:absolute;left:0;top:0;bottom:0;
+    width:5px;border-radius:14px 0 0 14px;
+}
+.mod-border.tableau{background:linear-gradient(180deg,var(--accent),var(--accent-light))}
+.mod-border.coming{background:linear-gradient(180deg,var(--text-muted),#94a3b8)}
+.mod-num{
+    font-size:0.78rem;font-weight:800;color:var(--accent);
+    font-family:'JetBrains Mono',monospace;letter-spacing:0.04em;
+    min-width:38px;flex-shrink:0;padding-left:10px;
+}
+.mod-row.coming .mod-num{color:var(--text-muted)}
+.mod-title{
+    font-size:1.05rem;font-weight:700;color:var(--text-primary);
+    flex:1;letter-spacing:-0.01em;
+}
+.mod-title .mod-sub{
+    display:block;font-size:0.78rem;color:var(--text-secondary);
+    font-weight:500;margin-top:2px;letter-spacing:0;
+}
+.status-badge{
+    display:inline-flex;align-items:center;gap:5px;
+    padding:5px 13px;border-radius:99px;font-size:0.7rem;
+    font-weight:700;text-transform:uppercase;letter-spacing:0.06em;flex-shrink:0;
+}
+.status-badge.complete{background:rgba(5,150,105,0.1);color:var(--emerald);border:1px solid rgba(5,150,105,0.25)}
+.status-badge.stub{background:rgba(148,163,184,0.1);color:var(--text-muted);border:1px solid rgba(148,163,184,0.25)}
+.status-badge .dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.mod-chevron{
+    flex-shrink:0;width:24px;height:24px;
+    display:flex;align-items:center;justify-content:center;
+    color:var(--text-muted);transition:transform .3s ease;
+}
+.mod-chevron svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.mod-row.expanded .mod-chevron{transform:rotate(90deg);color:var(--accent)}
+.mod-body{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.mod-row.expanded .mod-body{max-height:2000px}
+.mod-body-inner{padding:0 22px 22px 70px}
+.mod-intro{
+    padding:18px 22px;border-radius:12px;
+    background:linear-gradient(135deg,rgba(22,163,74,0.04),rgba(255,255,255,0.6));
+    border:1px solid rgba(22,163,74,0.10);
+    border-left:3px solid var(--accent);
+    margin-bottom:16px;font-size:0.94rem;
+    color:var(--text-primary);line-height:1.65;
+}
+.mod-intro strong{color:var(--accent-dark);font-weight:700}
+
+/* Deck cards (link to Tableau Workshop) */
+.deck-grid{display:grid;grid-template-columns:1fr;gap:12px}
+.deck-card{
+    display:flex;align-items:center;gap:18px;
+    padding:18px 22px;background:var(--card-bg);
+    border:1px solid var(--border-color);border-radius:14px;
+    text-decoration:none;color:inherit;
+    transition:all .25s ease;box-shadow:var(--shadow-sm);
+    position:relative;overflow:hidden;
+}
+.deck-card::before{
+    content:'';position:absolute;left:0;top:0;bottom:0;
+    width:0;background:linear-gradient(180deg,var(--accent),var(--accent-light));
+    transition:width .25s ease;
+}
+.deck-card:hover{transform:translateX(4px);border-color:rgba(22,163,74,0.3);box-shadow:0 8px 24px rgba(22,163,74,0.12)}
+.deck-card:hover::before{width:4px}
+.deck-icon{
+    flex-shrink:0;width:52px;height:52px;border-radius:12px;
+    background:linear-gradient(135deg,rgba(22,163,74,0.1),rgba(22,163,74,0.04));
+    display:flex;align-items:center;justify-content:center;
+    color:var(--accent);border:1px solid rgba(22,163,74,0.15);
+}
+.deck-icon svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.deck-info{flex:1;min-width:0}
+.deck-info .deck-title{font-size:1rem;font-weight:700;color:var(--text-primary);margin-bottom:3px;letter-spacing:-0.01em}
+.deck-info .deck-meta{font-size:0.78rem;color:var(--text-secondary);font-weight:500;margin-bottom:8px}
+.deck-info .deck-meta strong{color:var(--accent-dark);font-weight:700}
+.deck-info .deck-chips{display:flex;flex-wrap:wrap;gap:6px}
+.deck-chip{font-size:0.7rem;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--bg-soft);color:var(--text-secondary);border:1px solid var(--border-color)}
+.deck-arrow{
+    flex-shrink:0;width:36px;height:36px;border-radius:10px;
+    background:rgba(22,163,74,0.06);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--accent);transition:all .25s ease;
+}
+.deck-card:hover .deck-arrow{background:var(--accent);color:#fff;transform:translateX(2px)}
+.deck-arrow svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+
+/* Stub note */
+.stub-note{
+    padding:22px;background:var(--bg-soft);border:1px dashed var(--border-color);
+    border-radius:12px;text-align:center;font-size:0.85rem;color:var(--text-muted);
+}
+.stub-note strong{color:var(--text-secondary)}
+
+/* Article cards */
+.article-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:16px}
+.article-card{
+    display:flex;align-items:center;gap:12px;
+    padding:14px 18px;background:var(--card-bg);
+    border:1px solid var(--border-color);border-radius:12px;
+    text-decoration:none;color:inherit;
+    transition:all .2s ease;box-shadow:var(--shadow-sm);
+}
+.article-card:hover{border-color:rgba(22,163,74,0.3);transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.article-card .a-icon{
+    width:36px;height:36px;flex-shrink:0;border-radius:10px;
+    background:rgba(22,163,74,0.08);
+    display:flex;align-items:center;justify-content:center;
+}
+.article-card .a-icon svg{width:16px;height:16px;stroke:var(--accent);fill:none;stroke-width:2}
+.article-card .a-title{font-size:0.82rem;font-weight:600;color:var(--text-primary)}
+.article-card .a-meta{font-size:0.68rem;color:var(--text-muted);margin-top:2px}
+
+/* Footer */
+.outline-footer{
+    text-align:center;margin-top:48px;padding-top:32px;
+    border-top:1px solid var(--border-color);
+    color:var(--text-muted);font-size:0.78rem;font-weight:500;
+}
+.outline-footer a{color:var(--accent);text-decoration:none;font-weight:600}
+.outline-footer a:hover{text-decoration:underline}
+
+/* Responsive */
+@media (max-width:980px){
+    .page-wrap{grid-template-columns:1fr}
+    .sidebar{
+        position:fixed;top:72px;left:-300px;width:280px;
+        height:calc(100vh - 72px);z-index:998;
+        transition:left .3s ease;box-shadow:var(--shadow-lg);
+        background:rgba(255,255,255,0.98);
+    }
+    .sidebar.open{left:0}
+    .sidebar-toggle{display:flex}
+    .content{padding:32px 24px 60px}
+    .hero h1{font-size:2.2rem}
+    .stats-row{grid-template-columns:repeat(2,1fr)}
+    .article-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="hero-bg"></div>
+
+<!-- HEADER -->
+<header>
+    <div class="header-container">
+        <div class="logo-section">
+            <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle navigation">
+                <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </button>
+            <a href="../../index.html" class="ai2-logo-wrap">
+                <div class="ai2-logo">
+                    <span class="bracket">[</span>
+                    <span class="text">AI<sup>2</sup></span>
+                    <span class="bracket">]</span>
+                </div>
+                <div class="ai2-logo-line"></div>
+            </a>
+            <span class="course-tag">IE 5374 · Course Outline</span>
+        </div>
+        <a href="../../index.html" class="back-link">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            Back to AI²Lab
+        </a>
+    </div>
+</header>
+
+<div class="page-wrap">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sb-title">Course Navigation</div>
+
+        <div class="sb-group tableau" id="sbg-1">
+            <button class="sb-group-header" onclick="toggleSbGroup('sbg-1')">
+                <span class="sb-dot"></span>
+                <span>Tableau Workshop</span>
+                <svg class="sb-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="sb-items">
+                <a class="sb-item" href="#m1" onclick="focusMod('m1')">
+                    <span class="sb-num">L1</span>
+                    <span class="sb-label">Getting Started<div class="sb-meta">14 tasks · Superstore data</div></span>
+                </a>
+                <a class="sb-item" href="#m2" onclick="focusMod('m2')">
+                    <span class="sb-num">L2</span>
+                    <span class="sb-label">Visual Analytics<div class="sb-meta">10 tasks · Marks, Parameters</div></span>
+                </a>
+                <a class="sb-item" href="#m3" onclick="focusMod('m3')">
+                    <span class="sb-num">S3</span>
+                    <span class="sb-label">Healthcare Analytics<div class="sb-meta">Stub · ER dataset</div></span>
+                </a>
+            </div>
+        </div>
+
+        <div class="sb-group coming collapsed" id="sbg-2">
+            <button class="sb-group-header" onclick="toggleSbGroup('sbg-2')">
+                <span class="sb-dot"></span>
+                <span>Coming Soon</span>
+                <svg class="sb-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="sb-items">
+                <div class="sb-item"><span class="sb-num">--</span><span class="sb-label">Presentation Slides</span></div>
+                <div class="sb-item"><span class="sb-num">--</span><span class="sb-label">Data Art</span></div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="content">
+
+        <!-- Hero -->
+        <div class="hero">
+            <div class="eyebrow">Northeastern University</div>
+            <h1>Storytelling with <span class="accent">Data</span></h1>
+            <p class="tagline">Learn to present and communicate data-driven insights through storytelling. Hands-on workshops with Tableau, interactive charts, dashboards, and Generative AI-enhanced visualization.</p>
+            <div class="instructor">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Prof. Mohammad Dehghani
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M3 9h18"/></svg></div>
+                <div class="stat-value">3<span class="total">&nbsp;sessions</span></div>
+                <div class="stat-label">Tableau Workshop</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+                <div class="stat-value">24<span class="total">&nbsp;tasks</span></div>
+                <div class="stat-label">Hands-on</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 2 5-7"/></svg></div>
+                <div class="stat-value">6<span class="total">&nbsp;plots</span></div>
+                <div class="stat-label">Dashboards</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
+                <div class="stat-value">3<span class="total">&nbsp;datasets</span></div>
+                <div class="stat-label">Downloads</div>
+            </div>
+        </div>
+
+        <!-- MODULES -->
+        <div class="modules-section">
+            <div class="section-label">Module Outline</div>
+
+            <div class="phase-header tableau">
+                <div class="phase-dot"></div>
+                <span>Tableau Workshop</span>
+                <span class="phase-count">3 sessions · 2 lectures built</span>
+            </div>
+
+            <!-- M1: Lecture 1 -->
+            <div class="mod-row tableau expanded" id="m1">
+                <div class="mod-header" onclick="toggleMod('m1')">
+                    <div class="mod-border tableau"></div>
+                    <span class="mod-num">L1</span>
+                    <span class="mod-title">
+                        Getting Started with Tableau
+                        <span class="mod-sub">Load data, plot types, maps, crosstabs, calculations</span>
+                    </span>
+                    <span class="status-badge complete"><span class="dot"></span>Complete</span>
+                    <div class="mod-chevron"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+                </div>
+                <div class="mod-body">
+                    <div class="mod-body-inner">
+                        <div class="mod-intro">
+                            Your first hands-on session with Tableau. Connect to the <strong>Global Superstore 2016</strong> dataset, learn the difference between dimensions and measures, and build six plots covering seasonality, crosstabs, maps, hierarchies, and trendlines.
+                        </div>
+                        <div class="deck-grid">
+                            <a class="deck-card" href="https://mdehghani86.github.io/tableau-workshop/#m1" target="_blank">
+                                <div class="deck-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M3 9h18"/></svg></div>
+                                <div class="deck-info">
+                                    <div class="deck-title">Lecture 1 — Getting Started</div>
+                                    <div class="deck-meta"><strong>14 tasks</strong> · Global Superstore Orders &amp; Returns, 6 plots, Tableau shelf mockups</div>
+                                    <div class="deck-chips">
+                                        <span class="deck-chip">Load Data</span>
+                                        <span class="deck-chip">Plot Types</span>
+                                        <span class="deck-chip">Maps</span>
+                                        <span class="deck-chip">Crosstab</span>
+                                        <span class="deck-chip">Trendlines</span>
+                                    </div>
+                                </div>
+                                <div class="deck-arrow"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- M2: Lecture 2 -->
+            <div class="mod-row tableau expanded" id="m2">
+                <div class="mod-header" onclick="toggleMod('m2')">
+                    <div class="mod-border tableau"></div>
+                    <span class="mod-num">L2</span>
+                    <span class="mod-title">
+                        Visual Analytics
+                        <span class="mod-sub">Marks, highlights, drill-down, hierarchies, parameters, sets</span>
+                    </span>
+                    <span class="status-badge complete"><span class="dot"></span>Complete</span>
+                    <div class="mod-chevron"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+                </div>
+                <div class="mod-body">
+                    <div class="mod-body-inner">
+                        <div class="mod-intro">
+                            Visual Analytics = gaining insight through interactive visuals. Starting with <strong>Anscombe's Quartet</strong>, you'll work with marks, build views, drill into details, create hierarchies, and use parameters + sets to make filters dynamic.
+                        </div>
+                        <div class="deck-grid">
+                            <a class="deck-card" href="https://mdehghani86.github.io/tableau-workshop/#m2" target="_blank">
+                                <div class="deck-icon"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 2 5-7"/></svg></div>
+                                <div class="deck-info">
+                                    <div class="deck-title">Lecture 2 — Visual Analytics</div>
+                                    <div class="deck-meta"><strong>10 tasks</strong> · Anscombe + 4 Tableau workbooks (.twbx), interactive shelf mockups</div>
+                                    <div class="deck-chips">
+                                        <span class="deck-chip">Marks</span>
+                                        <span class="deck-chip">Highlights</span>
+                                        <span class="deck-chip">Hierarchies</span>
+                                        <span class="deck-chip">Parameters</span>
+                                        <span class="deck-chip">Sets</span>
+                                    </div>
+                                </div>
+                                <div class="deck-arrow"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- M3: Session 3 stub -->
+            <div class="mod-row coming" id="m3">
+                <div class="mod-header" onclick="toggleMod('m3')">
+                    <div class="mod-border coming"></div>
+                    <span class="mod-num">S3</span>
+                    <span class="mod-title">
+                        Healthcare Analytics
+                        <span class="mod-sub">Emergency Department dataset — agenda coming soon</span>
+                    </span>
+                    <span class="status-badge stub"><span class="dot"></span>Stub</span>
+                    <div class="mod-chevron"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+                </div>
+                <div class="mod-body">
+                    <div class="mod-body-inner">
+                        <div class="stub-note">
+                            <strong>Session 3 tasks will be posted here.</strong><br>
+                            Emergency Department dataset available for download from the interactive outline.<br>
+                            <a href="https://mdehghani86.github.io/tableau-workshop/" target="_blank" style="color:var(--accent);font-weight:600">Open Interactive Outline</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- READING MATERIALS -->
+        <div class="modules-section">
+            <div class="section-label">Reading Materials</div>
+            <div class="article-grid">
+                <a class="article-card" href="https://mdehghani86.github.io/tableau-workshop/articles/10_best_practices_for_building_effective_dashboardswp.pdf" target="_blank">
+                    <div class="a-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                    <div>
+                        <div class="a-title">10 Best Practices for Dashboards</div>
+                        <div class="a-meta">Tableau Whitepaper · PDF</div>
+                    </div>
+                </a>
+                <a class="article-card" href="https://mdehghani86.github.io/tableau-workshop/articles/which_chart_or_graph_is_right_for_youwp_1.pdf" target="_blank">
+                    <div class="a-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                    <div>
+                        <div class="a-title">Which Chart or Graph is Right?</div>
+                        <div class="a-meta">Tableau Whitepaper · PDF</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="outline-footer">
+            <div>IE 5374 · Storytelling with Data · Northeastern University</div>
+            <div style="margin-top:6px">Part of <a href="../../index.html">AI²Lab.ai</a> · Maintained by Prof. Mohammad Dehghani · <a href="https://github.com/mdehghani86/tableau-workshop" target="_blank">GitHub</a></div>
+        </div>
+
+    </main>
+</div>
+
+<script>
+function toggleMod(id){
+    const el=document.getElementById(id);
+    if(el)el.classList.toggle('expanded');
+}
+function toggleSbGroup(id){
+    const el=document.getElementById(id);
+    if(el)el.classList.toggle('collapsed');
+}
+function toggleSidebar(){
+    document.getElementById('sidebar').classList.toggle('open');
+}
+function focusMod(id){
+    const el=document.getElementById(id);
+    if(!el)return;
+    el.classList.add('expanded');
+    setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),100);
+    if(window.innerWidth<=980)document.getElementById('sidebar').classList.remove('open');
+    document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('active'));
+}
+document.addEventListener('DOMContentLoaded',()=>{
+    if(window.lucide)lucide.createIcons();
+});
+</script>
+</body>
+</html>
