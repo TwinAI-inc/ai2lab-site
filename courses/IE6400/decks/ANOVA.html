@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analysis of Variance (ANOVA) — IE 6800</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#F0F4FA;--surface:rgba(255,255,255,0.52);--border:rgba(255,255,255,0.7);--text:#111827;--text-m:rgba(17,24,39,0.6);--text-d:rgba(17,24,39,0.38);--pri:#2563EB;--pri-light:#60A5FA;--pri-dark:#1E40AF;--pri-glass:linear-gradient(135deg,rgba(37,99,235,0.12),rgba(96,165,250,0.08));--accent:#1D4ED8;--accent-glass:linear-gradient(135deg,rgba(29,78,216,0.1),rgba(96,165,250,0.06));--teal:#0369A1;--teal-glass:linear-gradient(135deg,rgba(3,105,161,0.1),rgba(125,211,252,0.06));--red:#DC2626;--green:#059669;--green-glass:linear-gradient(135deg,rgba(5,150,105,0.1),rgba(110,231,183,0.06));--amber:#D97706;--amber-glass:linear-gradient(135deg,rgba(217,119,6,0.1),rgba(252,211,77,0.06));--R:24px;--shadow:0 8px 32px rgba(0,0,0,0.07),0 2px 8px rgba(0,0,0,0.03);--shadow-lg:0 20px 60px rgba(0,0,0,0.1),0 4px 16px rgba(0,0,0,0.04)}
+html{scroll-behavior:smooth}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;scroll-snap-type:y mandatory;height:100vh;overflow-y:scroll}
+.slide{width:100vw;height:100vh;scroll-snap-align:start;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;padding:60px 90px 72px}
+.g{background:var(--surface);border:1px solid var(--border);border-radius:var(--R);backdrop-filter:blur(28px) saturate(1.5);-webkit-backdrop-filter:blur(28px) saturate(1.5);padding:32px;box-shadow:var(--shadow);position:relative}
+.g::before{content:'';position:absolute;top:0;left:8%;right:8%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.9),rgba(180,200,255,0.5),transparent);border-radius:1px}
+.g-blue{background:var(--pri-glass)}.g-purple{background:var(--accent-glass)}.g-teal{background:var(--teal-glass)}.g-green{background:var(--green-glass)}.g-amber{background:var(--amber-glass)}.g-red{background:linear-gradient(135deg,rgba(220,38,38,0.1),rgba(248,113,113,0.06))}
+.gx{background:linear-gradient(135deg,var(--pri),var(--pri-dark));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.gx-t{background:linear-gradient(135deg,#38BDF8,#0369A1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.gx-a{background:linear-gradient(135deg,#F59E0B,#D97706);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.gx-g{background:linear-gradient(135deg,#34D399,#059669);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.orb{position:absolute;border-radius:50%;pointer-events:none;animation:fl 20s ease-in-out infinite}
+.orb-b{background:radial-gradient(circle,rgba(96,165,250,0.18) 0%,transparent 70%)}
+.orb-p{background:radial-gradient(circle,rgba(96,165,250,0.15) 0%,transparent 70%)}
+@keyframes fl{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(25px,-35px) scale(1.04)}66%{transform:translate(-20px,20px) scale(0.96)}}
+.nav-dots{position:fixed;right:28px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:6px;z-index:100}
+.nav-dot{width:8px;height:8px;border-radius:50%;background:rgba(17,24,39,0.12);cursor:pointer;transition:all .3s;border:1px solid rgba(255,255,255,0.5);padding:0}
+.nav-dot.active{background:var(--pri);box-shadow:0 0 10px rgba(37,99,235,0.4);transform:scale(1.4)}
+.ft{position:absolute;bottom:20px;left:0;right:0;padding:0 90px;display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--text-d)}
+.ft-n{background:rgba(255,255,255,0.45);backdrop-filter:blur(10px);border:1px solid var(--border);padding:4px 14px;border-radius:20px;font-weight:500}
+.rv{opacity:0;transform:translateY(28px);transition:all .7s cubic-bezier(.22,1,.36,1)}.rv.vis{opacity:1;transform:translateY(0)}
+.d1{transition-delay:.15s}.d2{transition-delay:.3s}.d3{transition-delay:.45s}.d4{transition-delay:.6s}.d5{transition-delay:.75s}
+.step{opacity:0;transform:translateY(20px) scale(.97);transition:all .5s cubic-bezier(.22,1,.36,1);pointer-events:none}.step.shown{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:7px 18px;border-radius:20px;font-size:13px;font-weight:500;background:rgba(255,255,255,0.5);backdrop-filter:blur(12px);border:1px solid var(--border);color:var(--text-m);text-decoration:none;transition:all .3s;cursor:pointer}
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--pri),var(--accent));z-index:200;transition:width .4s ease-out;border-radius:0 2px 2px 0}
+.fs{position:fixed;bottom:24px;right:24px;z-index:100;width:44px;height:44px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,0.4);backdrop-filter:blur(20px);color:var(--pri);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s;box-shadow:var(--shadow)}
+.dm{position:fixed;bottom:24px;right:76px;z-index:100;width:44px;height:44px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,0.4);backdrop-filter:blur(20px);color:var(--pri);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s;box-shadow:var(--shadow)}
+.math-block{padding:16px 24px;border-radius:16px;background:rgba(37,99,235,0.06);border:1px solid rgba(37,99,235,0.12);text-align:center;margin:12px 0}
+/* Hamburger */
+.hm-btn{position:fixed;top:20px;left:20px;z-index:300;width:36px;height:36px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,0.4);backdrop-filter:blur(20px);color:var(--pri);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:all .3s;box-shadow:var(--shadow);padding:0}
+.hm-btn span{display:block;width:16px;height:2px;background:var(--pri);border-radius:2px;transition:all .3s}
+.hm-btn.open span:nth-child(1){transform:rotate(45deg) translate(2px,2px)}.hm-btn.open span:nth-child(2){opacity:0}.hm-btn.open span:nth-child(3){transform:rotate(-45deg) translate(3px,-3px)}
+.hm-panel{position:fixed;top:0;left:-240px;width:220px;height:100vh;z-index:250;background:var(--surface);backdrop-filter:blur(28px) saturate(1.5);border-right:1px solid var(--border);box-shadow:var(--shadow-lg);transition:left .35s cubic-bezier(.22,1,.36,1);overflow-y:auto;padding:56px 8px 20px}
+.hm-panel.open{left:0}
+.hm-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;font-size:12px;font-weight:500;color:var(--text-m);cursor:pointer;transition:all .2s;border:none;background:none;width:100%;text-align:left;font-family:'Outfit',sans-serif}
+.hm-item:hover{background:rgba(37,99,235,0.06);color:var(--text)}
+.hm-item.active{background:rgba(37,99,235,0.1);color:var(--pri);font-weight:600}
+.hm-item .hm-num{font-size:10px;font-weight:700;color:var(--text-d);min-width:16px;text-align:right}
+.hm-section{margin-top:10px;margin-bottom:2px}
+.hm-section:first-child{margin-top:4px}
+.hm-section-header{display:flex;align-items:center;gap:6px;padding:6px 10px;font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-d);cursor:pointer;border-radius:6px;transition:all .2s;user-select:none}
+.hm-section-header:hover{background:rgba(37,99,235,0.04);color:var(--pri)}
+.hm-section-header .hm-arrow{font-size:8px;transition:transform .25s;color:var(--text-d);margin-right:2px}
+.hm-section.collapsed .hm-arrow{transform:rotate(-90deg)}
+.hm-section.collapsed .hm-section-items{display:none}
+.hm-section-items{padding-left:8px;border-left:1.5px solid rgba(37,99,235,0.1);margin-left:8px}
+.hm-section .hm-item{padding:5px 8px !important;font-size:11px}
+/* Modern card upgrades */
+.g{box-shadow:var(--shadow),0 1px 0 rgba(255,255,255,0.5) inset !important}
+.g:hover{transform:translateY(-1px);transition:transform .25s ease}
+button:focus-visible,a:focus-visible{outline:2px solid var(--pri);outline-offset:3px;border-radius:8px}
+/* ANOVA Table styling */
+.anova-table{width:100%;border-collapse:separate;border-spacing:0;font-size:15px;font-family:'Outfit',sans-serif;border-radius:16px;overflow:hidden}
+.anova-table th{background:linear-gradient(135deg,#1E40AF,#1D4ED8);color:#fff;font-weight:700;padding:14px 18px;text-align:center;font-size:14px;letter-spacing:.5px}
+.anova-table td{padding:14px 18px;text-align:center;background:#fff;color:#0F172A;font-size:15px;font-weight:500;border-bottom:1px solid rgba(37,99,235,0.08)}
+.anova-table tr.row-between td{background:rgba(37,99,235,0.06)}
+.anova-table tr.row-within td{background:rgba(3,105,161,0.06)}
+.anova-table tr.row-total td{background:rgba(217,119,6,0.06);font-weight:700}
+.anova-table td:first-child{font-weight:700;text-align:left}
+/* Data table */
+.data-table{width:100%;border-collapse:separate;border-spacing:0;font-size:15px;border-radius:14px;overflow:hidden}
+.data-table th{background:linear-gradient(135deg,#1E40AF,#1D4ED8);color:#fff;font-weight:700;padding:12px 16px;text-align:center;font-size:13px;letter-spacing:.5px}
+.data-table td{padding:10px 16px;text-align:center;background:#fff;border-bottom:1px solid rgba(37,99,235,0.06);font-variant-numeric:tabular-nums}
+.data-table tr:nth-child(even) td{background:#F8FAFC}
+/* Assumption icons */
+.assume-icon{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}
+/* Interactive F-distribution canvas */
+.f-canvas{width:100%;border-radius:12px;display:block;background:rgba(37,99,235,0.02);border:1px solid rgba(37,99,235,0.08)}
+/* Dark mode */
+body.dark{--bg:#0F1117;--surface:rgba(30,33,45,0.72);--border:rgba(255,255,255,0.1);--text:#E5E7EB;--text-m:rgba(229,231,235,0.65);--text-d:rgba(229,231,235,0.35);--shadow:0 8px 32px rgba(0,0,0,0.3)}
+body.dark .g::before{background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),rgba(180,200,255,0.06),transparent)}
+body.dark .chip{background:rgba(30,33,45,0.5);border-color:rgba(255,255,255,0.1);color:#93C5FD}
+body.dark .dm,.dark .fs,.dark .hm-btn{background:rgba(30,33,45,0.6);color:#93C5FD}
+body.dark .hm-btn span{background:#93C5FD}
+body.dark .hm-panel{background:rgba(15,17,23,0.95);border-color:rgba(255,255,255,0.08)}
+body.dark .ft-n{background:rgba(30,33,45,0.6);border-color:rgba(255,255,255,0.08)}
+body.dark .anova-table th{background:linear-gradient(135deg,#1E3A5F,#1D4ED8)}
+body.dark .anova-table td{background:#1E293B;color:#F1F5F9;border-bottom-color:rgba(255,255,255,0.06)}
+body.dark .anova-table tr.row-between td{background:rgba(37,99,235,0.12)}
+body.dark .anova-table tr.row-within td{background:rgba(3,105,161,0.12)}
+body.dark .anova-table tr.row-total td{background:rgba(217,119,6,0.12)}
+body.dark .data-table td{background:#1E293B;color:#F1F5F9}
+body.dark .data-table tr:nth-child(even) td{background:#0F172A}
+@media print{body{scroll-snap-type:none!important;overflow:visible!important;height:auto!important;background:#fff!important}.slide{height:auto!important;scroll-snap-align:none!important;page-break-after:always;padding:40px 60px!important;display:flex!important;flex-direction:column!important}.nav-dots,.fs,.dm,.progress-bar,.hm-btn,.hm-panel{display:none!important}.rv,.step{opacity:1!important;transform:none!important}.orb{display:none!important}.g{backdrop-filter:none!important;background:rgba(240,244,250,0.5)!important;border:1px solid #ddd!important;box-shadow:none!important}.g::before{display:none!important}@page{margin:0.5in;size:landscape}}
+@media(max-width:900px){.slide{padding:30px 24px}.ft{padding:0 24px}.nav-dots{right:12px}}
+</style>
+</head>
+<body>
+<div class="progress-bar" id="progressBar" style="width:0%"></div>
+<nav class="nav-dots" id="navDots"></nav>
+<button class="fs" onclick="toggleFullscreen()" title="Fullscreen"><i data-lucide="maximize" style="width:20px;height:20px"></i></button>
+<button class="dm" onclick="toggleDark()" title="Dark mode"><i data-lucide="moon" style="width:20px;height:20px" id="dmIcon"></i></button>
+<button class="hm-btn" id="hmBtn" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+<div class="hm-panel" id="hmPanel"></div>
+
+<!-- ━━━ SLIDE 1 — COVER ━━━ -->
+<div class="slide" data-slide="1" style="justify-content:center;align-items:center;text-align:center">
+    <div class="orb orb-b" style="width:600px;height:600px;top:-150px;right:-120px;animation-delay:-3s"></div>
+    <div class="orb orb-p" style="width:450px;height:450px;bottom:-100px;left:-80px;animation-delay:-10s"></div>
+    <div class="orb orb-b" style="width:350px;height:350px;top:50%;left:50%;transform:translate(-50%,-50%);animation-delay:-7s;opacity:0.5"></div>
+
+    <div class="chip rv" style="margin-bottom:24px"><i data-lucide="bar-chart-3" style="width:14px;height:14px"></i> IE 6800 &middot; Foundations of Data Analytics</div>
+    <h1 style="font-size:72px;font-weight:800;line-height:1.05;margin-bottom:12px" class="rv d1">Analysis of<br><span class="gx">Variance</span></h1>
+    <p style="font-size:36px;font-weight:300;color:var(--pri);letter-spacing:8px;margin-bottom:32px" class="rv d2">ANOVA</p>
+    <p style="font-size:18px;color:var(--text-m);max-width:500px;line-height:1.6" class="rv d3">Comparing means across multiple groups<br>with a single, powerful test</p>
+
+    <div class="g rv d4" style="display:inline-flex;align-items:center;gap:14px;padding:14px 28px;margin-top:36px">
+        <div style="width:44px;height:44px;border-radius:14px;background:var(--pri-glass);display:flex;align-items:center;justify-content:center"><i data-lucide="user" style="width:20px;height:20px;color:var(--pri)"></i></div>
+        <div style="text-align:left">
+            <div style="font-size:16px;font-weight:700">Prof. Mohammad Dehghani</div>
+            <div style="font-size:13px;color:var(--text-d)">Northeastern University</div>
+        </div>
+    </div>
+
+    <div class="ft"><span class="ft-n">1 / 10</span><span>IE 6800: Foundations of Data Analytics</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ SLIDE 2 — WHY ANOVA? ━━━ -->
+<div class="slide" data-slide="2">
+    <div class="orb orb-b" style="width:400px;height:400px;top:-80px;right:-60px;animation-delay:-5s"></div>
+    <div style="font-size:15px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--pri);margin-bottom:8px" class="rv">THE PROBLEM</div>
+    <h2 style="font-size:48px;font-weight:800;margin-bottom:28px" class="rv d1">Why <span class="gx">ANOVA</span>?</h2>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:1100px">
+        <div class="g g-blue rv d2" style="padding:28px">
+            <div style="font-size:13px;font-weight:700;letter-spacing:2px;color:var(--pri);margin-bottom:12px">THE SCENARIO</div>
+            <p style="font-size:16px;line-height:1.7;color:var(--text-m)">You have <strong style="color:var(--text)">3 or more groups</strong> and want to know if their means differ significantly.</p>
+            <p style="font-size:15px;line-height:1.7;color:var(--text-m);margin-top:12px">For example: Do three machines produce different output rates? Do four teaching methods yield different test scores?</p>
+        </div>
+
+        <div class="g g-red rv d3" style="padding:28px">
+            <div style="font-size:13px;font-weight:700;letter-spacing:2px;color:var(--red);margin-bottom:12px">WHY NOT MULTIPLE T-TESTS?</div>
+            <p style="font-size:16px;line-height:1.7;color:var(--text-m)">With 3 groups, you need <strong style="color:var(--text)">3 pairwise t-tests</strong>. Each at $\alpha = 0.05$ inflates your overall error rate:</p>
+            <div class="math-block" style="margin-top:14px">
+                $$\alpha_{\text{overall}} = 1 - (1 - \alpha)^k$$
+            </div>
+            <p style="font-size:15px;color:var(--text-m);margin-top:10px">For $k=3$ comparisons:</p>
+            <div class="math-block">
+                $$\alpha_{\text{overall}} = 1 - (0.95)^3 \approx 0.143$$
+            </div>
+        </div>
+    </div>
+
+    <div class="g g-amber step" style="max-width:1100px;margin-top:20px;padding:20px 28px;display:flex;align-items:center;gap:16px">
+        <div style="font-size:32px">&#9888;</div>
+        <div>
+            <div style="font-size:14px;font-weight:700;color:var(--amber)">TYPE I ERROR INFLATION</div>
+            <p style="font-size:15px;color:var(--text-m)">Instead of a 5% chance of a false positive, you now have a <strong style="color:var(--red)">14.3% chance</strong>. With 10 groups and 45 comparisons, it jumps to <strong style="color:var(--red)">~90%</strong>! ANOVA solves this with a single, unified test.</p>
+        </div>
+    </div>
+
+    <div class="ft"><span class="ft-n">2 / 10</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ SLIDE 3 — THE ANOVA IDEA ━━━ -->
+<div class="slide" data-slide="3">
+    <div class="orb orb-p" style="width:400px;height:400px;bottom:-80px;left:-60px;animation-delay:-8s"></div>
+    <div style="font-size:15px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--pri);margin-bottom:8px" class="rv">CORE CONCEPT</div>
+    <h2 style="font-size:48px;font-weight:800;margin-bottom:24px" class="rv d1">The ANOVA <span class="gx">Idea</span></h2>
+
+    <div class="g rv d2" style="max-width:900px;padding:28px;margin-bottom:24px">
+        <p style="font-size:18px;font-weight:600;color:var(--text);margin-bottom:12px;text-align:center">Total Variation = Between-Group Variation + Within-Group Variation</p>
+        <div class="math-block" style="font-size:20px">
+            $$SS_T = SS_B + SS_W$$
+        </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;max-width:1100px">
+        <div class="g g-amber rv d3" style="padding:24px;text-align:center">
+            <div style="font-size:36px;margin-bottom:8px">&#128200;</div>
+            <div style="font-size:14px;font-weight:700;letter-spacing:1.5px;color:var(--amber);margin-bottom:8px">SS<sub>T</sub> (TOTAL)</div>
+            <p style="font-size:14px;color:var(--text-m);line-height:1.6">How much do <em>all</em> observations vary from the grand mean?</p>
+            <div class="math-block" style="font-size:14px;margin-top:12px">$$SS_T = \sum_{i}\sum_{j}(x_{ij} - \bar{x}_{\cdot\cdot})^2$$</div>
+        </div>
+        <div class="g g-blue rv d4" style="padding:24px;text-align:center">
+            <div style="font-size:36px;margin-bottom:8px">&#8596;</div>
+            <div style="font-size:14px;font-weight:700;letter-spacing:1.5px;color:var(--pri);margin-bottom:8px">SS<sub>B</sub> (BETWEEN)</div>
+            <p style="font-size:14px;color:var(--text-m);line-height:1.6">How much do <em>group means</em> vary from the grand mean?</p>
+            <div class="math-block" style="font-size:14px;margin-top:12px">$$SS_B = \sum_{i} n_i(\bar{x}_{i\cdot} - \bar{x}_{\cdot\cdot})^2$$</div>
+        </div>
+        <div class="g g-teal rv d5" style="padding:24px;text-align:center">
+            <div style="font-size:36px;margin-bottom:8px">&#8693;</div>
+            <div style="font-size:14px;font-weight:700;letter-spacing:1.5px;color:var(--teal);margin-bottom:8px">SS<sub>W</sub> (WITHIN)</div>
+            <p style="font-size:14px;color:var(--text-m);line-height:1.6">How much do observations vary <em>within</em> each group?</p>
+            <div class="math-block" style="font-size:14px;margin-top:12px">$$SS_W = \sum_{i}\sum_{j}(x_{ij} - \bar{x}_{i\cdot})^2$$</div>
+        </div>
+    </div>
+
+    <div class="g g-green step" style="max-width:1100px;margin-top:20px;padding:18px 24px;display:flex;align-items:center;gap:14px">
+        <div style="font-size:28px">&#128161;</div>
+        <p style="font-size:15px;color:var(--text-m)"><strong style="color:var(--green)">Key insight:</strong> If the between-group spread is <em>much larger</em> than the within-group spread, the groups are likely different.</p>
+    </div>
+
+    <div class="ft"><span class="ft-n">3 / 10</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ SLIDE 4 — THE F-STATISTIC ━━━ -->
+<div class="slide" data-slide="4">
+    <div class="orb orb-b" style="width:500px;height:500px;top:-100px;left:-100px;animation-delay:-4s"></div>
+    <div style="font-size:15px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--pri);margin-bottom:8px" class="rv">THE TEST STATISTIC</div>
+    <h2 style="font-size:48px;font-weight:800;margin-bottom:28px" class="rv d1">The <span class="gx">F-Statistic</span></h2>
+
+    <div style="display:grid;grid-template-columns:1.2fr 0.8fr;gap:28px;max-width:1100px">
+        <div>
+            <div class="g g-blue rv d2" style="padding:32px;margin-bottom:20px">
+                <div style="font-size:13px;font-weight:700;letter-spacing:2px;color:var(--pri);margin-bottom:14px">FORMULA</div>
+                <div class="math-block" style="font-size:22px;padding:24px">
+                    $$F = \frac{MS_B}{MS_W} = \frac{SS_B \;/\; (k-1)}{SS_W \;/\; (N-k)}$$
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px">
+                    <div style="font-size:14px;color:var(--text-m)"><strong style="color:var(--pri)">$k$</strong> = number of groups</div>
+                    <div style="font-size:14px;color:var(--text-m)"><strong style="color:var(--pri)">$N$</strong> = total observations</div>
+                    <div style="font-size:14px;color:var(--text-m)"><strong style="color:var(--pri)">$MS_B$</strong> = mean square between</div>
+                    <div style="font-size:14px;color:var(--text-m)"><strong style="color:var(--pri)">$MS_W$</strong> = mean square within</div>
+                </div>
+            </div>
+
+            <div class="g step" style="padding:20px 24px;display:flex;align-items:center;gap:14px">
+                <div style="font-size:28px">&#128218;</div>
+                <p style="font-size:15px;color:var(--text-m)">Under $H_0$, $F$ follows the <strong style="color:var(--pri)">F-distribution</strong> with $(k{-}1,\; N{-}k)$ degrees of freedom.</p>
+            </div>
+        </div>
+
+        <div>
+            <div class="g g-green rv d3" style="padding:24px;margin-bottom:16px">
+                <div style="font-size:13px;font-weight:700;letter-spacing:2px;color:var(--green);margin-bottom:10px">KEY PROPERTIES</div>
+                <ul style="list-style:none;font-size:15px;color:var(--text-m);line-height:2">
+                    <li style="display:flex;align-items:center;gap:8px"><span style="color:var(--green);font-weight:700">&#10003;</span> $F \geq 0$ always</li>
+                    <li style="display:flex;align-items:center;gap:8px"><span style="color:var(--green);font-weight:700">&#10003;</span> Right-skewed distribution</li>
+                    <li style="display:flex;align-items:center;gap:8px"><span style="color:var(--green);font-weight:700">&#10003;</span> Large $F$ = evidence of difference</li>
+                    <li style="display:flex;align-items:center;gap:8px"><span style="color:var(--green);font-weight:700">&#10003;</span> $F \approx 1$ under $H_0$</li>
+                </ul>
+            </div>
+            <div class="g g-amber step" style="padding:20px 24px">
+                <div style="font-size:13px;font-weight:700;letter-spacing:2px;color:var(--amber);margin-bottom:8px">DECISION RULE</div>
+                <p style="font-size:15px;color:var(--text-m)">Reject $H_0$ if $F > F_{\alpha,\;k-1,\;N-k}$</p>
+                <p style="font-size:13px;color:var(--text-d);margin-top:8px">Or equivalently: reject if p-value $< \alpha$</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="ft"><span class="ft-n">4 / 10</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ SLIDE 5 — ANOVA TABLE ━━━ -->
+<div class="slide" data-slide="5">
+    <div class="orb orb-p" style="width:350px;height:350px;top:-60px;right:-40px;animation-delay:-6s"></div>
+    <div style="font-size:15px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--pri);margin-bottom:8px" class="rv">THE CLASSIC FORMAT</div>
+    <h2 style="font-size:48px;font-weight:800;margin-bottom:28px" class="rv d1">ANOVA <span class="gx">Table</span></h2>
+
+    <div class="g rv d2" style="max-width:1000px;padding:32px;overflow:hidden">
+        <table class="anova-table">
+            <thead>
+                <tr>
+                    <th style="text-align:left;border-radius:12px 0 0 0">Source</th>
+                    <th>Sum of Squares</th>
+                    <th>df</th>
+                    <th>Mean Square</th>
+                    <th style="border-radius:0 12px 0 0">F</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="row-between">
+                    <td><span style="color:var(--pri)">&#9632;</span> Between Groups</td>
+                    <td>$SS_B$</td>
+                    <td>$k - 1$</td>
+                    <td>$MS_B = \dfrac{SS_B}{k-1}$</td>
+                    <td style="font-weight:700;color:var(--pri)">$\dfrac{MS_B}{MS_W}$</td>
+                </tr>
+                <tr class="row-within">
+                    <td><span style="color:var(--teal)">&#9632;</span> Within Groups</td>
+                    <td>$SS_W$</td>
+                    <td>$N - k$</td>
+                    <td>$MS_W = \dfrac{SS_W}{N-k}$</td>
+                    <td></td>
+                </tr>
+                <tr class="row-total">
+                    <td><span style="color:var(--amber)">&#9632;</span> Total</td>
+                    <td>$SS_T$</td>
+                    <td>$N - 1$</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;max-width:1000px;margin-top:20px">
+        <div class="g g-blue step" style="padding:16px 20px;text-align:center">
+            <div style="font-size:12px;font-weight:700;letter-spacing:1.5px;color:var(--pri);margin-bottom:4px">BETWEEN</div>
+            <p style="font-size:13px;color:var(--text-m)">Variation <em>explained</em> by the grouping factor</p>
+        </div>
+        <div class="g g-teal step" style="padding:16px 20px;text-align:center">
+            <div style="font-size:12px;font-weight:700;letter-spacing:1.5px;color:var(--teal);margin-bottom:4px">WITHIN</div>
+            <p style="font-size:13px;color:var(--text-m)">Random variation <em>within</em> each group (noise)</p>
+        </div>
+        <div class="g g-amber step" style="padding:16px 20px;text-align:center">
+            <div style="font-size:12px;font-weight:700;letter-spacing:1.5px;color:var(--amber);margin-bottom:4px">TOTAL</div>
+            <p style="font-size:13px;color:var(--text-m)">$SS_T = SS_B + SS_W$, always</p>
+        </div>
+    </div>
+
+    <div class="ft"><span class="ft-n">5 / 10</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ SLIDE 6 — ASSUMPTIONS ━━━ -->
+<div class="slide" data-slide="6">
+    <div class="orb orb-b" style="width:400px;height:400px;bottom:-100px;right:-80px;animation-delay:-9s"></div>
+    <div style="font-size:15px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--pri);margin-bottom:8px" class="rv">BEFORE YOU TEST</div>
+    <h2 style="font-size:48px;font-weight:800;margin-bottom:32px" class="rv d1">ANOVA <span class="gx">Assumptions</span></h2>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;max-width:1100px">
+        <div class="g g-blue rv d2" style="padding:28px">
+            <div class="assume-icon" style="background:var(--pri-glass);margin-bottom:14px">
+                <i data-lucide="shuffle" style="width:28px;height:28px;color:var(--pri)"></i>
+            </div>
+            <div style="font-size:18px;font-weight:700;margin-bottom:8px">Independence</div>
+            <p style="font-size:14px;color:var(--text-m);line-height:1.7">Observations within and across groups are <strong style="color:var(--text)">independent</strong> of each other.</p>
+            <div class="step" style="margin-top:14px;padding:10px 14px;border-radius:10px;background:rgba(37,99,235,0.06)">
+                <p style="font-size:12px;color:var(--text-d)"><strong>If violated:</strong> Use repeated measures ANOVA or mixed-effects models.</p>
+            </div>
+        </div>
+
+        <div class="g g-green rv d3" style="padding:28px">
+            <div class="assume-icon" style="background:var(--green-glass);margin-bottom:14px">
+                <i data-lucide="activity" style="width:28px;height:28px;color:var(--green)"></i>
+            </div>
+            <div style="font-size:18px;font-weight:700;margin-bottom:8px">Normality</div>
+            <p style="font-size:14px;color:var(--text-m);line-height:1.7">Each group's data is <strong style="color:var(--text)">approximately normally</strong> distributed.</p>
+            <div class="step" style="margin-top:14px;padding:10px 14px;border-radius:10px;background:rgba(5,150,105,0.06)">
+                <p style="font-size:12px;color:var(--text-d)"><strong>If violated:</strong> Use Kruskal-Wallis test (non-parametric alternative).</p>
+            </div>
+        </div>
+
+        <div class="g g-amber rv d4" style="padding:28px">
+            <div class="assume-icon" style="background:var(--amber-glass);margin-bottom:14px">
+                <i data-lucide="equal" style="width:28px;height:28px;color:var(--amber)"></i>
+            </div>
+            <div style="font-size:18px;font-weight:700;margin-bottom:8px">Equal Variance</div>
+            <p style="font-size:14px;color:var(--text-m);line-height:1.7">All groups have <strong style="color:var(--text)">similar variance</strong> $\sigma^2$ (homoscedasticity).</p>
+            <div class="step" style="margin-top:14px;padding:10px 14px;border-radius:10px;background:rgba(217,119,6,0.06)">
+                <p style="font-size:12px;color:var(--text-d)"><strong>If violated:</strong> Use Welch's ANOVA or transform data.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="g step" style="max-width:1100px;margin-top:20px;padding:16px 24px;display:flex;align-items:center;gap:12px">
+        <div style="font-size:24px">&#128270;</div>
+        <p style="font-size:14px;color:var(--text-m)"><strong style="color:var(--pri)">Pro tip:</strong> ANOVA is <em>robust</em> to mild violations of normality (especially with balanced group sizes). Check with Levene's test for equal variance and Shapiro-Wilk for normality.</p>
+    </div>
+
+    <div class="ft"><span class="ft-n">6 / 10</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ SLIDE 7 — EXAMPLE SETUP ━━━ -->
+<div class="slide" data-slide="7">
+    <div class="orb orb-p" style="width:400px;height:400px;top:-80px;left:-60px;animation-delay:-12s"></div>
+    <div style="font-size:15px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--teal);margin-bottom:8px" class="rv">WORKED EXAMPLE</div>
+    <h2 style="font-size:44px;font-weight:800;margin-bottom:24px" class="rv d1">Manufacturing <span class="gx-t">Output</span></h2>
+
+    <div style="display:grid;grid-template-columns:1.1fr 0.9fr;gap:28px;max-width:1100px">
+        <div>
+            <div class="g g-teal rv d2" style="padding:28px;margin-bottom:20px">
+                <div style="font-size:13px;font-weight:700;letter-spacing:2px;color:var(--teal);margin-bottom:12px">SCENARIO</div>
+                <p style="font-size:16px;line-height:1.7;color:var(--text-m)">A factory has <strong style="color:var(--text)">three machines</strong> (A, B, C) producing widgets. We sample <strong style="color:var(--text)">5 observations</strong> from each machine (output per hour) and want to know if performance differs.</p>
+            </div>
+
+            <div class="g step" style="padding:20px 24px;display:flex;align-items:center;gap:14px">
+                <div style="font-size:28px">&#10068;</div>
+                <div>
+                    <div style="font-size:14px;font-weight:700;color:var(--pri);margin-bottom:4px">QUESTION</div>
+                    <p style="font-size:15px;color:var(--text-m)">At $\alpha = 0.05$, is there a significant difference in output between machines?</p>
+                </div>
+            </div>
+
+            <div class="g g-blue step" style="padding:16px 20px;margin-top:16px">
+                <div style="font-size:12px;font-weight:700;letter-spacing:2px;color:var(--pri);margin-bottom:6px">HYPOTHESES</div>
+                <p style="font-size:14px;color:var(--text-m)">$H_0$: $\mu_A = \mu_B = \mu_C$ (all means equal)</p>
+                <p style="font-size:14px;color:var(--text-m);margin-top:4px">$H_1$: At least one $\mu_i$ is different</p>
+            </div>
+        </div>
+
+        <div class="g rv d3" style="padding:28px">
+            <div style="font-size:13px;font-weight:700;letter-spacing:2px;color:var(--pri);margin-bottom:16px">DATA</div>
+            <table class="data-table" style="margin-bottom:16px">
+                <thead>
+                    <tr>
+                        <th>Machine A</th>
+                        <th>Machine B</th>
+                        <th>Machine C</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>23</td><td>30</td><td>25</td></tr>
+                    <tr><td>25</td><td>28</td><td>26</td></tr>
+                    <tr><td>27</td><td>32</td><td>24</td></tr>
+                    <tr><td>22</td><td>29</td><td>27</td></tr>
+                    <tr><td>24</td><td>31</td><td>23</td></tr>
+                </tbody>
+            </table>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+                <div style="text-align:center;padding:10px;border-radius:10px;background:var(--pri-glass)">
+                    <div style="font-size:11px;color:var(--text-d);font-weight:600">Mean A</div>
+                    <div style="font-size:20px;font-weight:800;color:var(--pri)">24.2</div>
+                </div>
+                <div style="text-align:center;padding:10px;border-radius:10px;background:var(--teal-glass)">
+                    <div style="font-size:11px;color:var(--text-d);font-weight:600">Mean B</div>
+                    <div style="font-size:20px;font-weight:800;color:var(--teal)">30.0</div>
+                </div>
+                <div style="text-align:center;padding:10px;border-radius:10px;background:var(--green-glass)">
+                    <div style="font-size:11px;color:var(--text-d);font-weight:600">Mean C</div>
+                    <div style="font-size:20px;font-weight:800;color:var(--green)">25.0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ft"><span class="ft-n">7 / 10</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ SLIDE 8 — EXAMPLE SOLUTION ━━━ -->
+<div class="slide" data-slide="8">
+    <div class="orb orb-b" style="width:450px;height:450px;bottom:-100px;right:-80px;animation-delay:-3s"></div>
+    <div style="font-size:15px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--teal);margin-bottom:8px" class="rv">STEP BY STEP</div>
+    <h2 style="font-size:40px;font-weight:800;margin-bottom:20px" class="rv d1">Example <span class="gx-t">Solution</span></h2>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:1100px">
+        <!-- Left column: Steps -->
+        <div>
+            <div class="g g-blue rv d2" style="padding:20px 24px;margin-bottom:14px">
+                <div style="font-size:11px;font-weight:800;letter-spacing:2px;color:var(--pri);margin-bottom:8px">STEP 1 &mdash; GROUP MEANS</div>
+                <div style="font-size:14px;color:var(--text-m);line-height:1.8">
+                    $\bar{x}_A = 24.2$, &ensp; $\bar{x}_B = 30.0$, &ensp; $\bar{x}_C = 25.0$<br>
+                    <strong style="color:var(--text)">Grand mean:</strong> $\bar{x}_{\cdot\cdot} = \frac{24.2 + 30.0 + 25.0}{3} = 26.4$
+                </div>
+            </div>
+
+            <div class="g g-teal step" style="padding:20px 24px;margin-bottom:14px">
+                <div style="font-size:11px;font-weight:800;letter-spacing:2px;color:var(--teal);margin-bottom:8px">STEP 2 &mdash; SUM OF SQUARES</div>
+                <div style="font-size:13px;color:var(--text-m);line-height:1.9">
+                    $SS_B = 5(24.2{-}26.4)^2 + 5(30.0{-}26.4)^2 + 5(25.0{-}26.4)^2$<br>
+                    $\phantom{SS_B} = 5(4.84) + 5(12.96) + 5(1.96) = \mathbf{98.8}$<br><br>
+                    $SS_W = \sum\text{(within-group deviations}^2\text{)}= \mathbf{27.6}$<br><br>
+                    $SS_T = 98.8 + 27.6 = \mathbf{126.4}$
+                </div>
+            </div>
+        </div>
+
+        <!-- Right column: Table + Result -->
+        <div>
+            <div class="g rv d3" style="padding:20px 24px;margin-bottom:14px">
+                <div style="font-size:11px;font-weight:800;letter-spacing:2px;color:var(--pri);margin-bottom:10px">STEP 3 &mdash; ANOVA TABLE</div>
+                <table class="anova-table" style="font-size:13px">
+                    <thead>
+                        <tr><th style="text-align:left;font-size:11px">Source</th><th style="font-size:11px">SS</th><th style="font-size:11px">df</th><th style="font-size:11px">MS</th><th style="font-size:11px">F</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr class="row-between"><td>Between</td><td>98.8</td><td>2</td><td>49.4</td><td style="font-weight:800;color:var(--pri)">21.48</td></tr>
+                        <tr class="row-within"><td>Within</td><td>27.6</td><td>12</td><td>2.3</td><td></td></tr>
+                        <tr class="row-total"><td>Total</td><td>126.4</td><td>14</td><td></td><td></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="g g-green step" style="padding:20px 24px;margin-bottom:14px">
+                <div style="font-size:11px;font-weight:800;letter-spacing:2px;color:var(--green);margin-bottom:8px">STEP 4 &mdash; DECISION</div>
+                <div style="font-size:14px;color:var(--text-m);line-height:1.8">
+                    $F = \frac{49.4}{2.3} = \mathbf{21.48}$<br>
+                    $F_{\text{critical}}(2, 12) \text{ at } \alpha=0.05 = \mathbf{3.89}$<br><br>
+                    <span style="font-size:16px;font-weight:700;color:var(--green)">$21.48 > 3.89$ &rarr; Reject $H_0$</span>
+                </div>
+            </div>
+
+            <div class="g step" style="padding:16px 20px;background:linear-gradient(135deg,rgba(5,150,105,0.12),rgba(110,231,183,0.06));border:1.5px solid rgba(5,150,105,0.25)">
+                <p style="font-size:15px;font-weight:600;color:var(--green);text-align:center">&#10004; There IS a significant difference between machines.</p>
+                <p style="font-size:12px;color:var(--text-d);text-align:center;margin-top:4px">But which ones? We need post-hoc tests...</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="ft"><span class="ft-n">8 / 10</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ SLIDE 9 — POST-HOC TESTS ━━━ -->
+<div class="slide" data-slide="9">
+    <div class="orb orb-p" style="width:400px;height:400px;top:-80px;right:-60px;animation-delay:-7s"></div>
+    <div style="font-size:15px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--amber);margin-bottom:8px" class="rv">AFTER ANOVA</div>
+    <h2 style="font-size:48px;font-weight:800;margin-bottom:24px" class="rv d1">Post-Hoc: <span class="gx-a">Tukey's HSD</span></h2>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;max-width:1100px">
+        <div>
+            <div class="g g-amber rv d2" style="padding:28px;margin-bottom:16px">
+                <div style="font-size:13px;font-weight:700;letter-spacing:2px;color:var(--amber);margin-bottom:12px">THE PROBLEM</div>
+                <p style="font-size:16px;line-height:1.7;color:var(--text-m)">ANOVA tells you <strong style="color:var(--text)">"at least one mean is different"</strong> but does <em>not</em> tell you <strong style="color:var(--red)">which ones</strong> differ.</p>
+                <p style="font-size:15px;line-height:1.7;color:var(--text-m);margin-top:10px">Tukey's <strong style="color:var(--text)">Honestly Significant Difference</strong> (HSD) compares all pairs while controlling the family-wise error rate.</p>
+            </div>
+
+            <div class="g g-blue step" style="padding:24px">
+                <div style="font-size:13px;font-weight:700;letter-spacing:2px;color:var(--pri);margin-bottom:12px">FORMULA</div>
+                <div class="math-block" style="font-size:18px">
+                    $$HSD = q_{\alpha,\;k,\;N-k} \cdot \sqrt{\frac{MS_W}{n}}$$
+                </div>
+                <p style="font-size:13px;color:var(--text-d);margin-top:8px">$q$ = Studentized Range statistic, $n$ = observations per group</p>
+                <p style="font-size:14px;color:var(--text-m);margin-top:10px"><strong>Rule:</strong> If $|\bar{x}_i - \bar{x}_j| > HSD$, then groups $i$ and $j$ differ significantly.</p>
+            </div>
+        </div>
+
+        <div>
+            <div class="g rv d3" style="padding:28px;margin-bottom:16px">
+                <div style="font-size:13px;font-weight:700;letter-spacing:2px;color:var(--pri);margin-bottom:14px">APPLYING TO OUR EXAMPLE</div>
+                <p style="font-size:14px;color:var(--text-m);margin-bottom:12px">With $q_{0.05,\;3,\;12} \approx 3.77$, $MS_W = 2.3$, $n = 5$:</p>
+                <div class="math-block" style="font-size:16px">
+                    $$HSD = 3.77 \cdot \sqrt{\frac{2.3}{5}} = 3.77 \times 0.678 = 2.56$$
+                </div>
+            </div>
+
+            <div class="g g-green step" style="padding:24px">
+                <div style="font-size:13px;font-weight:700;letter-spacing:2px;color:var(--green);margin-bottom:14px">PAIRWISE COMPARISONS</div>
+                <div style="display:flex;flex-direction:column;gap:10px">
+                    <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;background:rgba(220,38,38,0.06);border:1px solid rgba(220,38,38,0.15)">
+                        <span style="font-size:14px;font-weight:700;color:var(--red)">&#10007;</span>
+                        <span style="font-size:14px;color:var(--text-m)">$|A - B| = |24.2 - 30.0| = 5.8 > 2.56$ &rarr; <strong style="color:var(--red)">Significant</strong></span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;background:rgba(5,150,105,0.06);border:1px solid rgba(5,150,105,0.15)">
+                        <span style="font-size:14px;font-weight:700;color:var(--green)">&#10003;</span>
+                        <span style="font-size:14px;color:var(--text-m)">$|A - C| = |24.2 - 25.0| = 0.8 < 2.56$ &rarr; <strong style="color:var(--green)">Not significant</strong></span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;background:rgba(220,38,38,0.06);border:1px solid rgba(220,38,38,0.15)">
+                        <span style="font-size:14px;font-weight:700;color:var(--red)">&#10007;</span>
+                        <span style="font-size:14px;color:var(--text-m)">$|B - C| = |30.0 - 25.0| = 5.0 > 2.56$ &rarr; <strong style="color:var(--red)">Significant</strong></span>
+                    </div>
+                </div>
+                <p style="font-size:13px;color:var(--text-d);margin-top:12px;text-align:center"><strong>Machine B is significantly faster</strong> than both A and C.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="ft"><span class="ft-n">9 / 10</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ SLIDE 10 — SUMMARY ━━━ -->
+<div class="slide" data-slide="10" style="justify-content:center;align-items:center;text-align:center">
+    <div class="orb orb-b" style="width:500px;height:500px;top:-120px;right:-100px;animation-delay:-5s"></div>
+    <div class="orb orb-p" style="width:400px;height:400px;bottom:-80px;left:-60px;animation-delay:-11s"></div>
+
+    <div style="font-size:15px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--pri);margin-bottom:8px" class="rv">WRAP-UP</div>
+    <h2 style="font-size:52px;font-weight:800;margin-bottom:32px" class="rv d1">Key <span class="gx">Takeaways</span></h2>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;max-width:1100px;margin-bottom:28px">
+        <div class="g g-blue rv d2" style="padding:24px;text-align:center">
+            <div style="font-size:36px;margin-bottom:10px">&#127919;</div>
+            <div style="font-size:15px;font-weight:700;margin-bottom:8px">When to Use</div>
+            <p style="font-size:13px;color:var(--text-m);line-height:1.6">Comparing means of <strong style="color:var(--pri)">3+ groups</strong> with a single continuous outcome variable.</p>
+        </div>
+        <div class="g g-teal rv d3" style="padding:24px;text-align:center">
+            <div style="font-size:36px;margin-bottom:10px">&#9878;</div>
+            <div style="font-size:15px;font-weight:700;margin-bottom:8px">The Logic</div>
+            <p style="font-size:13px;color:var(--text-m);line-height:1.6">Partition total variation into <strong style="color:var(--teal)">between</strong> vs <strong style="color:var(--teal)">within</strong>. Large ratio = significant.</p>
+        </div>
+        <div class="g g-green rv d4" style="padding:24px;text-align:center">
+            <div style="font-size:36px;margin-bottom:10px">&#9989;</div>
+            <div style="font-size:15px;font-weight:700;margin-bottom:8px">The Workflow</div>
+            <p style="font-size:13px;color:var(--text-m);line-height:1.6">Check assumptions &rarr; Run ANOVA &rarr; If significant, do <strong style="color:var(--green)">post-hoc</strong> tests.</p>
+        </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:800px">
+        <div class="g step" style="padding:18px;text-align:center">
+            <div style="font-size:12px;font-weight:700;letter-spacing:2px;color:var(--pri);margin-bottom:8px">F-STATISTIC</div>
+            <div style="font-size:16px;color:var(--text)">$F = \dfrac{MS_B}{MS_W}$</div>
+        </div>
+        <div class="g step" style="padding:18px;text-align:center">
+            <div style="font-size:12px;font-weight:700;letter-spacing:2px;color:var(--amber);margin-bottom:8px">TUKEY'S HSD</div>
+            <div style="font-size:16px;color:var(--text)">$HSD = q \cdot \sqrt{\dfrac{MS_W}{n}}$</div>
+        </div>
+    </div>
+
+    <div class="g step" style="max-width:800px;margin-top:24px;padding:20px 28px;display:flex;align-items:center;gap:16px;background:linear-gradient(135deg,rgba(37,99,235,0.08),rgba(96,165,250,0.04));border:1.5px solid rgba(37,99,235,0.2)">
+        <div style="width:48px;height:48px;border-radius:14px;background:var(--pri-glass);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i data-lucide="user" style="width:22px;height:22px;color:var(--pri)"></i></div>
+        <div style="text-align:left">
+            <div style="font-size:16px;font-weight:700">Prof. Mohammad Dehghani</div>
+            <div style="font-size:13px;color:var(--text-d)">IE 6800: Foundations of Data Analytics &middot; Northeastern University</div>
+        </div>
+    </div>
+
+    <div class="ft"><span class="ft-n">10 / 10</span><span>IE 6800: Foundations of Data Analytics</span><span>Northeastern University</span></div>
+</div>
+
+<script>
+/* Navigation, dots, progress bar */
+const slides=document.querySelectorAll('.slide');
+const navDots=document.getElementById('navDots');
+slides.forEach((s,i)=>{const d=document.createElement('button');d.className='nav-dot';d.addEventListener('click',()=>s.scrollIntoView({behavior:'smooth'}));navDots.appendChild(d)});
+const dots=navDots.querySelectorAll('.nav-dot');
+const pbar=document.getElementById('progressBar');
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const i=Array.from(slides).indexOf(e.target);dots.forEach((d,j)=>d.classList.toggle('active',j===i));e.target.querySelectorAll('.rv').forEach(el=>el.classList.add('vis'));pbar.style.width=((i+1)/slides.length*100)+'%';try{history.replaceState(null,null,'#slide-'+(i+1))}catch(e){};updateMenuActive(i)}})},{threshold:.5});
+slides.forEach(s=>obs.observe(s));
+(function(){const h=location.hash.match(/^#slide-(\d+)$/);if(h){const n=parseInt(h[1])-1;if(slides[n])setTimeout(()=>slides[n].scrollIntoView(),100)}})();
+function gci(){return Array.from(slides).findIndex(s=>{const r=s.getBoundingClientRect();return r.top>=-100&&r.top<window.innerHeight/2})}
+function advS(){const i=gci();if(i<0)return false;const st=slides[i].querySelectorAll('.step:not(.shown)');if(st.length>0){st[0].classList.add('shown');return true}return false}
+document.addEventListener('keydown',e=>{
+    if(e.key==='f'||e.key==='F'){if(!e.target.closest('input,textarea')){e.preventDefault();toggleFullscreen();return}}
+    if(e.key==='d'||e.key==='D'){if(!e.target.closest('input,textarea')){e.preventDefault();toggleDark();return}}
+    const c=gci();
+    if(['ArrowDown','ArrowRight',' ','PageDown'].includes(e.key)){e.preventDefault();if(!advS()){if(c<slides.length-1)slides[c+1].scrollIntoView({behavior:'smooth'})}}
+    if(['ArrowUp','ArrowLeft','Backspace','PageUp'].includes(e.key)){e.preventDefault();if(c>0)slides[c-1].scrollIntoView({behavior:'smooth'})}
+});
+document.addEventListener('click',e=>{if(e.target.closest('a,button,input,.chip,.nav-dot,.fs,.dm,.hm-btn,.hm-panel'))return;advS()});
+function toggleFullscreen(){if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()}
+function toggleDark(){document.body.classList.toggle('dark');const isDark=document.body.classList.contains('dark');localStorage.setItem('anova-dark',isDark?'1':'0');document.getElementById('dmIcon').setAttribute('data-lucide',isDark?'sun':'moon');lucide.createIcons()}
+(function(){if(localStorage.getItem('anova-dark')==='1'){document.body.classList.add('dark');document.getElementById('dmIcon').setAttribute('data-lucide','sun');lucide.createIcons()}})();
+
+/* Hamburger menu */
+const slideMeta=[
+    ['Cover','cover'],
+    ['Why ANOVA?','define'],
+    ['The ANOVA Idea','define'],
+    ['The F-Statistic','define'],
+    ['ANOVA Table','define'],
+    ['Assumptions','define'],
+    ['Example: Setup','example'],
+    ['Example: Solution','example'],
+    ['Post-Hoc: Tukey HSD','define'],
+    ['Summary & Takeaways','closing']
+];
+const slideSections=[
+    {label:'Introduction',range:[0,1]},
+    {label:'Theory',range:[2,5]},
+    {label:'Example',range:[6,8]},
+    {label:'Wrap-Up',range:[9,9]}
+];
+const typeIcons={cover:'&#9632;',story:'&#128214;',define:'&#8505;',example:'&#128295;',game:'&#9889;',compare:'&#9547;',interactive:'&#127760;',challenge:'&#127942;',closing:'&#10004;'};
+const typeColors={cover:'var(--pri)',story:'var(--amber)',define:'var(--pri)',example:'var(--teal)',game:'var(--accent)',compare:'var(--pri)',interactive:'var(--green)',challenge:'var(--red)',closing:'var(--pri)'};
+function buildMenu(){
+    const panel=document.getElementById('hmPanel');
+    let html='';
+    slideSections.forEach((sec,si)=>{
+        const [start,end]=sec.range;
+        html+='<div class="hm-section" data-sec="'+si+'">';
+        html+='<div class="hm-section-header" onclick="toggleSection('+si+')"><span class="hm-arrow">&#9660;</span><span style="flex:1">'+sec.label+'</span><span style="color:var(--text-d);font-weight:700">'+(end-start+1)+'</span></div>';
+        html+='<div class="hm-section-items">';
+        for(let i=start;i<=end;i++){
+            if(!slides[i])continue;
+            const m=slideMeta[i]||['Slide '+(i+1),'define'];
+            const clr=typeColors[m[1]]||'var(--pri)';
+            const icon=typeIcons[m[1]]||'';
+            html+='<button class="hm-item" onclick="goSlide('+i+')" style="gap:6px"><span class="hm-num">'+(i+1)+'</span><span style="color:'+clr+';font-size:11px;flex-shrink:0">'+icon+'</span><span style="flex:1;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+m[0]+'</span></button>';
+        }
+        html+='</div></div>';
+    });
+    panel.innerHTML=html;
+}
+function toggleSection(si){const el=document.querySelector('.hm-section[data-sec="'+si+'"]');if(el)el.classList.toggle('collapsed')}
+function toggleMenu(){document.getElementById('hmBtn').classList.toggle('open');document.getElementById('hmPanel').classList.toggle('open')}
+function goSlide(i){slides[i].scrollIntoView({behavior:'smooth'});toggleMenu()}
+function updateMenuActive(idx){document.querySelectorAll('.hm-item').forEach((el,i)=>{el.classList.toggle('active',i===idx)})}
+buildMenu();
+
+/* KaTeX */
+document.addEventListener('DOMContentLoaded',function(){
+    function tryRender(){if(typeof renderMathInElement!=='undefined')renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})}
+    tryRender();setTimeout(tryRender,1000);setTimeout(tryRender,2000);
+});
+</script>
+</body>
+</html>
