@@ -4145,29 +4145,45 @@
                 </button>
                 <div class="slider-container" id="sliderContainer">
                     <!-- Slide: Google Cambridge AI Showcase -->
-                    <div class="slide" style="min-width:100%;position:relative;height:400px;overflow:hidden;">
-                        <!-- Background image: Google Cambridge building -->
-                        <img src="https://www.reuters.com/resizer/v2/S6EHIBGW2JPUJMOI7BQ5VZSPSE.jpg?auth=7eb9aa21614b9b2b571682fddc47d2f80f118ff1bca7df4bf690b2dde3a4ab19&width=1920&quality=80" alt="Google Cambridge" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;object-position:center;">
-                        <!-- Dark overlay -->
-                        <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,rgba(0,0,0,0.55) 0%,rgba(0,0,0,0.35) 100%);"></div>
+                    <div class="slide" style="min-width:100%;position:relative;height:400px;overflow:hidden;display:flex;">
                         <!-- Google color accent bar top -->
-                        <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#4285F4 25%,#EA4335 25%,#EA4335 50%,#FBBC05 50%,#FBBC05 75%,#34A853 75%);z-index:2;"></div>
+                        <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#4285F4 25%,#EA4335 25%,#EA4335 50%,#FBBC05 50%,#FBBC05 75%,#34A853 75%);z-index:4;"></div>
 
-                        <!-- Title as a chip -->
-                        <div style="position:absolute;top:48px;left:0;right:0;z-index:3;display:flex;justify-content:center;padding:0 40px;">
-                            <div style="background:rgba(255,255,255,0.12);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,0.25);padding:14px 28px;border-radius:40px;">
-                                <h3 style="font-size:22px;font-weight:600;color:white;line-height:1.2;letter-spacing:-0.3px;margin:0;">
-                                    Our Students Present at <span style="background:white;padding:2px 10px;border-radius:8px;font-family:'Google Sans',Arial,sans-serif;font-weight:500;margin:0 2px;display:inline-block;"><span style="color:#4285F4;">G</span><span style="color:#EA4335;">o</span><span style="color:#FBBC05;">o</span><span style="color:#4285F4;">g</span><span style="color:#34A853;">l</span><span style="color:#EA4335;">e</span></span> Cambridge
-                                </h3>
+                        <!-- LEFT: 25% dark text panel -->
+                        <div style="flex:0 0 25%;background:linear-gradient(135deg,#0f1419 0%,#1a2332 100%);padding:40px 28px;display:flex;flex-direction:column;justify-content:center;gap:14px;position:relative;z-index:2;">
+                            <!-- Small star accent -->
+                            <svg viewBox="0 0 24 24" style="width:28px;height:28px;margin-bottom:6px;">
+                                <defs><linearGradient id="starSide" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00d9c0"/><stop offset="100%" stop-color="#007EF8"/></linearGradient></defs>
+                                <path d="M12 1 C11 8, 8 11, 1 12 C8 13, 11 16, 12 23 C13 16, 16 13, 23 12 C16 11, 13 8, 12 1 Z" fill="url(#starSide)"/>
+                            </svg>
+                            <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,0.5);text-transform:uppercase;">AI2Lab Showcase</div>
+                            <h3 style="font-size:22px;font-weight:700;color:white;line-height:1.25;letter-spacing:-0.3px;margin:0;">
+                                Students Present at <span style="background:white;padding:2px 8px;border-radius:6px;font-family:'Google Sans',Arial,sans-serif;font-weight:500;display:inline-block;margin-top:4px;"><span style="color:#4285F4;">G</span><span style="color:#EA4335;">o</span><span style="color:#FBBC05;">o</span><span style="color:#4285F4;">g</span><span style="color:#34A853;">l</span><span style="color:#EA4335;">e</span></span> Cambridge
+                            </h3>
+                            <!-- Stacked info chips -->
+                            <div style="display:flex;flex-direction:column;gap:6px;margin-top:6px;">
+                                <span style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:white;padding:5px 10px;border-radius:16px;font-size:11px;font-weight:500;display:inline-flex;align-items:center;gap:6px;width:fit-content;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="#4285F4" stroke-width="2" style="width:12px;height:12px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                    May 7, 2026
+                                </span>
+                                <span style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:white;padding:5px 10px;border-radius:16px;font-size:11px;font-weight:500;display:inline-flex;align-items:center;gap:6px;width:fit-content;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="#EA4335" stroke-width="2" style="width:12px;height:12px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                    2:00 PM
+                                </span>
+                                <span style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:white;padding:5px 10px;border-radius:16px;font-size:11px;font-weight:500;display:inline-flex;align-items:center;gap:6px;width:fit-content;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="#34A853" stroke-width="2" style="width:12px;height:12px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                    Cambridge, MA
+                                </span>
+                                <span style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:white;padding:5px 10px;border-radius:16px;font-size:11px;font-weight:500;display:inline-flex;align-items:center;gap:6px;width:fit-content;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="#FBBC05" stroke-width="2" style="width:12px;height:12px;"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                                    DADS 5250
+                                </span>
                             </div>
                         </div>
 
-                        <!-- Chips at bottom -->
-                        <div style="position:absolute;bottom:36px;left:0;right:0;z-index:3;display:flex;justify-content:center;gap:12px;flex-wrap:wrap;padding:0 40px;">
-                            <span style="background:rgba(255,255,255,0.15);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2);color:white;padding:8px 18px;border-radius:24px;font-size:13px;font-weight:500;">DADS 5250 — Applied GenAI</span>
-                            <span style="background:rgba(255,255,255,0.15);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2);color:white;padding:8px 18px;border-radius:24px;font-size:13px;font-weight:500;">May 7, 2026</span>
-                            <span style="background:rgba(255,255,255,0.15);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2);color:white;padding:8px 18px;border-radius:24px;font-size:13px;font-weight:500;">2:00 PM</span>
-                            <span style="background:rgba(255,255,255,0.15);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2);color:white;padding:8px 18px;border-radius:24px;font-size:13px;font-weight:500;">Google Cambridge, MA</span>
+                        <!-- RIGHT: 75% Google Cambridge photo -->
+                        <div style="flex:1;position:relative;overflow:hidden;">
+                            <img src="https://www.reuters.com/resizer/v2/S6EHIBGW2JPUJMOI7BQ5VZSPSE.jpg?auth=7eb9aa21614b9b2b571682fddc47d2f80f118ff1bca7df4bf690b2dde3a4ab19&width=1920&quality=80" alt="Google Cambridge" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;object-position:center;">
                         </div>
                     </div>
                     <!-- Slide: New Publication - AIDM Framework -->
