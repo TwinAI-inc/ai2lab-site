@@ -4154,22 +4154,22 @@
                             <div style="flex:1;background:#34A853;"></div>
                         </div>
 
-                        <!-- TOP: Split text/photo -->
-                        <div style="flex:1;display:flex;min-height:0;">
-                            <!-- LEFT: 25% dark text panel -->
-                            <div style="flex:0 0 25%;background:linear-gradient(135deg,#0f1419 0%,#1a2332 100%);padding:32px 28px;display:flex;flex-direction:column;justify-content:center;gap:14px;position:relative;z-index:2;">
-                                <svg viewBox="0 0 24 24" style="width:28px;height:28px;">
-                                    <defs><linearGradient id="starSide" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00d9c0"/><stop offset="100%" stop-color="#007EF8"/></linearGradient></defs>
-                                    <path d="M12 1 C11 8, 8 11, 1 12 C8 13, 11 16, 12 23 C13 16, 16 13, 23 12 C16 11, 13 8, 12 1 Z" fill="url(#starSide)"/>
-                                </svg>
-                                <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,0.5);text-transform:uppercase;">AI2Lab Showcase</div>
-                                <h3 style="font-size:22px;font-weight:700;color:white;line-height:1.25;letter-spacing:-0.3px;margin:0;">
-                                    Students Present at <span style="background:white;padding:2px 8px;border-radius:6px;font-family:'Google Sans',Arial,sans-serif;font-weight:500;display:inline-block;margin-top:4px;"><span style="color:#4285F4;">G</span><span style="color:#EA4335;">o</span><span style="color:#FBBC05;">o</span><span style="color:#4285F4;">g</span><span style="color:#34A853;">l</span><span style="color:#EA4335;">e</span></span> Cambridge
-                                </h3>
-                            </div>
-                            <!-- RIGHT: 75% Google Cambridge photo -->
-                            <div style="flex:1;position:relative;overflow:hidden;">
-                                <img src="assets/images/google_cambridge.jpg" alt="Google Cambridge" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;object-position:center;">
+                        <!-- TOP: Full-width image with title chip overlay -->
+                        <div style="flex:1;position:relative;overflow:hidden;">
+                            <img src="assets/images/google_cambridge.jpg" alt="Google Cambridge" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;object-position:center;">
+                            <!-- Soft gradient overlay at top for title readability -->
+                            <div style="position:absolute;top:0;left:0;right:0;height:40%;background:linear-gradient(to bottom,rgba(0,0,0,0.35),transparent);"></div>
+                            <!-- Title chip centered at top -->
+                            <div style="position:absolute;top:34px;left:0;right:0;display:flex;justify-content:center;padding:0 24px;z-index:3;">
+                                <div style="background:rgba(255,255,255,0.15);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.25);padding:14px 28px;border-radius:40px;display:flex;align-items:center;gap:14px;box-shadow:0 4px 24px rgba(0,0,0,0.2);">
+                                    <svg viewBox="0 0 24 24" style="width:24px;height:24px;flex-shrink:0;">
+                                        <defs><linearGradient id="starTop" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00d9c0"/><stop offset="100%" stop-color="#007EF8"/></linearGradient></defs>
+                                        <path d="M12 1 C11 8, 8 11, 1 12 C8 13, 11 16, 12 23 C13 16, 16 13, 23 12 C16 11, 13 8, 12 1 Z" fill="url(#starTop)"/>
+                                    </svg>
+                                    <h3 style="font-size:20px;font-weight:600;color:white;line-height:1.2;letter-spacing:-0.3px;margin:0;text-shadow:0 2px 8px rgba(0,0,0,0.3);">
+                                        Students Present at <span style="background:white;padding:2px 8px;border-radius:6px;font-family:'Google Sans',Arial,sans-serif;font-weight:500;display:inline-block;"><span style="color:#4285F4;">G</span><span style="color:#EA4335;">o</span><span style="color:#FBBC05;">o</span><span style="color:#4285F4;">g</span><span style="color:#34A853;">l</span><span style="color:#EA4335;">e</span></span> Cambridge
+                                    </h3>
+                                </div>
                             </div>
                         </div>
 
