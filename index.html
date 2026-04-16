@@ -4145,80 +4145,76 @@
                 </button>
                 <div class="slider-container" id="sliderContainer">
                     <!-- Slide: Google Cambridge AI Showcase -->
-                    <div class="slide" style="min-width:100%;position:relative;background:white;height:400px;overflow:hidden;">
-                        <!-- Google color accent bar -->
-                        <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#4285F4 25%,#EA4335 25%,#EA4335 50%,#FBBC05 50%,#FBBC05 75%,#34A853 75%);"></div>
-                        <!-- Subtle Google dots decoration -->
-                        <div style="position:absolute;top:20px;right:24px;display:flex;gap:6px;">
-                            <div style="width:8px;height:8px;border-radius:50%;background:#4285F4;opacity:0.3;"></div>
-                            <div style="width:8px;height:8px;border-radius:50%;background:#EA4335;opacity:0.3;"></div>
-                            <div style="width:8px;height:8px;border-radius:50%;background:#FBBC05;opacity:0.3;"></div>
-                            <div style="width:8px;height:8px;border-radius:50%;background:#34A853;opacity:0.3;"></div>
-                        </div>
-                        <div style="display:flex;height:100%;padding:36px 40px;">
+                    <div class="slide" style="min-width:100%;position:relative;height:400px;overflow:hidden;">
+                        <!-- Background image: Google Cambridge building -->
+                        <img src="https://www.reuters.com/resizer/v2/S6EHIBGW2JPUJMOI7BQ5VZSPSE.jpg?auth=7eb9aa21614b9b2b571682fddc47d2f80f118ff1bca7df4bf690b2dde3a4ab19&width=1920&quality=80" alt="Google Cambridge" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;object-position:center;">
+                        <!-- Dark overlay gradient -->
+                        <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,rgba(0,0,0,0.75) 0%,rgba(0,0,0,0.5) 50%,rgba(0,0,0,0.3) 100%);"></div>
+                        <!-- Google color accent bar top -->
+                        <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#4285F4 25%,#EA4335 25%,#EA4335 50%,#FBBC05 50%,#FBBC05 75%,#34A853 75%);z-index:2;"></div>
+                        <!-- Content -->
+                        <div style="position:relative;z-index:2;display:flex;height:100%;padding:36px 40px;color:white;">
                             <!-- Left Content -->
                             <div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding-right:32px;">
                                 <!-- Logos -->
-                                <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
-                                    <img src="assets/logos/NU_MonoLVX_RGB_RB.png" alt="Northeastern" style="height:32px;">
-                                    <span style="font-size:18px;color:#999;font-weight:300;">&times;</span>
-                                    <svg viewBox="0 0 24 24" style="height:28px;width:28px;"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18A10.96 10.96 0 0 0 1 12c0 1.77.42 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                                    <span style="font-size:15px;font-weight:600;color:#5f6368;">Google Cambridge</span>
+                                <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+                                    <img src="assets/logos/NU_MonoLVX_RGB_RB.png" alt="Northeastern" style="height:28px;filter:brightness(10);">
+                                    <span style="font-size:18px;color:rgba(255,255,255,0.5);font-weight:300;">&times;</span>
+                                    <svg viewBox="0 0 24 24" style="height:26px;width:26px;"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18A10.96 10.96 0 0 0 1 12c0 1.77.42 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
                                 </div>
-                                <!-- Badge -->
-                                <div style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#4285F4,#34A853);color:white;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:0.5px;width:fit-content;margin-bottom:14px;">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                <!-- Badge with GenAI star -->
+                                <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.15);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.2);color:white;padding:5px 14px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:0.5px;width:fit-content;margin-bottom:14px;">
+                                    <svg viewBox="0 0 24 24" fill="none" style="width:16px;height:16px;"><path d="M12 1 C11 8, 8 11, 1 12 C8 13, 11 16, 12 23 C13 16, 16 13, 23 12 C16 11, 13 8, 12 1 Z" fill="url(#starGrad)"/><defs><linearGradient id="starGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00d9c0"/><stop offset="100%" stop-color="#007EF8"/></linearGradient></defs></svg>
                                     AI2Lab Showcase Event
                                 </div>
                                 <!-- Title -->
-                                <h3 style="font-size:22px;font-weight:700;color:#202124;line-height:1.3;margin-bottom:10px;">
-                                    Our Students Present AI Projects<br>at <span style="color:#4285F4;">Google</span> Cambridge
+                                <h3 style="font-size:26px;font-weight:700;color:white;line-height:1.3;margin-bottom:10px;text-shadow:0 2px 8px rgba(0,0,0,0.3);">
+                                    Our Students Present AI Projects<br>at <span style="color:#FBBC05;">Google</span> Cambridge
                                 </h3>
                                 <!-- Description -->
-                                <p style="font-size:13px;color:#5f6368;line-height:1.6;margin-bottom:16px;">
-                                    Applied GenAI students showcase their work to Google engineers and receive real-world feedback on their AI projects.
+                                <p style="font-size:13px;color:rgba(255,255,255,0.85);line-height:1.6;margin-bottom:18px;max-width:420px;">
+                                    Applied GenAI students showcase their work to Google engineers and professionals, receiving real-world feedback on their AI projects.
                                 </p>
                                 <!-- Date/Time/Location -->
                                 <div style="display:flex;gap:16px;flex-wrap:wrap;">
-                                    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#202124;font-weight:600;">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="#4285F4" stroke-width="2" style="width:16px;height:16px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:white;font-weight:600;background:rgba(255,255,255,0.1);padding:5px 12px;border-radius:8px;backdrop-filter:blur(8px);">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="#FBBC05" stroke-width="2" style="width:14px;height:14px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                                         May 7, 2026
                                     </div>
-                                    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#202124;font-weight:600;">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="#EA4335" stroke-width="2" style="width:16px;height:16px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                        2:00 - 4:00 PM
+                                    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:white;font-weight:600;background:rgba(255,255,255,0.1);padding:5px 12px;border-radius:8px;backdrop-filter:blur(8px);">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="#4285F4" stroke-width="2" style="width:14px;height:14px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                        2:00 PM
                                     </div>
-                                    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#202124;font-weight:600;">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="#34A853" stroke-width="2" style="width:16px;height:16px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                                        Google Cambridge Office
+                                    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:white;font-weight:600;background:rgba(255,255,255,0.1);padding:5px 12px;border-radius:8px;backdrop-filter:blur(8px);">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="#34A853" stroke-width="2" style="width:14px;height:14px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                        Cambridge, MA
                                     </div>
                                 </div>
                             </div>
-                            <!-- Right Visual -->
-                            <div style="width:280px;display:flex;align-items:center;justify-content:center;">
-                                <div style="position:relative;">
-                                    <!-- Google G large background -->
-                                    <svg viewBox="0 0 24 24" style="width:200px;height:200px;opacity:0.06;"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18A10.96 10.96 0 0 0 1 12c0 1.77.42 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                                    <!-- Overlay cards -->
-                                    <div style="position:absolute;top:30px;left:20px;right:20px;display:flex;flex-direction:column;gap:8px;">
-                                        <div style="background:white;border:1px solid #e8eaed;border-radius:10px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,0.08);display:flex;align-items:center;gap:8px;">
-                                            <div style="width:28px;height:28px;border-radius:50%;background:#4285F4;display:flex;align-items:center;justify-content:center;">
-                                                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" style="width:14px;height:14px;"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-                                            </div>
-                                            <span style="font-size:11px;font-weight:600;color:#202124;">AI-Powered Projects</span>
-                                        </div>
-                                        <div style="background:white;border:1px solid #e8eaed;border-radius:10px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,0.08);display:flex;align-items:center;gap:8px;">
-                                            <div style="width:28px;height:28px;border-radius:50%;background:#34A853;display:flex;align-items:center;justify-content:center;">
-                                                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" style="width:14px;height:14px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                                            </div>
-                                            <span style="font-size:11px;font-weight:600;color:#202124;">Live Feedback from Engineers</span>
-                                        </div>
-                                        <div style="background:white;border:1px solid #e8eaed;border-radius:10px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,0.08);display:flex;align-items:center;gap:8px;">
-                                            <div style="width:28px;height:28px;border-radius:50%;background:#FBBC05;display:flex;align-items:center;justify-content:center;">
-                                                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" style="width:14px;height:14px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                                            </div>
-                                            <span style="font-size:11px;font-weight:600;color:#202124;">Applied GenAI Course</span>
-                                        </div>
+                            <!-- Right: GenAI Star + highlight cards -->
+                            <div style="width:260px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;">
+                                <!-- Simini/GenAI 4-pointed star -->
+                                <svg viewBox="0 0 24 24" fill="none" style="width:60px;height:60px;margin-bottom:8px;filter:drop-shadow(0 0 12px rgba(0,217,192,0.4));">
+                                    <path d="M12 1 C11 8, 8 11, 1 12 C8 13, 11 16, 12 23 C13 16, 16 13, 23 12 C16 11, 13 8, 12 1 Z" fill="url(#starGrad2)"/>
+                                    <defs><linearGradient id="starGrad2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00d9c0"/><stop offset="100%" stop-color="#007EF8"/></linearGradient></defs>
+                                </svg>
+                                <div style="background:rgba(255,255,255,0.1);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:12px 16px;text-align:center;width:100%;">
+                                    <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:#FBBC05;margin-bottom:4px;">APPLIED GenAI</div>
+                                    <div style="font-size:20px;font-weight:700;color:white;">DADS 5250</div>
+                                    <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:4px;">Northeastern University</div>
+                                </div>
+                                <div style="display:flex;gap:8px;">
+                                    <div style="background:rgba(66,133,244,0.2);border:1px solid rgba(66,133,244,0.3);border-radius:8px;padding:6px 10px;text-align:center;">
+                                        <div style="font-size:16px;font-weight:700;color:#4285F4;">Live</div>
+                                        <div style="font-size:9px;color:rgba(255,255,255,0.6);">Demos</div>
+                                    </div>
+                                    <div style="background:rgba(52,168,83,0.2);border:1px solid rgba(52,168,83,0.3);border-radius:8px;padding:6px 10px;text-align:center;">
+                                        <div style="font-size:16px;font-weight:700;color:#34A853;">Real</div>
+                                        <div style="font-size:9px;color:rgba(255,255,255,0.6);">Feedback</div>
+                                    </div>
+                                    <div style="background:rgba(251,188,5,0.2);border:1px solid rgba(251,188,5,0.3);border-radius:8px;padding:6px 10px;text-align:center;">
+                                        <div style="font-size:16px;font-weight:700;color:#FBBC05;">AI</div>
+                                        <div style="font-size:9px;color:rgba(255,255,255,0.6);">Projects</div>
                                     </div>
                                 </div>
                             </div>
@@ -6170,7 +6166,7 @@
         }
 
         // Auto-slide every 5 seconds
-        setInterval(() => moveSlide(1), 5000);
+        setInterval(() => moveSlide(1), 8000);
 
         // Publications Filter
         let currentFilter = 'all';
