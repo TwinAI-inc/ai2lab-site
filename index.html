@@ -4145,45 +4145,55 @@
                 </button>
                 <div class="slider-container" id="sliderContainer">
                     <!-- Slide: Google Cambridge AI Showcase -->
-                    <div class="slide" style="min-width:100%;position:relative;height:400px;overflow:hidden;display:flex;">
-                        <!-- Google color accent bar top -->
-                        <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#4285F4 25%,#EA4335 25%,#EA4335 50%,#FBBC05 50%,#FBBC05 75%,#34A853 75%);z-index:4;"></div>
+                    <div class="slide" style="min-width:100%;position:relative;height:400px;overflow:hidden;display:flex;flex-direction:column;">
+                        <!-- Google 4-box accent bar top -->
+                        <div style="position:absolute;top:0;left:0;right:0;height:10px;display:flex;z-index:4;">
+                            <div style="flex:1;background:#4285F4;"></div>
+                            <div style="flex:1;background:#EA4335;"></div>
+                            <div style="flex:1;background:#FBBC05;"></div>
+                            <div style="flex:1;background:#34A853;"></div>
+                        </div>
 
-                        <!-- LEFT: 25% dark text panel -->
-                        <div style="flex:0 0 25%;background:linear-gradient(135deg,#0f1419 0%,#1a2332 100%);padding:40px 28px;display:flex;flex-direction:column;justify-content:center;gap:14px;position:relative;z-index:2;">
-                            <!-- Small star accent -->
-                            <svg viewBox="0 0 24 24" style="width:28px;height:28px;margin-bottom:6px;">
-                                <defs><linearGradient id="starSide" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00d9c0"/><stop offset="100%" stop-color="#007EF8"/></linearGradient></defs>
-                                <path d="M12 1 C11 8, 8 11, 1 12 C8 13, 11 16, 12 23 C13 16, 16 13, 23 12 C16 11, 13 8, 12 1 Z" fill="url(#starSide)"/>
-                            </svg>
-                            <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,0.5);text-transform:uppercase;">AI2Lab Showcase</div>
-                            <h3 style="font-size:22px;font-weight:700;color:white;line-height:1.25;letter-spacing:-0.3px;margin:0;">
-                                Students Present at <span style="background:white;padding:2px 8px;border-radius:6px;font-family:'Google Sans',Arial,sans-serif;font-weight:500;display:inline-block;margin-top:4px;"><span style="color:#4285F4;">G</span><span style="color:#EA4335;">o</span><span style="color:#FBBC05;">o</span><span style="color:#4285F4;">g</span><span style="color:#34A853;">l</span><span style="color:#EA4335;">e</span></span> Cambridge
-                            </h3>
-                            <!-- Stacked info chips -->
-                            <div style="display:flex;flex-direction:column;gap:6px;margin-top:6px;">
-                                <span style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:white;padding:5px 10px;border-radius:16px;font-size:11px;font-weight:500;display:inline-flex;align-items:center;gap:6px;width:fit-content;">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="#4285F4" stroke-width="2" style="width:12px;height:12px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                                    May 7, 2026
-                                </span>
-                                <span style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:white;padding:5px 10px;border-radius:16px;font-size:11px;font-weight:500;display:inline-flex;align-items:center;gap:6px;width:fit-content;">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="#EA4335" stroke-width="2" style="width:12px;height:12px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                    2:00 PM
-                                </span>
-                                <span style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:white;padding:5px 10px;border-radius:16px;font-size:11px;font-weight:500;display:inline-flex;align-items:center;gap:6px;width:fit-content;">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="#34A853" stroke-width="2" style="width:12px;height:12px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                                    Cambridge, MA
-                                </span>
-                                <span style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:white;padding:5px 10px;border-radius:16px;font-size:11px;font-weight:500;display:inline-flex;align-items:center;gap:6px;width:fit-content;">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="#FBBC05" stroke-width="2" style="width:12px;height:12px;"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-                                    DADS 5250
-                                </span>
+                        <!-- TOP: Split text/photo -->
+                        <div style="flex:1;display:flex;min-height:0;">
+                            <!-- LEFT: 25% dark text panel -->
+                            <div style="flex:0 0 25%;background:linear-gradient(135deg,#0f1419 0%,#1a2332 100%);padding:32px 28px;display:flex;flex-direction:column;justify-content:center;gap:14px;position:relative;z-index:2;">
+                                <svg viewBox="0 0 24 24" style="width:28px;height:28px;">
+                                    <defs><linearGradient id="starSide" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00d9c0"/><stop offset="100%" stop-color="#007EF8"/></linearGradient></defs>
+                                    <path d="M12 1 C11 8, 8 11, 1 12 C8 13, 11 16, 12 23 C13 16, 16 13, 23 12 C16 11, 13 8, 12 1 Z" fill="url(#starSide)"/>
+                                </svg>
+                                <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,0.5);text-transform:uppercase;">AI2Lab Showcase</div>
+                                <h3 style="font-size:22px;font-weight:700;color:white;line-height:1.25;letter-spacing:-0.3px;margin:0;">
+                                    Students Present at <span style="background:white;padding:2px 8px;border-radius:6px;font-family:'Google Sans',Arial,sans-serif;font-weight:500;display:inline-block;margin-top:4px;"><span style="color:#4285F4;">G</span><span style="color:#EA4335;">o</span><span style="color:#FBBC05;">o</span><span style="color:#4285F4;">g</span><span style="color:#34A853;">l</span><span style="color:#EA4335;">e</span></span> Cambridge
+                                </h3>
+                            </div>
+                            <!-- RIGHT: 75% Google Cambridge photo -->
+                            <div style="flex:1;position:relative;overflow:hidden;">
+                                <img src="https://www.reuters.com/resizer/v2/S6EHIBGW2JPUJMOI7BQ5VZSPSE.jpg?auth=7eb9aa21614b9b2b571682fddc47d2f80f118ff1bca7df4bf690b2dde3a4ab19&width=1920&quality=80" alt="Google Cambridge" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;object-position:center;">
                             </div>
                         </div>
 
-                        <!-- RIGHT: 75% Google Cambridge photo -->
-                        <div style="flex:1;position:relative;overflow:hidden;">
-                            <img src="https://www.reuters.com/resizer/v2/S6EHIBGW2JPUJMOI7BQ5VZSPSE.jpg?auth=7eb9aa21614b9b2b571682fddc47d2f80f118ff1bca7df4bf690b2dde3a4ab19&width=1920&quality=80" alt="Google Cambridge" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;object-position:center;">
+                        <!-- BOTTOM: Full-width info ribbon -->
+                        <div style="background:linear-gradient(90deg,#0f1419 0%,#1a2332 50%,#0f1419 100%);padding:14px 28px;display:flex;justify-content:center;align-items:center;gap:28px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,0.08);">
+                            <span style="color:white;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:8px;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="#4285F4" stroke-width="2" style="width:14px;height:14px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                May 7, 2026
+                            </span>
+                            <span style="color:rgba(255,255,255,0.2);">|</span>
+                            <span style="color:white;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:8px;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="#EA4335" stroke-width="2" style="width:14px;height:14px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                2:00 PM
+                            </span>
+                            <span style="color:rgba(255,255,255,0.2);">|</span>
+                            <span style="color:white;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:8px;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="#34A853" stroke-width="2" style="width:14px;height:14px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                Google Cambridge, MA
+                            </span>
+                            <span style="color:rgba(255,255,255,0.2);">|</span>
+                            <span style="color:white;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:8px;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="#FBBC05" stroke-width="2" style="width:14px;height:14px;"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                                DADS 5250 — Applied GenAI
+                            </span>
                         </div>
                     </div>
                     <!-- Slide: New Publication - AIDM Framework -->
