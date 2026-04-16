@@ -4149,38 +4149,41 @@
                         <!-- Background image: Google Cambridge building -->
                         <img src="https://www.reuters.com/resizer/v2/S6EHIBGW2JPUJMOI7BQ5VZSPSE.jpg?auth=7eb9aa21614b9b2b571682fddc47d2f80f118ff1bca7df4bf690b2dde3a4ab19&width=1920&quality=80" alt="Google Cambridge" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;object-position:center;">
                         <!-- Dark overlay -->
-                        <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.4) 100%);"></div>
+                        <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,rgba(0,0,0,0.55) 0%,rgba(0,0,0,0.35) 100%);"></div>
                         <!-- Google color accent bar top -->
                         <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#4285F4 25%,#EA4335 25%,#EA4335 50%,#FBBC05 50%,#FBBC05 75%,#34A853 75%);z-index:2;"></div>
-                        <!-- Content -->
-                        <div style="position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center;height:100%;padding:50px 60px;color:white;max-width:720px;">
-                            <!-- Logos + Badge row -->
-                            <div style="display:flex;align-items:center;gap:14px;margin-bottom:28px;">
-                                <img src="assets/logos/NU_MonoLVX_RGB_RB.png" alt="Northeastern" style="height:32px;filter:brightness(10);">
-                                <span style="font-size:18px;color:rgba(255,255,255,0.4);font-weight:300;">&times;</span>
-                                <svg viewBox="0 0 24 24" style="height:30px;width:30px;"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18A10.96 10.96 0 0 0 1 12c0 1.77.42 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                            </div>
-                            <!-- Small badge -->
-                            <div style="display:inline-flex;align-items:center;gap:7px;color:rgba(255,255,255,0.75);font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-bottom:18px;">
-                                <svg viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M12 1 C11 8, 8 11, 1 12 C8 13, 11 16, 12 23 C13 16, 16 13, 23 12 C16 11, 13 8, 12 1 Z" fill="url(#ss)"/><defs><linearGradient id="ss" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00d9c0"/><stop offset="100%" stop-color="#007EF8"/></linearGradient></defs></svg>
-                                AI2Lab Showcase
-                            </div>
-                            <!-- Title -->
-                            <h3 style="font-size:36px;font-weight:700;color:white;line-height:1.2;margin-bottom:16px;letter-spacing:-0.5px;">
+
+                        <!-- Split GenAI star -->
+                        <!-- Left half on far left edge -->
+                        <svg viewBox="0 0 12 24" preserveAspectRatio="xMinYMid meet" style="position:absolute;top:50%;left:0;transform:translateY(-50%);width:90px;height:180px;opacity:0.55;z-index:1;">
+                            <defs><linearGradient id="starL" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00d9c0"/><stop offset="100%" stop-color="#007EF8"/></linearGradient></defs>
+                            <path d="M12 1 C11 8, 8 11, 1 12 C8 13, 11 16, 12 23 Z" fill="url(#starL)"/>
+                        </svg>
+                        <!-- Right half on far right edge -->
+                        <svg viewBox="12 0 12 24" preserveAspectRatio="xMaxYMid meet" style="position:absolute;top:50%;right:0;transform:translateY(-50%);width:90px;height:180px;opacity:0.55;z-index:1;">
+                            <defs><linearGradient id="starR" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00d9c0"/><stop offset="100%" stop-color="#007EF8"/></linearGradient></defs>
+                            <path d="M12 1 C13 8, 16 11, 23 12 C16 13, 13 16, 12 23 Z" fill="url(#starR)"/>
+                        </svg>
+
+                        <!-- Logos top-right -->
+                        <div style="position:absolute;top:22px;right:26px;z-index:3;display:flex;align-items:center;gap:12px;">
+                            <img src="assets/logos/NU_MonoLVX_RGB_RB.png" alt="Northeastern" style="height:26px;filter:brightness(10);">
+                            <span style="font-size:16px;color:rgba(255,255,255,0.4);font-weight:300;">&times;</span>
+                            <svg viewBox="0 0 24 24" style="height:24px;width:24px;"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18A10.96 10.96 0 0 0 1 12c0 1.77.42 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                        </div>
+
+                        <!-- Title at top -->
+                        <div style="position:absolute;top:70px;left:60px;right:60px;z-index:3;text-align:center;">
+                            <h3 style="font-size:38px;font-weight:700;color:white;line-height:1.2;letter-spacing:-0.5px;text-shadow:0 2px 12px rgba(0,0,0,0.4);">
                                 Our Students Present at <span style="color:#FBBC05;">Google</span> Cambridge
                             </h3>
-                            <!-- One-line tagline -->
-                            <p style="font-size:15px;color:rgba(255,255,255,0.8);line-height:1.5;margin-bottom:24px;max-width:560px;">
-                                Applied GenAI students showcase their AI projects to Google engineers.
-                            </p>
-                            <!-- Date + Location (minimal) -->
-                            <div style="display:flex;gap:24px;font-size:13px;color:rgba(255,255,255,0.9);font-weight:500;">
-                                <span>May 7, 2026</span>
-                                <span style="color:rgba(255,255,255,0.3);">•</span>
-                                <span>2:00 PM</span>
-                                <span style="color:rgba(255,255,255,0.3);">•</span>
-                                <span>Cambridge, MA</span>
-                            </div>
+                        </div>
+
+                        <!-- Date chips at bottom -->
+                        <div style="position:absolute;bottom:36px;left:0;right:0;z-index:3;display:flex;justify-content:center;gap:12px;flex-wrap:wrap;padding:0 40px;">
+                            <span style="background:rgba(255,255,255,0.15);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2);color:white;padding:8px 18px;border-radius:24px;font-size:13px;font-weight:500;">May 7, 2026</span>
+                            <span style="background:rgba(255,255,255,0.15);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2);color:white;padding:8px 18px;border-radius:24px;font-size:13px;font-weight:500;">2:00 PM</span>
+                            <span style="background:rgba(255,255,255,0.15);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2);color:white;padding:8px 18px;border-radius:24px;font-size:13px;font-weight:500;">Google Cambridge, MA</span>
                         </div>
                     </div>
                     <!-- Slide: New Publication - AIDM Framework -->
