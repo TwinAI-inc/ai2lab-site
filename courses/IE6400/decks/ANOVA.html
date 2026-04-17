@@ -38,12 +38,14 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);over
 .progress-bar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--pri),var(--accent));z-index:200;transition:width .4s ease-out;border-radius:0 2px 2px 0}
 .fs{position:fixed;bottom:24px;right:24px;z-index:100;width:44px;height:44px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,0.4);backdrop-filter:blur(20px);color:var(--pri);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s;box-shadow:var(--shadow)}
 .dm{position:fixed;bottom:24px;right:76px;z-index:100;width:44px;height:44px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,0.4);backdrop-filter:blur(20px);color:var(--pri);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s;box-shadow:var(--shadow)}
+.ft-btn{position:fixed;bottom:24px;right:128px;z-index:100;height:44px;padding:0 16px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,0.4);backdrop-filter:blur(20px);color:var(--pri);cursor:pointer;display:flex;align-items:center;gap:6px;font-family:'Outfit',sans-serif;font-weight:700;font-size:12px;letter-spacing:1px;transition:all .3s;box-shadow:var(--shadow)}
+.ft-btn:hover{background:rgba(37,99,235,0.12)}
 .math-block{padding:16px 24px;border-radius:16px;background:rgba(37,99,235,0.06);border:1px solid rgba(37,99,235,0.12);text-align:center;margin:12px 0}
 /* Hamburger */
 .hm-btn{position:fixed;top:20px;left:20px;z-index:300;width:36px;height:36px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,0.4);backdrop-filter:blur(20px);color:var(--pri);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:all .3s;box-shadow:var(--shadow);padding:0}
 .hm-btn span{display:block;width:16px;height:2px;background:var(--pri);border-radius:2px;transition:all .3s}
 .hm-btn.open span:nth-child(1){transform:rotate(45deg) translate(2px,2px)}.hm-btn.open span:nth-child(2){opacity:0}.hm-btn.open span:nth-child(3){transform:rotate(-45deg) translate(3px,-3px)}
-.hm-panel{position:fixed;top:0;left:-240px;width:220px;height:100vh;z-index:250;background:var(--surface);backdrop-filter:blur(28px) saturate(1.5);border-right:1px solid var(--border);box-shadow:var(--shadow-lg);transition:left .35s cubic-bezier(.22,1,.36,1);overflow-y:auto;padding:56px 8px 20px}
+.hm-panel{position:fixed;top:0;left:-240px;width:240px;height:100vh;z-index:250;background:var(--surface);backdrop-filter:blur(28px) saturate(1.5);border-right:1px solid var(--border);box-shadow:var(--shadow-lg);transition:left .35s cubic-bezier(.22,1,.36,1);overflow-y:auto;padding:56px 8px 20px}
 .hm-panel.open{left:0}
 .hm-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;font-size:12px;font-weight:500;color:var(--text-m);cursor:pointer;transition:all .2s;border:none;background:none;width:100%;text-align:left;font-family:'Outfit',sans-serif}
 .hm-item:hover{background:rgba(37,99,235,0.06);color:var(--text)}
@@ -58,11 +60,10 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);over
 .hm-section.collapsed .hm-section-items{display:none}
 .hm-section-items{padding-left:8px;border-left:1.5px solid rgba(37,99,235,0.1);margin-left:8px}
 .hm-section .hm-item{padding:5px 8px !important;font-size:11px}
-/* Modern card upgrades */
 .g{box-shadow:var(--shadow),0 1px 0 rgba(255,255,255,0.5) inset !important}
 .g:hover{transform:translateY(-1px);transition:transform .25s ease}
 button:focus-visible,a:focus-visible{outline:2px solid var(--pri);outline-offset:3px;border-radius:8px}
-/* ANOVA Table styling */
+/* ANOVA Table */
 .anova-table{width:100%;border-collapse:separate;border-spacing:0;font-size:15px;font-family:'Outfit',sans-serif;border-radius:16px;overflow:hidden}
 .anova-table th{background:linear-gradient(135deg,#1E40AF,#1D4ED8);color:#fff;font-weight:700;padding:14px 18px;text-align:center;font-size:14px;letter-spacing:.5px}
 .anova-table td{padding:14px 18px;text-align:center;background:#fff;color:#0F172A;font-size:15px;font-weight:500;border-bottom:1px solid rgba(37,99,235,0.08)}
@@ -70,20 +71,38 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--pri);outline-offset
 .anova-table tr.row-within td{background:rgba(3,105,161,0.06)}
 .anova-table tr.row-total td{background:rgba(217,119,6,0.06);font-weight:700}
 .anova-table td:first-child{font-weight:700;text-align:left}
-/* Data table */
 .data-table{width:100%;border-collapse:separate;border-spacing:0;font-size:15px;border-radius:14px;overflow:hidden}
 .data-table th{background:linear-gradient(135deg,#1E40AF,#1D4ED8);color:#fff;font-weight:700;padding:12px 16px;text-align:center;font-size:13px;letter-spacing:.5px}
 .data-table td{padding:10px 16px;text-align:center;background:#fff;border-bottom:1px solid rgba(37,99,235,0.06);font-variant-numeric:tabular-nums}
 .data-table tr:nth-child(even) td{background:#F8FAFC}
-/* Assumption icons */
 .assume-icon{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}
-/* Interactive F-distribution canvas */
 .f-canvas{width:100%;border-radius:12px;display:block;background:rgba(37,99,235,0.02);border:1px solid rgba(37,99,235,0.08)}
+/* F-table modal */
+.ft-overlay{display:none;position:fixed;inset:0;background:rgba(15,17,23,0.4);backdrop-filter:blur(6px);z-index:500;align-items:center;justify-content:center;padding:28px}
+.ft-overlay.open{display:flex}
+.ft-modal{background:var(--surface);backdrop-filter:blur(28px) saturate(1.5);border:1px solid var(--border);border-radius:var(--R);box-shadow:var(--shadow-lg);width:94%;max-width:920px;max-height:88vh;overflow:auto;padding:28px}
+.ft-modal h3{font-size:22px;font-weight:800;color:var(--text);margin-bottom:4px}
+.ft-modal .ft-sub{font-size:13px;color:var(--text-m);margin-bottom:16px}
+.f-table{width:100%;border-collapse:collapse;font-size:12px;font-family:'Outfit',monospace}
+.f-table th{background:rgba(37,99,235,0.85);color:white;font-weight:700;padding:7px 5px;text-align:center;position:sticky;top:0;font-size:12px;z-index:2}
+.f-table td{padding:6px 5px;text-align:center;border-bottom:1px solid rgba(148,163,184,0.15);color:var(--text);cursor:pointer;transition:all .15s;font-size:12px;font-weight:500;font-variant-numeric:tabular-nums}
+.f-table td:first-child{font-weight:700;color:white;background:rgba(37,99,235,0.85);text-align:center;position:sticky;left:0;z-index:1}
+.f-table td:hover{background:rgba(37,99,235,0.18);color:var(--pri);font-weight:700}
+.f-table tr:nth-child(even) td:not(:first-child){background:rgba(37,99,235,0.03)}
+.f-table tr:hover td:not(:first-child){background:rgba(37,99,235,0.06)}
+/* Flip cards */
+.flip-card{perspective:800px;cursor:pointer;flex:1;min-width:180px}
+.flip-card-inner{position:relative;width:100%;height:300px;transition:transform 0.65s cubic-bezier(.22,1,.36,1);transform-style:preserve-3d}
+.flip-card.flipped .flip-card-inner{transform:rotateY(180deg)}
+.flip-card-front,.flip-card-back{position:absolute;inset:0;border-radius:var(--R);backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--surface);border:1px solid var(--border);backdrop-filter:blur(28px) saturate(1.5);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:22px 18px;text-align:center}
+.flip-card-front::before,.flip-card-back::before{content:'';position:absolute;top:0;left:8%;right:8%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.9),rgba(180,200,255,0.5),transparent);border-radius:1px}
+.flip-card-back{transform:rotateY(180deg);justify-content:flex-start;padding:18px 16px;text-align:left}
+.flip-card-front .flip-hint{position:absolute;bottom:10px;font-size:10px;font-weight:600;letter-spacing:1.5px;color:var(--text-d);text-transform:uppercase}
 /* Dark mode */
 body.dark{--bg:#0F1117;--surface:rgba(30,33,45,0.72);--border:rgba(255,255,255,0.1);--text:#E5E7EB;--text-m:rgba(229,231,235,0.65);--text-d:rgba(229,231,235,0.35);--shadow:0 8px 32px rgba(0,0,0,0.3)}
 body.dark .g::before{background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),rgba(180,200,255,0.06),transparent)}
 body.dark .chip{background:rgba(30,33,45,0.5);border-color:rgba(255,255,255,0.1);color:#93C5FD}
-body.dark .dm,.dark .fs,.dark .hm-btn{background:rgba(30,33,45,0.6);color:#93C5FD}
+body.dark .dm,.dark .fs,.dark .hm-btn,.dark .ft-btn{background:rgba(30,33,45,0.6);color:#93C5FD}
 body.dark .hm-btn span{background:#93C5FD}
 body.dark .hm-panel{background:rgba(15,17,23,0.95);border-color:rgba(255,255,255,0.08)}
 body.dark .ft-n{background:rgba(30,33,45,0.6);border-color:rgba(255,255,255,0.08)}
@@ -94,17 +113,37 @@ body.dark .anova-table tr.row-within td{background:rgba(3,105,161,0.12)}
 body.dark .anova-table tr.row-total td{background:rgba(217,119,6,0.12)}
 body.dark .data-table td{background:#1E293B;color:#F1F5F9}
 body.dark .data-table tr:nth-child(even) td{background:#0F172A}
-@media print{body{scroll-snap-type:none!important;overflow:visible!important;height:auto!important;background:#fff!important}.slide{height:auto!important;scroll-snap-align:none!important;page-break-after:always;padding:40px 60px!important;display:flex!important;flex-direction:column!important}.nav-dots,.fs,.dm,.progress-bar,.hm-btn,.hm-panel{display:none!important}.rv,.step{opacity:1!important;transform:none!important}.orb{display:none!important}.g{backdrop-filter:none!important;background:rgba(240,244,250,0.5)!important;border:1px solid #ddd!important;box-shadow:none!important}.g::before{display:none!important}@page{margin:0.5in;size:landscape}}
-@media(max-width:900px){.slide{padding:30px 24px}.ft{padding:0 24px}.nav-dots{right:12px}}
+body.dark .ft-modal{background:rgba(15,17,23,0.95)}
+body.dark .f-table td{color:#E5E7EB}
+@media print{body{scroll-snap-type:none!important;overflow:visible!important;height:auto!important;background:#fff!important}.slide{height:auto!important;scroll-snap-align:none!important;page-break-after:always;padding:40px 60px!important;display:flex!important;flex-direction:column!important}.nav-dots,.fs,.dm,.ft-btn,.progress-bar,.hm-btn,.hm-panel,.ft-overlay{display:none!important}.rv,.step{opacity:1!important;transform:none!important}.orb{display:none!important}.g{backdrop-filter:none!important;background:rgba(240,244,250,0.5)!important;border:1px solid #ddd!important;box-shadow:none!important}.g::before{display:none!important}@page{margin:0.5in;size:landscape}}
+@media(max-width:900px){.slide{padding:30px 24px}.ft{padding:0 24px}.nav-dots{right:12px}.ft-btn{padding:0 10px;font-size:10px}}
 </style>
 </head>
 <body>
 <div class="progress-bar" id="progressBar" style="width:0%"></div>
 <nav class="nav-dots" id="navDots"></nav>
+<button class="ft-btn" onclick="toggleFTable()" title="F-Table"><i data-lucide="table-2" style="width:14px;height:14px"></i> F-TABLE</button>
 <button class="fs" onclick="toggleFullscreen()" title="Fullscreen"><i data-lucide="maximize" style="width:20px;height:20px"></i></button>
 <button class="dm" onclick="toggleDark()" title="Dark mode"><i data-lucide="moon" style="width:20px;height:20px" id="dmIcon"></i></button>
 <button class="hm-btn" id="hmBtn" onclick="toggleMenu()"><span></span><span></span><span></span></button>
 <div class="hm-panel" id="hmPanel"></div>
+
+<!-- F-Table Modal -->
+<div class="ft-overlay" id="fTableOverlay" onclick="if(event.target===this)toggleFTable()">
+    <div class="ft-modal">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+            <div>
+                <h3>F-Distribution Critical Values</h3>
+                <div class="ft-sub">Upper tail at $\alpha = 0.05$ &middot; rows = df<sub>within</sub> ($N{-}k$), columns = df<sub>between</sub> ($k{-}1$)</div>
+            </div>
+            <button onclick="toggleFTable()" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--text-d);padding:4px">&times;</button>
+        </div>
+        <div style="max-height:64vh;overflow:auto;border-radius:12px;border:1px solid rgba(148,163,184,0.18)">
+            <table class="f-table" id="fTable"></table>
+        </div>
+        <p style="font-size:11px;color:var(--text-d);margin-top:10px;text-align:center">Hover a cell to preview. Values shown for $\alpha=0.05$. For $\alpha=0.01$ or two-tail, multiply or use software.</p>
+    </div>
+</div>
 
 <!-- ━━━ SLIDE 1 — COVER ━━━ -->
 <div class="slide" data-slide="1" style="justify-content:center;align-items:center;text-align:center">
@@ -125,7 +164,7 @@ body.dark .data-table tr:nth-child(even) td{background:#0F172A}
         </div>
     </div>
 
-    <div class="ft"><span class="ft-n">1 / 10</span><span>IE 6800: Foundations of Data Analytics</span><span>Northeastern University</span></div>
+    <div class="ft"><span class="ft-n"></span><span>IE 6800: Foundations of Data Analytics</span><span>Northeastern University</span></div>
 </div>
 
 <!-- ━━━ SLIDE 2 — WHY ANOVA? ━━━ -->
@@ -162,17 +201,61 @@ body.dark .data-table tr:nth-child(even) td{background:#0F172A}
         </div>
     </div>
 
-    <div class="ft"><span class="ft-n">2 / 10</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+    <div class="ft"><span class="ft-n"></span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
 </div>
 
-<!-- ━━━ SLIDE 3 — THE ANOVA IDEA ━━━ -->
+<!-- ━━━ SLIDE 3 — ANOVA vs T-TEST (NEW) ━━━ -->
 <div class="slide" data-slide="3">
+    <div class="orb orb-p" style="width:420px;height:420px;top:-70px;right:-80px;animation-delay:-6s"></div>
+    <div style="font-size:15px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--pri);margin-bottom:8px" class="rv">A DEEPER LOOK</div>
+    <h2 style="font-size:44px;font-weight:800;margin-bottom:22px" class="rv d1">ANOVA vs <span class="gx">Multiple t-tests</span></h2>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:1100px">
+        <div class="g g-red rv d2" style="padding:26px">
+            <div style="font-size:13px;font-weight:700;letter-spacing:2px;color:var(--red);margin-bottom:12px">PAIRWISE t-TESTS (NAIVE)</div>
+            <p style="font-size:14px;color:var(--text-m);line-height:1.7">With $k$ groups, you need $\binom{k}{2}$ tests:</p>
+            <ul style="list-style:none;margin-top:10px;font-size:14px;color:var(--text-m);line-height:1.9">
+                <li>&bull; 3 groups &rarr; 3 tests</li>
+                <li>&bull; 5 groups &rarr; 10 tests</li>
+                <li>&bull; 10 groups &rarr; 45 tests</li>
+            </ul>
+            <div class="math-block" style="margin-top:12px;font-size:14px">
+                $\alpha_{\text{overall}} = 1 - (1-\alpha)^m$
+            </div>
+            <p style="font-size:13px;color:var(--red);margin-top:8px"><strong>Fails to control family-wise error rate.</strong></p>
+        </div>
+
+        <div class="g g-green rv d3" style="padding:26px">
+            <div style="font-size:13px;font-weight:700;letter-spacing:2px;color:var(--green);margin-bottom:12px">ANOVA (ONE TEST)</div>
+            <p style="font-size:14px;color:var(--text-m);line-height:1.7">A single omnibus F-test asks: do any of the means differ?</p>
+            <ul style="list-style:none;margin-top:10px;font-size:14px;color:var(--text-m);line-height:1.9">
+                <li>&bull; One hypothesis, one $\alpha$</li>
+                <li>&bull; Error rate stays at $0.05$</li>
+                <li>&bull; Scales to any $k$</li>
+            </ul>
+            <div class="math-block" style="margin-top:12px;font-size:14px">
+                $F = \dfrac{MS_B}{MS_W}$
+            </div>
+            <p style="font-size:13px;color:var(--green);margin-top:8px"><strong>Then use post-hoc to locate the differences.</strong></p>
+        </div>
+    </div>
+
+    <div class="g g-blue step" style="max-width:1100px;margin-top:20px;padding:18px 24px;display:flex;align-items:center;gap:14px">
+        <div style="font-size:28px">&#128161;</div>
+        <p style="font-size:14px;color:var(--text-m)"><strong style="color:var(--pri)">Special case:</strong> When $k=2$ (two groups), ANOVA and the independent-samples t-test are algebraically identical &mdash; $F = t^2$ and both give the same p-value.</p>
+    </div>
+
+    <div class="ft"><span class="ft-n"></span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ SLIDE 4 — THE ANOVA IDEA ━━━ -->
+<div class="slide" data-slide="4">
     <div class="orb orb-p" style="width:400px;height:400px;bottom:-80px;left:-60px;animation-delay:-8s"></div>
     <div style="font-size:15px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--pri);margin-bottom:8px" class="rv">CORE CONCEPT</div>
     <h2 style="font-size:48px;font-weight:800;margin-bottom:24px" class="rv d1">The ANOVA <span class="gx">Idea</span></h2>
 
     <div class="g rv d2" style="max-width:900px;padding:28px;margin-bottom:24px">
-        <p style="font-size:18px;font-weight:600;color:var(--text);margin-bottom:12px;text-align:center">Total Variation = Between-Group Variation + Within-Group Variation</p>
+        <p style="font-size:18px;font-weight:600;color:var(--text);margin-bottom:12px;text-align:center">Total Variation = Between Group Variation + Within Group Variation</p>
         <div class="math-block" style="font-size:20px">
             $$SS_T = SS_B + SS_W$$
         </div>
@@ -201,14 +284,142 @@ body.dark .data-table tr:nth-child(even) td{background:#0F172A}
 
     <div class="g g-green step" style="max-width:1100px;margin-top:20px;padding:18px 24px;display:flex;align-items:center;gap:14px">
         <div style="font-size:28px">&#128161;</div>
-        <p style="font-size:15px;color:var(--text-m)"><strong style="color:var(--green)">Key insight:</strong> If the between-group spread is <em>much larger</em> than the within-group spread, the groups are likely different.</p>
+        <p style="font-size:15px;color:var(--text-m)"><strong style="color:var(--green)">Key insight:</strong> If the between group spread is <em>much larger</em> than the within group spread, the groups are likely different.</p>
     </div>
 
-    <div class="ft"><span class="ft-n">3 / 10</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+    <div class="ft"><span class="ft-n"></span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
 </div>
 
-<!-- ━━━ SLIDE 4 — THE F-STATISTIC ━━━ -->
-<div class="slide" data-slide="4">
+<!-- ━━━ SLIDE 5 — VARIANCE PARTITION ANALOGY (NEW SVG) ━━━ -->
+<div class="slide" data-slide="5">
+    <div class="orb orb-b" style="width:380px;height:380px;top:-60px;right:-60px;animation-delay:-9s"></div>
+    <div style="font-size:15px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--pri);margin-bottom:8px" class="rv">SEEING THE PARTITION</div>
+    <h2 style="font-size:42px;font-weight:800;margin-bottom:18px" class="rv d1">Analogy &mdash; <span class="gx">Salaries Across Departments</span></h2>
+
+    <div style="display:grid;grid-template-columns:1.35fr 1fr;gap:26px;max-width:1200px;align-items:center">
+        <div class="g rv d2" style="padding:24px">
+            <svg viewBox="0 0 620 300" style="width:100%;height:auto;display:block">
+                <!-- Background axis -->
+                <line x1="40" y1="260" x2="600" y2="260" stroke="#94A3B8" stroke-width="1.5"/>
+                <text x="10" y="160" font-family="Outfit" font-size="11" fill="#64748B" transform="rotate(-90 10 160)">Salary ($)</text>
+                <text x="310" y="285" font-family="Outfit" font-size="11" fill="#64748B" text-anchor="middle">Department</text>
+
+                <!-- Grand mean line (dashed horizontal) -->
+                <line x1="40" y1="150" x2="600" y2="150" stroke="#D97706" stroke-width="1.5" stroke-dasharray="6 4"/>
+                <text x="605" y="153" font-family="Outfit" font-size="11" fill="#D97706" font-weight="700">Grand mean</text>
+
+                <!-- Engineering group -->
+                <text x="130" y="50" font-family="Outfit" font-size="12" fill="#2563EB" font-weight="700" text-anchor="middle">Engineering</text>
+                <circle cx="110" cy="95" r="6" fill="#2563EB" opacity="0.85"/>
+                <circle cx="130" cy="85" r="6" fill="#2563EB" opacity="0.85"/>
+                <circle cx="125" cy="110" r="6" fill="#2563EB" opacity="0.85"/>
+                <circle cx="145" cy="105" r="6" fill="#2563EB" opacity="0.85"/>
+                <circle cx="150" cy="75" r="6" fill="#2563EB" opacity="0.85"/>
+                <!-- Group mean line -->
+                <line x1="100" y1="95" x2="160" y2="95" stroke="#1E40AF" stroke-width="3"/>
+                <text x="165" y="98" font-family="Outfit" font-size="10" fill="#1E40AF" font-weight="700">x̄₁</text>
+
+                <!-- Sales group -->
+                <text x="310" y="50" font-family="Outfit" font-size="12" fill="#0369A1" font-weight="700" text-anchor="middle">Sales</text>
+                <circle cx="290" cy="200" r="6" fill="#0369A1" opacity="0.85"/>
+                <circle cx="310" cy="185" r="6" fill="#0369A1" opacity="0.85"/>
+                <circle cx="305" cy="210" r="6" fill="#0369A1" opacity="0.85"/>
+                <circle cx="325" cy="195" r="6" fill="#0369A1" opacity="0.85"/>
+                <circle cx="330" cy="180" r="6" fill="#0369A1" opacity="0.85"/>
+                <line x1="280" y1="195" x2="340" y2="195" stroke="#075985" stroke-width="3"/>
+                <text x="345" y="198" font-family="Outfit" font-size="10" fill="#075985" font-weight="700">x̄₂</text>
+
+                <!-- Marketing group -->
+                <text x="490" y="50" font-family="Outfit" font-size="12" fill="#059669" font-weight="700" text-anchor="middle">Marketing</text>
+                <circle cx="470" cy="155" r="6" fill="#059669" opacity="0.85"/>
+                <circle cx="490" cy="140" r="6" fill="#059669" opacity="0.85"/>
+                <circle cx="485" cy="165" r="6" fill="#059669" opacity="0.85"/>
+                <circle cx="505" cy="150" r="6" fill="#059669" opacity="0.85"/>
+                <circle cx="510" cy="135" r="6" fill="#059669" opacity="0.85"/>
+                <line x1="460" y1="150" x2="520" y2="150" stroke="#047857" stroke-width="3"/>
+                <text x="525" y="153" font-family="Outfit" font-size="10" fill="#047857" font-weight="700">x̄₃</text>
+
+                <!-- Between arrows (group mean to grand mean) -->
+                <line x1="130" y1="95" x2="130" y2="150" stroke="#2563EB" stroke-width="2" marker-end="url(#arrR)" marker-start="url(#arrL)" stroke-dasharray="3 3" opacity="0.8"/>
+                <text x="60" y="125" font-family="Outfit" font-size="10" fill="#2563EB" font-weight="700">BETWEEN</text>
+                <line x1="310" y1="195" x2="310" y2="150" stroke="#0369A1" stroke-width="2" marker-end="url(#arrR)" marker-start="url(#arrL)" stroke-dasharray="3 3" opacity="0.8"/>
+
+                <!-- Within arrow (illustrative, inside Marketing cluster) -->
+                <line x1="550" y1="135" x2="550" y2="165" stroke="#059669" stroke-width="2" marker-end="url(#arrG)" marker-start="url(#arrG)"/>
+                <text x="555" y="154" font-family="Outfit" font-size="10" fill="#059669" font-weight="700">WITHIN</text>
+
+                <!-- Arrow markers -->
+                <defs>
+                    <marker id="arrR" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><polygon points="0 0, 6 3, 0 6" fill="#2563EB"/></marker>
+                    <marker id="arrL" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><polygon points="6 0, 0 3, 6 6" fill="#2563EB"/></marker>
+                    <marker id="arrG" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><polygon points="0 0, 6 3, 0 6" fill="#059669"/></marker>
+                </defs>
+            </svg>
+        </div>
+
+        <div>
+            <div class="g g-blue rv d3" style="padding:18px 22px;margin-bottom:12px">
+                <div style="font-size:12px;font-weight:800;color:var(--pri);letter-spacing:1.5px;margin-bottom:6px">SS<sub>B</sub> &mdash; BETWEEN DEPARTMENTS</div>
+                <p style="font-size:13px;color:var(--text-m);line-height:1.6">How far does <em>each department's average salary</em> sit from the company-wide average?</p>
+            </div>
+            <div class="g g-green rv d4" style="padding:18px 22px;margin-bottom:12px">
+                <div style="font-size:12px;font-weight:800;color:var(--green);letter-spacing:1.5px;margin-bottom:6px">SS<sub>W</sub> &mdash; WITHIN EACH DEPARTMENT</div>
+                <p style="font-size:13px;color:var(--text-m);line-height:1.6">How much do <em>individual salaries</em> vary from their own department's mean? (Junior vs senior, bonuses, etc.)</p>
+            </div>
+            <div class="g step" style="padding:16px 20px;background:linear-gradient(135deg,rgba(217,119,6,0.1),rgba(252,211,77,0.05));border:1.5px solid rgba(217,119,6,0.22)">
+                <div style="font-size:12px;font-weight:800;color:var(--amber);letter-spacing:1.5px;margin-bottom:6px">THE QUESTION ANOVA ANSWERS</div>
+                <p style="font-size:13px;color:var(--text-m);line-height:1.6">Is the <strong>department effect</strong> (between) big enough relative to the <strong>individual noise</strong> (within) to conclude departments actually pay differently?</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="ft"><span class="ft-n"></span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ SLIDE 6 — 5-STEP PROCEDURE (NEW) ━━━ -->
+<div class="slide" data-slide="6">
+    <div class="orb orb-p" style="width:400px;height:400px;bottom:-60px;right:-40px;animation-delay:-11s"></div>
+    <div style="font-size:15px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--pri);margin-bottom:8px" class="rv">HOW TO RUN AN ANOVA</div>
+    <h2 style="font-size:46px;font-weight:800;margin-bottom:28px" class="rv d1">The <span class="gx">5-Step Procedure</span></h2>
+
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px;max-width:1200px">
+        <div class="g g-blue rv d1" style="padding:20px 16px;text-align:center;position:relative">
+            <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:30px;height:30px;border-radius:50%;background:var(--pri);color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px">1</div>
+            <div style="margin-top:6px;font-size:13px;font-weight:800;color:var(--pri);letter-spacing:1.2px;margin-bottom:8px">HYPOTHESES</div>
+            <p style="font-size:12px;color:var(--text-m);line-height:1.6">$H_0: \mu_1 = \mu_2 = \ldots = \mu_k$<br>$H_1$: at least one differs</p>
+        </div>
+        <div class="g g-teal rv d2" style="padding:20px 16px;text-align:center;position:relative">
+            <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:30px;height:30px;border-radius:50%;background:var(--teal);color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px">2</div>
+            <div style="margin-top:6px;font-size:13px;font-weight:800;color:var(--teal);letter-spacing:1.2px;margin-bottom:8px">SUM OF SQUARES</div>
+            <p style="font-size:12px;color:var(--text-m);line-height:1.6">Compute $SS_B$, $SS_W$, $SS_T$ from group means and the grand mean.</p>
+        </div>
+        <div class="g g-amber rv d3" style="padding:20px 16px;text-align:center;position:relative">
+            <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:30px;height:30px;border-radius:50%;background:var(--amber);color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px">3</div>
+            <div style="margin-top:6px;font-size:13px;font-weight:800;color:var(--amber);letter-spacing:1.2px;margin-bottom:8px">F-STATISTIC</div>
+            <p style="font-size:12px;color:var(--text-m);line-height:1.6">$F = \dfrac{MS_B}{MS_W}$<br>with $df_1 = k{-}1$, $df_2 = N{-}k$</p>
+        </div>
+        <div class="g g-purple rv d4" style="padding:20px 16px;text-align:center;position:relative">
+            <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:30px;height:30px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px">4</div>
+            <div style="margin-top:6px;font-size:13px;font-weight:800;color:var(--accent);letter-spacing:1.2px;margin-bottom:8px">CRITICAL / P</div>
+            <p style="font-size:12px;color:var(--text-m);line-height:1.6">Look up $F_{\alpha,\;df_1,\;df_2}$ in the F-table, or compute p-value.</p>
+        </div>
+        <div class="g g-green rv d5" style="padding:20px 16px;text-align:center;position:relative">
+            <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:30px;height:30px;border-radius:50%;background:var(--green);color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px">5</div>
+            <div style="margin-top:6px;font-size:13px;font-weight:800;color:var(--green);letter-spacing:1.2px;margin-bottom:8px">DECISION</div>
+            <p style="font-size:12px;color:var(--text-m);line-height:1.6">If $F > F_{\text{crit}}$ (or $p < \alpha$), reject $H_0$. Then run post-hoc.</p>
+        </div>
+    </div>
+
+    <div class="g step" style="max-width:1100px;margin-top:28px;padding:18px 24px;display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,rgba(37,99,235,0.08),rgba(96,165,250,0.04));border:1.5px solid rgba(37,99,235,0.22)">
+        <div style="font-size:26px">&#128270;</div>
+        <p style="font-size:14px;color:var(--text-m)"><strong style="color:var(--pri)">Before Step 1:</strong> always check assumptions (independence, normality, equal variance). If any fail, switch to Welch's ANOVA or Kruskal-Wallis.</p>
+    </div>
+
+    <div class="ft"><span class="ft-n"></span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ SLIDE 7 — THE F-STATISTIC ━━━ -->
+<div class="slide" data-slide="7">
     <div class="orb orb-b" style="width:500px;height:500px;top:-100px;left:-100px;animation-delay:-4s"></div>
     <div style="font-size:15px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--pri);margin-bottom:8px" class="rv">THE TEST STATISTIC</div>
     <h2 style="font-size:48px;font-weight:800;margin-bottom:28px" class="rv d1">The <span class="gx">F-Statistic</span></h2>
@@ -239,7 +450,7 @@ body.dark .data-table tr:nth-child(even) td{background:#0F172A}
                 <div style="font-size:13px;font-weight:700;letter-spacing:2px;color:var(--green);margin-bottom:10px">KEY PROPERTIES</div>
                 <ul style="list-style:none;font-size:15px;color:var(--text-m);line-height:2">
                     <li style="display:flex;align-items:center;gap:8px"><span style="color:var(--green);font-weight:700">&#10003;</span> $F \geq 0$ always</li>
-                    <li style="display:flex;align-items:center;gap:8px"><span style="color:var(--green);font-weight:700">&#10003;</span> Right-skewed distribution</li>
+                    <li style="display:flex;align-items:center;gap:8px"><span style="color:var(--green);font-weight:700">&#10003;</span> Right skewed distribution</li>
                     <li style="display:flex;align-items:center;gap:8px"><span style="color:var(--green);font-weight:700">&#10003;</span> Large $F$ = evidence of difference</li>
                     <li style="display:flex;align-items:center;gap:8px"><span style="color:var(--green);font-weight:700">&#10003;</span> $F \approx 1$ under $H_0$</li>
                 </ul>
@@ -252,11 +463,97 @@ body.dark .data-table tr:nth-child(even) td{background:#0F172A}
         </div>
     </div>
 
-    <div class="ft"><span class="ft-n">4 / 10</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+    <div class="ft"><span class="ft-n"></span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
 </div>
 
-<!-- ━━━ SLIDE 5 — ANOVA TABLE ━━━ -->
-<div class="slide" data-slide="5">
+<!-- ━━━ SLIDE 8 — F-DISTRIBUTION VISUAL + P-VALUE (NEW) ━━━ -->
+<div class="slide" data-slide="8">
+    <div class="orb orb-b" style="width:400px;height:400px;top:-60px;right:-60px;animation-delay:-6s"></div>
+    <div style="font-size:15px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--pri);margin-bottom:8px" class="rv">VISUALIZING F</div>
+    <h2 style="font-size:44px;font-weight:800;margin-bottom:22px" class="rv d1">The <span class="gx">F-Distribution</span> &amp; the P-value</h2>
+
+    <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:26px;max-width:1200px;align-items:center">
+        <div class="g rv d2" style="padding:22px">
+            <svg viewBox="0 0 620 300" style="width:100%;height:auto;display:block">
+                <!-- Axis -->
+                <line x1="40" y1="250" x2="600" y2="250" stroke="#94A3B8" stroke-width="1.5"/>
+                <text x="10" y="150" font-family="Outfit" font-size="11" fill="#64748B" transform="rotate(-90 10 150)">f(F)</text>
+                <text x="320" y="282" font-family="Outfit" font-size="11" fill="#64748B" text-anchor="middle">F</text>
+                <!-- Axis tick labels -->
+                <text x="40" y="268" font-family="Outfit" font-size="10" fill="#94A3B8">0</text>
+                <text x="170" y="268" font-family="Outfit" font-size="10" fill="#94A3B8">1</text>
+                <text x="300" y="268" font-family="Outfit" font-size="10" fill="#94A3B8">2</text>
+                <text x="430" y="268" font-family="Outfit" font-size="10" fill="#94A3B8">3</text>
+                <text x="560" y="268" font-family="Outfit" font-size="10" fill="#94A3B8">4</text>
+
+                <!-- Critical region shaded (F > 3.49 ≈ Fcrit) -->
+                <path d="M 495 250
+                         C 508 250, 520 247, 534 245
+                         C 550 242, 565 238, 580 234
+                         C 590 232, 598 230, 600 230
+                         L 600 250 Z"
+                      fill="#DC2626" opacity="0.35"/>
+
+                <!-- P-value region (F > observed = 21.48 — show at x=4 for visibility) -->
+                <!-- Instead of p-value separate region, highlight critical region with annotation -->
+
+                <!-- Smooth F-curve (bezier approximation for F(2,12) shape) -->
+                <path d="M 40 250
+                         C 60 100, 90 60, 135 55
+                         C 160 52, 180 80, 210 120
+                         C 240 160, 270 190, 310 210
+                         C 360 225, 420 238, 495 245
+                         C 540 247, 580 249, 600 250"
+                      fill="none" stroke="#1D4ED8" stroke-width="3"/>
+
+                <!-- Fill under curve (area) -->
+                <path d="M 40 250
+                         C 60 100, 90 60, 135 55
+                         C 160 52, 180 80, 210 120
+                         C 240 160, 270 190, 310 210
+                         C 360 225, 420 238, 495 245
+                         C 540 247, 580 249, 600 250
+                         L 600 250 L 40 250 Z"
+                      fill="#3B82F6" opacity="0.1"/>
+
+                <!-- Critical value vertical line (F_crit at x ≈ 495) -->
+                <line x1="495" y1="60" x2="495" y2="250" stroke="#DC2626" stroke-width="2" stroke-dasharray="5 3"/>
+                <text x="498" y="70" font-family="Outfit" font-size="12" fill="#DC2626" font-weight="700">F<tspan font-size="9">crit</tspan> = 3.89</text>
+
+                <!-- Rejection region annotation -->
+                <text x="545" y="210" font-family="Outfit" font-size="11" fill="#991B1B" font-weight="700" text-anchor="middle">REJECT H₀</text>
+                <text x="545" y="224" font-family="Outfit" font-size="10" fill="#991B1B" text-anchor="middle">α = 0.05</text>
+
+                <!-- Fail to reject region -->
+                <text x="250" y="220" font-family="Outfit" font-size="11" fill="#1E40AF" font-weight="700" text-anchor="middle">FAIL TO REJECT H₀</text>
+                <text x="250" y="234" font-family="Outfit" font-size="10" fill="#64748B" text-anchor="middle">1 - α = 0.95</text>
+
+                <!-- Title -->
+                <text x="320" y="30" font-family="Outfit" font-size="13" fill="#111827" font-weight="700" text-anchor="middle">F-distribution (df₁ = 2, df₂ = 12)</text>
+            </svg>
+        </div>
+
+        <div>
+            <div class="g g-blue rv d3" style="padding:18px 22px;margin-bottom:12px">
+                <div style="font-size:12px;font-weight:800;color:var(--pri);letter-spacing:1.5px;margin-bottom:6px">P-VALUE</div>
+                <p style="font-size:13px;color:var(--text-m);line-height:1.6">The area under the F-curve <em>to the right</em> of the observed $F$. Small p-value &rarr; observed $F$ is far out in the tail.</p>
+            </div>
+            <div class="g g-red rv d4" style="padding:18px 22px;margin-bottom:12px">
+                <div style="font-size:12px;font-weight:800;color:var(--red);letter-spacing:1.5px;margin-bottom:6px">REJECTION REGION</div>
+                <p style="font-size:13px;color:var(--text-m);line-height:1.6">Set by $\alpha$: the critical value $F_\alpha$ cuts off the top $\alpha$ of the distribution.</p>
+            </div>
+            <div class="g step" style="padding:16px 20px;background:linear-gradient(135deg,rgba(37,99,235,0.1),rgba(96,165,250,0.04));border:1.5px solid rgba(37,99,235,0.22)">
+                <div style="font-size:12px;font-weight:800;color:var(--pri);letter-spacing:1.5px;margin-bottom:6px">TRY IT</div>
+                <p style="font-size:13px;color:var(--text-m);line-height:1.6">Click the <strong>F-TABLE</strong> button (top-right) to explore critical values for different $(df_1, df_2)$.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="ft"><span class="ft-n"></span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ SLIDE 9 — ANOVA TABLE ━━━ -->
+<div class="slide" data-slide="9">
     <div class="orb orb-p" style="width:350px;height:350px;top:-60px;right:-40px;animation-delay:-6s"></div>
     <div style="font-size:15px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--pri);margin-bottom:8px" class="rv">THE CLASSIC FORMAT</div>
     <h2 style="font-size:48px;font-weight:800;margin-bottom:28px" class="rv d1">ANOVA <span class="gx">Table</span></h2>
@@ -313,11 +610,11 @@ body.dark .data-table tr:nth-child(even) td{background:#0F172A}
         </div>
     </div>
 
-    <div class="ft"><span class="ft-n">5 / 10</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+    <div class="ft"><span class="ft-n"></span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
 </div>
 
-<!-- ━━━ SLIDE 6 — ASSUMPTIONS ━━━ -->
-<div class="slide" data-slide="6">
+<!-- ━━━ SLIDE 10 — ASSUMPTIONS ━━━ -->
+<div class="slide" data-slide="10">
     <div class="orb orb-b" style="width:400px;height:400px;bottom:-100px;right:-80px;animation-delay:-9s"></div>
     <div style="font-size:15px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--pri);margin-bottom:8px" class="rv">BEFORE YOU TEST</div>
     <h2 style="font-size:48px;font-weight:800;margin-bottom:32px" class="rv d1">ANOVA <span class="gx">Assumptions</span></h2>
@@ -330,7 +627,7 @@ body.dark .data-table tr:nth-child(even) td{background:#0F172A}
             <div style="font-size:18px;font-weight:700;margin-bottom:8px">Independence</div>
             <p style="font-size:14px;color:var(--text-m);line-height:1.7">Observations within and across groups are <strong style="color:var(--text)">independent</strong> of each other.</p>
             <div class="step" style="margin-top:14px;padding:10px 14px;border-radius:10px;background:rgba(37,99,235,0.06)">
-                <p style="font-size:12px;color:var(--text-d)"><strong>If violated:</strong> Use repeated measures ANOVA or mixed-effects models.</p>
+                <p style="font-size:12px;color:var(--text-d)"><strong>If violated:</strong> Use repeated measures ANOVA or mixed effects models.</p>
             </div>
         </div>
 
@@ -341,7 +638,7 @@ body.dark .data-table tr:nth-child(even) td{background:#0F172A}
             <div style="font-size:18px;font-weight:700;margin-bottom:8px">Normality</div>
             <p style="font-size:14px;color:var(--text-m);line-height:1.7">Each group's data is <strong style="color:var(--text)">approximately normally</strong> distributed.</p>
             <div class="step" style="margin-top:14px;padding:10px 14px;border-radius:10px;background:rgba(5,150,105,0.06)">
-                <p style="font-size:12px;color:var(--text-d)"><strong>If violated:</strong> Use Kruskal-Wallis test (non-parametric alternative).</p>
+                <p style="font-size:12px;color:var(--text-d)"><strong>If violated:</strong> Use Kruskal-Wallis test (non parametric alternative).</p>
             </div>
         </div>
 
@@ -362,11 +659,60 @@ body.dark .data-table tr:nth-child(even) td{background:#0F172A}
         <p style="font-size:14px;color:var(--text-m)"><strong style="color:var(--pri)">Pro tip:</strong> ANOVA is <em>robust</em> to mild violations of normality (especially with balanced group sizes). Check with Levene's test for equal variance and Shapiro-Wilk for normality.</p>
     </div>
 
-    <div class="ft"><span class="ft-n">6 / 10</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+    <div class="ft"><span class="ft-n"></span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
 </div>
 
-<!-- ━━━ SLIDE 7 — EXAMPLE SETUP ━━━ -->
-<div class="slide" data-slide="7">
+<!-- ━━━ SLIDE 11 — TYPES OF ANOVA (NEW) ━━━ -->
+<div class="slide" data-slide="11">
+    <div class="orb orb-p" style="width:400px;height:400px;top:-80px;left:-60px;animation-delay:-12s"></div>
+    <div style="font-size:15px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--pri);margin-bottom:8px" class="rv">FAMILY OF ANOVAs</div>
+    <h2 style="font-size:46px;font-weight:800;margin-bottom:22px" class="rv d1">Types of <span class="gx">ANOVA</span></h2>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;max-width:1200px">
+        <div class="g g-blue rv d2" style="padding:24px">
+            <div style="font-size:11px;font-weight:800;letter-spacing:2px;color:var(--pri);margin-bottom:8px">ONE-WAY</div>
+            <div style="font-size:20px;font-weight:800;margin-bottom:10px">One Factor, $k$ Levels</div>
+            <p style="font-size:13px;color:var(--text-m);line-height:1.7">One categorical predictor, one numeric outcome. Compare means across $k$ groups.</p>
+            <div style="margin-top:12px;padding:10px 14px;border-radius:10px;background:rgba(37,99,235,0.08)">
+                <div style="font-size:11px;font-weight:700;color:var(--pri);margin-bottom:4px">EXAMPLE</div>
+                <p style="font-size:12px;color:var(--text-m)">3 machines &rarr; output</p>
+            </div>
+            <div style="margin-top:10px;padding:8px 12px;border-radius:8px;background:rgba(37,99,235,0.04);font-size:11px;color:var(--text-d)"><strong>df:</strong> $(k{-}1,\; N{-}k)$</div>
+        </div>
+
+        <div class="g g-teal rv d3" style="padding:24px">
+            <div style="font-size:11px;font-weight:800;letter-spacing:2px;color:var(--teal);margin-bottom:8px">TWO-WAY</div>
+            <div style="font-size:20px;font-weight:800;margin-bottom:10px">Two Factors + Interaction</div>
+            <p style="font-size:13px;color:var(--text-m);line-height:1.7">Two categorical predictors. Tests main effects of each, plus their interaction.</p>
+            <div style="margin-top:12px;padding:10px 14px;border-radius:10px;background:rgba(3,105,161,0.08)">
+                <div style="font-size:11px;font-weight:700;color:var(--teal);margin-bottom:4px">EXAMPLE</div>
+                <p style="font-size:12px;color:var(--text-m)">Machine &times; shift &rarr; output</p>
+            </div>
+            <div style="margin-top:10px;padding:8px 12px;border-radius:8px;background:rgba(3,105,161,0.04);font-size:11px;color:var(--text-d)"><strong>Tests:</strong> factor A, factor B, A&times;B</div>
+        </div>
+
+        <div class="g g-green rv d4" style="padding:24px">
+            <div style="font-size:11px;font-weight:800;letter-spacing:2px;color:var(--green);margin-bottom:8px">REPEATED MEASURES</div>
+            <div style="font-size:20px;font-weight:800;margin-bottom:10px">Same Subjects, Over Time</div>
+            <p style="font-size:13px;color:var(--text-m);line-height:1.7">Each subject measured under multiple conditions. Accounts for within-subject correlation.</p>
+            <div style="margin-top:12px;padding:10px 14px;border-radius:10px;background:rgba(5,150,105,0.08)">
+                <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:4px">EXAMPLE</div>
+                <p style="font-size:12px;color:var(--text-m)">Patient BP at 0, 4, 8 weeks</p>
+            </div>
+            <div style="margin-top:10px;padding:8px 12px;border-radius:8px;background:rgba(5,150,105,0.04);font-size:11px;color:var(--text-d)"><strong>Use:</strong> same-subject designs, growth curves</div>
+        </div>
+    </div>
+
+    <div class="g step" style="max-width:1150px;margin-top:22px;padding:16px 22px;display:flex;align-items:center;gap:14px">
+        <div style="font-size:26px">&#128273;</div>
+        <p style="font-size:13px;color:var(--text-m)"><strong style="color:var(--pri)">Also worth knowing:</strong> <em>MANOVA</em> (multiple outcome variables), <em>ANCOVA</em> (ANOVA with a continuous covariate), <em>mixed effects ANOVA</em> (fixed + random factors). All share the same variance partition logic.</p>
+    </div>
+
+    <div class="ft"><span class="ft-n"></span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ SLIDE 12 — EXAMPLE SETUP ━━━ -->
+<div class="slide" data-slide="12">
     <div class="orb orb-p" style="width:400px;height:400px;top:-80px;left:-60px;animation-delay:-12s"></div>
     <div style="font-size:15px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--teal);margin-bottom:8px" class="rv">WORKED EXAMPLE</div>
     <h2 style="font-size:44px;font-weight:800;margin-bottom:24px" class="rv d1">Manufacturing <span class="gx-t">Output</span></h2>
@@ -428,17 +774,16 @@ body.dark .data-table tr:nth-child(even) td{background:#0F172A}
         </div>
     </div>
 
-    <div class="ft"><span class="ft-n">7 / 10</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+    <div class="ft"><span class="ft-n"></span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
 </div>
 
-<!-- ━━━ SLIDE 8 — EXAMPLE SOLUTION ━━━ -->
-<div class="slide" data-slide="8">
+<!-- ━━━ SLIDE 13 — EXAMPLE SOLUTION ━━━ -->
+<div class="slide" data-slide="13">
     <div class="orb orb-b" style="width:450px;height:450px;bottom:-100px;right:-80px;animation-delay:-3s"></div>
     <div style="font-size:15px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--teal);margin-bottom:8px" class="rv">STEP BY STEP</div>
     <h2 style="font-size:40px;font-weight:800;margin-bottom:20px" class="rv d1">Example <span class="gx-t">Solution</span></h2>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:1100px">
-        <!-- Left column: Steps -->
         <div>
             <div class="g g-blue rv d2" style="padding:20px 24px;margin-bottom:14px">
                 <div style="font-size:11px;font-weight:800;letter-spacing:2px;color:var(--pri);margin-bottom:8px">STEP 1 &mdash; GROUP MEANS</div>
@@ -453,13 +798,12 @@ body.dark .data-table tr:nth-child(even) td{background:#0F172A}
                 <div style="font-size:13px;color:var(--text-m);line-height:1.9">
                     $SS_B = 5(24.2{-}26.4)^2 + 5(30.0{-}26.4)^2 + 5(25.0{-}26.4)^2$<br>
                     $\phantom{SS_B} = 5(4.84) + 5(12.96) + 5(1.96) = \mathbf{98.8}$<br><br>
-                    $SS_W = \sum\text{(within-group deviations}^2\text{)}= \mathbf{27.6}$<br><br>
+                    $SS_W = \sum\text{(within group deviations}^2\text{)}= \mathbf{27.6}$<br><br>
                     $SS_T = 98.8 + 27.6 = \mathbf{126.4}$
                 </div>
             </div>
         </div>
 
-        <!-- Right column: Table + Result -->
         <div>
             <div class="g rv d3" style="padding:20px 24px;margin-bottom:14px">
                 <div style="font-size:11px;font-weight:800;letter-spacing:2px;color:var(--pri);margin-bottom:10px">STEP 3 &mdash; ANOVA TABLE</div>
@@ -491,11 +835,11 @@ body.dark .data-table tr:nth-child(even) td{background:#0F172A}
         </div>
     </div>
 
-    <div class="ft"><span class="ft-n">8 / 10</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+    <div class="ft"><span class="ft-n"></span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
 </div>
 
-<!-- ━━━ SLIDE 9 — POST-HOC TESTS ━━━ -->
-<div class="slide" data-slide="9">
+<!-- ━━━ SLIDE 14 — POST-HOC TESTS ━━━ -->
+<div class="slide" data-slide="14">
     <div class="orb orb-p" style="width:400px;height:400px;top:-80px;right:-60px;animation-delay:-7s"></div>
     <div style="font-size:15px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--amber);margin-bottom:8px" class="rv">AFTER ANOVA</div>
     <h2 style="font-size:48px;font-weight:800;margin-bottom:24px" class="rv d1">Post-Hoc: <span class="gx-a">Tukey's HSD</span></h2>
@@ -548,11 +892,237 @@ body.dark .data-table tr:nth-child(even) td{background:#0F172A}
         </div>
     </div>
 
-    <div class="ft"><span class="ft-n">9 / 10</span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+    <div class="ft"><span class="ft-n"></span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
 </div>
 
-<!-- ━━━ SLIDE 10 — SUMMARY ━━━ -->
-<div class="slide" data-slide="10" style="justify-content:center;align-items:center;text-align:center">
+<!-- ━━━ SLIDE 15 — EFFECT SIZE + INTERPRETATION (NEW) ━━━ -->
+<div class="slide" data-slide="15">
+    <div class="orb orb-b" style="width:400px;height:400px;top:-60px;left:-50px;animation-delay:-10s"></div>
+    <div style="font-size:15px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--pri);margin-bottom:8px" class="rv">HOW BIG IS THE EFFECT?</div>
+    <h2 style="font-size:44px;font-weight:800;margin-bottom:22px" class="rv d1">Effect Size &amp; <span class="gx">Interpretation</span></h2>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:26px;max-width:1150px">
+        <div>
+            <div class="g g-blue rv d2" style="padding:24px;margin-bottom:14px">
+                <div style="font-size:12px;font-weight:800;color:var(--pri);letter-spacing:1.5px;margin-bottom:8px">ETA SQUARED ($\eta^2$)</div>
+                <div class="math-block" style="font-size:18px">
+                    $$\eta^2 = \frac{SS_B}{SS_T}$$
+                </div>
+                <p style="font-size:13px;color:var(--text-m);line-height:1.6;margin-top:8px">The proportion of total variance <em>explained</em> by the grouping factor. Our example: $\eta^2 = 98.8/126.4 = 0.78$ &rarr; <strong style="color:var(--pri)">78% of variation</strong> is explained by the machine.</p>
+            </div>
+
+            <div class="g g-green step" style="padding:18px 22px">
+                <div style="font-size:12px;font-weight:800;color:var(--green);letter-spacing:1.5px;margin-bottom:6px">RULES OF THUMB</div>
+                <ul style="list-style:none;font-size:13px;color:var(--text-m);line-height:1.9">
+                    <li>&bull; $\eta^2 \approx 0.01$ &rarr; small effect</li>
+                    <li>&bull; $\eta^2 \approx 0.06$ &rarr; medium effect</li>
+                    <li>&bull; $\eta^2 \geq 0.14$ &rarr; large effect</li>
+                </ul>
+            </div>
+        </div>
+
+        <div>
+            <div class="g g-amber rv d3" style="padding:24px;margin-bottom:14px">
+                <div style="font-size:12px;font-weight:800;color:var(--amber);letter-spacing:1.5px;margin-bottom:8px">WHAT "REJECT H<sub>0</sub>" ACTUALLY MEANS</div>
+                <p style="font-size:13px;color:var(--text-m);line-height:1.7"><strong style="color:var(--text)">At least one</strong> group mean differs from the others &mdash; not that <em>all</em> means differ. Post-hoc tests locate the differences.</p>
+            </div>
+
+            <div class="g g-red step" style="padding:18px 22px;margin-bottom:12px">
+                <div style="font-size:12px;font-weight:800;color:var(--red);letter-spacing:1.5px;margin-bottom:6px">COMMON MISREADS</div>
+                <ul style="list-style:none;font-size:12px;color:var(--text-m);line-height:1.7">
+                    <li>&bull; "$p < 0.05$" means the effect is <em>important</em> &mdash; no, it means unlikely under $H_0$</li>
+                    <li>&bull; A non-significant F means "no difference" &mdash; no, it means insufficient evidence</li>
+                </ul>
+            </div>
+
+            <div class="g step" style="padding:16px 20px;background:linear-gradient(135deg,rgba(37,99,235,0.08),rgba(96,165,250,0.04));border:1.5px solid rgba(37,99,235,0.22)">
+                <p style="font-size:13px;color:var(--text-m)"><strong style="color:var(--pri)">Report both:</strong> the F-statistic <em>and</em> $\eta^2$. Statistical significance tells you <em>whether</em>, effect size tells you <em>how much</em>.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="ft"><span class="ft-n"></span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ SLIDE 16 — REAL WORLD CASE STUDIES (NEW) ━━━ -->
+<div class="slide" data-slide="16">
+    <div class="orb orb-p" style="width:400px;height:400px;bottom:-60px;right:-60px;animation-delay:-13s"></div>
+    <div style="font-size:15px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--pri);margin-bottom:8px" class="rv">ANOVA IN THE WILD</div>
+    <h2 style="font-size:44px;font-weight:800;margin-bottom:22px" class="rv d1">Real World <span class="gx">Case Studies</span></h2>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;max-width:1200px">
+        <div class="g g-blue rv d2" style="padding:22px">
+            <div style="width:64px;height:64px;border-radius:18px;background:var(--pri-glass);display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:32px">&#127981;</div>
+            <div style="font-size:11px;font-weight:800;color:var(--pri);letter-spacing:1.5px;margin-bottom:6px">MANUFACTURING</div>
+            <div style="font-size:18px;font-weight:800;margin-bottom:8px">Production Lines</div>
+            <p style="font-size:13px;color:var(--text-m);line-height:1.6">A factory compares output from 4 production lines. ANOVA detects which lines are underperforming so maintenance can be targeted.</p>
+            <div style="margin-top:12px;padding:10px 12px;border-radius:10px;background:rgba(37,99,235,0.06)">
+                <div style="font-size:10px;font-weight:700;color:var(--pri);letter-spacing:1px;margin-bottom:3px">ANOVA ANSWERS</div>
+                <p style="font-size:12px;color:var(--text-m)">Do lines differ in throughput?</p>
+            </div>
+        </div>
+
+        <div class="g g-teal rv d3" style="padding:22px">
+            <div style="width:64px;height:64px;border-radius:18px;background:var(--teal-glass);display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:32px">&#128187;</div>
+            <div style="font-size:11px;font-weight:800;color:var(--teal);letter-spacing:1.5px;margin-bottom:6px">MARKETING</div>
+            <div style="font-size:18px;font-weight:800;margin-bottom:8px">A/B/C Website Test</div>
+            <p style="font-size:13px;color:var(--text-m);line-height:1.6">Three landing page designs, measuring conversion rate across users. ANOVA identifies the winning design without inflating false positives.</p>
+            <div style="margin-top:12px;padding:10px 12px;border-radius:10px;background:rgba(3,105,161,0.06)">
+                <div style="font-size:10px;font-weight:700;color:var(--teal);letter-spacing:1px;margin-bottom:3px">ANOVA ANSWERS</div>
+                <p style="font-size:12px;color:var(--text-m)">Does design affect conversion?</p>
+            </div>
+        </div>
+
+        <div class="g g-green rv d4" style="padding:22px">
+            <div style="width:64px;height:64px;border-radius:18px;background:var(--green-glass);display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:32px">&#127973;</div>
+            <div style="font-size:11px;font-weight:800;color:var(--green);letter-spacing:1.5px;margin-bottom:6px">HEALTHCARE</div>
+            <div style="font-size:18px;font-weight:800;margin-bottom:8px">ER Wait Times</div>
+            <p style="font-size:13px;color:var(--text-m);line-height:1.6">A hospital measures patient wait times across 4 shifts (day, evening, night, weekend). ANOVA flags which shift needs more staffing.</p>
+            <div style="margin-top:12px;padding:10px 12px;border-radius:10px;background:rgba(5,150,105,0.06)">
+                <div style="font-size:10px;font-weight:700;color:var(--green);letter-spacing:1px;margin-bottom:3px">ANOVA ANSWERS</div>
+                <p style="font-size:12px;color:var(--text-m)">Do wait times differ by shift?</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="g step" style="max-width:1150px;margin-top:22px;padding:16px 22px;display:flex;align-items:center;gap:14px">
+        <div style="font-size:26px">&#128204;</div>
+        <p style="font-size:13px;color:var(--text-m)"><strong style="color:var(--pri)">Common thread:</strong> a categorical factor (line, design, shift) with 3+ levels and a continuous outcome (throughput, conversion, wait time). That is exactly ANOVA's sweet spot.</p>
+    </div>
+
+    <div class="ft"><span class="ft-n"></span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ SLIDE 17 — COMMON PITFALLS (NEW) ━━━ -->
+<div class="slide" data-slide="17">
+    <div class="orb orb-b" style="width:400px;height:400px;top:-80px;right:-60px;animation-delay:-8s"></div>
+    <div style="font-size:15px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:8px" class="rv">WATCH OUT</div>
+    <h2 style="font-size:46px;font-weight:800;margin-bottom:24px" class="rv d1">Common <span style="background:linear-gradient(135deg,#DC2626,#F87171);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Pitfalls</span></h2>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:1150px">
+        <div class="g g-red rv d2" style="padding:20px 24px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="font-size:22px">&#9888;</span><div style="font-size:13px;font-weight:800;color:var(--red);letter-spacing:1.5px">RUNNING MULTIPLE t-TESTS</div></div>
+            <p style="font-size:13px;color:var(--text-m);line-height:1.6">Skipping ANOVA and running all pairwise t-tests inflates the family-wise error rate. Always start with the omnibus F.</p>
+        </div>
+
+        <div class="g g-red rv d3" style="padding:20px 24px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="font-size:22px">&#9888;</span><div style="font-size:13px;font-weight:800;color:var(--red);letter-spacing:1.5px">IGNORING ASSUMPTIONS</div></div>
+            <p style="font-size:13px;color:var(--text-m);line-height:1.6">Severely unequal variances or heavy skew can invalidate the F-test. Check Levene's / Shapiro-Wilk before trusting the p-value.</p>
+        </div>
+
+        <div class="g g-red rv d4" style="padding:20px 24px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="font-size:22px">&#9888;</span><div style="font-size:13px;font-weight:800;color:var(--red);letter-spacing:1.5px">UNEQUAL SAMPLE SIZES</div></div>
+            <p style="font-size:13px;color:var(--text-m);line-height:1.6">Highly unbalanced designs amplify the effect of heteroscedasticity. Prefer balanced groups or switch to Welch's ANOVA.</p>
+        </div>
+
+        <div class="g g-red rv d5" style="padding:20px 24px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="font-size:22px">&#9888;</span><div style="font-size:13px;font-weight:800;color:var(--red);letter-spacing:1.5px">STOPPING AT THE F-TEST</div></div>
+            <p style="font-size:13px;color:var(--text-m);line-height:1.6">A significant F alone says nothing about <em>which</em> groups differ. Always follow with Tukey's HSD (or Bonferroni / Scheffe).</p>
+        </div>
+
+        <div class="g g-red step" style="padding:20px 24px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="font-size:22px">&#9888;</span><div style="font-size:13px;font-weight:800;color:var(--red);letter-spacing:1.5px">INTERPRETING MAIN EFFECTS UNDER INTERACTION</div></div>
+            <p style="font-size:13px;color:var(--text-m);line-height:1.6">In two-way ANOVA, if the A&times;B interaction is significant, main effects can be misleading &mdash; interpret simple effects instead.</p>
+        </div>
+
+        <div class="g g-red step" style="padding:20px 24px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="font-size:22px">&#9888;</span><div style="font-size:13px;font-weight:800;color:var(--red);letter-spacing:1.5px">CONFUSING SIGNIFICANCE WITH SIZE</div></div>
+            <p style="font-size:13px;color:var(--text-m);line-height:1.6">With very large $n$, tiny mean differences can produce $p < 0.05$. Always report $\eta^2$ alongside the F to show <em>how much</em> the factor matters.</p>
+        </div>
+    </div>
+
+    <div class="ft"><span class="ft-n"></span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ SLIDE 18 — HISTORY FLIP CARDS (NEW) ━━━ -->
+<div class="slide" data-slide="18">
+    <div class="orb orb-p" style="width:400px;height:400px;bottom:-60px;left:-40px;animation-delay:-14s"></div>
+    <div style="font-size:15px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--pri);margin-bottom:8px" class="rv">A CENTURY OF ANOVA</div>
+    <h2 style="font-size:44px;font-weight:800;margin-bottom:8px" class="rv d1">The <span class="gx">Story</span> Behind the F-Test</h2>
+    <p style="font-size:14px;color:var(--text-m);margin-bottom:22px" class="rv d2">Click each card to flip &mdash; ANOVA grew out of agriculture, brewing, and war-time statistics.</p>
+
+    <div style="display:flex;gap:16px;max-width:1200px;flex-wrap:wrap">
+        <div class="flip-card rv d3" onclick="this.classList.toggle('flipped')">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    <div style="font-size:11px;font-weight:800;color:var(--pri);letter-spacing:2px;margin-bottom:8px">1918</div>
+                    <div style="font-size:22px;font-weight:800;margin-bottom:6px">R.A. Fisher</div>
+                    <div style="font-size:13px;color:var(--text-m)">The first ANOVA paper</div>
+                    <div class="flip-hint">tap to flip</div>
+                </div>
+                <div class="flip-card-back" style="border-left:4px solid #2563EB">
+                    <div style="font-size:11px;font-weight:800;color:var(--pri);letter-spacing:1.5px;margin-bottom:6px">ROTHAMSTED, ENGLAND</div>
+                    <p style="font-size:12px;color:var(--text-m);line-height:1.6">Fisher invents variance decomposition to analyze <strong>crop yield experiments</strong>. His 1918 paper "The Correlation Between Relatives" lays the algebraic foundation for SS<sub>B</sub> + SS<sub>W</sub>.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flip-card rv d4" onclick="this.classList.toggle('flipped')">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    <div style="font-size:11px;font-weight:800;color:var(--teal);letter-spacing:2px;margin-bottom:8px">1925</div>
+                    <div style="font-size:22px;font-weight:800;margin-bottom:6px">Fisher's Book</div>
+                    <div style="font-size:13px;color:var(--text-m)">Statistical Methods</div>
+                    <div class="flip-hint">tap to flip</div>
+                </div>
+                <div class="flip-card-back" style="border-left:4px solid #0369A1">
+                    <div style="font-size:11px;font-weight:800;color:var(--teal);letter-spacing:1.5px;margin-bottom:6px">FOR RESEARCH WORKERS</div>
+                    <p style="font-size:12px;color:var(--text-m);line-height:1.6">Fisher publishes <em>Statistical Methods for Research Workers</em>, making ANOVA accessible to biologists, agronomists, and industrialists. Also introduces <strong>degrees of freedom</strong> and the F-table.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flip-card rv d5" onclick="this.classList.toggle('flipped')">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    <div style="font-size:11px;font-weight:800;color:var(--amber);letter-spacing:2px;margin-bottom:8px">1934</div>
+                    <div style="font-size:22px;font-weight:800;margin-bottom:6px">G.W. Snedecor</div>
+                    <div style="font-size:13px;color:var(--text-m)">Names it "F"</div>
+                    <div class="flip-hint">tap to flip</div>
+                </div>
+                <div class="flip-card-back" style="border-left:4px solid #D97706">
+                    <div style="font-size:11px;font-weight:800;color:var(--amber);letter-spacing:1.5px;margin-bottom:6px">IOWA STATE</div>
+                    <p style="font-size:12px;color:var(--text-m);line-height:1.6">Snedecor tabulates the distribution of the variance ratio and names it <strong>F in honor of Fisher</strong>. His 1937 textbook standardizes the ANOVA table format still used today.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flip-card step" onclick="this.classList.toggle('flipped')">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    <div style="font-size:11px;font-weight:800;color:var(--green);letter-spacing:2px;margin-bottom:8px">1953</div>
+                    <div style="font-size:22px;font-weight:800;margin-bottom:6px">G.E.P. Box</div>
+                    <div style="font-size:13px;color:var(--text-m)">Robustness</div>
+                    <div class="flip-hint">tap to flip</div>
+                </div>
+                <div class="flip-card-back" style="border-left:4px solid #059669">
+                    <div style="font-size:11px;font-weight:800;color:var(--green);letter-spacing:1.5px;margin-bottom:6px">ICI &amp; PRINCETON</div>
+                    <p style="font-size:12px;color:var(--text-m);line-height:1.6">Box shows ANOVA is <strong>robust to mild violations</strong> of normality and equal variance when groups are balanced. This made ANOVA practical far beyond Fisher's original agricultural setting.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flip-card step" onclick="this.classList.toggle('flipped')">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    <div style="font-size:11px;font-weight:800;color:var(--accent);letter-spacing:2px;margin-bottom:8px">TODAY</div>
+                    <div style="font-size:22px;font-weight:800;margin-bottom:6px">Everywhere</div>
+                    <div style="font-size:13px;color:var(--text-m)">ANOVA in industry</div>
+                    <div class="flip-hint">tap to flip</div>
+                </div>
+                <div class="flip-card-back" style="border-left:4px solid #1D4ED8">
+                    <div style="font-size:11px;font-weight:800;color:var(--accent);letter-spacing:1.5px;margin-bottom:6px">CLINICAL TRIALS TO A/B TESTS</div>
+                    <p style="font-size:12px;color:var(--text-m);line-height:1.6">Every clinical trial, every manufacturing quality test, every experimental ML benchmark, and every web A/B/C test traces back to Fisher's partition at Rothamsted. A <strong>100 year old idea</strong> still at the center of modern analytics.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ft"><span class="ft-n"></span><span>Prof. Mohammad Dehghani</span><span>Northeastern University</span></div>
+</div>
+
+<!-- ━━━ SLIDE 19 — SUMMARY ━━━ -->
+<div class="slide" data-slide="19" style="justify-content:center;align-items:center;text-align:center">
     <div class="orb orb-b" style="width:500px;height:500px;top:-120px;right:-100px;animation-delay:-5s"></div>
     <div class="orb orb-p" style="width:400px;height:400px;bottom:-80px;left:-60px;animation-delay:-11s"></div>
 
@@ -577,14 +1147,18 @@ body.dark .data-table tr:nth-child(even) td{background:#0F172A}
         </div>
     </div>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:800px">
-        <div class="g step" style="padding:18px;text-align:center">
-            <div style="font-size:12px;font-weight:700;letter-spacing:2px;color:var(--pri);margin-bottom:8px">F-STATISTIC</div>
-            <div style="font-size:16px;color:var(--text)">$F = \dfrac{MS_B}{MS_W}$</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;max-width:900px">
+        <div class="g step" style="padding:16px;text-align:center">
+            <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--pri);margin-bottom:6px">F-STATISTIC</div>
+            <div style="font-size:15px;color:var(--text)">$F = \dfrac{MS_B}{MS_W}$</div>
         </div>
-        <div class="g step" style="padding:18px;text-align:center">
-            <div style="font-size:12px;font-weight:700;letter-spacing:2px;color:var(--amber);margin-bottom:8px">TUKEY'S HSD</div>
-            <div style="font-size:16px;color:var(--text)">$HSD = q \cdot \sqrt{\dfrac{MS_W}{n}}$</div>
+        <div class="g step" style="padding:16px;text-align:center">
+            <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--pri);margin-bottom:6px">EFFECT SIZE</div>
+            <div style="font-size:15px;color:var(--text)">$\eta^2 = \dfrac{SS_B}{SS_T}$</div>
+        </div>
+        <div class="g step" style="padding:16px;text-align:center">
+            <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--amber);margin-bottom:6px">TUKEY'S HSD</div>
+            <div style="font-size:15px;color:var(--text)">$HSD = q \sqrt{\tfrac{MS_W}{n}}$</div>
         </div>
     </div>
 
@@ -596,7 +1170,7 @@ body.dark .data-table tr:nth-child(even) td{background:#0F172A}
         </div>
     </div>
 
-    <div class="ft"><span class="ft-n">10 / 10</span><span>IE 6800: Foundations of Data Analytics</span><span>Northeastern University</span></div>
+    <div class="ft"><span class="ft-n"></span><span>IE 6800: Foundations of Data Analytics</span><span>Northeastern University</span></div>
 </div>
 
 <script>
@@ -606,6 +1180,10 @@ const navDots=document.getElementById('navDots');
 slides.forEach((s,i)=>{const d=document.createElement('button');d.className='nav-dot';d.addEventListener('click',()=>s.scrollIntoView({behavior:'smooth'}));navDots.appendChild(d)});
 const dots=navDots.querySelectorAll('.nav-dot');
 const pbar=document.getElementById('progressBar');
+
+/* Dynamic footer numbering */
+slides.forEach((s,i)=>{const ft=s.querySelector('.ft-n');if(ft)ft.textContent=(i+1)+' / '+slides.length});
+
 const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const i=Array.from(slides).indexOf(e.target);dots.forEach((d,j)=>d.classList.toggle('active',j===i));e.target.querySelectorAll('.rv').forEach(el=>el.classList.add('vis'));pbar.style.width=((i+1)/slides.length*100)+'%';try{history.replaceState(null,null,'#slide-'+(i+1))}catch(e){};updateMenuActive(i)}})},{threshold:.5});
 slides.forEach(s=>obs.observe(s));
 (function(){const h=location.hash.match(/^#slide-(\d+)$/);if(h){const n=parseInt(h[1])-1;if(slides[n])setTimeout(()=>slides[n].scrollIntoView(),100)}})();
@@ -614,33 +1192,96 @@ function advS(){const i=gci();if(i<0)return false;const st=slides[i].querySelect
 document.addEventListener('keydown',e=>{
     if(e.key==='f'||e.key==='F'){if(!e.target.closest('input,textarea')){e.preventDefault();toggleFullscreen();return}}
     if(e.key==='d'||e.key==='D'){if(!e.target.closest('input,textarea')){e.preventDefault();toggleDark();return}}
+    if(e.key==='t'||e.key==='T'){if(!e.target.closest('input,textarea')){e.preventDefault();toggleFTable();return}}
+    if(e.key==='Escape'){document.getElementById('fTableOverlay').classList.remove('open');return}
     const c=gci();
     if(['ArrowDown','ArrowRight',' ','PageDown'].includes(e.key)){e.preventDefault();if(!advS()){if(c<slides.length-1)slides[c+1].scrollIntoView({behavior:'smooth'})}}
     if(['ArrowUp','ArrowLeft','Backspace','PageUp'].includes(e.key)){e.preventDefault();if(c>0)slides[c-1].scrollIntoView({behavior:'smooth'})}
 });
-document.addEventListener('click',e=>{if(e.target.closest('a,button,input,.chip,.nav-dot,.fs,.dm,.hm-btn,.hm-panel'))return;advS()});
+document.addEventListener('click',e=>{if(e.target.closest('a,button,input,.chip,.nav-dot,.fs,.dm,.hm-btn,.ft-btn,.hm-panel,.ft-overlay,.flip-card'))return;advS()});
 function toggleFullscreen(){if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()}
 function toggleDark(){document.body.classList.toggle('dark');const isDark=document.body.classList.contains('dark');localStorage.setItem('anova-dark',isDark?'1':'0');document.getElementById('dmIcon').setAttribute('data-lucide',isDark?'sun':'moon');lucide.createIcons()}
 (function(){if(localStorage.getItem('anova-dark')==='1'){document.body.classList.add('dark');document.getElementById('dmIcon').setAttribute('data-lucide','sun');lucide.createIcons()}})();
+
+/* F-Table Modal */
+function toggleFTable(){
+    const ov=document.getElementById('fTableOverlay');
+    const wasOpen=ov.classList.contains('open');
+    ov.classList.toggle('open');
+    if(!wasOpen){buildFTable();setTimeout(()=>{if(typeof renderMathInElement!=='undefined')renderMathInElement(ov,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})},30)}
+}
+/* F critical values at alpha=0.05 */
+const fTableData={
+    df1:[1,2,3,4,5,6,7,8,10,12,15,20,30,60,'∞'],
+    df2:[1,2,3,4,5,6,7,8,9,10,12,15,20,24,30,40,60,120,'∞'],
+    vals:[
+        [161,200,216,225,230,234,237,239,242,244,246,248,250,252,254],
+        [18.5,19.0,19.2,19.2,19.3,19.3,19.4,19.4,19.4,19.4,19.4,19.4,19.5,19.5,19.5],
+        [10.1,9.55,9.28,9.12,9.01,8.94,8.89,8.85,8.79,8.74,8.70,8.66,8.62,8.57,8.53],
+        [7.71,6.94,6.59,6.39,6.26,6.16,6.09,6.04,5.96,5.91,5.86,5.80,5.75,5.69,5.63],
+        [6.61,5.79,5.41,5.19,5.05,4.95,4.88,4.82,4.74,4.68,4.62,4.56,4.50,4.43,4.37],
+        [5.99,5.14,4.76,4.53,4.39,4.28,4.21,4.15,4.06,4.00,3.94,3.87,3.81,3.74,3.67],
+        [5.59,4.74,4.35,4.12,3.97,3.87,3.79,3.73,3.64,3.57,3.51,3.44,3.38,3.30,3.23],
+        [5.32,4.46,4.07,3.84,3.69,3.58,3.50,3.44,3.35,3.28,3.22,3.15,3.08,3.01,2.93],
+        [5.12,4.26,3.86,3.63,3.48,3.37,3.29,3.23,3.14,3.07,3.01,2.94,2.86,2.79,2.71],
+        [4.96,4.10,3.71,3.48,3.33,3.22,3.14,3.07,2.98,2.91,2.85,2.77,2.70,2.62,2.54],
+        [4.75,3.89,3.49,3.26,3.11,3.00,2.91,2.85,2.75,2.69,2.62,2.54,2.47,2.38,2.30],
+        [4.54,3.68,3.29,3.06,2.90,2.79,2.71,2.64,2.54,2.48,2.40,2.33,2.25,2.16,2.07],
+        [4.35,3.49,3.10,2.87,2.71,2.60,2.51,2.45,2.35,2.28,2.20,2.12,2.04,1.95,1.84],
+        [4.26,3.40,3.01,2.78,2.62,2.51,2.42,2.36,2.25,2.18,2.11,2.03,1.94,1.84,1.73],
+        [4.17,3.32,2.92,2.69,2.53,2.42,2.33,2.27,2.16,2.09,2.01,1.93,1.84,1.74,1.62],
+        [4.08,3.23,2.84,2.61,2.45,2.34,2.25,2.18,2.08,2.00,1.92,1.84,1.74,1.64,1.51],
+        [4.00,3.15,2.76,2.53,2.37,2.25,2.17,2.10,1.99,1.92,1.84,1.75,1.65,1.53,1.39],
+        [3.92,3.07,2.68,2.45,2.29,2.17,2.09,2.02,1.91,1.83,1.75,1.66,1.55,1.43,1.25],
+        [3.84,3.00,2.60,2.37,2.21,2.10,2.01,1.94,1.83,1.75,1.67,1.57,1.46,1.32,1.00]
+    ]
+};
+function buildFTable(){
+    const tbl=document.getElementById('fTable');
+    if(tbl.dataset.built==='1')return;
+    let html='<thead><tr><th style="text-align:center">df₂ \\ df₁</th>';
+    fTableData.df1.forEach(c=>html+='<th>'+c+'</th>');
+    html+='</tr></thead><tbody>';
+    fTableData.df2.forEach((r,i)=>{
+        html+='<tr><td>'+r+'</td>';
+        fTableData.vals[i].forEach(v=>html+='<td>'+v+'</td>');
+        html+='</tr>';
+    });
+    html+='</tbody>';
+    tbl.innerHTML=html;
+    tbl.dataset.built='1';
+}
 
 /* Hamburger menu */
 const slideMeta=[
     ['Cover','cover'],
     ['Why ANOVA?','define'],
+    ['ANOVA vs t-tests','compare'],
     ['The ANOVA Idea','define'],
+    ['Variance Partition Analogy','story'],
+    ['5-Step Procedure','define'],
     ['The F-Statistic','define'],
+    ['F-Distribution Visual','interactive'],
     ['ANOVA Table','define'],
     ['Assumptions','define'],
+    ['Types of ANOVA','compare'],
     ['Example: Setup','example'],
     ['Example: Solution','example'],
     ['Post-Hoc: Tukey HSD','define'],
-    ['Summary & Takeaways','closing']
+    ['Effect Size &amp; Interpretation','define'],
+    ['Real World Case Studies','story'],
+    ['Common Pitfalls','challenge'],
+    ['History of ANOVA','story'],
+    ['Summary &amp; Takeaways','closing']
 ];
 const slideSections=[
-    {label:'Introduction',range:[0,1]},
-    {label:'Theory',range:[2,5]},
-    {label:'Example',range:[6,8]},
-    {label:'Wrap-Up',range:[9,9]}
+    {label:'Introduction',range:[0,2]},
+    {label:'Core Theory',range:[3,9]},
+    {label:'Types',range:[10,10]},
+    {label:'Example',range:[11,13]},
+    {label:'Interpretation',range:[14,16]},
+    {label:'Context',range:[17,17]},
+    {label:'Wrap-Up',range:[18,18]}
 ];
 const typeIcons={cover:'&#9632;',story:'&#128214;',define:'&#8505;',example:'&#128295;',game:'&#9889;',compare:'&#9547;',interactive:'&#127760;',challenge:'&#127942;',closing:'&#10004;'};
 const typeColors={cover:'var(--pri)',story:'var(--amber)',define:'var(--pri)',example:'var(--teal)',game:'var(--accent)',compare:'var(--pri)',interactive:'var(--green)',challenge:'var(--red)',closing:'var(--pri)'};
