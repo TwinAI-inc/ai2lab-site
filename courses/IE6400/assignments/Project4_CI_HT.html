@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project 4 — CI & Hypothesis Testing | IE 6400</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+    --neu-red:#C41230;
+    --neu-red-dark:#8f0c22;
+    --neu-red-light:#ff4d6d;
+    --text-primary:#1a1a2e;
+    --text-secondary:#64748b;
+    --text-muted:#94a3b8;
+    --bg-light:#fafbfc;
+    --bg-soft:#f1f5f9;
+    --card-bg:#ffffff;
+    --border-color:#e2e8f0;
+    --pri:#2563EB;
+    --pri-light:#60A5FA;
+    --pri-dark:#1E40AF;
+    --teal:#0369A1;
+    --green:#059669;
+    --amber:#D97706;
+    --red:#DC2626;
+    --purple:#7C3AED;
+    --shadow-sm:0 2px 8px rgba(0,0,0,0.04);
+    --shadow-md:0 8px 28px rgba(0,0,0,0.06);
+    --shadow-lg:0 20px 60px rgba(0,0,0,0.1);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Outfit',sans-serif;background:var(--bg-light);color:var(--text-primary);line-height:1.6;min-height:100vh;padding:0 0 60px}
+a{color:var(--neu-red);text-decoration:none}
+a:hover{text-decoration:underline}
+code{font-family:'JetBrains Mono',monospace;font-size:0.9em;background:rgba(37,99,235,0.06);padding:2px 6px;border-radius:4px;color:var(--pri-dark)}
+
+.topbar{background:#fff;border-bottom:1px solid var(--border-color);padding:14px 32px;display:flex;align-items:center;gap:18px;position:sticky;top:0;z-index:50;box-shadow:var(--shadow-sm)}
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--text-secondary);transition:color .2s}
+.back-link:hover{color:var(--neu-red);text-decoration:none}
+.topbar-title{font-weight:700;font-size:15px;color:var(--text-primary)}
+.topbar-meta{margin-left:auto;font-size:12px;color:var(--text-muted);display:flex;gap:16px;align-items:center}
+
+.wrap{max-width:1180px;margin:0 auto;padding:32px}
+
+/* Hero */
+.hero{background:linear-gradient(135deg,#C41230 0%,#8f0c22 100%);color:#fff;padding:46px 42px;border-radius:24px;box-shadow:var(--shadow-lg);position:relative;overflow:hidden;margin-bottom:34px}
+.hero::before{content:'';position:absolute;top:-40%;right:-10%;width:480px;height:480px;background:radial-gradient(circle,rgba(255,255,255,0.12) 0%,transparent 70%);pointer-events:none}
+.hero .eyebrow{font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;opacity:0.85;margin-bottom:10px}
+.hero h1{font-size:44px;font-weight:800;line-height:1.1;margin-bottom:14px;position:relative}
+.hero p{font-size:17px;max-width:800px;opacity:0.95;position:relative;line-height:1.6}
+.hero-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px;position:relative}
+.hero-chip{background:rgba(255,255,255,0.15);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.2);padding:7px 16px;border-radius:18px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+
+/* Sections */
+.section{margin-bottom:38px}
+.section-label{font-size:11px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px}
+.section-title{font-size:28px;font-weight:800;color:var(--text-primary);margin-bottom:8px}
+.section-sub{font-size:15px;color:var(--text-secondary);margin-bottom:22px;max-width:820px}
+
+.card{background:var(--card-bg);border:1px solid var(--border-color);border-radius:18px;padding:26px;box-shadow:var(--shadow-sm);transition:all .25s}
+.card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.card-title{font-size:17px;font-weight:800;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.card-body{font-size:14px;color:var(--text-secondary);line-height:1.65}
+
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:860px){.grid-3,.grid-2,.grid-4{grid-template-columns:1fr}}
+
+/* Badges */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:12px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.badge-pri{background:rgba(37,99,235,0.1);color:var(--pri-dark)}
+.badge-teal{background:rgba(3,105,161,0.1);color:var(--teal)}
+.badge-green{background:rgba(5,150,105,0.1);color:var(--green)}
+.badge-amber{background:rgba(217,119,6,0.1);color:var(--amber)}
+.badge-red{background:rgba(220,38,38,0.1);color:var(--red)}
+.badge-purple{background:rgba(124,58,237,0.1);color:var(--purple)}
+
+/* Test cards */
+.test-card{border-left:5px solid var(--pri);padding-left:26px;background:#fff;border:1px solid var(--border-color);border-left:5px solid var(--pri);border-radius:18px;padding:28px 28px 28px 32px;box-shadow:var(--shadow-sm);margin-bottom:18px}
+.test-card.t2{border-left-color:var(--teal)}
+.test-card.t3{border-left-color:var(--green)}
+.test-card.t4{border-left-color:var(--purple)}
+.test-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.test-num{width:40px;height:40px;border-radius:12px;background:rgba(37,99,235,0.1);color:var(--pri-dark);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;flex-shrink:0}
+.test-card.t2 .test-num{background:rgba(3,105,161,0.1);color:var(--teal)}
+.test-card.t3 .test-num{background:rgba(5,150,105,0.1);color:var(--green)}
+.test-card.t4 .test-num{background:rgba(124,58,237,0.1);color:var(--purple)}
+.test-title{font-size:19px;font-weight:800}
+.test-sub{font-size:13px;color:var(--text-secondary);margin-top:2px}
+.test-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px}
+@media(max-width:760px){.test-grid{grid-template-columns:1fr}}
+.test-box{background:var(--bg-soft);border-radius:12px;padding:14px 16px}
+.test-box-label{font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--text-muted);text-transform:uppercase;margin-bottom:6px}
+.test-box p, .test-box div{font-size:13px;color:var(--text-secondary);line-height:1.7}
+.eq-box{background:rgba(37,99,235,0.04);border:1px solid rgba(37,99,235,0.12);border-radius:10px;padding:10px 14px;font-size:14px;text-align:center;margin-top:8px}
+
+/* Data sources grid */
+.src-card{background:#fff;border:1px solid var(--border-color);border-radius:14px;padding:18px;transition:all .2s;display:block}
+.src-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);text-decoration:none;border-color:var(--pri-light)}
+.src-name{font-weight:800;font-size:14px;color:var(--text-primary);margin-bottom:4px}
+.src-url{font-size:11px;color:var(--pri);font-family:'JetBrains Mono',monospace;margin-bottom:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.src-desc{font-size:12px;color:var(--text-secondary);line-height:1.5}
+
+/* Idea cards */
+.idea-card{background:#fff;border:1px solid var(--border-color);border-radius:16px;padding:22px;position:relative}
+.idea-num{position:absolute;top:-12px;left:22px;background:linear-gradient(135deg,var(--neu-red),var(--neu-red-dark));color:#fff;font-size:11px;font-weight:800;padding:3px 12px;border-radius:10px;letter-spacing:1px}
+.idea-title{font-size:16px;font-weight:800;margin-bottom:6px;margin-top:8px}
+.idea-body{font-size:13px;color:var(--text-secondary);line-height:1.6}
+.idea-tests{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+.idea-tests span{font-size:10px;font-weight:700;padding:3px 8px;border-radius:8px;background:var(--bg-soft);color:var(--text-secondary)}
+
+/* Rubric table */
+.rubric-table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px;border-radius:14px;overflow:hidden;box-shadow:var(--shadow-sm)}
+.rubric-table th{background:linear-gradient(135deg,var(--neu-red),var(--neu-red-dark));color:#fff;font-weight:700;padding:12px 14px;text-align:left;font-size:12px;letter-spacing:1px;text-transform:uppercase}
+.rubric-table th:last-child,.rubric-table td:last-child{text-align:right}
+.rubric-table td{padding:12px 14px;background:#fff;border-bottom:1px solid var(--border-color);color:var(--text-secondary)}
+.rubric-table tr:last-child td{border-bottom:none}
+.rubric-table tr.total td{background:var(--bg-soft);font-weight:800;color:var(--text-primary)}
+
+/* Step chips (Report template) */
+.step-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:6px}
+.step-chip{flex:1;min-width:180px;background:#fff;border:1px solid var(--border-color);border-radius:14px;padding:16px 18px;position:relative}
+.step-chip-num{font-size:11px;font-weight:800;color:var(--neu-red);letter-spacing:1.5px;margin-bottom:4px}
+.step-chip-title{font-size:14px;font-weight:700;margin-bottom:4px}
+.step-chip-body{font-size:12px;color:var(--text-secondary);line-height:1.55}
+
+/* Tool badges */
+.tool-row{display:flex;gap:10px;flex-wrap:wrap}
+.tool-badge{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--border-color);border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;color:var(--text-primary)}
+.tool-badge i,.tool-badge svg{width:14px;height:14px}
+
+/* Note box */
+.note{background:linear-gradient(135deg,rgba(37,99,235,0.06),rgba(96,165,250,0.02));border:1px solid rgba(37,99,235,0.15);border-radius:14px;padding:16px 20px;display:flex;align-items:flex-start;gap:12px}
+.note-icon{width:32px;height:32px;border-radius:10px;background:rgba(37,99,235,0.12);color:var(--pri-dark);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.note-body{font-size:13px;color:var(--text-secondary);line-height:1.6}
+.note strong{color:var(--pri-dark)}
+
+/* GenAI prompt box */
+.prompt-box{background:#0F172A;color:#E2E8F0;border-radius:18px;padding:24px 28px;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.75;white-space:pre-wrap;word-wrap:break-word;position:relative;box-shadow:var(--shadow-md);max-height:520px;overflow:auto;border:1px solid #1E293B}
+.prompt-box::-webkit-scrollbar{width:8px}
+.prompt-box::-webkit-scrollbar-thumb{background:#334155;border-radius:4px}
+.prompt-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.prompt-label{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:800;letter-spacing:2px;color:#94A3B8;text-transform:uppercase}
+.prompt-copy{background:var(--neu-red);color:#fff;border:none;padding:7px 16px;border-radius:10px;font-weight:700;font-size:11px;letter-spacing:1px;cursor:pointer;text-transform:uppercase;font-family:'Outfit',sans-serif;transition:all .2s}
+.prompt-copy:hover{background:var(--neu-red-dark);transform:translateY(-1px)}
+.prompt-copy.copied{background:var(--green)}
+.prompt-token{color:#F59E0B}
+.prompt-comment{color:#64748B;font-style:italic}
+
+.footer{text-align:center;padding:40px 20px 10px;font-size:12px;color:var(--text-muted)}
+</style>
+</head>
+<body>
+
+<!-- Top bar -->
+<div class="topbar">
+    <a class="back-link" href="../course-outline.html">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Course outline
+    </a>
+    <span style="color:var(--text-muted)">·</span>
+    <span class="topbar-title">IE 6400 · Project 4</span>
+    <div class="topbar-meta">
+        <span>Max 2-page report</span>
+        <span>·</span>
+        <span>100 points</span>
+    </div>
+</div>
+
+<div class="wrap">
+
+<!-- Hero -->
+<section class="hero">
+    <div class="eyebrow">Project 4 · IE 6400 Foundations of Data Analytics</div>
+    <h1>Confidence Intervals &amp; Hypothesis Testing on Real Data</h1>
+    <p>Find a real world dataset, pose four statistical questions about it, and answer them with four formal tests: one for a mean, one for the difference of two means, one for a standard deviation, and one ANOVA across 3+ groups. Submit a <strong>tight, two page report</strong>.</p>
+    <div class="hero-meta">
+        <span class="hero-chip"><i data-lucide="calendar" style="width:14px;height:14px"></i> Max 2 pages</span>
+        <span class="hero-chip"><i data-lucide="database" style="width:14px;height:14px"></i> Real data, your choice</span>
+        <span class="hero-chip"><i data-lucide="bar-chart-2" style="width:14px;height:14px"></i> 4 tests required</span>
+        <span class="hero-chip"><i data-lucide="sparkles" style="width:14px;height:14px"></i> GenAI bonus</span>
+        <span class="hero-chip"><i data-lucide="target" style="width:14px;height:14px"></i> 100 points</span>
+    </div>
+</section>
+
+<!-- 1 · Overview -->
+<section class="section">
+    <div class="section-label">Overview</div>
+    <div class="section-title">What you will do</div>
+    <div class="section-sub">This project ties together the Confidence Intervals &amp; Hypothesis Testing deck with a dataset you pick yourself. You will build CIs and run three formal tests on real data, then report the results like a working analyst.</div>
+
+    <div class="grid-3">
+        <div class="card">
+            <div class="card-title"><span class="badge badge-pri">Step 1</span></div>
+            <div class="card-body"><strong>Pick a dataset</strong> from a reputable source (see the list below). It must have at least one continuous numeric variable, one categorical variable with <strong>2 groups (n &ge; 30 each)</strong>, and one categorical variable with <strong>3+ groups</strong> for the ANOVA.</div>
+        </div>
+        <div class="card">
+            <div class="card-title"><span class="badge badge-teal">Step 2</span></div>
+            <div class="card-body"><strong>Pose four questions</strong> that map to the four required tests. Each question should be something a decision maker would actually ask about your data.</div>
+        </div>
+        <div class="card">
+            <div class="card-title"><span class="badge badge-green">Step 3</span></div>
+            <div class="card-body"><strong>Run, interpret, and report.</strong> Each test gets a clean hypothesis, a confidence interval, a p-value, a decision, and a one-line interpretation a non-statistician would understand.</div>
+        </div>
+    </div>
+</section>
+
+<!-- 2 · Dataset Requirements -->
+<section class="section">
+    <div class="section-label">Ground rules</div>
+    <div class="section-title">Dataset requirements</div>
+    <div class="section-sub">Pick responsibly &mdash; the quality of your tests is only as good as the quality of your data.</div>
+
+    <div class="grid-2">
+        <div class="card">
+            <div class="card-title"><i data-lucide="check-circle" style="width:18px;height:18px;color:var(--green)"></i> Must have</div>
+            <div class="card-body">
+                <ul style="list-style:none;padding:0">
+                    <li style="padding:4px 0">&bull; At least one <strong>continuous numeric</strong> variable (your test variable)</li>
+                    <li style="padding:4px 0">&bull; A <strong>2-group categorical</strong> variable (for Test 2)</li>
+                    <li style="padding:4px 0">&bull; A <strong>3+ group categorical</strong> variable (for ANOVA in Test 4) &mdash; can be the same variable split into more levels</li>
+                    <li style="padding:4px 0">&bull; <strong>n &ge; 30 per group</strong> (so CLT kicks in)</li>
+                    <li style="padding:4px 0">&bull; A <strong>credible public source</strong> you can cite with a URL and access date</li>
+                    <li style="padding:4px 0">&bull; Data you actually understand &mdash; units, definitions, collection method</li>
+                </ul>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title"><i data-lucide="x-circle" style="width:18px;height:18px;color:var(--red)"></i> Don't do</div>
+            <div class="card-body">
+                <ul style="list-style:none;padding:0">
+                    <li style="padding:4px 0">&bull; Don't use a textbook sample dataset (iris, titanic, mpg, etc.)</li>
+                    <li style="padding:4px 0">&bull; Don't re-use a dataset from a classmate or prior project</li>
+                    <li style="padding:4px 0">&bull; Don't generate synthetic data &mdash; tests must be on real observations</li>
+                    <li style="padding:4px 0">&bull; Don't pick a tiny sample just to make the math easier</li>
+                    <li style="padding:4px 0">&bull; Don't test a hypothesis you already know the answer to</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 3 · Where to find data -->
+<section class="section">
+    <div class="section-label">Where to look</div>
+    <div class="section-title">Suggested data sources</div>
+    <div class="section-sub">Free, reputable, and quick to download. Pick one that matches your interests &mdash; engineering, health, finance, sports, environment, government, social.</div>
+
+    <div class="grid-3">
+        <a class="src-card" href="https://www.kaggle.com/datasets" target="_blank">
+            <div class="src-name">Kaggle Datasets</div>
+            <div class="src-url">kaggle.com/datasets</div>
+            <div class="src-desc">The largest catalog of downloadable CSVs. Filter by "usability 8+" and "size &lt; 100MB". Great for sports, finance, health, real estate.</div>
+        </a>
+        <a class="src-card" href="https://archive.ics.uci.edu/" target="_blank">
+            <div class="src-name">UCI Machine Learning Repository</div>
+            <div class="src-url">archive.ics.uci.edu</div>
+            <div class="src-desc">400+ curated datasets used in research. Small, clean, well documented. Manufacturing, medical, adult income, wine quality, etc.</div>
+        </a>
+        <a class="src-card" href="https://www.data.gov/" target="_blank">
+            <div class="src-name">Data.gov</div>
+            <div class="src-url">data.gov</div>
+            <div class="src-desc">US federal data: traffic crashes, housing, energy, agriculture, healthcare. Deep, large, real world.</div>
+        </a>
+        <a class="src-card" href="https://ourworldindata.org/" target="_blank">
+            <div class="src-name">Our World in Data</div>
+            <div class="src-url">ourworldindata.org</div>
+            <div class="src-desc">Global statistics on health, environment, economy, education. Downloadable per country and per year.</div>
+        </a>
+        <a class="src-card" href="https://fred.stlouisfed.org/" target="_blank">
+            <div class="src-name">FRED (Federal Reserve)</div>
+            <div class="src-url">fred.stlouisfed.org</div>
+            <div class="src-desc">Economic time series: inflation, employment, interest rates. Split by state or sector for two group comparisons.</div>
+        </a>
+        <a class="src-card" href="https://datasetsearch.research.google.com/" target="_blank">
+            <div class="src-name">Google Dataset Search</div>
+            <div class="src-url">datasetsearch.research.google.com</div>
+            <div class="src-desc">Meta search across thousands of data portals. Start here if you don't know what you want.</div>
+        </a>
+        <a class="src-card" href="https://www.bls.gov/data/" target="_blank">
+            <div class="src-name">U.S. Bureau of Labor Statistics</div>
+            <div class="src-url">bls.gov/data</div>
+            <div class="src-desc">Wages, employment, prices, productivity. Rich two group splits (industry, region, gender, education).</div>
+        </a>
+        <a class="src-card" href="https://www.ncdc.noaa.gov/cdo-web/" target="_blank">
+            <div class="src-name">NOAA Climate Data Online</div>
+            <div class="src-url">ncdc.noaa.gov/cdo-web</div>
+            <div class="src-desc">Weather station data: temperature, precipitation, wind. Compare cities, seasons, or decades.</div>
+        </a>
+        <a class="src-card" href="https://www.cdc.gov/nchs/nhanes/" target="_blank">
+            <div class="src-name">CDC NHANES</div>
+            <div class="src-url">cdc.gov/nchs/nhanes</div>
+            <div class="src-desc">U.S. National Health and Nutrition Examination Survey. BMI, blood pressure, cholesterol, activity &mdash; split by sex, age group, etc.</div>
+        </a>
+        <a class="src-card" href="https://www.pro-football-reference.com/" target="_blank">
+            <div class="src-name">Sports Reference</div>
+            <div class="src-url">pro-football-reference.com</div>
+            <div class="src-desc">NFL / NBA / MLB season stats. Great for comparing positions, eras, conferences.</div>
+        </a>
+        <a class="src-card" href="https://www.gapminder.org/data/" target="_blank">
+            <div class="src-name">Gapminder</div>
+            <div class="src-url">gapminder.org/data</div>
+            <div class="src-desc">Global development indicators: income, life expectancy, CO₂. Easy for country group comparisons.</div>
+        </a>
+        <a class="src-card" href="https://www.zillow.com/research/data/" target="_blank">
+            <div class="src-name">Zillow Research Data</div>
+            <div class="src-url">zillow.com/research/data</div>
+            <div class="src-desc">Home prices, rents, inventory by ZIP code and metro. Great for regional housing comparisons.</div>
+        </a>
+    </div>
+</section>
+
+<!-- 4 · Four required tests -->
+<section class="section">
+    <div class="section-label">The core of the project</div>
+    <div class="section-title">Four required tests</div>
+    <div class="section-sub">Each test must be framed as a real question about your dataset, run correctly, and interpreted in plain English. Report the CI <em>and</em> the p-value for each.</div>
+
+    <!-- Test 1: One-sample mean -->
+    <div class="test-card t1">
+        <div class="test-head">
+            <div class="test-num">1</div>
+            <div>
+                <div class="test-title">One sample test for a mean</div>
+                <div class="test-sub">Is the population mean different from some benchmark value $\mu_0$?</div>
+            </div>
+            <span class="badge badge-pri" style="margin-left:auto">t-test or z-test</span>
+        </div>
+        <div class="test-grid">
+            <div class="test-box">
+                <div class="test-box-label">Hypotheses</div>
+                <div>$H_0: \mu = \mu_0$<br>$H_1: \mu \neq \mu_0$ (or one sided)</div>
+            </div>
+            <div class="test-box">
+                <div class="test-box-label">Test statistic</div>
+                <div class="eq-box">$t = \dfrac{\bar{x} - \mu_0}{s / \sqrt{n}}$ &nbsp; with $df = n-1$</div>
+            </div>
+            <div class="test-box">
+                <div class="test-box-label">95% CI for $\mu$</div>
+                <div class="eq-box">$\bar{x} \pm t_{\alpha/2,\;n-1} \cdot \dfrac{s}{\sqrt{n}}$</div>
+            </div>
+            <div class="test-box">
+                <div class="test-box-label">Example question</div>
+                <div>"Is the average daily high temperature in Boston this year different from the historical average of 58 &deg;F?"</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Test 2: Two-sample difference -->
+    <div class="test-card t2">
+        <div class="test-head">
+            <div class="test-num">2</div>
+            <div>
+                <div class="test-title">Two sample test for a difference of means</div>
+                <div class="test-sub">Do two groups have different population means?</div>
+            </div>
+            <span class="badge badge-teal" style="margin-left:auto">Independent samples t-test</span>
+        </div>
+        <div class="test-grid">
+            <div class="test-box">
+                <div class="test-box-label">Hypotheses</div>
+                <div>$H_0: \mu_1 = \mu_2$<br>$H_1: \mu_1 \neq \mu_2$</div>
+            </div>
+            <div class="test-box">
+                <div class="test-box-label">Test statistic (Welch)</div>
+                <div class="eq-box">$t = \dfrac{\bar{x}_1 - \bar{x}_2}{\sqrt{\dfrac{s_1^2}{n_1} + \dfrac{s_2^2}{n_2}}}$</div>
+            </div>
+            <div class="test-box">
+                <div class="test-box-label">95% CI for $\mu_1 - \mu_2$</div>
+                <div class="eq-box">$(\bar{x}_1 - \bar{x}_2) \pm t_{\alpha/2} \cdot SE$</div>
+            </div>
+            <div class="test-box">
+                <div class="test-box-label">Example question</div>
+                <div>"Do homes in ZIP code A sell for more per square foot than in ZIP code B?"</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Test 3: Standard deviation -->
+    <div class="test-card t3">
+        <div class="test-head">
+            <div class="test-num">3</div>
+            <div>
+                <div class="test-title">Test for a standard deviation (or variance)</div>
+                <div class="test-sub">Is the population spread different from some benchmark $\sigma_0$?</div>
+            </div>
+            <span class="badge badge-green" style="margin-left:auto">Chi-squared test</span>
+        </div>
+        <div class="test-grid">
+            <div class="test-box">
+                <div class="test-box-label">Hypotheses</div>
+                <div>$H_0: \sigma^2 = \sigma_0^2$<br>$H_1: \sigma^2 \neq \sigma_0^2$ (or one sided)</div>
+            </div>
+            <div class="test-box">
+                <div class="test-box-label">Test statistic</div>
+                <div class="eq-box">$\chi^2 = \dfrac{(n-1)s^2}{\sigma_0^2}$ &nbsp; with $df = n-1$</div>
+            </div>
+            <div class="test-box">
+                <div class="test-box-label">95% CI for $\sigma^2$</div>
+                <div class="eq-box">$\left( \dfrac{(n-1)s^2}{\chi^2_{\alpha/2}},\; \dfrac{(n-1)s^2}{\chi^2_{1-\alpha/2}} \right)$</div>
+            </div>
+            <div class="test-box">
+                <div class="test-box-label">Example question</div>
+                <div>"Is the day to day variability in a stock's return larger than the sector benchmark SD of 1.5%?"</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Test 4: ANOVA -->
+    <div class="test-card t4">
+        <div class="test-head">
+            <div class="test-num">4</div>
+            <div>
+                <div class="test-title">One way ANOVA across 3+ groups</div>
+                <div class="test-sub">Do the means across three or more groups differ from each other?</div>
+            </div>
+            <span class="badge badge-purple" style="margin-left:auto">F-test</span>
+        </div>
+        <div class="test-grid">
+            <div class="test-box">
+                <div class="test-box-label">Hypotheses</div>
+                <div>$H_0: \mu_1 = \mu_2 = \ldots = \mu_k$<br>$H_1$: at least one $\mu_i$ differs</div>
+            </div>
+            <div class="test-box">
+                <div class="test-box-label">Test statistic</div>
+                <div class="eq-box">$F = \dfrac{MS_B}{MS_W}$ &nbsp; with $(k{-}1,\; N{-}k)$ df</div>
+            </div>
+            <div class="test-box">
+                <div class="test-box-label">If you reject $H_0$</div>
+                <div>Follow up with <strong>Tukey's HSD</strong> to locate which specific pairs differ. Report $\eta^2 = SS_B / SS_T$ as the effect size.</div>
+            </div>
+            <div class="test-box">
+                <div class="test-box-label">Example question</div>
+                <div>"Do average home prices differ across 3 Boston neighborhoods (Back Bay, South End, Brighton)?"</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="note" style="margin-top:18px">
+        <div class="note-icon"><i data-lucide="info" style="width:16px;height:16px"></i></div>
+        <div class="note-body"><strong>Assumptions checklist (for every test):</strong> independence of observations, approximate normality (or n &ge; 30 for CLT), and equal variances for Tests 2 &amp; 4 (or use Welch's correction / Kruskal-Wallis). State each one in your report and say how you checked it (histogram, QQ plot, Levene).</div>
+    </div>
+</section>
+
+<!-- 5 · Sample project ideas -->
+<section class="section">
+    <div class="section-label">Starter ideas</div>
+    <div class="section-title">Sample project ideas</div>
+    <div class="section-sub">Use these as inspiration, but bring your own angle. The best projects pick a question you actually care about the answer to. For each idea, the 2-group split works for Test 2 &mdash; expand to <strong>3 or more groups</strong> for the ANOVA in Test 4.</div>
+
+    <div class="grid-2">
+        <div class="idea-card">
+            <span class="idea-num">IDEA 1</span>
+            <div class="idea-title">Housing prices in two ZIP codes</div>
+            <div class="idea-body">Pull Zillow data for two neighborhoods. Test (1) whether average price per sqft in ZIP A differs from the regional benchmark, (2) whether ZIP A vs ZIP B differ, and (3) whether ZIP A is more price volatile than the regional SD.</div>
+            <div class="idea-tests"><span>Zillow Research</span><span>housing</span></div>
+        </div>
+
+        <div class="idea-card">
+            <span class="idea-num">IDEA 2</span>
+            <div class="idea-title">NFL quarterback performance</div>
+            <div class="idea-body">Download QB stats for a recent season. Test (1) whether mean passer rating differs from a historical league value, (2) whether AFC vs NFC QBs differ, and (3) whether the SD of yards per attempt is different from the league benchmark.</div>
+            <div class="idea-tests"><span>Pro Football Reference</span><span>sports</span></div>
+        </div>
+
+        <div class="idea-card">
+            <span class="idea-num">IDEA 3</span>
+            <div class="idea-title">NHANES health measurement</div>
+            <div class="idea-body">Pick a variable like systolic blood pressure. Test (1) whether the mean differs from the CDC target of 120 mmHg, (2) whether men vs women differ, and (3) whether SD in one subgroup exceeds a clinical benchmark.</div>
+            <div class="idea-tests"><span>CDC NHANES</span><span>health</span></div>
+        </div>
+
+        <div class="idea-card">
+            <span class="idea-num">IDEA 4</span>
+            <div class="idea-title">City climate comparison</div>
+            <div class="idea-body">Pull daily high temperatures for two cities for the past year from NOAA. Test (1) whether Boston's mean high differs from the 30 year normal, (2) whether Boston vs Chicago differ, and (3) whether Boston's SD (weather variability) differs from a baseline.</div>
+            <div class="idea-tests"><span>NOAA CDO</span><span>climate</span></div>
+        </div>
+
+        <div class="idea-card">
+            <span class="idea-num">IDEA 5</span>
+            <div class="idea-title">Stock return behavior</div>
+            <div class="idea-body">Pull daily returns for two tickers for the last 2 years from Yahoo Finance or FRED. Test (1) whether the mean daily return differs from 0, (2) whether the two tickers have different means, and (3) whether one ticker's SD (volatility) differs from the sector benchmark.</div>
+            <div class="idea-tests"><span>Yahoo Finance / FRED</span><span>finance</span></div>
+        </div>
+
+        <div class="idea-card">
+            <span class="idea-num">IDEA 6</span>
+            <div class="idea-title">Airline on time performance</div>
+            <div class="idea-body">Use BTS Reporting Carrier On Time data. Test (1) whether mean delay at Logan differs from the national average, (2) whether two carriers differ, and (3) whether one carrier's delay SD (consistency) exceeds the national benchmark.</div>
+            <div class="idea-tests"><span>BTS / Data.gov</span><span>operations</span></div>
+        </div>
+    </div>
+</section>
+
+<!-- 6 · Report template -->
+<section class="section">
+    <div class="section-label">Deliverable</div>
+    <div class="section-title">Two page report template</div>
+    <div class="section-sub">Exactly 2 pages, 10&ndash;11 pt font, single or 1.15 spacing, with one figure and one table allowed. Tight and decision focused.</div>
+
+    <div class="step-row">
+        <div class="step-chip">
+            <div class="step-chip-num">&sect; 1 &middot; 3 LINES</div>
+            <div class="step-chip-title">Dataset &amp; context</div>
+            <div class="step-chip-body">Source, URL, access date, what's in it, why you chose it.</div>
+        </div>
+        <div class="step-chip">
+            <div class="step-chip-num">&sect; 2 &middot; 2 LINES</div>
+            <div class="step-chip-title">Questions</div>
+            <div class="step-chip-body">The three business / scientific questions you will answer.</div>
+        </div>
+        <div class="step-chip">
+            <div class="step-chip-num">&sect; 3 &middot; 3 BLOCKS</div>
+            <div class="step-chip-title">Tests &amp; results</div>
+            <div class="step-chip-body">For each test: $H_0$, $H_1$, statistic, df, p-value, 95% CI, decision, plain English line.</div>
+        </div>
+        <div class="step-chip">
+            <div class="step-chip-num">&sect; 4 &middot; 3 LINES</div>
+            <div class="step-chip-title">Assumptions</div>
+            <div class="step-chip-body">Independence, normality, equal variance &mdash; how you checked each.</div>
+        </div>
+        <div class="step-chip">
+            <div class="step-chip-num">&sect; 5 &middot; 3 LINES</div>
+            <div class="step-chip-title">Conclusion &amp; caveats</div>
+            <div class="step-chip-body">What a decision maker should do with these results, and what your sample can't tell them.</div>
+        </div>
+    </div>
+</section>
+
+<!-- 7 · Rubric -->
+<section class="section">
+    <div class="section-label">Grading</div>
+    <div class="section-title">Rubric (100 points)</div>
+
+    <table class="rubric-table">
+        <thead>
+            <tr><th>Criterion</th><th>What we look for</th><th>Points</th></tr>
+        </thead>
+        <tbody>
+            <tr><td><strong>Dataset quality</strong></td><td>Credible source, clear variables, appropriate sample size, good citation</td><td>10</td></tr>
+            <tr><td><strong>Test 1 &mdash; mean</strong></td><td>Correct $H_0 / H_1$, statistic, CI, p-value, decision, plain English line</td><td>12</td></tr>
+            <tr><td><strong>Test 2 &mdash; difference of means</strong></td><td>Correct setup, Welch / pooled choice justified, CI, p-value, decision</td><td>15</td></tr>
+            <tr><td><strong>Test 3 &mdash; standard deviation</strong></td><td>Correct chi-squared statistic, CI for $\sigma^2$, p-value, decision</td><td>12</td></tr>
+            <tr><td><strong>Test 4 &mdash; one way ANOVA</strong></td><td>Correct F setup, ANOVA table, post-hoc (if reject), $\eta^2$ effect size</td><td>18</td></tr>
+            <tr><td><strong>Assumption checks</strong></td><td>Independence, normality (QQ / histogram), equal variance</td><td>8</td></tr>
+            <tr><td><strong>Interpretation</strong></td><td>Plain English, decision focused, honest about limits</td><td>15</td></tr>
+            <tr><td><strong>Writing &amp; layout</strong></td><td>Fits in 2 pages, readable, clear figures / tables, correct notation</td><td>10</td></tr>
+            <tr><td><strong>Bonus &mdash; GenAI HTML report</strong></td><td>Submit the HTML report generated via the GenAI prompt below (see Bonus section)</td><td>+10</td></tr>
+            <tr class="total"><td colspan="2" style="text-align:right;padding-right:20px"><strong>Total</strong></td><td><strong>100 + 10 bonus</strong></td></tr>
+        </tbody>
+    </table>
+</section>
+
+<!-- 8 · Tools -->
+<section class="section">
+    <div class="section-label">Tools</div>
+    <div class="section-title">How to actually run the tests</div>
+    <div class="section-sub">Use whatever you are fastest in. A short code snippet or function call is expected in the report's appendix or inline.</div>
+
+    <div class="grid-3">
+        <div class="card">
+            <div class="card-title"><i data-lucide="code" style="width:18px;height:18px;color:var(--pri)"></i> Python</div>
+            <div class="card-body">
+                <code>scipy.stats.ttest_1samp</code><br>
+                <code>scipy.stats.ttest_ind</code> (add <code>equal_var=False</code> for Welch)<br>
+                <code>scipy.stats.chi2</code> for the SD test<br>
+                <code>statsmodels.stats</code> for CIs
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title"><i data-lucide="code-2" style="width:18px;height:18px;color:var(--teal)"></i> R</div>
+            <div class="card-body">
+                <code>t.test(x, mu=mu0)</code><br>
+                <code>t.test(x, y)</code><br>
+                <code>varTest</code> from the <code>EnvStats</code> package<br>
+                <code>sigma.test</code> from <code>TeachingDemos</code>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title"><i data-lucide="sheet" style="width:18px;height:18px;color:var(--green)"></i> Excel / Sheets</div>
+            <div class="card-body">
+                <code>T.TEST</code>, <code>T.INV.2T</code>, <code>CHISQ.INV</code><br>
+                Analysis ToolPak: <em>t-Test: Two-Sample Assuming Unequal Variances</em><br>
+                Manual CI with <code>STDEV.S</code>, <code>AVERAGE</code>, <code>COUNT</code>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Bonus: GenAI HTML report prompt -->
+<section class="section">
+    <div class="section-label" style="color:var(--neu-red)">Bonus Material (+10 points)</div>
+    <div class="section-title">Turn your results into an HTML report with GenAI</div>
+    <div class="section-sub">After you run your tests, copy the prompt below into <strong>Claude</strong>, <strong>ChatGPT</strong>, or <strong>Claude Code</strong>, replace the bracketed placeholders with your actual numbers, and let it generate a polished single-file HTML report. Submit the resulting <code>.html</code> alongside your PDF for bonus points.</div>
+
+    <div class="note" style="margin-bottom:20px">
+        <div class="note-icon"><i data-lucide="lightbulb" style="width:16px;height:16px"></i></div>
+        <div class="note-body"><strong>How to use this prompt:</strong> paste it verbatim into your GenAI tool of choice. Fill in every <code>[...]</code> placeholder with your real result. Ask it to save the HTML file, then open it in a browser to review. Feel free to iterate: "make it more compact", "add a p-value chart", "change to dark mode", etc.</div>
+    </div>
+
+    <div class="prompt-box">
+        <div class="prompt-header">
+            <span class="prompt-label"><i data-lucide="sparkles" style="width:12px;height:12px"></i> GenAI Prompt &middot; copy &amp; paste into Claude / ChatGPT / Claude Code</span>
+            <button class="prompt-copy" onclick="copyPrompt(this)">Copy</button>
+        </div>
+<div id="promptText" style="white-space:pre-wrap">You are a statistics tutor and front-end developer. Build me a single-file HTML report for my IE 6400 Project 4 at Northeastern University.
+
+=== CONTEXT ===
+Course: IE 6400 Foundations of Data Analytics
+Project: Confidence Intervals & Hypothesis Testing on real data
+Max length when printed: 2 pages (A4 or Letter)
+Tone: professional, compact, decision-oriented
+
+=== MY DATASET ===
+Source: [URL]
+Access date: [YYYY-MM-DD]
+Description: [1-2 sentences about what the data is]
+Sample size: n = [total N]
+Numeric variable: [name and units]
+Group variable (2 levels): [name, levels A and B, n_A, n_B]
+Group variable (3+ levels for ANOVA): [name, levels, n per group]
+
+=== MY RESULTS (fill in your actual numbers) ===
+
+Test 1 — One-sample t-test for a mean:
+  H0: mu = [mu0]
+  H1: mu != [mu0]
+  Sample mean = [xbar], sample SD = [s], n = [n]
+  t = [t-stat], df = [df], p = [p-value]
+  95% CI for mu: ([lower], [upper])
+  Decision: [reject / fail to reject] H0
+  Plain English: [one sentence]
+
+Test 2 — Two-sample t-test for difference of means:
+  Groups: [A] vs [B]
+  H0: mu_A = mu_B
+  Means: xbar_A = [..], xbar_B = [..]
+  SDs: s_A = [..], s_B = [..]
+  Sample sizes: n_A = [..], n_B = [..]
+  t = [..], df = [..] (Welch), p = [..]
+  95% CI for (mu_A - mu_B): ([lower], [upper])
+  Decision: [..]
+  Plain English: [one sentence]
+
+Test 3 — Chi-squared test for a standard deviation:
+  H0: sigma = [sigma0]
+  H1: sigma != [sigma0]
+  Sample SD = [s], n = [n]
+  chi-squared = [..], df = [n-1], p = [..]
+  95% CI for sigma^2: ([lower], [upper])
+  Decision: [..]
+  Plain English: [one sentence]
+
+Test 4 — One-way ANOVA across 3+ groups:
+  Groups: [list all levels]
+  H0: all group means equal
+  H1: at least one differs
+  Group means and SDs: [list for each group]
+  ANOVA table: SS_B = [..], SS_W = [..], SS_T = [..],
+               df_B = [..], df_W = [..],
+               MS_B = [..], MS_W = [..], F = [..], p = [..]
+  eta^2 = [SS_B / SS_T]
+  If rejected — Tukey HSD results: [which pairs differ]
+  Plain English: [one sentence]
+
+Assumption checks I ran:
+  Independence: [how]
+  Normality: [method + result, e.g. QQ plot looks linear, Shapiro-Wilk p = ..]
+  Equal variance: [Levene test p = .., or used Welch]
+
+=== WHAT I WANT YOU TO DO ===
+
+Generate a complete single-file HTML document that:
+
+1. Uses Google Font 'Outfit' and KaTeX (both via CDN) for the math
+2. Looks professional: clean white cards on a light gray background,
+   blue (#2563EB) accent for the primary color, Northeastern red (#C41230)
+   for the title bar. Rounded corners, soft shadows, no emojis in the
+   final output (except small inline icons via Lucide CDN if you like).
+3. Has these sections in order:
+   a) Header: project title, my name [LEAVE AS PLACEHOLDER "Your Name"],
+      course, date, dataset URL
+   b) Dataset context (3 lines)
+   c) Four test result cards (one per test) with: H0, H1, statistic,
+      df, p-value, 95% CI, decision chip (green = reject, gray = fail),
+      and the plain-English interpretation
+   d) Assumption checks — a short bullet list
+   e) Conclusion & caveats (3-4 lines)
+4. Includes a small inline SVG visual for EACH test card:
+   - Tests 1, 3: a horizontal CI bar with the null value marked
+   - Test 2: two density humps side by side
+   - Test 4: three or more labeled dots with group means
+5. Prints cleanly on 2 pages when I hit Ctrl+P (use @media print and
+   page-break-inside: avoid on the cards)
+6. Fills in every number I gave above. Do NOT leave any [bracketed]
+   placeholders except my name.
+
+Output ONLY the HTML code starting with <!DOCTYPE html>. No commentary,
+no markdown fences, nothing else. If I want iterations I will ask.</div>
+    </div>
+
+    <div class="grid-3" style="margin-top:22px">
+        <div class="card">
+            <div class="card-title"><i data-lucide="zap" style="width:18px;height:18px;color:var(--pri)"></i> Which tool?</div>
+            <div class="card-body">Any of them work: <strong>Claude 4.6/4.7</strong> (via claude.ai), <strong>ChatGPT</strong> (GPT-5 or 4o), <strong>Gemini</strong> (2.5 Pro), or <strong>Claude Code</strong> in your terminal. The prompt is model agnostic.</div>
+        </div>
+        <div class="card">
+            <div class="card-title"><i data-lucide="refresh-cw" style="width:18px;height:18px;color:var(--teal)"></i> How to iterate</div>
+            <div class="card-body">First output usually needs 1-2 tweaks. Ask things like: "compress to 1 page", "add a donut chart for eta squared", "swap the color scheme to dark mode", "add a section summarizing all four decisions in a small table at the top".</div>
+        </div>
+        <div class="card">
+            <div class="card-title"><i data-lucide="check" style="width:18px;height:18px;color:var(--green)"></i> What to submit</div>
+            <div class="card-body">Save the generated HTML as <code>Project4_LastName_AI_Report.html</code> and include it in your zip. Also include the <strong>exact prompt you used</strong> (copy/paste into a <code>prompt.txt</code>) so we can see how you guided the model.</div>
+        </div>
+    </div>
+</section>
+
+<!-- Submission -->
+<section class="section">
+    <div class="section-label">Submission</div>
+    <div class="section-title">What to submit on Canvas</div>
+    <div class="section-sub">One zip file containing the three items below. Named <code>Project4_LastName_FirstName.zip</code>.</div>
+
+    <div class="grid-4">
+        <div class="card">
+            <div class="card-title"><span class="badge badge-amber">1</span> 2 page PDF report</div>
+            <div class="card-body">Named <code>Project4_LastName.pdf</code>. Hard cap at 2 pages &mdash; overflow is truncated when graded.</div>
+        </div>
+        <div class="card">
+            <div class="card-title"><span class="badge badge-teal">2</span> Data file</div>
+            <div class="card-body">The CSV / Excel file you analyzed, plus a 1 line README noting the source and access date.</div>
+        </div>
+        <div class="card">
+            <div class="card-title"><span class="badge badge-pri">3</span> Code / workbook</div>
+            <div class="card-body">A <code>.ipynb</code>, <code>.R</code>, or <code>.xlsx</code> showing how you computed each statistic. Clean enough that a TA could rerun it.</div>
+        </div>
+        <div class="card">
+            <div class="card-title"><span class="badge badge-purple">4</span> Bonus HTML + prompt <span style="font-size:9px;background:var(--neu-red);color:#fff;padding:2px 6px;border-radius:6px;margin-left:4px">+10</span></div>
+            <div class="card-body">Optional. The GenAI-generated <code>.html</code> report plus the <code>prompt.txt</code> you used.</div>
+        </div>
+    </div>
+</section>
+
+<div class="footer">
+    IE 6400 &middot; Foundations of Data Analytics &middot; Northeastern University<br>
+    Part of <a href="../../../index.html">AI&sup2;Lab.ai</a> &middot; Maintained by Prof. Mohammad Dehghani
+</div>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+    lucide.createIcons();
+    function tryRender(){if(typeof renderMathInElement!=='undefined')renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})}
+    tryRender();setTimeout(tryRender,600);setTimeout(tryRender,1500);
+});
+function copyPrompt(btn){
+    const text=document.getElementById('promptText').innerText;
+    navigator.clipboard.writeText(text).then(()=>{
+        const orig=btn.textContent;
+        btn.textContent='Copied!';
+        btn.classList.add('copied');
+        setTimeout(()=>{btn.textContent=orig;btn.classList.remove('copied')},2000);
+    }).catch(()=>{
+        const ta=document.createElement('textarea');
+        ta.value=text;document.body.appendChild(ta);ta.select();
+        try{document.execCommand('copy');btn.textContent='Copied!';btn.classList.add('copied');setTimeout(()=>{btn.textContent='Copy';btn.classList.remove('copied')},2000)}catch(e){}
+        document.body.removeChild(ta);
+    });
+}
+</script>
+</body>
+</html>
