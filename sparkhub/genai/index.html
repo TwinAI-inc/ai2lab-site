@@ -45,11 +45,7 @@
         .nav-links a.active { color: var(--accent); }
 
         /* ---- Hero ---- */
-        .hero {
-            position: relative;
-            padding: 110px 48px 40px;
-            overflow: hidden;
-        }
+        .hero { position: relative; padding: 110px 48px 40px; overflow: hidden; }
         .hero .bg {
             position: absolute; inset: 0; z-index: 0;
             background:
@@ -62,33 +58,65 @@
             background: linear-gradient(to top, #000 0%, rgba(0,0,0,0.5) 60%, rgba(0,0,0,0.3) 100%);
         }
         .hero-content { position: relative; z-index: 2; max-width: 600px; }
-        .hero-label {
-            font-size: 0.55rem; font-weight: 500; text-transform: uppercase;
-            letter-spacing: 0.15em; color: rgba(168,130,255,0.6); margin-bottom: 10px;
-        }
-        .hero h1 {
-            font-size: 2.4rem; font-weight: 200; letter-spacing: -0.02em;
-            line-height: 1.15; color: var(--w100); margin-bottom: 10px;
-        }
+        .hero-label { font-size: 0.55rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.15em; color: rgba(168,130,255,0.6); margin-bottom: 10px; }
+        .hero h1 { font-size: 2.4rem; font-weight: 200; letter-spacing: -0.02em; line-height: 1.15; color: var(--w100); margin-bottom: 10px; }
         .hero p { font-size: 0.82rem; font-weight: 300; color: var(--w40); line-height: 1.55; }
 
-        /* ---- Project Cards Grid ---- */
-        .projects-section {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 36px 40px 80px;
-        }
+        /* ---- Section ---- */
+        .projects-section { max-width: 1100px; margin: 0 auto; padding: 36px 40px 80px; }
         .section-header {
-            display: flex;
-            align-items: baseline;
-            justify-content: space-between;
-            margin-bottom: 28px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid var(--w6);
+            display: flex; align-items: baseline; justify-content: space-between;
+            margin-bottom: 18px; padding-bottom: 12px;
+            border-bottom: 1px solid var(--w6); gap: 14px; flex-wrap: wrap;
         }
         .section-header h2 { font-size: 0.65rem; font-weight: 400; text-transform: uppercase; letter-spacing: 0.1em; color: var(--w30); }
         .section-header .count { font-size: 0.65rem; color: var(--w20); }
 
+        /* ---- Filter bar ---- */
+        .filter-bar {
+            display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+            margin-bottom: 22px;
+        }
+        .search-wrap {
+            position: relative; flex: 1; min-width: 220px;
+        }
+        .search-wrap svg {
+            position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+            width: 12px; height: 12px; fill: none; stroke: var(--w30); stroke-width: 2;
+            pointer-events: none;
+        }
+        .search-input {
+            width: 100%;
+            background: var(--w3);
+            border: 1px solid var(--w10);
+            border-radius: 999px;
+            padding: 9px 14px 9px 32px;
+            color: var(--w90);
+            font-family: inherit; font-size: 0.72rem;
+            transition: all 0.2s;
+        }
+        .search-input:focus { outline: none; border-color: var(--accent); background: var(--w6); }
+        .search-input::placeholder { color: var(--w20); }
+        .filter-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+        .filter-pill {
+            font-family: inherit;
+            font-size: 0.6rem; font-weight: 500;
+            letter-spacing: 0.04em;
+            padding: 6px 12px; border-radius: 999px;
+            border: 1px solid var(--w10);
+            background: transparent;
+            color: var(--w40);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .filter-pill:hover { color: var(--w80); border-color: var(--w20); }
+        .filter-pill.active {
+            color: var(--w100);
+            background: rgba(168,85,247,0.14);
+            border-color: rgba(168,85,247,0.5);
+        }
+
+        /* ---- Project Grid ---- */
         .project-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -98,114 +126,264 @@
             border-radius: 14px;
             overflow: hidden;
         }
-
         .project-card {
             background: var(--black);
             padding: 24px;
             display: flex;
             flex-direction: column;
-            transition: background 0.3s;
+            transition: background 0.3s, transform 0.3s;
+            cursor: pointer;
+            position: relative;
         }
-        .project-card:hover { background: rgba(168,85,247,0.03); }
+        .project-card:hover { background: rgba(168,85,247,0.04); }
+        .project-card:hover .card-img img { opacity: 1; transform: scale(1.02); }
+        .project-card:hover .card-open-hint { opacity: 1; }
 
         .card-img {
-            width: 100%;
-            height: 170px;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 14px;
+            width: 100%; height: 170px; overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 14px; position: relative;
         }
         .card-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0.9;
+            width: 100%; height: 100%; object-fit: cover;
+            opacity: 0.9; transition: opacity 0.3s, transform 0.5s;
         }
-        .card-number {
-            font-size: 0.6rem;
-            font-weight: 400;
-            color: var(--w20);
+        .card-open-hint {
+            position: absolute; top: 10px; right: 10px;
+            font-size: 0.5rem; font-weight: 500;
+            letter-spacing: 0.12em; text-transform: uppercase;
+            color: var(--w80); background: rgba(0,0,0,0.6);
+            padding: 4px 10px; border-radius: 999px;
+            backdrop-filter: blur(8px);
+            opacity: 0; transition: opacity 0.3s;
+        }
+
+        /* number + term on the same row */
+        .card-meta-row {
+            display: flex; align-items: center; gap: 10px;
             margin-bottom: 8px;
         }
+        .card-number {
+            font-size: 0.6rem; font-weight: 400;
+            color: var(--w20); letter-spacing: 0.08em;
+        }
+        .card-meta-row .dot {
+            width: 3px; height: 3px; border-radius: 50%;
+            background: var(--w15);
+        }
+        .card-term {
+            font-size: 0.55rem; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 0.1em;
+            color: rgba(168,140,255,0.75);
+            padding: 2px 8px; border-radius: 999px;
+            background: rgba(168,140,255,0.07);
+            border: 1px solid rgba(168,140,255,0.18);
+        }
         .card-title {
-            font-size: 1.1rem;
-            font-weight: 300;
-            color: var(--w100);
-            letter-spacing: -0.01em;
-            line-height: 1.3;
-            margin-bottom: 6px;
+            font-size: 1.1rem; font-weight: 300; color: var(--w100);
+            letter-spacing: -0.01em; line-height: 1.3; margin-bottom: 6px;
         }
         .card-desc {
-            font-size: 0.72rem;
-            font-weight: 300;
-            color: var(--w40);
-            line-height: 1.55;
-            margin-bottom: 14px;
-            flex: 1;
+            font-size: 0.72rem; font-weight: 300; color: var(--w40);
+            line-height: 1.55; margin-bottom: 14px; flex: 1;
         }
-        .card-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-            margin-bottom: 14px;
-        }
+        .card-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 14px; }
         .card-tag {
-            font-size: 0.58rem;
-            padding: 3px 9px;
-            border-radius: 999px;
-            border: 1px solid var(--w10);
-            color: var(--w40);
-            font-weight: 400;
+            font-size: 0.58rem; padding: 3px 9px; border-radius: 999px;
+            border: 1px solid var(--w10); color: var(--w40); font-weight: 400;
         }
         .card-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            padding-top: 12px;
-            border-top: 1px solid var(--w6);
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 10px; padding-top: 12px; border-top: 1px solid var(--w6);
         }
-        .card-authors {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            min-width: 0;
-        }
-        .card-authors .author-chip {
-            font-size: 0.6rem;
-            font-weight: 400;
+        .card-authors { display: flex; flex-wrap: wrap; gap: 5px; min-width: 0; }
+        .author-chip {
+            font-size: 0.6rem; font-weight: 400;
             color: rgba(168,140,255,0.85);
-            padding: 3px 10px;
-            border-radius: 999px;
+            padding: 3px 10px; border-radius: 999px;
             background: rgba(140,70,230,0.08);
             border: 1px solid rgba(140,70,230,0.12);
             white-space: nowrap;
+            display: inline-flex; align-items: center; gap: 4px;
+            transition: all 0.2s;
         }
-        .card-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 0.68rem;
-            font-weight: 500;
+        a.author-chip:hover {
             color: var(--w100);
-            padding: 5px 14px;
-            border-radius: 999px;
+            background: rgba(140,70,230,0.18);
+            border-color: rgba(140,70,230,0.4);
+        }
+        a.author-chip svg { width: 8px; height: 8px; fill: currentColor; opacity: 0.7; }
+
+        .card-link {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 0.68rem; font-weight: 500;
+            color: var(--w100);
+            padding: 5px 14px; border-radius: 999px;
             border: 1px solid var(--w20);
             transition: all 0.3s;
-            white-space: nowrap;
-            flex-shrink: 0;
+            white-space: nowrap; flex-shrink: 0;
         }
         .card-link:hover {
-            background: var(--w100);
-            color: var(--black);
-            border-color: var(--w100);
+            background: var(--w100); color: var(--black); border-color: var(--w100);
         }
-        .card-link svg {
-            width: 9px; height: 9px; fill: none;
-            stroke: currentColor; stroke-width: 2;
+        .card-link svg { width: 9px; height: 9px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            padding: 60px 20px;
+            text-align: center;
+            color: var(--w30);
+            font-size: 0.78rem;
+            background: var(--black);
         }
+        .empty-state .clear-btn {
+            display: inline-block; margin-top: 14px;
+            padding: 7px 16px; border-radius: 999px;
+            border: 1px solid var(--w20); color: var(--w80);
+            font-size: 0.65rem; cursor: pointer;
+            background: transparent; font-family: inherit;
+        }
+        .empty-state .clear-btn:hover { background: var(--w100); color: var(--black); }
+
+        /* ---- Modal ---- */
+        .modal-overlay {
+            position: fixed; inset: 0; z-index: 1000;
+            background: rgba(0,0,0,0.78);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            display: flex; align-items: center; justify-content: center;
+            padding: 30px;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .modal-overlay.open { opacity: 1; pointer-events: auto; }
+        .modal {
+            position: relative;
+            width: 100%; max-width: 880px; max-height: 90vh;
+            background: linear-gradient(180deg, #0a0010 0%, #060008 100%);
+            border: 1px solid var(--w15);
+            border-radius: 18px;
+            overflow: hidden;
+            display: flex; flex-direction: column;
+            transform: translateY(20px) scale(0.98);
+            transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(168,85,247,0.08);
+        }
+        .modal-overlay.open .modal { transform: translateY(0) scale(1); }
+        .modal-close {
+            position: absolute; top: 14px; right: 14px; z-index: 10;
+            width: 32px; height: 32px; border-radius: 50%;
+            background: rgba(0,0,0,0.6);
+            border: 1px solid var(--w15);
+            color: var(--w80); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            backdrop-filter: blur(8px);
+            transition: all 0.2s;
+        }
+        .modal-close:hover { background: var(--w100); color: var(--black); border-color: var(--w100); }
+        .modal-close svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+        .modal-hero {
+            position: relative;
+            width: 100%; aspect-ratio: 16/7;
+            background: #000;
+            border-bottom: 1px solid var(--w6);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .modal-hero img { width: 100%; height: 100%; object-fit: cover; opacity: 0.95; }
+        .modal-hero::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(to bottom, transparent 60%, rgba(6,0,16,0.85));
+            pointer-events: none;
+        }
+
+        .modal-body {
+            padding: 28px 36px 32px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--w15) transparent;
+        }
+        .modal-body::-webkit-scrollbar { width: 6px; }
+        .modal-body::-webkit-scrollbar-thumb { background: var(--w15); border-radius: 3px; }
+
+        .modal-meta {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase;
+            color: var(--w30); margin-bottom: 8px;
+        }
+        .modal-meta .term-pill {
+            color: rgba(168,140,255,0.85);
+            padding: 3px 9px; border-radius: 999px;
+            background: rgba(168,140,255,0.07);
+            border: 1px solid rgba(168,140,255,0.18);
+            font-weight: 500;
+        }
+        .modal-title {
+            font-size: 1.7rem; font-weight: 200;
+            color: var(--w100); letter-spacing: -0.02em;
+            line-height: 1.2; margin-bottom: 12px;
+        }
+        .modal-authors {
+            display: flex; flex-wrap: wrap; gap: 6px;
+            margin-bottom: 22px;
+        }
+        .modal-section { margin-bottom: 22px; }
+        .modal-section h4 {
+            font-size: 0.58rem; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 0.14em;
+            color: var(--w30); margin-bottom: 8px;
+        }
+        .modal-section p {
+            font-size: 0.85rem; font-weight: 300;
+            color: var(--w80); line-height: 1.6;
+        }
+        .modal-section ul {
+            list-style: none; padding: 0;
+        }
+        .modal-section li {
+            font-size: 0.78rem; font-weight: 300;
+            color: var(--w60); line-height: 1.55;
+            padding: 6px 0 6px 18px;
+            position: relative;
+        }
+        .modal-section li::before {
+            content: ''; position: absolute;
+            left: 0; top: 13px;
+            width: 6px; height: 1px;
+            background: var(--accent);
+        }
+        .tech-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+        .tech-chip {
+            font-size: 0.65rem; padding: 4px 10px; border-radius: 6px;
+            background: var(--w6); border: 1px solid var(--w10);
+            color: var(--w60);
+        }
+
+        .modal-cta-row {
+            display: flex; gap: 10px; flex-wrap: wrap;
+            margin-top: 26px;
+            padding-top: 22px;
+            border-top: 1px solid var(--w6);
+        }
+        .modal-cta {
+            display: inline-flex; align-items: center; gap: 7px;
+            padding: 10px 22px; border-radius: 999px;
+            font-size: 0.78rem; font-weight: 500;
+            cursor: pointer; transition: all 0.25s;
+            font-family: inherit; border: none;
+        }
+        .modal-cta.primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: var(--w100);
+        }
+        .modal-cta.primary:hover { filter: brightness(1.15); transform: translateY(-1px); }
+        .modal-cta.ghost {
+            background: transparent;
+            color: var(--w80);
+            border: 1px solid var(--w20);
+        }
+        .modal-cta.ghost:hover { background: var(--w100); color: var(--black); border-color: var(--w100); }
+        .modal-cta svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2; }
 
         /* ---- Footer ---- */
         footer {
@@ -224,13 +402,8 @@
         }
         .hero-content { opacity: 0; animation: fadeUp 1s cubic-bezier(0.22,1,0.36,1) 0.2s forwards; }
         .project-card {
-            opacity: 0;
-            animation: fadeUp 0.6s cubic-bezier(0.22,1,0.36,1) forwards;
+            animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) backwards;
         }
-        .project-card:nth-child(1) { animation-delay: 0.1s; }
-        .project-card:nth-child(2) { animation-delay: 0.2s; }
-        .project-card:nth-child(3) { animation-delay: 0.3s; }
-        .project-card:nth-child(4) { animation-delay: 0.4s; }
 
         /* ---- Responsive ---- */
         @media (max-width: 768px) {
@@ -240,6 +413,9 @@
             .project-grid { grid-template-columns: 1fr; }
             .navbar { padding: 14px 20px; }
             .nav-links { gap: 16px; }
+            .modal { max-height: 95vh; border-radius: 14px; }
+            .modal-body { padding: 22px 20px 26px; }
+            .modal-title { font-size: 1.3rem; }
         }
     </style>
 </head>
@@ -277,124 +453,371 @@
     <section class="projects-section">
         <div class="section-header">
             <h2>Featured Projects</h2>
-            <span class="count">5 projects</span>
+            <span class="count" id="projectCount"></span>
         </div>
 
-        <div class="project-grid">
-
-            <!-- Project 1: GenBI -->
-            <div class="project-card">
-                <div class="card-img"><img src="../images/proj-genbi.png" alt=""></div>
-                <div class="card-number">01</div>
-                <h3 class="card-title">GenBI — Generative Business Intelligence</h3>
-                <p class="card-desc">An AI-powered business intelligence platform that transforms natural language queries into interactive charts, dashboards, and data stories — 19 chart types, 4 themes, real-time Canvas 2D rendering.</p>
-                <div class="card-tags">
-                    <span class="card-tag">GenAI</span>
-                    <span class="card-tag">Business Intelligence</span>
-                    <span class="card-tag">Data Visualization</span>
-                    <span class="card-tag">Flask</span>
-                    <span class="card-tag">Canvas 2D</span>
-                </div>
-                <div class="card-footer">
-                    <div class="card-authors"><span class="author-chip">AI2Lab Team</span></div>
-                    <a href="https://genbi.co/" target="_blank" class="card-link">
-                        View project
-                        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                    </a>
-                </div>
+        <div class="filter-bar">
+            <div class="search-wrap">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                <input class="search-input" id="searchInput" type="text" placeholder="Search projects, authors, tags…" autocomplete="off">
             </div>
-
-            <!-- Project 2: NeedGen -->
-            <div class="project-card">
-                <div class="card-img"><img src="../images/proj-needgen.png" alt=""></div>
-                <div class="card-number">02</div>
-                <h3 class="card-title">NeedGen: Product Requirements Simulator</h3>
-                <p class="card-desc">An AI-powered simulator that generates and validates product requirements through intelligent stakeholder simulation, helping teams identify gaps and conflicts before development begins.</p>
-                <div class="card-tags">
-                    <span class="card-tag">GenAI</span>
-                    <span class="card-tag">Product Management</span>
-                    <span class="card-tag">Simulation</span>
-                    <span class="card-tag">Vercel</span>
-                </div>
-                <div class="card-footer">
-                    <div class="card-authors"><span class="author-chip">Jahangir Babar</span><span class="author-chip">Aashutosh Agrawal</span></div>
-                    <a href="https://product-requirements-simulator-sigma.vercel.app/" target="_blank" class="card-link">
-                        View project
-                        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Project 3: GenAI World Cup Builder -->
-            <div class="project-card">
-                <div class="card-img"><img src="../images/proj-worldcup.png" alt=""></div>
-                <div class="card-number">03</div>
-                <h3 class="card-title">GenAI World Cup Squad Builder</h3>
-                <p class="card-desc">A generative AI application that helps users build and optimize World Cup squads using intelligent player analysis, formation suggestions, and team chemistry evaluation powered by LLMs.</p>
-                <div class="card-tags">
-                    <span class="card-tag">GenAI</span>
-                    <span class="card-tag">Sports Analytics</span>
-                    <span class="card-tag">LLM</span>
-                    <span class="card-tag">Vercel</span>
-                </div>
-                <div class="card-footer">
-                    <div class="card-authors"><span class="author-chip">Jahangir Babar</span><span class="author-chip">Aashutosh Agrawal</span></div>
-                    <a href="https://worldcup-squad-builder-genai.vercel.app/" target="_blank" class="card-link">
-                        View project
-                        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Project 4: PromptBud -->
-            <div class="project-card">
-                <div class="card-img"><img src="../images/proj-promptbud.png" alt=""></div>
-                <div class="card-number">04</div>
-                <h3 class="card-title">PromptBud — Chrome Extension</h3>
-                <p class="card-desc">A Chrome extension that enhances prompt engineering workflows, helping users craft, organize, and optimize prompts for better AI interactions across any LLM platform.</p>
-                <div class="card-tags">
-                    <span class="card-tag">Chrome Extension</span>
-                    <span class="card-tag">Prompt Engineering</span>
-                    <span class="card-tag">Developer Tools</span>
-                </div>
-                <div class="card-footer">
-                    <div class="card-authors"><span class="author-chip">Rakshith Dharmappa</span><span class="author-chip">Sayam Khatri</span><span class="author-chip">Hari Krishna Kancharla</span></div>
-                    <a href="https://chromewebstore.google.com/detail/promptbud/nlablchghipjcomoacflekgiloolchen" target="_blank" class="card-link">
-                        View project
-                        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Project 5: WealthNexus -->
-            <div class="project-card">
-                <div class="card-img"><img src="../images/proj-wealthnexus.png" alt=""></div>
-                <div class="card-number">05</div>
-                <h3 class="card-title">WealthNexus — Agentic Wealth Intelligence</h3>
-                <p class="card-desc">An AI-driven financial advisor that combines multi-agent orchestration with Modern Portfolio Theory, using hybrid adaptive routing and RAG-augmented recommendations (relevance, risk alignment, diversification) to deliver verifiable wealth management advice with real-time market data.</p>
-                <div class="card-tags">
-                    <span class="card-tag">Spring 2026</span>
-                    <span class="card-tag">Agentic AI</span>
-                    <span class="card-tag">FinTech</span>
-                    <span class="card-tag">LangGraph</span>
-                    <span class="card-tag">RAG</span>
-                </div>
-                <div class="card-footer">
-                    <div class="card-authors"><span class="author-chip">Seoyeon Kang</span></div>
-                    <a href="https://sykang16.github.io/Agentic_Wealth_Intelligence/" target="_blank" class="card-link">
-                        View project
-                        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                    </a>
-                </div>
-            </div>
-
+            <div class="filter-pills" id="filterPills"></div>
         </div>
+
+        <div class="project-grid" id="projectGrid"></div>
     </section>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="modal" id="modalCard">
+            <button class="modal-close" id="modalClose" aria-label="Close">
+                <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+            <div class="modal-hero" id="modalHero"><img id="modalImg" src="" alt=""></div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer>
         <p>SparkHub is part of <a href="https://ai2lab.ai">AI2Lab</a> &mdash; Dr. Mohammad Dehghani, Northeastern University</p>
     </footer>
+
+<script>
+// =========================================================================
+// PROJECTS DATA — single source of truth. Add new projects here.
+// =========================================================================
+const projects = [
+    {
+        id: 'genbi',
+        num: '01',
+        term: 'Fall 2025',
+        title: 'GenBI — Generative Business Intelligence',
+        image: '../images/proj-genbi.png',
+        shortDesc: 'An AI-powered business intelligence platform that transforms natural language queries into interactive charts, dashboards, and data stories — 19 chart types, 4 themes, real-time Canvas 2D rendering.',
+        longDesc: 'GenBI lets users ask data questions in plain English and instantly receive interactive charts, dashboards, and narrative data stories. The platform combines LLM-powered query understanding with a custom Canvas 2D rendering engine spanning 19 chart types and 4 visual themes, plus a risk-decision module that uses TOPSIS multi-criteria analysis with Monte Carlo simulation.',
+        features: [
+            '19 chart types across 4 themes (Liquid Glass, Minimal, Editorial, Press)',
+            'Real-time Canvas 2D rendering with sub-100ms updates',
+            'RAG-grounded query understanding via Azure OpenAI',
+            'TOPSIS multi-criteria risk scoring with Monte Carlo simulation',
+            'Stripe-billed multi-tier subscription model',
+            'Session-only auth with Codex-audited security hardening'
+        ],
+        tech: ['Python 3.11', 'Flask 3', 'PostgreSQL', 'Canvas 2D', 'Azure OpenAI', 'Stripe', 'pytest'],
+        tags: ['GenAI', 'Business Intelligence', 'Data Viz', 'Flask'],
+        authors: [{ name: 'AI2Lab Team' }],
+        liveUrl: 'https://genbi.co/'
+    },
+    {
+        id: 'needgen',
+        num: '02',
+        term: 'Spring 2026',
+        title: 'NeedGen — Product Requirements Simulator',
+        image: '../images/proj-needgen.png',
+        shortDesc: 'An AI-powered simulator that generates and validates product requirements through intelligent stakeholder simulation, helping teams identify gaps and conflicts before development begins.',
+        longDesc: 'NeedGen replaces the painful early-stage requirements workshop with an AI-driven stakeholder simulation. Multiple LLM personas (PM, engineer, end user, compliance) negotiate a product spec, and the system surfaces gaps, conflicts, and edge cases before a single line of code is written.',
+        features: [
+            'Multi-persona stakeholder simulation (PM, engineer, user, compliance)',
+            'Automatic gap detection and conflict surfacing',
+            'Exportable requirements doc with traceability matrix',
+            'Iterative refinement loop with reviewer feedback'
+        ],
+        tech: ['Next.js', 'Vercel', 'OpenAI API', 'TypeScript'],
+        tags: ['GenAI', 'Product Management', 'Simulation'],
+        authors: [
+            { name: 'Jahangir Babar' },
+            { name: 'Aashutosh Agrawal' }
+        ],
+        liveUrl: 'https://product-requirements-simulator-sigma.vercel.app/'
+    },
+    {
+        id: 'worldcup',
+        num: '03',
+        term: 'Spring 2026',
+        title: 'GenAI World Cup Squad Builder',
+        image: '../images/proj-worldcup.png',
+        shortDesc: 'A generative AI application that helps users build and optimize World Cup squads using intelligent player analysis, formation suggestions, and team chemistry evaluation powered by LLMs.',
+        longDesc: 'A playful but technically serious LLM application that turns World Cup squad-building into an interactive optimization problem. The system reasons over player attributes, formation constraints, and team chemistry to recommend lineups and substitutions, with natural-language explanations of each tactical decision.',
+        features: [
+            'LLM-driven player attribute analysis and clustering',
+            'Formation suggestions with tactical reasoning',
+            'Team chemistry scoring across positional pairs',
+            'Drag-and-drop squad builder UI'
+        ],
+        tech: ['Next.js', 'Vercel', 'OpenAI API', 'Tailwind CSS'],
+        tags: ['GenAI', 'Sports Analytics', 'LLM'],
+        authors: [
+            { name: 'Jahangir Babar' },
+            { name: 'Aashutosh Agrawal' }
+        ],
+        liveUrl: 'https://worldcup-squad-builder-genai.vercel.app/'
+    },
+    {
+        id: 'promptbud',
+        num: '04',
+        term: 'Spring 2025',
+        title: 'PromptBud — Chrome Extension',
+        image: '../images/proj-promptbud.png',
+        shortDesc: 'A Chrome extension that enhances prompt engineering workflows, helping users craft, organize, and optimize prompts for better AI interactions across any LLM platform.',
+        longDesc: 'PromptBud lives as a Chrome extension that overlays any LLM web UI (ChatGPT, Claude, Gemini, etc.) and gives prompt engineers a real workspace: reusable templates, version history, A/B variants, and a personal prompt library that follows you across sites.',
+        features: [
+            'Cross-platform overlay (ChatGPT, Claude, Gemini, Copilot)',
+            'Reusable prompt templates with variable interpolation',
+            'Version history and A/B variant comparison',
+            'Personal prompt library synced across sites',
+            'One-click prompt sharing and import'
+        ],
+        tech: ['Chrome Extension MV3', 'TypeScript', 'IndexedDB', 'React'],
+        tags: ['Chrome Extension', 'Prompt Engineering', 'Developer Tools'],
+        authors: [
+            { name: 'Rakshith Dharmappa' },
+            { name: 'Sayam Khatri' },
+            { name: 'Hari Krishna Kancharla' }
+        ],
+        liveUrl: 'https://chromewebstore.google.com/detail/promptbud/nlablchghipjcomoacflekgiloolchen'
+    },
+    {
+        id: 'wealthnexus',
+        num: '05',
+        term: 'Spring 2026',
+        title: 'WealthNexus — Agentic Wealth Intelligence',
+        image: '../images/proj-wealthnexus.png',
+        shortDesc: 'An AI-driven financial advisor that combines multi-agent orchestration with Modern Portfolio Theory, using hybrid adaptive routing and RAG-augmented recommendations to deliver verifiable wealth management advice.',
+        longDesc: 'WealthNexus addresses the accuracy-diversity trade-off in financial advisory through hybrid adaptive routing and Modern Portfolio Theory constraints. The platform integrates multi-agent orchestration with classical finance theory to deliver optimized, verifiable wealth-management recommendations grounded in real-time market data.',
+        features: [
+            'Two-tier intent classification with 98% keyword accuracy',
+            'RAG-augmented recommendations with composite scoring (40% relevance, 35% risk alignment, 25% diversification)',
+            'Real-time market data integration via MCP',
+            'Conversational investment profile building',
+            'Portfolio analysis with natural language queries',
+            'Optional Plaid API integration for live account syncing'
+        ],
+        tech: ['Python 3.12+', 'LangGraph', 'FastAPI', 'Streamlit', 'ChromaDB', 'Claude API', 'Pydantic v2', 'MCP', 'Plaid', 'Sentence Transformers'],
+        tags: ['Agentic AI', 'FinTech', 'LangGraph', 'RAG'],
+        authors: [
+            { name: 'Seoyeon Kang', linkedin: 'https://www.linkedin.com/in/seoyeon-kang/' }
+        ],
+        liveUrl: 'https://sykang16.github.io/Agentic_Wealth_Intelligence/'
+    },
+    {
+        id: 'tekkal',
+        num: '06',
+        term: 'Spring 2026',
+        title: 'TEKKAL — Multi-Agent Slide Platform',
+        image: '../images/proj-tekkal.png',
+        shortDesc: 'A local-first slide platform whose canonical state is a single deck.json scene graph, mutated identically by mouse drags, chat-driven tool calls, and external CLI agents — with five Gemini specialists writing through a 57-tool API instead of full-file rewrites.',
+        longDesc: 'TEKKAL sits between Gamma-style AI slide generators (visual polish, no editor) and CLI code agents that emit raw HTML (no schema). It defines a JSON scene graph that agents can write efficiently and that humans can still edit visually, with both surfaces mutating the same canonical deck.json. A five-specialist Gemini pipeline (Planner, Content Agent, Visual Agent, Reviewer, Writer) routes intent and writes through a 57-tool typed API. Validation runs after each turn; failures flow back as the next tool_result for self-healing — without ever mutating the deck on a bad write. On the benchmark, Gemini 3 Pro preview through TEKKAL produces equivalent first-pass quality to a CLI baseline, but iterative edits become roughly an order of magnitude cheaper in tokens because each revision lands as a single tool call rather than a full deck rewrite.',
+        features: [
+            'Canonical deck.json scene graph shared by visual editor + AI panel + CLI agents',
+            'Five-specialist Gemini pipeline: Planner, Content Agent, Visual Agent, Reviewer, Writer',
+            '57-tool typed API with role-filtered subsets per specialist',
+            'Self-healing validation — schema errors flow back as tool_result for the model to retry',
+            'Local-first: File System Access API + IndexedDB, no backend, API key stays in browser',
+            'Per-element animation timeline with [step:N] markers in speaker notes',
+            'Order-of-magnitude cheaper iterative edits vs CLI full-file rewrites'
+        ],
+        tech: ['React', 'Vite', 'TypeScript', 'JSON Schema (Ajv)', 'Gemini 3 Pro preview', 'KaTeX', 'Shiki', 'three.js', 'TikZJax (WASM)', 'File System Access API', 'IndexedDB'],
+        tags: ['Agentic AI', 'Slides', 'Multi-Agent', 'Schema Validation', 'Local-first'],
+        authors: [
+            { name: 'Hyoungseo Son', linkedin: 'https://www.linkedin.com/in/hyoungseo-son-b0b93a283/' }
+        ],
+        liveUrl: 'https://tekkal.dev'
+    }
+];
+
+// =========================================================================
+// FILTER + SEARCH STATE
+// =========================================================================
+const TERM_FILTERS = ['All', 'Spring 2025', 'Fall 2025', 'Spring 2026'];
+let activeTerm = 'All';
+let searchQuery = '';
+
+// =========================================================================
+// RENDER
+// =========================================================================
+const grid = document.getElementById('projectGrid');
+const countEl = document.getElementById('projectCount');
+const pillsEl = document.getElementById('filterPills');
+const searchInput = document.getElementById('searchInput');
+
+function renderPills() {
+    pillsEl.innerHTML = '';
+    TERM_FILTERS.forEach(term => {
+        const btn = document.createElement('button');
+        btn.className = 'filter-pill' + (term === activeTerm ? ' active' : '');
+        btn.textContent = term;
+        btn.addEventListener('click', () => {
+            activeTerm = term;
+            renderPills();
+            renderGrid();
+        });
+        pillsEl.appendChild(btn);
+    });
+}
+
+function matchesFilters(p) {
+    if (activeTerm !== 'All' && p.term !== activeTerm) return false;
+    if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        const hay = [
+            p.title, p.shortDesc, p.term,
+            ...(p.tags || []),
+            ...(p.tech || []),
+            ...(p.authors || []).map(a => a.name)
+        ].join(' ').toLowerCase();
+        if (!hay.includes(q)) return false;
+    }
+    return true;
+}
+
+function authorChipHTML(author, opts = {}) {
+    const onlyName = opts.modal === false;
+    if (author.linkedin) {
+        return `<a class="author-chip" href="${author.linkedin}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+            <svg viewBox="0 0 24 24"><path d="M20.4 20.4h-3.6v-5.6c0-1.3 0-3-1.8-3s-2.1 1.4-2.1 2.9v5.7H9.4V9h3.4v1.6h.1c.5-.9 1.6-1.8 3.3-1.8 3.6 0 4.2 2.4 4.2 5.4v6.2zM5.3 7.4a2.1 2.1 0 110-4.2 2.1 2.1 0 010 4.2zm1.8 13H3.5V9h3.6v11.4z"/></svg>
+            ${author.name}
+        </a>`;
+    }
+    return `<span class="author-chip">${author.name}</span>`;
+}
+
+function renderGrid() {
+    const visible = projects.filter(matchesFilters);
+    grid.innerHTML = '';
+    countEl.textContent = `${visible.length} of ${projects.length} project${projects.length !== 1 ? 's' : ''}`;
+
+    if (visible.length === 0) {
+        grid.innerHTML = `<div class="empty-state">
+            No projects match your filters.
+            <br><button class="clear-btn" onclick="document.getElementById('searchInput').value='';window._clearFilters()">Clear filters</button>
+        </div>`;
+        return;
+    }
+
+    visible.forEach((p, i) => {
+        const card = document.createElement('div');
+        card.className = 'project-card';
+        card.style.animationDelay = `${0.05 + i * 0.07}s`;
+        card.dataset.id = p.id;
+        card.innerHTML = `
+            <div class="card-img">
+                <img src="${p.image}" alt="">
+                <span class="card-open-hint">View details</span>
+            </div>
+            <div class="card-meta-row">
+                <span class="card-number">${p.num}</span>
+                <span class="dot"></span>
+                <span class="card-term">${p.term}</span>
+            </div>
+            <h3 class="card-title">${p.title}</h3>
+            <p class="card-desc">${p.shortDesc}</p>
+            <div class="card-tags">
+                ${(p.tags || []).map(t => `<span class="card-tag">${t}</span>`).join('')}
+            </div>
+            <div class="card-footer">
+                <div class="card-authors">
+                    ${(p.authors || []).map(a => authorChipHTML(a)).join('')}
+                </div>
+                <a href="${p.liveUrl}" target="_blank" rel="noopener" class="card-link" onclick="event.stopPropagation()">
+                    Live demo
+                    <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+            </div>
+        `;
+        card.addEventListener('click', () => openModal(p.id));
+        grid.appendChild(card);
+    });
+}
+
+window._clearFilters = function() {
+    activeTerm = 'All';
+    searchQuery = '';
+    searchInput.value = '';
+    renderPills();
+    renderGrid();
+};
+
+searchInput.addEventListener('input', e => {
+    searchQuery = e.target.value.trim();
+    renderGrid();
+});
+
+// =========================================================================
+// MODAL
+// =========================================================================
+const modal = document.getElementById('modal');
+const modalClose = document.getElementById('modalClose');
+const modalImg = document.getElementById('modalImg');
+const modalBody = document.getElementById('modalBody');
+
+function openModal(id) {
+    const p = projects.find(x => x.id === id);
+    if (!p) return;
+    modalImg.src = p.image;
+    modalImg.alt = p.title;
+    modalBody.innerHTML = `
+        <div class="modal-meta">
+            <span>Project ${p.num}</span>
+            <span>·</span>
+            <span class="term-pill">${p.term}</span>
+        </div>
+        <h2 class="modal-title">${p.title}</h2>
+        <div class="modal-authors">${(p.authors || []).map(a => authorChipHTML(a)).join('')}</div>
+
+        <div class="modal-section">
+            <h4>About</h4>
+            <p>${p.longDesc || p.shortDesc}</p>
+        </div>
+
+        ${p.features && p.features.length ? `
+        <div class="modal-section">
+            <h4>Key Features</h4>
+            <ul>${p.features.map(f => `<li>${f}</li>`).join('')}</ul>
+        </div>` : ''}
+
+        ${p.tech && p.tech.length ? `
+        <div class="modal-section">
+            <h4>Tech Stack</h4>
+            <div class="tech-chips">${p.tech.map(t => `<span class="tech-chip">${t}</span>`).join('')}</div>
+        </div>` : ''}
+
+        ${(p.tags && p.tags.length) ? `
+        <div class="modal-section">
+            <h4>Categories</h4>
+            <div class="tech-chips">${p.tags.map(t => `<span class="tech-chip">${t}</span>`).join('')}</div>
+        </div>` : ''}
+
+        <div class="modal-cta-row">
+            <a href="${p.liveUrl}" target="_blank" rel="noopener" class="modal-cta primary">
+                Live demo
+                <svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg>
+            </a>
+            <button class="modal-cta ghost" onclick="closeModal()">Close</button>
+        </div>
+    `;
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+}
+window.closeModal = closeModal;
+
+modalClose.addEventListener('click', closeModal);
+modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal.classList.contains('open')) closeModal(); });
+
+// =========================================================================
+// INIT
+// =========================================================================
+renderPills();
+renderGrid();
+</script>
 
 </body>
 </html>
