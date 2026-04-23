@@ -213,6 +213,14 @@
             border-color: rgba(140,70,230,0.4);
         }
         a.author-chip svg { width: 8px; height: 8px; fill: currentColor; opacity: 0.7; }
+        .author-photo {
+            width: 16px; height: 16px; border-radius: 999px;
+            object-fit: cover; object-position: center top;
+            background: rgba(140,70,230,0.18);
+            border: 1px solid rgba(140,70,230,0.35);
+            margin-left: -6px; flex-shrink: 0;
+            display: inline-block;
+        }
 
         .card-link {
             display: inline-flex; align-items: center; gap: 5px;
@@ -543,8 +551,8 @@ const projects = [
         tech: ['Next.js', 'Vercel', 'OpenAI API', 'TypeScript'],
         tags: ['GenAI', 'Product Management', 'Simulation'],
         authors: [
-            { name: 'Jahangir Babar' },
-            { name: 'Aashutosh Agrawal' }
+            { name: 'Jahangir Babar', linkedin: 'https://www.linkedin.com/in/jahangir-babar/', photo: '../../assets/students/Jahangir_nobg.png' },
+            { name: 'Aashutosh Agrawal', linkedin: 'https://www.linkedin.com/in/aashutosh-agrawal/', photo: '../../assets/students/Aashutosh_nobg.png' }
         ],
         liveUrl: 'https://product-requirements-simulator-sigma.vercel.app/'
     },
@@ -565,8 +573,8 @@ const projects = [
         tech: ['Next.js', 'Vercel', 'OpenAI API', 'Tailwind CSS'],
         tags: ['GenAI', 'Sports Analytics', 'LLM'],
         authors: [
-            { name: 'Jahangir Babar' },
-            { name: 'Aashutosh Agrawal' }
+            { name: 'Jahangir Babar', linkedin: 'https://www.linkedin.com/in/jahangir-babar/', photo: '../../assets/students/Jahangir_nobg.png' },
+            { name: 'Aashutosh Agrawal', linkedin: 'https://www.linkedin.com/in/aashutosh-agrawal/', photo: '../../assets/students/Aashutosh_nobg.png' }
         ],
         liveUrl: 'https://worldcup-squad-builder-genai.vercel.app/'
     },
@@ -588,9 +596,9 @@ const projects = [
         tech: ['Chrome Extension MV3', 'TypeScript', 'IndexedDB', 'React'],
         tags: ['Chrome Extension', 'Prompt Engineering', 'Developer Tools'],
         authors: [
-            { name: 'Rakshith Dharmappa' },
-            { name: 'Sayam Khatri' },
-            { name: 'Hari Krishna Kancharla' }
+            { name: 'Rakshith Dharmappa', linkedin: 'https://www.linkedin.com/in/rakshithd26/' },
+            { name: 'Sayam Khatri', linkedin: 'https://www.linkedin.com/in/sayamkhatri/' },
+            { name: 'Hari Krishna Kancharla', linkedin: 'https://www.linkedin.com/in/hari-krishna-kancharla/' }
         ],
         liveUrl: 'https://chromewebstore.google.com/detail/promptbud/nlablchghipjcomoacflekgiloolchen'
     },
@@ -613,7 +621,7 @@ const projects = [
         tech: ['Python 3.12+', 'LangGraph', 'FastAPI', 'Streamlit', 'ChromaDB', 'Claude API', 'Pydantic v2', 'MCP', 'Plaid', 'Sentence Transformers'],
         tags: ['Agentic AI', 'FinTech', 'LangGraph', 'RAG'],
         authors: [
-            { name: 'Seoyeon Kang', linkedin: 'https://www.linkedin.com/in/seoyeon-kang/' }
+            { name: 'Seoyeon Kang', linkedin: 'https://www.linkedin.com/in/seoyeon-kang/', photo: '../../assets/students/Seoyeon_nobg.png' }
         ],
         liveUrl: 'https://sykang16.github.io/Agentic_Wealth_Intelligence/'
     },
@@ -689,14 +697,15 @@ function matchesFilters(p) {
 }
 
 function authorChipHTML(author, opts = {}) {
-    const onlyName = opts.modal === false;
+    const photo = author.photo ? `<img class="author-photo" src="${author.photo}" alt="${author.name}" loading="lazy">` : '';
     if (author.linkedin) {
         return `<a class="author-chip" href="${author.linkedin}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+            ${photo}
             <svg viewBox="0 0 24 24"><path d="M20.4 20.4h-3.6v-5.6c0-1.3 0-3-1.8-3s-2.1 1.4-2.1 2.9v5.7H9.4V9h3.4v1.6h.1c.5-.9 1.6-1.8 3.3-1.8 3.6 0 4.2 2.4 4.2 5.4v6.2zM5.3 7.4a2.1 2.1 0 110-4.2 2.1 2.1 0 010 4.2zm1.8 13H3.5V9h3.6v11.4z"/></svg>
             ${author.name}
         </a>`;
     }
-    return `<span class="author-chip">${author.name}</span>`;
+    return `<span class="author-chip">${photo}${author.name}</span>`;
 }
 
 function renderGrid() {
