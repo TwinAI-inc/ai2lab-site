@@ -245,33 +245,34 @@
         }
         .empty-state .clear-btn:hover { background: var(--w100); color: var(--black); }
 
-        /* ---- Modal ---- */
+        /* ---- Modal (compact, fits viewport) ---- */
         .modal-overlay {
             position: fixed; inset: 0; z-index: 1000;
             background: rgba(0,0,0,0.78);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             display: flex; align-items: center; justify-content: center;
-            padding: 30px;
+            padding: 24px;
             opacity: 0; pointer-events: none;
             transition: opacity 0.3s;
         }
         .modal-overlay.open { opacity: 1; pointer-events: auto; }
         .modal {
             position: relative;
-            width: 100%; max-width: 880px; max-height: 90vh;
+            width: 100%; max-width: 920px; max-height: calc(100vh - 48px);
             background: linear-gradient(180deg, #0a0010 0%, #060008 100%);
             border: 1px solid var(--w15);
-            border-radius: 18px;
+            border-radius: 16px;
             overflow: hidden;
-            display: flex; flex-direction: column;
-            transform: translateY(20px) scale(0.98);
+            display: grid;
+            grid-template-columns: 0.72fr 1fr;
+            transform: translateY(12px) scale(0.98);
             transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
             box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(168,85,247,0.08);
         }
         .modal-overlay.open .modal { transform: translateY(0) scale(1); }
         .modal-close {
-            position: absolute; top: 14px; right: 14px; z-index: 10;
-            width: 32px; height: 32px; border-radius: 50%;
+            position: absolute; top: 12px; right: 12px; z-index: 10;
+            width: 28px; height: 28px; border-radius: 50%;
             background: rgba(0,0,0,0.6);
             border: 1px solid var(--w15);
             color: var(--w80); cursor: pointer;
@@ -280,110 +281,126 @@
             transition: all 0.2s;
         }
         .modal-close:hover { background: var(--w100); color: var(--black); border-color: var(--w100); }
-        .modal-close svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; }
+        .modal-close svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2; }
 
         .modal-hero {
             position: relative;
-            width: 100%; aspect-ratio: 16/7;
             background: #000;
-            border-bottom: 1px solid var(--w6);
             overflow: hidden;
-            flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            border-right: 1px solid var(--w6);
         }
         .modal-hero img { width: 100%; height: 100%; object-fit: cover; opacity: 0.95; }
         .modal-hero::after {
             content: ''; position: absolute; inset: 0;
-            background: linear-gradient(to bottom, transparent 60%, rgba(6,0,16,0.85));
+            background: linear-gradient(to right, transparent 70%, rgba(6,0,16,0.4));
             pointer-events: none;
         }
 
         .modal-body {
-            padding: 28px 36px 32px;
+            padding: 22px 26px;
             overflow-y: auto;
             scrollbar-width: thin;
             scrollbar-color: var(--w15) transparent;
+            display: flex; flex-direction: column;
         }
-        .modal-body::-webkit-scrollbar { width: 6px; }
+        .modal-body::-webkit-scrollbar { width: 4px; }
         .modal-body::-webkit-scrollbar-thumb { background: var(--w15); border-radius: 3px; }
 
         .modal-meta {
-            display: flex; align-items: center; gap: 10px;
-            font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase;
-            color: var(--w30); margin-bottom: 8px;
+            display: flex; align-items: center; gap: 8px;
+            font-size: 0.55rem; letter-spacing: 0.12em; text-transform: uppercase;
+            color: var(--w30); margin-bottom: 6px;
         }
         .modal-meta .term-pill {
             color: rgba(168,140,255,0.85);
-            padding: 3px 9px; border-radius: 999px;
+            padding: 2px 8px; border-radius: 999px;
             background: rgba(168,140,255,0.07);
             border: 1px solid rgba(168,140,255,0.18);
             font-weight: 500;
         }
         .modal-title {
-            font-size: 1.7rem; font-weight: 200;
-            color: var(--w100); letter-spacing: -0.02em;
-            line-height: 1.2; margin-bottom: 12px;
+            font-size: 1.25rem; font-weight: 300;
+            color: var(--w100); letter-spacing: -0.01em;
+            line-height: 1.25; margin-bottom: 8px;
         }
         .modal-authors {
-            display: flex; flex-wrap: wrap; gap: 6px;
-            margin-bottom: 22px;
+            display: flex; flex-wrap: wrap; gap: 5px;
+            margin-bottom: 14px;
         }
-        .modal-section { margin-bottom: 22px; }
+
+        /* Top CTA row — sits prominently right under authors */
+        .modal-cta-row {
+            display: flex; gap: 8px; flex-wrap: wrap;
+            margin-bottom: 16px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--w6);
+        }
+        .modal-cta {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 7px 14px; border-radius: 999px;
+            font-size: 0.7rem; font-weight: 500;
+            cursor: pointer; transition: all 0.25s;
+            font-family: inherit;
+            text-decoration: none;
+        }
+        .modal-cta.primary {
+            background: rgba(168,140,255,0.1);
+            color: var(--w100);
+            border: 1px solid rgba(168,140,255,0.4);
+        }
+        .modal-cta.primary:hover {
+            background: rgba(168,140,255,0.2);
+            border-color: rgba(168,140,255,0.7);
+            box-shadow: 0 0 0 3px rgba(168,140,255,0.08);
+        }
+        .modal-cta.ghost {
+            background: transparent;
+            color: var(--w60);
+            border: 1px solid var(--w15);
+        }
+        .modal-cta.ghost:hover { background: var(--w8); color: var(--w100); border-color: var(--w30); }
+        .modal-cta svg { width: 10px; height: 10px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+        .modal-section { margin-bottom: 12px; }
+        .modal-section:last-child { margin-bottom: 0; }
         .modal-section h4 {
-            font-size: 0.58rem; font-weight: 500;
+            font-size: 0.52rem; font-weight: 500;
             text-transform: uppercase; letter-spacing: 0.14em;
-            color: var(--w30); margin-bottom: 8px;
+            color: var(--w30); margin-bottom: 6px;
         }
         .modal-section p {
-            font-size: 0.85rem; font-weight: 300;
-            color: var(--w80); line-height: 1.6;
+            font-size: 0.74rem; font-weight: 300;
+            color: var(--w80); line-height: 1.5;
         }
         .modal-section ul {
             list-style: none; padding: 0;
+            display: grid; grid-template-columns: 1fr; gap: 0;
         }
+        .modal-section ul.two-col { grid-template-columns: 1fr 1fr; column-gap: 14px; }
         .modal-section li {
-            font-size: 0.78rem; font-weight: 300;
-            color: var(--w60); line-height: 1.55;
-            padding: 6px 0 6px 18px;
+            font-size: 0.68rem; font-weight: 300;
+            color: var(--w60); line-height: 1.4;
+            padding: 3px 0 3px 12px;
             position: relative;
         }
         .modal-section li::before {
             content: ''; position: absolute;
-            left: 0; top: 13px;
-            width: 6px; height: 1px;
+            left: 0; top: 11px;
+            width: 5px; height: 1px;
             background: var(--accent);
         }
-        .tech-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+        .tech-chips { display: flex; flex-wrap: wrap; gap: 4px; }
         .tech-chip {
-            font-size: 0.65rem; padding: 4px 10px; border-radius: 6px;
-            background: var(--w6); border: 1px solid var(--w10);
-            color: var(--w60);
+            font-size: 0.58rem; padding: 3px 8px; border-radius: 5px;
+            background: var(--w6); border: 1px solid var(--w8);
+            color: var(--w60); font-weight: 400;
         }
 
-        .modal-cta-row {
-            display: flex; gap: 10px; flex-wrap: wrap;
-            margin-top: 26px;
-            padding-top: 22px;
-            border-top: 1px solid var(--w6);
+        @media (max-width: 720px) {
+            .modal { grid-template-columns: 1fr; max-height: 95vh; }
+            .modal-hero { aspect-ratio: 16/8; border-right: none; border-bottom: 1px solid var(--w6); }
         }
-        .modal-cta {
-            display: inline-flex; align-items: center; gap: 7px;
-            padding: 10px 22px; border-radius: 999px;
-            font-size: 0.78rem; font-weight: 500;
-            cursor: pointer; transition: all 0.25s;
-            font-family: inherit; border: none;
-        }
-        .modal-cta.primary {
-            background: linear-gradient(135deg, var(--accent), var(--accent2));
-            color: var(--w100);
-        }
-        .modal-cta.primary:hover { filter: brightness(1.15); transform: translateY(-1px); }
-        .modal-cta.ghost {
-            background: transparent;
-            color: var(--w80);
-            border: 1px solid var(--w20);
-        }
-        .modal-cta.ghost:hover { background: var(--w100); color: var(--black); border-color: var(--w100); }
-        .modal-cta svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2; }
 
         /* ---- Footer ---- */
         footer {
@@ -413,9 +430,9 @@
             .project-grid { grid-template-columns: 1fr; }
             .navbar { padding: 14px 20px; }
             .nav-links { gap: 16px; }
-            .modal { max-height: 95vh; border-radius: 14px; }
-            .modal-body { padding: 22px 20px 26px; }
-            .modal-title { font-size: 1.3rem; }
+            .modal-body { padding: 18px 18px; }
+            .modal-title { font-size: 1.1rem; }
+            .modal-section ul.two-col { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -492,17 +509,17 @@ const projects = [
         id: 'genbi',
         num: '01',
         term: 'Fall 2025',
-        title: 'GenBI — Generative Business Intelligence',
+        title: 'GenBI : Generative Business Intelligence',
         image: '../images/proj-genbi.png',
-        shortDesc: 'An AI-powered business intelligence platform that transforms natural language queries into interactive charts, dashboards, and data stories — 19 chart types, 4 themes, real-time Canvas 2D rendering.',
-        longDesc: 'GenBI lets users ask data questions in plain English and instantly receive interactive charts, dashboards, and narrative data stories. The platform combines LLM-powered query understanding with a custom Canvas 2D rendering engine spanning 19 chart types and 4 visual themes, plus a risk-decision module that uses TOPSIS multi-criteria analysis with Monte Carlo simulation.',
+        shortDesc: 'An AI powered business intelligence platform that transforms natural language queries into interactive charts, dashboards, and data stories: 19 chart types, 4 themes, real time Canvas 2D rendering.',
+        longDesc: 'GenBI lets users ask data questions in plain English and instantly receive interactive charts, dashboards, and narrative data stories. The platform combines LLM powered query understanding with a custom Canvas 2D rendering engine spanning 19 chart types and 4 visual themes, plus a risk decision module that uses TOPSIS multi criteria analysis with Monte Carlo simulation.',
         features: [
             '19 chart types across 4 themes (Liquid Glass, Minimal, Editorial, Press)',
-            'Real-time Canvas 2D rendering with sub-100ms updates',
-            'RAG-grounded query understanding via Azure OpenAI',
+            'Real time Canvas 2D rendering with sub 100ms updates',
+            'RAG grounded query understanding via Azure OpenAI',
             'TOPSIS multi-criteria risk scoring with Monte Carlo simulation',
-            'Stripe-billed multi-tier subscription model',
-            'Session-only auth with Codex-audited security hardening'
+            'Stripe billed multi tier subscription model',
+            'Session only auth with Codex audited security hardening'
         ],
         tech: ['Python 3.11', 'Flask 3', 'PostgreSQL', 'Canvas 2D', 'Azure OpenAI', 'Stripe', 'pytest'],
         tags: ['GenAI', 'Business Intelligence', 'Data Viz', 'Flask'],
@@ -513,10 +530,10 @@ const projects = [
         id: 'needgen',
         num: '02',
         term: 'Spring 2026',
-        title: 'NeedGen — Product Requirements Simulator',
+        title: 'NeedGen : Product Requirements Simulator',
         image: '../images/proj-needgen.png',
-        shortDesc: 'An AI-powered simulator that generates and validates product requirements through intelligent stakeholder simulation, helping teams identify gaps and conflicts before development begins.',
-        longDesc: 'NeedGen replaces the painful early-stage requirements workshop with an AI-driven stakeholder simulation. Multiple LLM personas (PM, engineer, end user, compliance) negotiate a product spec, and the system surfaces gaps, conflicts, and edge cases before a single line of code is written.',
+        shortDesc: 'An AI powered simulator that generates and validates product requirements through intelligent stakeholder simulation, helping teams identify gaps and conflicts before development begins.',
+        longDesc: 'NeedGen replaces the painful early stage requirements workshop with an AI driven stakeholder simulation. Multiple LLM personas (PM, engineer, end user, compliance) negotiate a product spec, and the system surfaces gaps, conflicts, and edge cases before a single line of code is written.',
         features: [
             'Multi-persona stakeholder simulation (PM, engineer, user, compliance)',
             'Automatic gap detection and conflict surfacing',
@@ -557,12 +574,12 @@ const projects = [
         id: 'promptbud',
         num: '04',
         term: 'Spring 2025',
-        title: 'PromptBud — Chrome Extension',
+        title: 'PromptBud : Chrome Extension',
         image: '../images/proj-promptbud.png',
         shortDesc: 'A Chrome extension that enhances prompt engineering workflows, helping users craft, organize, and optimize prompts for better AI interactions across any LLM platform.',
         longDesc: 'PromptBud lives as a Chrome extension that overlays any LLM web UI (ChatGPT, Claude, Gemini, etc.) and gives prompt engineers a real workspace: reusable templates, version history, A/B variants, and a personal prompt library that follows you across sites.',
         features: [
-            'Cross-platform overlay (ChatGPT, Claude, Gemini, Copilot)',
+            'Cross platform overlay (ChatGPT, Claude, Gemini, Copilot)',
             'Reusable prompt templates with variable interpolation',
             'Version history and A/B variant comparison',
             'Personal prompt library synced across sites',
@@ -581,14 +598,14 @@ const projects = [
         id: 'wealthnexus',
         num: '05',
         term: 'Spring 2026',
-        title: 'WealthNexus — Agentic Wealth Intelligence',
+        title: 'WealthNexus : Agentic Wealth Intelligence',
         image: '../images/proj-wealthnexus.png',
-        shortDesc: 'An AI-driven financial advisor that combines multi-agent orchestration with Modern Portfolio Theory, using hybrid adaptive routing and RAG-augmented recommendations to deliver verifiable wealth management advice.',
-        longDesc: 'WealthNexus addresses the accuracy-diversity trade-off in financial advisory through hybrid adaptive routing and Modern Portfolio Theory constraints. The platform integrates multi-agent orchestration with classical finance theory to deliver optimized, verifiable wealth-management recommendations grounded in real-time market data.',
+        shortDesc: 'An AI driven financial advisor that combines multiagent orchestration with Modern Portfolio Theory, using hybrid adaptive routing and RAG augmented recommendations to deliver verifiable wealth management advice.',
+        longDesc: 'WealthNexus addresses the accuracy versus diversity trade off in financial advisory through hybrid adaptive routing and Modern Portfolio Theory constraints. The platform integrates multiagent orchestration with classical finance theory to deliver optimized, verifiable wealth management recommendations grounded in real time market data.',
         features: [
-            'Two-tier intent classification with 98% keyword accuracy',
-            'RAG-augmented recommendations with composite scoring (40% relevance, 35% risk alignment, 25% diversification)',
-            'Real-time market data integration via MCP',
+            'Two tier intent classification with 98% keyword accuracy',
+            'RAG augmented recommendations with composite scoring (40% relevance, 35% risk alignment, 25% diversification)',
+            'Real time market data integration via MCP',
             'Conversational investment profile building',
             'Portfolio analysis with natural language queries',
             'Optional Plaid API integration for live account syncing'
@@ -604,21 +621,21 @@ const projects = [
         id: 'tekkal',
         num: '06',
         term: 'Spring 2026',
-        title: 'TEKKAL — Multi-Agent Slide Platform',
+        title: 'TEKKAL : Multiagent Slide Platform',
         image: '../images/proj-tekkal.png',
-        shortDesc: 'A local-first slide platform whose canonical state is a single deck.json scene graph, mutated identically by mouse drags, chat-driven tool calls, and external CLI agents — with five Gemini specialists writing through a 57-tool API instead of full-file rewrites.',
-        longDesc: 'TEKKAL sits between Gamma-style AI slide generators (visual polish, no editor) and CLI code agents that emit raw HTML (no schema). It defines a JSON scene graph that agents can write efficiently and that humans can still edit visually, with both surfaces mutating the same canonical deck.json. A five-specialist Gemini pipeline (Planner, Content Agent, Visual Agent, Reviewer, Writer) routes intent and writes through a 57-tool typed API. Validation runs after each turn; failures flow back as the next tool_result for self-healing — without ever mutating the deck on a bad write. On the benchmark, Gemini 3 Pro preview through TEKKAL produces equivalent first-pass quality to a CLI baseline, but iterative edits become roughly an order of magnitude cheaper in tokens because each revision lands as a single tool call rather than a full deck rewrite.',
+        shortDesc: 'A local first slide platform whose canonical state is a single deck.json scene graph, mutated identically by mouse drags, chat driven tool calls, and external CLI agents, with five Gemini specialists writing through a 57 tool API instead of full file rewrites.',
+        longDesc: 'TEKKAL sits between Gamma style AI slide generators (visual polish, no editor) and CLI code agents that emit raw HTML (no schema). It defines a JSON scene graph that agents can write efficiently and that humans can still edit visually, with both surfaces mutating the same canonical deck.json. A five specialist Gemini pipeline (Planner, Content Agent, Visual Agent, Reviewer, Writer) routes intent and writes through a 57 tool typed API. Validation runs after each turn; failures flow back as the next tool_result for self healing, without ever mutating the deck on a bad write. On the benchmark, Gemini 3 Pro preview through TEKKAL produces equivalent first pass quality to a CLI baseline, but iterative edits become roughly an order of magnitude cheaper in tokens because each revision lands as a single tool call rather than a full deck rewrite.',
         features: [
-            'Canonical deck.json scene graph shared by visual editor + AI panel + CLI agents',
-            'Five-specialist Gemini pipeline: Planner, Content Agent, Visual Agent, Reviewer, Writer',
-            '57-tool typed API with role-filtered subsets per specialist',
-            'Self-healing validation — schema errors flow back as tool_result for the model to retry',
-            'Local-first: File System Access API + IndexedDB, no backend, API key stays in browser',
-            'Per-element animation timeline with [step:N] markers in speaker notes',
-            'Order-of-magnitude cheaper iterative edits vs CLI full-file rewrites'
+            'Canonical deck.json scene graph shared by visual editor, AI panel, and CLI agents',
+            'Five specialist Gemini pipeline: Planner, Content Agent, Visual Agent, Reviewer, Writer',
+            '57 tool typed API with role filtered subsets per specialist',
+            'Self healing validation: schema errors flow back as tool_result for the model to retry',
+            'Local first: File System Access API + IndexedDB, no backend, API key stays in browser',
+            'Per element animation timeline with [step:N] markers in speaker notes',
+            'Iterative edits roughly an order of magnitude cheaper than CLI full file rewrites'
         ],
         tech: ['React', 'Vite', 'TypeScript', 'JSON Schema (Ajv)', 'Gemini 3 Pro preview', 'KaTeX', 'Shiki', 'three.js', 'TikZJax (WASM)', 'File System Access API', 'IndexedDB'],
-        tags: ['Agentic AI', 'Slides', 'Multi-Agent', 'Schema Validation', 'Local-first'],
+        tags: ['Agentic AI', 'Slides', 'Multiagent', 'Schema Validation', 'Local First'],
         authors: [
             { name: 'Hyoungseo Son', linkedin: 'https://www.linkedin.com/in/hyoungseo-son-b0b93a283/' }
         ],
@@ -756,6 +773,9 @@ function openModal(id) {
     if (!p) return;
     modalImg.src = p.image;
     modalImg.alt = p.title;
+    const featuresTwoCol = (p.features && p.features.length > 4) ? ' two-col' : '';
+    const allChips = [...(p.tech || []), ...(p.tags || [])];
+
     modalBody.innerHTML = `
         <div class="modal-meta">
             <span>Project ${p.num}</span>
@@ -765,6 +785,14 @@ function openModal(id) {
         <h2 class="modal-title">${p.title}</h2>
         <div class="modal-authors">${(p.authors || []).map(a => authorChipHTML(a)).join('')}</div>
 
+        <div class="modal-cta-row">
+            <a href="${p.liveUrl}" target="_blank" rel="noopener" class="modal-cta primary">
+                Live demo
+                <svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg>
+            </a>
+            <button class="modal-cta ghost" onclick="closeModal()">Close</button>
+        </div>
+
         <div class="modal-section">
             <h4>About</h4>
             <p>${p.longDesc || p.shortDesc}</p>
@@ -773,28 +801,14 @@ function openModal(id) {
         ${p.features && p.features.length ? `
         <div class="modal-section">
             <h4>Key Features</h4>
-            <ul>${p.features.map(f => `<li>${f}</li>`).join('')}</ul>
+            <ul class="${featuresTwoCol}">${p.features.map(f => `<li>${f}</li>`).join('')}</ul>
         </div>` : ''}
 
-        ${p.tech && p.tech.length ? `
+        ${allChips.length ? `
         <div class="modal-section">
-            <h4>Tech Stack</h4>
-            <div class="tech-chips">${p.tech.map(t => `<span class="tech-chip">${t}</span>`).join('')}</div>
+            <h4>Stack &amp; Categories</h4>
+            <div class="tech-chips">${allChips.map(t => `<span class="tech-chip">${t}</span>`).join('')}</div>
         </div>` : ''}
-
-        ${(p.tags && p.tags.length) ? `
-        <div class="modal-section">
-            <h4>Categories</h4>
-            <div class="tech-chips">${p.tags.map(t => `<span class="tech-chip">${t}</span>`).join('')}</div>
-        </div>` : ''}
-
-        <div class="modal-cta-row">
-            <a href="${p.liveUrl}" target="_blank" rel="noopener" class="modal-cta primary">
-                Live demo
-                <svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg>
-            </a>
-            <button class="modal-cta ghost" onclick="closeModal()">Close</button>
-        </div>
     `;
     modal.classList.add('open');
     modal.setAttribute('aria-hidden', 'false');
