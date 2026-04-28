@@ -32,82 +32,389 @@
         /* ---- Navbar ---- */
         .navbar {
             position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-            padding: 20px 40px;
+            padding: 16px 40px;
             display: flex; align-items: center; justify-content: space-between;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.9), rgba(0,0,0,0.4), transparent);
+            background: linear-gradient(to bottom, rgba(0,0,0,0.92), rgba(0,0,0,0.4), transparent);
         }
-        .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 1.2rem; font-weight: 600; color: var(--w100); }
-        .nav-logo svg { width: 28px; height: 28px; }
-        .nav-logo span { font-weight: 300; color: var(--w30); }
-        .nav-links { display: flex; gap: 32px; }
-        .nav-links a { font-size: 0.8rem; font-weight: 400; color: var(--w40); letter-spacing: 0.04em; text-transform: uppercase; transition: color 0.3s; }
+        .nav-logo { display: flex; align-items: center; gap: 8px; font-size: 0.95rem; font-weight: 600; color: var(--w100); }
+        .nav-logo svg { width: 22px; height: 22px; }
+        .nav-logo span { font-weight: 300; color: var(--w30); font-size: 0.85rem; }
+        .nav-links { display: flex; gap: 24px; }
+        .nav-links a { font-size: 0.68rem; font-weight: 400; color: var(--w40); letter-spacing: 0.06em; text-transform: uppercase; transition: color 0.3s; }
         .nav-links a:hover { color: var(--w100); }
         .nav-links a.active { color: var(--accent); }
 
         /* ---- Hero ---- */
-        .hero {
-            position: relative;
-            min-height: 50vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            padding: 0 60px 60px;
-            overflow: hidden;
-        }
+        .hero { position: relative; padding: 110px 48px 40px; overflow: hidden; }
         .hero .bg {
             position: absolute; inset: 0; z-index: 0;
             background:
-                radial-gradient(ellipse 50% 50% at 60% 40%, rgba(59,130,246,0.3), transparent 70%),
-                radial-gradient(ellipse 40% 50% at 30% 60%, rgba(45,212,168,0.2), transparent 70%),
-                linear-gradient(135deg, #000a18, #001020 40%, #000a14);
+                radial-gradient(ellipse 50% 60% at 20% 30%, rgba(45,212,168,0.15), transparent 70%),
+                radial-gradient(ellipse 30% 50% at 70% 50%, rgba(59,130,246,0.10), transparent 70%),
+                linear-gradient(135deg, #000a14, #001018 40%, #000a10);
         }
         .hero .overlay {
             position: absolute; inset: 0; z-index: 1;
-            background: linear-gradient(to top, #000 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.2) 100%);
+            background: linear-gradient(to top, #000 0%, rgba(0,0,0,0.5) 60%, rgba(0,0,0,0.3) 100%);
         }
-        .hero-content { position: relative; z-index: 2; max-width: 700px; }
-        .hero-label {
-            font-size: 0.65rem; font-weight: 400; text-transform: uppercase;
-            letter-spacing: 0.15em; color: rgba(45,212,168,0.7); margin-bottom: 12px;
-        }
-        .hero h1 {
-            font-size: 3.5rem; font-weight: 200; letter-spacing: -0.02em;
-            line-height: 1.1; color: var(--w100); margin-bottom: 16px;
-        }
-        .hero p { font-size: 1rem; font-weight: 300; color: var(--w40); line-height: 1.6; }
+        .hero-content { position: relative; z-index: 2; max-width: 600px; }
+        .hero-label { font-size: 0.55rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.15em; color: rgba(45,212,168,0.7); margin-bottom: 10px; }
+        .hero h1 { font-size: 2.4rem; font-weight: 200; letter-spacing: -0.02em; line-height: 1.15; color: var(--w100); margin-bottom: 10px; }
+        .hero p { font-size: 0.82rem; font-weight: 300; color: var(--w40); line-height: 1.55; }
 
-        /* ---- Projects ---- */
-        .projects-section { max-width: 1200px; margin: 0 auto; padding: 60px 40px 100px; }
+        /* ---- Section ---- */
+        .projects-section { max-width: 1100px; margin: 0 auto; padding: 36px 40px 80px; }
         .section-header {
             display: flex; align-items: baseline; justify-content: space-between;
-            margin-bottom: 40px; padding-bottom: 16px; border-bottom: 1px solid var(--w6);
+            margin-bottom: 18px; padding-bottom: 12px;
+            border-bottom: 1px solid var(--w6); gap: 14px; flex-wrap: wrap;
         }
-        .section-header h2 { font-size: 0.75rem; font-weight: 400; text-transform: uppercase; letter-spacing: 0.1em; color: var(--w30); }
-        .section-header .count { font-size: 0.75rem; color: var(--w20); }
+        .section-header h2 { font-size: 0.65rem; font-weight: 400; text-transform: uppercase; letter-spacing: 0.1em; color: var(--w30); }
+        .section-header .count { font-size: 0.65rem; color: var(--w20); }
 
-        /* Empty state */
-        .empty-state {
-            text-align: center;
-            padding: 100px 40px;
+        /* ---- Filter bar ---- */
+        .filter-bar {
+            display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+            margin-bottom: 22px;
+        }
+        .search-wrap {
+            position: relative; flex: 1; min-width: 220px;
+        }
+        .search-wrap svg {
+            position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+            width: 12px; height: 12px; fill: none; stroke: var(--w30); stroke-width: 2;
+            pointer-events: none;
+        }
+        .search-input {
+            width: 100%;
+            background: var(--w3);
+            border: 1px solid var(--w10);
+            border-radius: 999px;
+            padding: 9px 14px 9px 32px;
+            color: var(--w90);
+            font-family: inherit; font-size: 0.72rem;
+            transition: all 0.2s;
+        }
+        .search-input:focus { outline: none; border-color: var(--accent); background: var(--w6); }
+        .search-input::placeholder { color: var(--w20); }
+        .filter-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+        .filter-pill {
+            font-family: inherit;
+            font-size: 0.6rem; font-weight: 500;
+            letter-spacing: 0.04em;
+            padding: 6px 12px; border-radius: 999px;
+            border: 1px solid var(--w10);
+            background: transparent;
+            color: var(--w40);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .filter-pill:hover { color: var(--w80); border-color: var(--w20); }
+        .filter-pill.active {
+            color: var(--w100);
+            background: rgba(45,212,168,0.14);
+            border-color: rgba(45,212,168,0.5);
+        }
+
+        /* ---- Project Grid ---- */
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1px;
+            background: var(--w6);
             border: 1px solid var(--w6);
-            border-radius: 16px;
+            border-radius: 14px;
+            overflow: hidden;
         }
-        .empty-icon { font-size: 2.5rem; margin-bottom: 20px; opacity: 0.2; }
-        .empty-state h3 { font-size: 1.3rem; font-weight: 300; color: var(--w60); margin-bottom: 8px; }
-        .empty-state p { font-size: 0.9rem; font-weight: 300; color: var(--w30); margin-bottom: 28px; line-height: 1.6; }
-        .empty-cta {
-            display: inline-flex; align-items: center; gap: 8px;
-            font-size: 0.85rem; font-weight: 500; color: var(--black);
-            background: var(--w100); padding: 10px 28px; border-radius: 999px;
+        .project-card {
+            background: var(--black);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            transition: background 0.3s, transform 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+        .project-card:hover { background: rgba(45,212,168,0.04); }
+        .project-card:hover .card-img img { opacity: 1; transform: scale(1.02); }
+        .project-card:hover .card-open-hint { opacity: 1; }
+
+        .card-img {
+            width: 100%; height: 170px; overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 14px; position: relative;
+        }
+        .card-img img {
+            width: 100%; height: 100%; object-fit: cover;
+            opacity: 0.9; transition: opacity 0.3s, transform 0.5s;
+        }
+        .card-open-hint {
+            position: absolute; top: 10px; right: 10px;
+            font-size: 0.5rem; font-weight: 500;
+            letter-spacing: 0.12em; text-transform: uppercase;
+            color: var(--w80); background: rgba(0,0,0,0.6);
+            padding: 4px 10px; border-radius: 999px;
+            backdrop-filter: blur(8px);
+            opacity: 0; transition: opacity 0.3s;
+        }
+
+        .card-meta-row {
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 8px;
+        }
+        .card-number {
+            font-size: 0.6rem; font-weight: 400;
+            color: var(--w20); letter-spacing: 0.08em;
+        }
+        .card-meta-row .dot {
+            width: 3px; height: 3px; border-radius: 50%;
+            background: var(--w15);
+        }
+        .card-term {
+            font-size: 0.55rem; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 0.1em;
+            color: rgba(120,230,200,0.85);
+            padding: 2px 8px; border-radius: 999px;
+            background: rgba(45,212,168,0.07);
+            border: 1px solid rgba(45,212,168,0.18);
+        }
+        .card-title {
+            font-size: 1.1rem; font-weight: 300; color: var(--w100);
+            letter-spacing: -0.01em; line-height: 1.3; margin-bottom: 6px;
+        }
+        .card-desc {
+            font-size: 0.72rem; font-weight: 300; color: var(--w40);
+            line-height: 1.55; margin-bottom: 14px; flex: 1;
+        }
+        .card-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 14px; }
+        .card-tag {
+            font-size: 0.58rem; padding: 3px 9px; border-radius: 999px;
+            border: 1px solid var(--w10); color: var(--w40); font-weight: 400;
+        }
+        .card-footer {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 10px; padding-top: 12px; border-top: 1px solid var(--w6);
+        }
+        .card-authors { display: flex; flex-wrap: wrap; gap: 5px; min-width: 0; }
+        .author-chip {
+            font-size: 0.6rem; font-weight: 400;
+            color: rgba(120,230,200,0.95);
+            padding: 3px 10px; border-radius: 999px;
+            background: rgba(45,212,168,0.08);
+            border: 1px solid rgba(45,212,168,0.18);
+            white-space: nowrap;
+            display: inline-flex; align-items: center; gap: 4px;
+            transition: all 0.2s;
+        }
+        a.author-chip:hover {
+            color: var(--w100);
+            background: rgba(45,212,168,0.22);
+            border-color: rgba(45,212,168,0.5);
+        }
+        a.author-chip svg { width: 8px; height: 8px; fill: currentColor; opacity: 0.7; }
+        .author-photo {
+            width: 16px; height: 16px; border-radius: 999px;
+            object-fit: cover; object-position: center top;
+            background: rgba(45,212,168,0.18);
+            border: 1px solid rgba(45,212,168,0.4);
+            margin-left: -6px; flex-shrink: 0;
+            display: inline-block;
+        }
+
+        .card-link {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 0.68rem; font-weight: 500;
+            color: var(--w100);
+            padding: 5px 14px; border-radius: 999px;
+            border: 1px solid var(--w20);
             transition: all 0.3s;
+            white-space: nowrap; flex-shrink: 0;
         }
-        .empty-cta:hover { box-shadow: 0 0 30px rgba(255,255,255,0.15); transform: translateY(-2px); }
+        .card-link:hover {
+            background: var(--w100); color: var(--black); border-color: var(--w100);
+        }
+        .card-link svg { width: 9px; height: 9px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            padding: 60px 20px;
+            text-align: center;
+            color: var(--w30);
+            font-size: 0.78rem;
+            background: var(--black);
+        }
+        .empty-state .clear-btn {
+            display: inline-block; margin-top: 14px;
+            padding: 7px 16px; border-radius: 999px;
+            border: 1px solid var(--w20); color: var(--w80);
+            font-size: 0.65rem; cursor: pointer;
+            background: transparent; font-family: inherit;
+        }
+        .empty-state .clear-btn:hover { background: var(--w100); color: var(--black); }
+
+        /* ---- Modal ---- */
+        .modal-overlay {
+            position: fixed; inset: 0; z-index: 1000;
+            background: rgba(0,0,0,0.78);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            display: flex; align-items: center; justify-content: center;
+            padding: 24px;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .modal-overlay.open { opacity: 1; pointer-events: auto; }
+        .modal {
+            position: relative;
+            width: 100%; max-width: 920px; max-height: calc(100vh - 48px);
+            background: linear-gradient(180deg, #000d10 0%, #00060a 100%);
+            border: 1px solid var(--w15);
+            border-radius: 16px;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 0.72fr 1fr;
+            transform: translateY(12px) scale(0.98);
+            transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(45,212,168,0.08);
+        }
+        .modal-overlay.open .modal { transform: translateY(0) scale(1); }
+        .modal-close {
+            position: absolute; top: 12px; right: 12px; z-index: 10;
+            width: 28px; height: 28px; border-radius: 50%;
+            background: rgba(0,0,0,0.6);
+            border: 1px solid var(--w15);
+            color: var(--w80); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            backdrop-filter: blur(8px);
+            transition: all 0.2s;
+        }
+        .modal-close:hover { background: var(--w100); color: var(--black); border-color: var(--w100); }
+        .modal-close svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+        .modal-hero {
+            position: relative;
+            background: #000;
+            overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            border-right: 1px solid var(--w6);
+        }
+        .modal-hero img { width: 100%; height: 100%; object-fit: cover; opacity: 0.95; }
+        .modal-hero::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(to right, transparent 70%, rgba(0,12,16,0.4));
+            pointer-events: none;
+        }
+
+        .modal-body {
+            padding: 22px 26px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--w15) transparent;
+            display: flex; flex-direction: column;
+        }
+        .modal-body::-webkit-scrollbar { width: 4px; }
+        .modal-body::-webkit-scrollbar-thumb { background: var(--w15); border-radius: 3px; }
+
+        .modal-meta {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 0.55rem; letter-spacing: 0.12em; text-transform: uppercase;
+            color: var(--w30); margin-bottom: 6px;
+        }
+        .modal-meta .term-pill {
+            color: rgba(120,230,200,0.95);
+            padding: 2px 8px; border-radius: 999px;
+            background: rgba(45,212,168,0.07);
+            border: 1px solid rgba(45,212,168,0.18);
+            font-weight: 500;
+        }
+        .modal-title {
+            font-size: 1.25rem; font-weight: 300;
+            color: var(--w100); letter-spacing: -0.01em;
+            line-height: 1.25; margin-bottom: 8px;
+        }
+        .modal-authors {
+            display: flex; flex-wrap: wrap; gap: 5px;
+            margin-bottom: 14px;
+        }
+
+        .modal-cta-row {
+            display: flex; gap: 8px; flex-wrap: wrap;
+            margin-bottom: 16px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--w6);
+        }
+        .modal-cta {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 7px 14px; border-radius: 999px;
+            font-size: 0.7rem; font-weight: 500;
+            cursor: pointer; transition: all 0.25s;
+            font-family: inherit;
+            text-decoration: none;
+        }
+        .modal-cta.primary {
+            background: rgba(45,212,168,0.12);
+            color: var(--w100);
+            border: 1px solid rgba(45,212,168,0.45);
+        }
+        .modal-cta.primary:hover {
+            background: rgba(45,212,168,0.22);
+            border-color: rgba(45,212,168,0.7);
+            box-shadow: 0 0 0 3px rgba(45,212,168,0.08);
+        }
+        .modal-cta.ghost {
+            background: transparent;
+            color: var(--w60);
+            border: 1px solid var(--w15);
+        }
+        .modal-cta.ghost:hover { background: var(--w8); color: var(--w100); border-color: var(--w30); }
+        .modal-cta svg { width: 10px; height: 10px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+        .modal-section { margin-bottom: 12px; }
+        .modal-section:last-child { margin-bottom: 0; }
+        .modal-section h4 {
+            font-size: 0.52rem; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 0.14em;
+            color: var(--w30); margin-bottom: 6px;
+        }
+        .modal-section p {
+            font-size: 0.74rem; font-weight: 300;
+            color: var(--w80); line-height: 1.5;
+        }
+        .modal-section ul {
+            list-style: none; padding: 0;
+            display: grid; grid-template-columns: 1fr; gap: 0;
+        }
+        .modal-section ul.two-col { grid-template-columns: 1fr 1fr; column-gap: 14px; }
+        .modal-section li {
+            font-size: 0.68rem; font-weight: 300;
+            color: var(--w60); line-height: 1.4;
+            padding: 3px 0 3px 12px;
+            position: relative;
+        }
+        .modal-section li::before {
+            content: ''; position: absolute;
+            left: 0; top: 11px;
+            width: 5px; height: 1px;
+            background: var(--accent);
+        }
+        .tech-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+        .tech-chip {
+            font-size: 0.58rem; padding: 3px 8px; border-radius: 5px;
+            background: var(--w6); border: 1px solid var(--w8);
+            color: var(--w60); font-weight: 400;
+        }
+
+        @media (max-width: 720px) {
+            .modal { grid-template-columns: 1fr; max-height: 95vh; }
+            .modal-hero { aspect-ratio: 16/8; border-right: none; border-bottom: 1px solid var(--w6); }
+        }
 
         /* ---- Footer ---- */
         footer {
             border-top: 1px solid var(--w6);
-            padding: 40px; text-align: center;
-            font-size: 0.75rem; color: var(--w20);
+            padding: 28px;
+            text-align: center;
+            font-size: 0.62rem;
+            color: var(--w20);
         }
         footer a { color: var(--w40); }
 
@@ -117,13 +424,21 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .hero-content { opacity: 0; animation: fadeUp 1s cubic-bezier(0.22,1,0.36,1) 0.2s forwards; }
-        .empty-state { opacity: 0; animation: fadeUp 0.8s cubic-bezier(0.22,1,0.36,1) 0.3s forwards; }
+        .project-card {
+            animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) backwards;
+        }
 
+        /* ---- Responsive ---- */
         @media (max-width: 768px) {
-            .hero { min-height: 40vh; padding: 0 24px 40px; }
-            .hero h1 { font-size: 2.2rem; }
-            .projects-section { padding: 40px 16px 80px; }
-            .navbar { padding: 16px 20px; }
+            .hero { padding: 90px 20px 30px; }
+            .hero h1 { font-size: 1.8rem; }
+            .projects-section { padding: 28px 16px 60px; }
+            .project-grid { grid-template-columns: 1fr; }
+            .navbar { padding: 14px 20px; }
+            .nav-links { gap: 16px; }
+            .modal-body { padding: 18px 18px; }
+            .modal-title { font-size: 1.1rem; }
+            .modal-section ul.two-col { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -153,7 +468,7 @@
         <div class="hero-content">
             <div class="hero-label">Collection 02</div>
             <h1>Data Visualization Projects</h1>
-            <p>Interactive dashboards, storytelling with data, D3.js visualizations, and creative data art — built by AI2Lab members at Northeastern University.</p>
+            <p>Interactive dashboards, scrollytelling data stories, D3 narratives, and creative data art &mdash; built by AI2Lab members at Northeastern University.</p>
         </div>
     </section>
 
@@ -161,23 +476,279 @@
     <section class="projects-section">
         <div class="section-header">
             <h2>Featured Projects</h2>
-            <span class="count">Coming soon</span>
+            <span class="count" id="projectCount"></span>
         </div>
 
-        <div class="empty-state">
-            <div class="empty-icon">&#9733;</div>
-            <h3>Projects coming soon</h3>
-            <p>Data Visualization projects from AI2Lab members will be featured here.<br>Have a project to showcase? Get in touch.</p>
-            <a href="mailto:m.dehghani@northeastern.edu?subject=SparkHub%20DataViz%20Submission" class="empty-cta">
-                Submit your project &rarr;
-            </a>
+        <div class="filter-bar">
+            <div class="search-wrap">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                <input class="search-input" id="searchInput" type="text" placeholder="Search projects, authors, tags…" autocomplete="off">
+            </div>
+            <div class="filter-pills" id="filterPills"></div>
         </div>
+
+        <div class="project-grid" id="projectGrid"></div>
     </section>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="modal" id="modalCard">
+            <button class="modal-close" id="modalClose" aria-label="Close">
+                <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+            <div class="modal-hero" id="modalHero"><img id="modalImg" src="" alt=""></div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer>
         <p>SparkHub is part of <a href="https://ai2lab.ai">AI2Lab</a> &mdash; Dr. Mohammad Dehghani, Northeastern University</p>
     </footer>
+
+<script>
+// =========================================================================
+// PROJECTS DATA — single source of truth. Add new projects here.
+// =========================================================================
+const projects = [
+    {
+        id: 'chocolate-story',
+        num: '01',
+        term: 'Spring 2026',
+        title: 'Not so Sweet : The Chocolate Supply Chain',
+        image: '../images/proj-chocolate-story.png',
+        shortDesc: 'A scrollytelling data story that unwraps the $5 chocolate bar, revealing how only a few cents reach the West African farmers who grow 65% of the world’s cocoa.',
+        longDesc: 'Not so Sweet is a long-form scrollytelling visualization that traces the journey of a $5 chocolate bar from cocoa farm to retail shelf. Through a sequence of animated stage cards (Farmer, Cooperative, Exporter, Importer, Manufacturer, Distributor, Retailer), the story reveals how value is captured at each step — farmers receive about $0.23 while retailers take $1.40 — and anchors the narrative in market-concentration figures (5 corporations dominating the chocolate industry, 3 processors controlling 60% of grinding) to make supply-chain inequity viscerally legible.',
+        features: [
+            'Scrollytelling narrative with progressive revelation across seven supply-chain stages',
+            'Animated stage cards showing per-step price capture (farmer $0.23 → retailer $1.40)',
+            'Editorial typography (serif headlines, cocoa-toned palette) supporting the storytelling tone',
+            'Statistical anchors: 65% global cocoa from West Africa, 5 corporations control distribution',
+            'Side-rail progress dots and chained stage icons for spatial orientation',
+            'Photo-driven hero spreads pairing data callouts with on-the-ground imagery'
+        ],
+        tech: ['HTML', 'CSS', 'JavaScript', 'Scrollytelling', 'GitHub Pages'],
+        tags: ['Data Viz', 'Scrollytelling', 'Supply Chain', 'Storytelling'],
+        authors: [
+            { name: 'Santhosh K Chandrasekar' }
+        ],
+        liveUrl: 'https://santhoshkchandrasekar.github.io/chocolate-story/'
+    },
+    {
+        id: 'words-wellbeing',
+        num: '02',
+        term: 'Spring 2026',
+        title: 'Words & Wellbeing : Untranslatable Languages of Mind',
+        image: '../images/proj-words-wellbeing.png',
+        shortDesc: 'An interactive IE5374 data-storytelling project that explores how cultures around the world encode mental wellbeing in single, untranslatable words — Sisu, Hygge, Lagom, Saudade, Ubuntu, Ikigai.',
+        longDesc: 'Words & Wellbeing reframes mental health through the lens of language. The project takes six culturally specific terms — Sisu (Finnish), Hygge (Danish), Lagom (Swedish), Saudade (Portuguese), Ubuntu (Zulu), Ikigai (Japanese) — and uses them as anchor points for a guided, conversational visualization. The opening sequence ("Hey, are you okay?" "Sad? Tired maybe?") establishes the emotional theme, and the story then walks the reader through how each culture’s vocabulary shapes a distinct approach to psychological wellness.',
+        features: [
+            'Conversational opener that frames the data story emotionally before introducing data',
+            'Six culture-specific wellbeing concepts as narrative anchor points',
+            'Step-by-step guided sequence with a central interactive control',
+            'Soft pastel palette and minimalist illustrative style chosen to match the wellbeing topic',
+            'Cross-cultural framing of mental health vocabulary as a comparative lens',
+            'Built as the final group project for IE5374 Data Storytelling at Northeastern'
+        ],
+        tech: ['HTML', 'CSS', 'JavaScript', 'Netlify'],
+        tags: ['Data Viz', 'Storytelling', 'Wellbeing', 'IE5374'],
+        authors: [
+            { name: 'IE5374 Group 2' }
+        ],
+        liveUrl: 'https://group2projectfinal.netlify.app/'
+    }
+];
+
+// =========================================================================
+// FILTER + SEARCH STATE
+// =========================================================================
+const TERM_FILTERS = ['All', 'Spring 2025', 'Fall 2025', 'Spring 2026'];
+let activeTerm = 'All';
+let searchQuery = '';
+
+// =========================================================================
+// RENDER
+// =========================================================================
+const grid = document.getElementById('projectGrid');
+const countEl = document.getElementById('projectCount');
+const pillsEl = document.getElementById('filterPills');
+const searchInput = document.getElementById('searchInput');
+
+function renderPills() {
+    pillsEl.innerHTML = '';
+    TERM_FILTERS.forEach(term => {
+        const btn = document.createElement('button');
+        btn.className = 'filter-pill' + (term === activeTerm ? ' active' : '');
+        btn.textContent = term;
+        btn.addEventListener('click', () => {
+            activeTerm = term;
+            renderPills();
+            renderGrid();
+        });
+        pillsEl.appendChild(btn);
+    });
+}
+
+function matchesFilters(p) {
+    if (activeTerm !== 'All' && p.term !== activeTerm) return false;
+    if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        const hay = [
+            p.title, p.shortDesc, p.term,
+            ...(p.tags || []),
+            ...(p.tech || []),
+            ...(p.authors || []).map(a => a.name)
+        ].join(' ').toLowerCase();
+        if (!hay.includes(q)) return false;
+    }
+    return true;
+}
+
+function authorChipHTML(author) {
+    const photo = author.photo ? `<img class="author-photo" src="${author.photo}" alt="${author.name}" loading="lazy">` : '';
+    if (author.linkedin) {
+        return `<a class="author-chip" href="${author.linkedin}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+            ${photo}
+            <svg viewBox="0 0 24 24"><path d="M20.4 20.4h-3.6v-5.6c0-1.3 0-3-1.8-3s-2.1 1.4-2.1 2.9v5.7H9.4V9h3.4v1.6h.1c.5-.9 1.6-1.8 3.3-1.8 3.6 0 4.2 2.4 4.2 5.4v6.2zM5.3 7.4a2.1 2.1 0 110-4.2 2.1 2.1 0 010 4.2zm1.8 13H3.5V9h3.6v11.4z"/></svg>
+            ${author.name}
+        </a>`;
+    }
+    return `<span class="author-chip">${photo}${author.name}</span>`;
+}
+
+function renderGrid() {
+    const visible = projects.filter(matchesFilters);
+    grid.innerHTML = '';
+    countEl.textContent = `${visible.length} of ${projects.length} project${projects.length !== 1 ? 's' : ''}`;
+
+    if (visible.length === 0) {
+        grid.innerHTML = `<div class="empty-state">
+            No projects match your filters.
+            <br><button class="clear-btn" onclick="document.getElementById('searchInput').value='';window._clearFilters()">Clear filters</button>
+        </div>`;
+        return;
+    }
+
+    visible.forEach((p, i) => {
+        const card = document.createElement('div');
+        card.className = 'project-card';
+        card.style.animationDelay = `${0.05 + i * 0.07}s`;
+        card.dataset.id = p.id;
+        card.innerHTML = `
+            <div class="card-img">
+                <img src="${p.image}" alt="">
+                <span class="card-open-hint">View details</span>
+            </div>
+            <div class="card-meta-row">
+                <span class="card-number">${p.num}</span>
+                <span class="dot"></span>
+                <span class="card-term">${p.term}</span>
+            </div>
+            <h3 class="card-title">${p.title}</h3>
+            <p class="card-desc">${p.shortDesc}</p>
+            <div class="card-tags">
+                ${(p.tags || []).map(t => `<span class="card-tag">${t}</span>`).join('')}
+            </div>
+            <div class="card-footer">
+                <div class="card-authors">
+                    ${(p.authors || []).map(a => authorChipHTML(a)).join('')}
+                </div>
+                <a href="${p.liveUrl}" target="_blank" rel="noopener" class="card-link" onclick="event.stopPropagation()">
+                    Live demo
+                    <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+            </div>
+        `;
+        card.addEventListener('click', () => openModal(p.id));
+        grid.appendChild(card);
+    });
+}
+
+window._clearFilters = function() {
+    activeTerm = 'All';
+    searchQuery = '';
+    searchInput.value = '';
+    renderPills();
+    renderGrid();
+};
+
+searchInput.addEventListener('input', e => {
+    searchQuery = e.target.value.trim();
+    renderGrid();
+});
+
+// =========================================================================
+// MODAL
+// =========================================================================
+const modal = document.getElementById('modal');
+const modalClose = document.getElementById('modalClose');
+const modalImg = document.getElementById('modalImg');
+const modalBody = document.getElementById('modalBody');
+
+function openModal(id) {
+    const p = projects.find(x => x.id === id);
+    if (!p) return;
+    modalImg.src = p.image;
+    modalImg.alt = p.title;
+    const featuresTwoCol = (p.features && p.features.length > 4) ? ' two-col' : '';
+    const allChips = [...(p.tech || []), ...(p.tags || [])];
+
+    modalBody.innerHTML = `
+        <div class="modal-meta">
+            <span>Project ${p.num}</span>
+            <span>·</span>
+            <span class="term-pill">${p.term}</span>
+        </div>
+        <h2 class="modal-title">${p.title}</h2>
+        <div class="modal-authors">${(p.authors || []).map(a => authorChipHTML(a)).join('')}</div>
+
+        <div class="modal-cta-row">
+            <a href="${p.liveUrl}" target="_blank" rel="noopener" class="modal-cta primary">
+                Live demo
+                <svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg>
+            </a>
+            <button class="modal-cta ghost" onclick="closeModal()">Close</button>
+        </div>
+
+        <div class="modal-section">
+            <h4>About</h4>
+            <p>${p.longDesc || p.shortDesc}</p>
+        </div>
+
+        ${p.features && p.features.length ? `
+        <div class="modal-section">
+            <h4>Key Features</h4>
+            <ul class="${featuresTwoCol}">${p.features.map(f => `<li>${f}</li>`).join('')}</ul>
+        </div>` : ''}
+
+        ${allChips.length ? `
+        <div class="modal-section">
+            <h4>Stack &amp; Categories</h4>
+            <div class="tech-chips">${allChips.map(t => `<span class="tech-chip">${t}</span>`).join('')}</div>
+        </div>` : ''}
+    `;
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+}
+window.closeModal = closeModal;
+
+modalClose.addEventListener('click', closeModal);
+modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal.classList.contains('open')) closeModal(); });
+
+// =========================================================================
+// INIT
+// =========================================================================
+renderPills();
+renderGrid();
+</script>
 
 </body>
 </html>
