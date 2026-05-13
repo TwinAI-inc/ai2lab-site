@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Module 4 · Buy vs Rent · NPV Analysis</title>
+<title>Module 3 · Buy or Rent? · The Present-Value Decision</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -211,8 +211,8 @@
 <div class="app">
   <div class="head">
     <div class="brand">
-      <div class="code">Module 4 &middot; Economic Equivalence</div>
-      <h1>Buy vs Rent &mdash; <em>NPV Analysis</em></h1>
+      <div class="code">Module 3 &middot; Borrowing, Lending, and Investing</div>
+      <h1>Buy or Rent? &mdash; <em>The Present-Value Decision</em></h1>
       <span class="tag">multi-factor real-estate decision tool</span>
     </div>
   </div>
@@ -306,10 +306,10 @@
     const annualMtg = monthlyPayment(loan, p.apr, p.term) * 12;
     const marr = p.marr / 100;
 
-    const buyCum = [-(dp + closing)];
+    const buyOps = [-(dp + closing)];
     const rentCum = [0];
     let yearlyRent = p.rent * 12;
-    let cBuy = -(dp + closing); let cRent = 0;
+    let cBuyOps = -(dp + closing); let cRent = 0;
 
     for (let t = 1; t <= p.horizon; t++) {
       const homeVal = p.homePrice * Math.pow(1 + p.appreciation/100, t);
@@ -321,21 +321,23 @@
       let rentFlow = -(yearlyRent + p.renterIns);
 
       const df = 1 / Math.pow(1 + marr, t);
-      cBuy += buyFlow * df;
+      cBuyOps += buyFlow * df;
       cRent += rentFlow * df;
 
-      buyCum.push(cBuy);
+      buyOps.push(cBuyOps);
       rentCum.push(cRent);
       yearlyRent *= (1 + p.rentGrowth/100);
     }
 
-    // exit at horizon
-    const homeValEnd = p.homePrice * Math.pow(1 + p.appreciation/100, p.horizon);
-    const remaining = remainingBalance(loan, p.apr, p.term, p.horizon);
-    const sellProceeds = homeValEnd * (1 - p.sellCostPct/100);
-    const exit = sellProceeds - remaining;
-    cBuy += exit / Math.pow(1 + marr, p.horizon);
-    buyCum[p.horizon] = cBuy;
+    // Buy line = cumulative ops + exit-at-each-year (smooth curve, no kink)
+    const buyCum = buyOps.map((c, t) => {
+      if (t === 0) return c;
+      const homeVal = p.homePrice * Math.pow(1 + p.appreciation/100, t);
+      const remaining = remainingBalance(loan, p.apr, p.term, t);
+      const sellProceeds = homeVal * (1 - p.sellCostPct/100);
+      const exit = sellProceeds - remaining;
+      return c + exit / Math.pow(1 + marr, t);
+    });
 
     return { buyCum, rentCum, dp, closing, loan, monthlyMtg: monthlyPayment(loan, p.apr, p.term) };
   }
@@ -415,13 +417,43 @@
     rentCum.forEach((v, t) => { const px = xToPx(t), py = yToPx(v); if (t === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py); });
     ctx.stroke();
 
-    // marker dots at currentYear
+    // marker dots + chip labels at currentYear
     if (currentYear >= 0 && currentYear <= horizon) {
-      [['#5c7a4a', buyCum[currentYear]], ['#b8860b', rentCum[currentYear]]].forEach(([color, v]) => {
+      const bv = buyCum[currentYear], rv = rentCum[currentYear];
+      // dots
+      [['#5c7a4a', bv], ['#b8860b', rv]].forEach(([color, v]) => {
         ctx.fillStyle = color;
         ctx.beginPath(); ctx.arc(xToPx(currentYear), yToPx(v), 5, 0, Math.PI*2); ctx.fill();
         ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
       });
+      // chips
+      function roundRect(x, y, w, h, r) {
+        ctx.beginPath();
+        ctx.moveTo(x+r, y);
+        ctx.arcTo(x+w, y, x+w, y+h, r);
+        ctx.arcTo(x+w, y+h, x, y+h, r);
+        ctx.arcTo(x, y+h, x, y, r);
+        ctx.arcTo(x, y, x+w, y, r);
+        ctx.closePath();
+      }
+      function drawChip(x, y, label, color, dir) {
+        ctx.font = '600 10.5px Outfit, sans-serif';
+        ctx.textAlign = 'left';
+        const padX = 7, padY = 3, gap = 9;
+        const tw = ctx.measureText(label).width;
+        const cw = tw + padX*2, ch = 17;
+        let cx = x + gap, cy = (dir === 'up') ? y - ch - gap : y + gap;
+        if (cx + cw > W - padR) cx = x - cw - gap;
+        if (cy < padT) cy = y + gap;
+        if (cy + ch > H - padB) cy = y - ch - gap;
+        ctx.fillStyle = '#ffffff'; ctx.strokeStyle = color; ctx.lineWidth = 1.4;
+        roundRect(cx, cy, cw, ch, 9); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = color;
+        ctx.fillText(label, cx + padX, cy + ch - padY - 2);
+      }
+      // Buy chip below dot, Rent chip above dot (Buy is usually the lower curve)
+      drawChip(xToPx(currentYear), yToPx(bv), 'Buy ' + fmt(bv), '#5c7a4a', bv < rv ? 'down' : 'up');
+      drawChip(xToPx(currentYear), yToPx(rv), 'Rent ' + fmt(rv), '#b8860b', rv > bv ? 'up' : 'down');
     }
   }
 

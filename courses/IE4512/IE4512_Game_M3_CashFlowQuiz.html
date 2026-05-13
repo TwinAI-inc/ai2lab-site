@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Module 3 · Cash Flow Series Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf9f5; --paper: #ffffff; --ink: #1a1a1a; --muted: #5a5247; --soft: #8b7355;
+    --border: #e8e3d4; --line: #d4cfc0;
+    --blue: #1947d6; --blue-light: #4a6fe6; --blue-soft: #eef2ff;
+    --gold: #b8860b; --gold-soft: #faf3e0;
+    --olive: #5c7a4a; --olive-soft: #f0f4ea;
+    --crimson: #8a2828; --crimson-soft: #fdf2f3;
+  }
+  html, body { height: 100%; overflow: hidden; }
+  body { background: var(--bg); color: var(--ink); font-family: 'Outfit', -apple-system, system-ui, sans-serif; font-size: 13px; line-height: 1.5; }
+  .app { display: flex; flex-direction: column; height: 100vh; padding: 10px 16px 8px; max-width: 1400px; margin: 0 auto; gap: 8px; }
+
+  .head {
+    flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; gap: 14px;
+    padding: 8px 14px; background: var(--paper); border: 1px solid var(--border);
+    border-radius: 10px; border-top: 3px solid var(--blue); flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; min-width: 0; }
+  .brand .code { font-size: 10px; color: var(--blue); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; }
+  .brand h1 { font-family: 'Lora', Georgia, serif; font-size: 19px; font-weight: 700; line-height: 1; }
+  .brand h1 em { font-style: italic; color: var(--blue); font-weight: 400; }
+  .brand .tag { font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted); }
+  .head .right { display: flex; align-items: center; gap: 10px; font-size: 11px; color: var(--muted); }
+
+  .progress-strip { flex-shrink: 0; display: flex; gap: 6px; padding: 0 2px; }
+  .progress-strip .seg {
+    flex: 1; height: 6px; border-radius: 4px; background: #ece8d8; transition: background .3s;
+  }
+  .progress-strip .seg.done { background: var(--gold); }
+  .progress-strip .seg.active { background: linear-gradient(90deg, var(--blue), var(--blue-light)); }
+  .progress-strip .seg.wrong { background: var(--crimson); }
+
+  .stage { flex: 1; display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 12px; min-height: 0; }
+  .panel { background: var(--paper); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+  .panel .ph { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  .panel .ph .pill { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; color: var(--blue); }
+  .panel .ph .ptype { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; color: var(--gold); padding: 3px 9px; background: var(--gold-soft); border-radius: 999px; }
+  .panel .pbody { flex: 1; overflow-y: auto; padding-right: 4px; }
+  .panel .pbody h2 { font-family: 'Lora', serif; font-size: 18px; font-weight: 600; line-height: 1.3; margin-bottom: 10px; color: var(--ink); }
+  .panel .pbody h2 em { font-style: italic; color: var(--blue); }
+  .panel .pbody p { color: var(--muted); margin-bottom: 10px; }
+  .panel .pbody p strong { color: var(--ink); font-weight: 600; }
+  .panel .pbody .formula-card { background: var(--blue-soft); border-left: 3px solid var(--blue); padding: 9px 12px; border-radius: 6px; margin: 10px 0; font-family: 'Lora', serif; font-size: 13px; color: var(--ink); }
+  .panel .pbody .formula-card em { font-style: italic; }
+  .panel .pbody .hint-card { background: var(--olive-soft); border-left: 3px solid var(--olive); padding: 9px 12px; border-radius: 6px; margin-top: 10px; font-size: 12.5px; color: var(--muted); }
+  .panel .pbody .hint-card strong { color: var(--olive); }
+  .panel .pbody .solution { background: #fcfbf4; border: 1px dashed var(--gold); padding: 10px 12px; border-radius: 6px; margin-top: 10px; font-size: 12px; color: var(--muted); }
+  .panel .pbody .solution strong { color: var(--gold); }
+  .panel .pbody .solution code { font-family: 'JetBrains Mono', Consolas, monospace; font-size: 11.5px; background: #fff; padding: 1px 5px; border-radius: 3px; border: 1px solid var(--border); }
+
+  .diagram-wrap { background: #faf8ef; border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin: 8px 0 12px; }
+  svg.diagram { width: 100%; height: 170px; display: block; }
+
+  .answer-row { display: flex; gap: 8px; align-items: stretch; margin-top: 14px; }
+  .answer-row .pre { display: flex; align-items: center; padding: 0 10px; background: var(--blue-soft); color: var(--blue); font-weight: 700; border-radius: 8px 0 0 8px; border: 1px solid var(--blue); border-right: none; font-size: 13px; }
+  .answer-row input {
+    flex: 1; padding: 9px 12px; border: 1px solid var(--border); border-left: none; border-radius: 0 8px 8px 0;
+    font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 600; color: var(--ink); background: #fff;
+    outline: none;
+  }
+  .answer-row input:focus { border-color: var(--blue); }
+  .answer-row .suf { display: flex; align-items: center; padding: 0 8px; color: var(--muted); font-size: 11px; }
+
+  .btn-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .btn {
+    padding: 8px 14px; border-radius: 8px; border: 1px solid var(--border); background: #fff;
+    font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--ink);
+    transition: all .15s; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn:hover { border-color: var(--blue); color: var(--blue); }
+  .btn.primary { background: var(--blue); color: #fff; border-color: var(--blue); }
+  .btn.primary:hover { background: var(--blue-light); border-color: var(--blue-light); color: #fff; }
+  .btn.gold { background: var(--gold); color: #fff; border-color: var(--gold); }
+  .btn.gold:hover { background: #d4a017; border-color: #d4a017; color: #fff; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .feedback { margin-top: 10px; padding: 9px 12px; border-radius: 7px; font-size: 12.5px; display: none; }
+  .feedback.correct { display: block; background: var(--olive-soft); border-left: 3px solid var(--olive); color: var(--olive); font-weight: 600; }
+  .feedback.wrong { display: block; background: var(--crimson-soft); border-left: 3px solid var(--crimson); color: var(--crimson); font-weight: 600; }
+  .feedback .small { font-weight: 400; color: var(--muted); margin-top: 3px; font-size: 11.5px; display: block; }
+
+  .summary-card { display: none; text-align: center; padding: 30px 20px; }
+  .summary-card.active { display: block; }
+  .summary-card .big-score { font-family: 'Lora', serif; font-size: 56px; font-weight: 700; color: var(--blue); }
+  .summary-card .big-score em { font-style: italic; color: var(--gold); }
+  .summary-card .sublabel { font-size: 13px; color: var(--muted); margin-bottom: 18px; }
+  .summary-card .recap { display: grid; grid-template-columns: 1fr; gap: 5px; max-width: 460px; margin: 0 auto 18px; text-align: left; font-size: 12px; }
+  .summary-card .recap .row { display: flex; justify-content: space-between; padding: 6px 10px; background: var(--bg); border-radius: 6px; }
+  .summary-card .recap .row.ok { border-left: 2px solid var(--olive); }
+  .summary-card .recap .row.no { border-left: 2px solid var(--crimson); }
+  .summary-card .recap .row .lbl { color: var(--ink); font-weight: 500; }
+  .summary-card .recap .row .val { font-family: 'JetBrains Mono', Consolas, monospace; color: var(--muted); }
+
+  .foot { flex-shrink: 0; text-align: center; font-size: 10px; color: var(--soft); font-family: 'Lora', serif; font-style: italic; padding: 2px; }
+
+  /* SVG diagram styling */
+  svg.diagram .axis { stroke: var(--ink); stroke-width: 1.5; fill: none; }
+  svg.diagram .tick { stroke: var(--muted); stroke-width: 1; }
+  svg.diagram .tick-label { fill: var(--muted); font-size: 10px; font-family: 'Outfit', sans-serif; }
+  svg.diagram .arrow-up { stroke: var(--olive); stroke-width: 2; fill: none; }
+  svg.diagram .arrow-down { stroke: var(--crimson); stroke-width: 2; fill: none; }
+  svg.diagram .arrow-label { font-size: 10px; font-family: 'Outfit', sans-serif; font-weight: 600; }
+  svg.diagram .arrow-label.up { fill: var(--olive); }
+  svg.diagram .arrow-label.down { fill: var(--crimson); }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="head">
+    <div class="brand">
+      <div>
+        <div class="code">Module 3 &middot; Borrowing, Lending, and Investing</div>
+        <h1>Cash Flow Series <em>Quiz</em></h1>
+      </div>
+      <div class="tag">five engineering economy series problems, instantly graded</div>
+    </div>
+    <div class="right">
+      <span id="problem-counter">Problem 1 / 5</span>
+      <span>&middot;</span>
+      <span id="score-counter">Score: 0 / 0</span>
+    </div>
+  </div>
+
+  <div class="progress-strip" id="progress-strip">
+    <div class="seg active"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div>
+  </div>
+
+  <div class="stage" id="stage">
+    <div class="panel">
+      <div class="ph">
+        <div class="pill">Problem</div>
+        <div class="ptype" id="ptype-pill">Uniform Series</div>
+      </div>
+      <div class="pbody" id="problem-body"></div>
+    </div>
+
+    <div class="panel">
+      <div class="ph">
+        <div class="pill">Your Answer</div>
+        <div class="ptype" id="ptype-pill-2" style="color:var(--olive); background:var(--olive-soft);">enter a number</div>
+      </div>
+      <div class="pbody">
+        <div id="solve-area">
+          <div class="answer-row">
+            <div class="pre" id="answer-prefix">PW =</div>
+            <input id="answer-input" type="number" step="0.01" placeholder="e.g. 12345.67" autocomplete="off" />
+            <span class="suf" id="answer-suffix">$</span>
+          </div>
+          <div class="btn-row">
+            <button class="btn primary" id="btn-check">Check answer</button>
+            <button class="btn" id="btn-hint">Show hint</button>
+            <button class="btn" id="btn-solution">Show solution</button>
+          </div>
+          <div class="feedback" id="feedback"></div>
+          <div id="hint-display" style="display:none;" class="hint-card" style="margin-top:12px;"></div>
+          <div id="solution-display" style="display:none;" class="solution"></div>
+          <div class="btn-row" id="next-row" style="display:none;">
+            <button class="btn gold" id="btn-next">Next problem &rarr;</button>
+          </div>
+        </div>
+
+        <div id="summary-area" class="summary-card">
+          <div class="big-score"><span id="final-score">0</span><em>/ 5</em></div>
+          <div class="sublabel" id="summary-blurb">Quiz complete.</div>
+          <div class="recap" id="recap-list"></div>
+          <button class="btn primary" id="btn-restart">Restart quiz</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">&copy; Prof. Mohammad Dehghani &middot; IE 4512 / EMGT 6225</div>
+</div>
+
+<script>
+  // ============ PROBLEMS ============
+  const PROBLEMS = [
+    {
+      type: 'Uniform Series',
+      symbol: 'PW',
+      unit: '$',
+      title: 'A <em>uniform</em> annual savings stream',
+      narrative: `A new injection molder costs <strong>$52,000</strong> today. It will save the plant <strong>$9,500 per year</strong> in labor and waste for <strong>8 years</strong>, after which it has no salvage value. The firm's MARR is <strong>10%</strong>.`,
+      ask: `Compute the <strong>present worth (PW)</strong> of this investment.`,
+      formula: `PW = &minus;P + A &times; (P/A, i%, n)`,
+      hint: `The cost is a single sum at t = 0 (already in PW). The savings are 8 uniform end-of-year payments of $9,500. Use the (P/A, 10%, 8) factor.`,
+      diagram: {
+        years: 8,
+        flows: [{t:0, v:-1, label:'$52k'}, {t:1, v:1, label:'$9.5k'}, {t:2, v:1, label:''}, {t:3, v:1, label:''}, {t:4, v:1, label:''}, {t:5, v:1, label:''}, {t:6, v:1, label:''}, {t:7, v:1, label:''}, {t:8, v:1, label:'$9.5k'}],
+        uniform: { from: 1, to: 8, label: '$9,500 / yr' }
+      },
+      // PW = -52000 + 9500 * [(1.10^8 - 1) / (0.10 * 1.10^8)]
+      // (P/A,10%,8) = 5.33493
+      // PW = -52000 + 50681.84 = -1318.16
+      answer: -1318.16,
+      tolerance: 50,
+      solution: `<strong>Solve:</strong><br>
+        (P/A, 10%, 8) = [1 &minus; (1.10)<sup>&minus;8</sup>] / 0.10 = <code>5.3349</code><br>
+        PW = &minus;52,000 + 9,500 &times; 5.3349<br>
+        PW = &minus;52,000 + 50,682 = <code>&minus;$1,318</code><br>
+        <em>Decision:</em> PW &lt; 0 &rarr; the project does not clear the 10% hurdle. Reject.`
+    },
+    {
+      type: 'Arithmetic Gradient',
+      symbol: 'PW',
+      unit: '$',
+      title: 'A <em>growing-by-G</em> maintenance stream',
+      narrative: `Maintenance on a piece of equipment is forecast at <strong>$2,000 in year 1</strong> and grows by <strong>$300 each subsequent year</strong> through year 10. The firm's MARR is <strong>8%</strong>.`,
+      ask: `Compute the <strong>present worth (PW)</strong> of these 10 cash flows (treat them as costs, so PW will be positive cost magnitude or sign as you choose &mdash; we'll grade |PW|).`,
+      formula: `PW = A &times; (P/A, i, n) + G &times; (P/G, i, n)`,
+      hint: `Decompose into a base uniform series A = $2,000 and an arithmetic gradient G = $300. Use (P/A, 8%, 10) and (P/G, 8%, 10).`,
+      diagram: {
+        years: 10,
+        flows: (() => {
+          const arr = [];
+          for (let t = 1; t <= 10; t++) arr.push({t, v: 1, label: '$' + (2000 + 300*(t-1)).toLocaleString()});
+          return arr;
+        })(),
+        gradient: { start: 2000, step: 300, n: 10 }
+      },
+      // (P/A,8%,10) = 6.7101  ;  (P/G,8%,10) = 25.9768
+      // PW = 2000(6.7101) + 300(25.9768) = 13,420.20 + 7,793.04 = 21,213.24
+      answer: 21213.24,
+      tolerance: 100,
+      acceptAbs: true,
+      solution: `<strong>Solve:</strong><br>
+        (P/A, 8%, 10) = <code>6.7101</code> &nbsp; (P/G, 8%, 10) = <code>25.9768</code><br>
+        PW = 2,000(6.7101) + 300(25.9768)<br>
+        PW = 13,420 + 7,793 = <code>$21,213</code>`
+    },
+    {
+      type: 'Geometric Gradient',
+      symbol: 'PW',
+      unit: '$',
+      title: 'A <em>rent</em> that grows g% per year',
+      narrative: `An apartment lease starts at <strong>$24,000 in year 1</strong> and is contractually escalated at <strong>g = 4% per year</strong> for <strong>15 years</strong>. Your personal MARR is <strong>i = 9%</strong>.`,
+      ask: `Compute the <strong>present worth (PW)</strong> of these 15 rent payments. (Grade on |PW|.)`,
+      formula: `When i &ne; g: &nbsp; P<sub>g</sub> = A<sub>1</sub> &times; [1 &minus; ((1+g)/(1+i))<sup>n</sup>] / (i &minus; g)`,
+      hint: `Use the geometric-gradient closed form. Since i (9%) and g (4%) differ, the simpler formula applies. Plug A&#8321; = 24,000, g = 0.04, i = 0.09, n = 15.`,
+      diagram: {
+        years: 15,
+        flows: (() => {
+          const arr = [];
+          for (let t = 1; t <= 15; t++) {
+            const v = 24000 * Math.pow(1.04, t-1);
+            arr.push({t, v: 1, label: t === 1 || t === 15 ? '$' + (v/1000).toFixed(1) + 'k' : ''});
+          }
+          return arr;
+        })(),
+        geometric: { A1: 24000, g: 0.04, n: 15 }
+      },
+      // Pg = 24000 * (1 - (1.04/1.09)^15) / (0.09 - 0.04)
+      // ratio = 1.04/1.09 = 0.954128
+      // (0.954128)^15 = 0.4944 (more precisely 0.49443)
+      // = 24000 * (1 - 0.49443) / 0.05 = 24000 * 10.1114 = 242,673
+      answer: 242673,
+      tolerance: 800,
+      acceptAbs: true,
+      solution: `<strong>Solve:</strong><br>
+        ratio = 1.04 / 1.09 = <code>0.95413</code><br>
+        ratio<sup>15</sup> = <code>0.49443</code><br>
+        P<sub>g</sub> = 24,000 &times; (1 &minus; 0.49443) / (0.09 &minus; 0.04)<br>
+        P<sub>g</sub> = 24,000 &times; 10.111 = <code>$242,673</code>`
+    },
+    {
+      type: 'Single Sum',
+      symbol: 'F',
+      unit: '$',
+      title: 'A <em>single</em> deposit compounded for n years',
+      narrative: `You deposit <strong>$5,000</strong> today into an account earning <strong>6% compounded annually</strong>. You leave it untouched for <strong>20 years</strong>.`,
+      ask: `Compute the <strong>future worth (F)</strong> of the account at year 20.`,
+      formula: `F = P &times; (F/P, i, n) = P &times; (1+i)<sup>n</sup>`,
+      hint: `Pure compound growth. (F/P, 6%, 20) = (1.06)<sup>20</sup>. No annuity here.`,
+      diagram: {
+        years: 20,
+        flows: [{t:0, v:-1, label:'$5k'}, {t:20, v:2, label:'F = ?'}],
+        labelStep: 4
+      },
+      // F = 5000 * (1.06)^20 = 5000 * 3.20714 = 16035.68
+      answer: 16035.68,
+      tolerance: 30,
+      solution: `<strong>Solve:</strong><br>
+        (F/P, 6%, 20) = (1.06)<sup>20</sup> = <code>3.2071</code><br>
+        F = 5,000 &times; 3.2071 = <code>$16,036</code>`
+    },
+    {
+      type: 'Mixed Series',
+      symbol: 'PW',
+      unit: '$',
+      title: 'A <em>mixed</em> capstone &mdash; uniform + bonuses',
+      narrative: `A factory line costs <strong>$80,000</strong> upfront and generates uniform savings of <strong>$15,000 per year for 6 years</strong>. A vendor rebate adds <strong>$5,000 in year 3</strong>, and decommissioning yields a salvage of <strong>$10,000 in year 6</strong>. MARR = <strong>12%</strong>.`,
+      ask: `Compute the <strong>present worth (PW)</strong> of the whole project.`,
+      formula: `PW = &minus;C&#8320; + A(P/A) + &Sigma; F<sub>k</sub>(P/F)`,
+      hint: `Three pieces: (1) lump cost at t=0, (2) uniform $15k for 6 years, (3) two extra one-shot inflows. Add their PVs.`,
+      diagram: {
+        years: 6,
+        flows: [
+          {t:0, v:-1.5, label:'$80k'},
+          {t:1, v:1, label:'$15k'}, {t:2, v:1, label:''}, {t:3, v:1.4, label:'$15k + $5k'}, {t:4, v:1, label:''}, {t:5, v:1, label:''}, {t:6, v:1.6, label:'$15k + $10k'}
+        ]
+      },
+      // PW = -80000 + 15000(P/A,12%,6) + 5000(P/F,12%,3) + 10000(P/F,12%,6)
+      // (P/A,12%,6) = 4.1114 ; (P/F,12%,3) = 0.7118 ; (P/F,12%,6) = 0.5066
+      // = -80000 + 61671 + 3559 + 5066 = -9704
+      answer: -9704,
+      tolerance: 60,
+      solution: `<strong>Solve:</strong><br>
+        (P/A, 12%, 6) = <code>4.1114</code> &nbsp; (P/F, 12%, 3) = <code>0.7118</code> &nbsp; (P/F, 12%, 6) = <code>0.5066</code><br>
+        PW = &minus;80,000 + 15,000(4.1114) + 5,000(0.7118) + 10,000(0.5066)<br>
+        PW = &minus;80,000 + 61,671 + 3,559 + 5,066 = <code>&minus;$9,704</code><br>
+        <em>Decision:</em> PW &lt; 0 &rarr; reject at 12% MARR.`
+    }
+  ];
+
+  // ============ STATE ============
+  let idx = 0;
+  let score = 0;
+  let attempts = 0;
+  const results = []; // {correct: bool, userAnswer: num, problem: ref}
+
+  const $ = id => document.getElementById(id);
+
+  // ============ DIAGRAM ============
+  function drawDiagram(d, years) {
+    const W = 480, H = 170;
+    const padL = 20, padR = 30, padT = 12, padB = 30;
+    const iW = W - padL - padR, iH = H - padT - padB;
+    const yMid = padT + iH * 0.55;
+    const xToPx = t => padL + (t / years) * iW;
+
+    let svg = `<svg class="diagram" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">`;
+    // axis
+    svg += `<line class="axis" x1="${padL}" y1="${yMid}" x2="${W-padR}" y2="${yMid}" />`;
+    svg += `<polygon points="${W-padR},${yMid} ${W-padR-7},${yMid-4} ${W-padR-7},${yMid+4}" fill="var(--ink)" />`;
+
+    // ticks
+    const labelStep = d.labelStep || (years > 12 ? Math.ceil(years/8) : 1);
+    for (let t = 0; t <= years; t++) {
+      const px = xToPx(t);
+      svg += `<line class="tick" x1="${px}" y1="${yMid-3}" x2="${px}" y2="${yMid+3}" />`;
+      if (t % labelStep === 0 || t === years) {
+        svg += `<text class="tick-label" x="${px}" y="${yMid+15}" text-anchor="middle">${t}</text>`;
+      }
+    }
+
+    // flows
+    (d.flows || []).forEach(f => {
+      const px = xToPx(f.t);
+      const dir = f.v > 0 ? -1 : 1;
+      const len = Math.min(Math.abs(f.v) * 30, 60);
+      const y2 = yMid + dir * len;
+      const cls = f.v > 0 ? 'arrow-up' : 'arrow-down';
+      const labelCls = f.v > 0 ? 'up' : 'down';
+      svg += `<line class="${cls}" x1="${px}" y1="${yMid}" x2="${px}" y2="${y2}" />`;
+      // arrowhead
+      const ah = dir === -1 ? -1 : 1;
+      svg += `<polygon points="${px},${y2} ${px-4},${y2 + ah*5} ${px+4},${y2 + ah*5}" fill="${f.v > 0 ? 'var(--olive)' : 'var(--crimson)'}" />`;
+      if (f.label) {
+        const ly = y2 + dir * 8;
+        svg += `<text class="arrow-label ${labelCls}" x="${px}" y="${ly}" text-anchor="middle">${f.label}</text>`;
+      }
+    });
+
+    // uniform-bracket annotation (optional)
+    if (d.uniform) {
+      const x1 = xToPx(d.uniform.from), x2 = xToPx(d.uniform.to);
+      const ay = yMid - 50;
+      svg += `<line x1="${x1}" y1="${ay}" x2="${x2}" y2="${ay}" stroke="var(--olive)" stroke-width="1" stroke-dasharray="3,3" />`;
+      svg += `<text class="arrow-label up" x="${(x1+x2)/2}" y="${ay - 5}" text-anchor="middle">${d.uniform.label}</text>`;
+    }
+    if (d.gradient) {
+      svg += `<text class="arrow-label down" x="${xToPx(d.gradient.n/2)}" y="${padT+12}" text-anchor="middle">A = $${d.gradient.start.toLocaleString()} &nbsp; G = $${d.gradient.step}/yr</text>`;
+    }
+    if (d.geometric) {
+      svg += `<text class="arrow-label down" x="${xToPx(d.geometric.n/2)}" y="${padT+12}" text-anchor="middle">A&#8321; = $${d.geometric.A1.toLocaleString()} &nbsp; g = ${(d.geometric.g*100).toFixed(1)}% / yr</text>`;
+    }
+
+    svg += `</svg>`;
+    return svg;
+  }
+
+  // ============ RENDER ============
+  function render() {
+    if (idx >= PROBLEMS.length) { renderSummary(); return; }
+    const p = PROBLEMS[idx];
+    $('problem-counter').textContent = `Problem ${idx+1} / ${PROBLEMS.length}`;
+    $('score-counter').textContent = `Score: ${score} / ${attempts}`;
+    $('ptype-pill').textContent = p.type;
+    $('answer-prefix').textContent = p.symbol + ' =';
+    $('answer-suffix').textContent = p.unit;
+
+    $('problem-body').innerHTML = `
+      <h2>${p.title}</h2>
+      <p>${p.narrative}</p>
+      <div class="diagram-wrap">${drawDiagram(p.diagram, p.diagram.years)}</div>
+      <p>${p.ask}</p>
+      <div class="formula-card">${p.formula}</div>
+    `;
+    $('answer-input').value = '';
+    $('feedback').className = 'feedback';
+    $('feedback').innerHTML = '';
+    $('hint-display').style.display = 'none';
+    $('hint-display').innerHTML = '<strong>Hint:</strong> ' + p.hint;
+    $('solution-display').style.display = 'none';
+    $('solution-display').innerHTML = '<strong>Walkthrough.</strong><br>' + p.solution;
+    $('next-row').style.display = 'none';
+    $('btn-check').disabled = false;
+    $('btn-hint').disabled = false;
+
+    // progress strip
+    document.querySelectorAll('#progress-strip .seg').forEach((seg, i) => {
+      seg.className = 'seg' + (i < idx ? (results[i] && results[i].correct ? ' done' : ' wrong') : (i === idx ? ' active' : ''));
+    });
+
+    $('solve-area').style.display = '';
+    $('summary-area').classList.remove('active');
+    $('answer-input').focus();
+  }
+
+  function check() {
+    const p = PROBLEMS[idx];
+    const v = parseFloat($('answer-input').value);
+    if (isNaN(v)) {
+      $('feedback').className = 'feedback wrong';
+      $('feedback').innerHTML = 'Enter a numeric answer first.';
+      return;
+    }
+    attempts++;
+    const target = p.acceptAbs ? Math.abs(p.answer) : p.answer;
+    const userVal = p.acceptAbs ? Math.abs(v) : v;
+    const ok = Math.abs(userVal - target) <= p.tolerance;
+    if (ok) {
+      score++;
+      $('feedback').className = 'feedback correct';
+      $('feedback').innerHTML = `Correct &mdash; ${p.symbol} &asymp; ${p.unit === '$' ? '$' : ''}${target.toLocaleString(undefined,{maximumFractionDigits:2})}<span class="small">Within tolerance of &plusmn;${p.tolerance}. Move on when ready.</span>`;
+    } else {
+      $('feedback').className = 'feedback wrong';
+      const diff = userVal - target;
+      const off = (Math.abs(diff) / Math.abs(target || 1)) * 100;
+      $('feedback').innerHTML = `Not quite. You entered <strong>${v.toLocaleString()}</strong>; target is near <strong>${target.toLocaleString(undefined,{maximumFractionDigits:0})}</strong> (off by ~${off.toFixed(1)}%).<span class="small">Try Show hint or recheck the factor values.</span>`;
+    }
+    results[idx] = { correct: ok, userAnswer: v, problem: p };
+    $('score-counter').textContent = `Score: ${score} / ${attempts}`;
+    $('btn-check').disabled = true;
+    $('next-row').style.display = 'flex';
+    // update progress strip immediately
+    document.querySelectorAll('#progress-strip .seg').forEach((seg, i) => {
+      seg.className = 'seg' + (i < idx ? (results[i] && results[i].correct ? ' done' : ' wrong') : (i === idx ? (ok ? ' done' : ' wrong') : ''));
+    });
+  }
+
+  function showHint() { $('hint-display').style.display = 'block'; $('btn-hint').disabled = true; }
+  function showSolution() {
+    $('solution-display').style.display = 'block';
+    $('btn-check').disabled = true;
+    $('next-row').style.display = 'flex';
+    if (!results[idx]) { results[idx] = { correct: false, userAnswer: null, problem: PROBLEMS[idx] }; attempts++; $('score-counter').textContent = `Score: ${score} / ${attempts}`; }
+  }
+  function next() { idx++; render(); }
+
+  function renderSummary() {
+    $('solve-area').style.display = 'none';
+    $('summary-area').classList.add('active');
+    $('final-score').textContent = score;
+    const pct = (score / PROBLEMS.length) * 100;
+    let blurb = '';
+    if (pct === 100) blurb = 'Perfect score &mdash; you have these series cold.';
+    else if (pct >= 80) blurb = 'Strong work. One slip; review and you\'re ready.';
+    else if (pct >= 60) blurb = 'Solid. Re-do the missed problems for full mastery.';
+    else blurb = 'Worth another pass. Use Show solution for the missed ones.';
+    $('summary-blurb').textContent = blurb;
+    const recap = PROBLEMS.map((p, i) => {
+      const r = results[i] || { correct: false };
+      return `<div class="row ${r.correct ? 'ok' : 'no'}"><span class="lbl">${i+1}. ${p.type}</span><span class="val">${r.correct ? 'Correct' : 'Missed'}</span></div>`;
+    }).join('');
+    $('recap-list').innerHTML = recap;
+    // mark final strip
+    document.querySelectorAll('#progress-strip .seg').forEach((seg, i) => {
+      seg.className = 'seg' + (results[i] && results[i].correct ? ' done' : ' wrong');
+    });
+  }
+
+  $('btn-check').addEventListener('click', check);
+  $('btn-hint').addEventListener('click', showHint);
+  $('btn-solution').addEventListener('click', showSolution);
+  $('btn-next').addEventListener('click', next);
+  $('btn-restart').addEventListener('click', () => { idx = 0; score = 0; attempts = 0; results.length = 0; render(); });
+  $('answer-input').addEventListener('keydown', e => { if (e.key === 'Enter' && !$('btn-check').disabled) check(); });
+
+  render();
+</script>
+</body>
+</html>
