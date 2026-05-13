@@ -205,6 +205,99 @@
   .metric.gold .num { color: var(--gold); }
   .metric.blue .num { color: var(--blue); }
 
+  /* ============ TAX-MODE BLOCK ============ */
+  .tax-mode-block {
+    background: var(--blue-soft); border: 1px solid var(--blue); border-radius: 8px;
+    padding: 9px 12px; margin-bottom: 10px;
+  }
+  .tax-mode-block > label {
+    font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700;
+    color: var(--blue); display: block; margin-bottom: 4px;
+  }
+  .tax-mode-block select {
+    width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px;
+    font-family: 'Outfit', sans-serif; font-size: 12px; background: #fff; color: var(--ink); cursor: pointer;
+  }
+  .tax-mode-block .std-ded-row {
+    display: none; margin-top: 7px; align-items: center; gap: 6px;
+  }
+  .tax-mode-block .std-ded-row.show { display: flex; }
+  .tax-mode-block .std-ded-row label {
+    display: inline; font-size: 10.5px; letter-spacing: 0; text-transform: none;
+    color: var(--muted); flex: 0 0 auto; margin: 0; font-weight: 500;
+  }
+  .tax-mode-block .std-ded-row .pre {
+    padding: 0 5px; font-size: 11px; color: var(--muted);
+  }
+  .tax-mode-block .std-ded-row input {
+    flex: 1; padding: 5px 7px; border: 1px solid var(--border); border-radius: 6px;
+    font-size: 12px; font-family: 'Outfit', sans-serif;
+  }
+  .tax-mode-note {
+    margin-top: 6px; font-size: 10.5px; color: var(--muted); line-height: 1.45; font-style: italic;
+  }
+
+  /* ============ DISCUSSION PAGE ============ */
+  .discussion-page {
+    padding: 14px 6px 18px; overflow-y: auto; max-height: 100%; height: 100%;
+  }
+  .discussion-page h2 {
+    font-family: 'Lora', serif; font-size: 26px; font-weight: 700; line-height: 1.2; margin-bottom: 8px;
+  }
+  .discussion-page h2 em { font-style: italic; color: var(--blue); }
+  .discussion-page .lede {
+    font-family: 'Lora', serif; font-style: italic; font-size: 14px; line-height: 1.65;
+    color: var(--muted); max-width: 780px; margin-bottom: 14px;
+  }
+  .discussion-page .assign-banner {
+    padding: 12px 16px; background: var(--olive-soft); border-left: 3px solid var(--olive); border-radius: 8px;
+    font-family: 'Outfit', sans-serif; font-size: 13px; color: #3d5530; line-height: 1.55; margin-bottom: 14px;
+  }
+  .discussion-page .assign-banner strong { font-weight: 700; color: var(--olive); }
+  .discussion-page .disc-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 12px;
+  }
+  .disc-card {
+    padding: 14px 16px; background: var(--paper); border: 1px solid var(--border);
+    border-radius: 10px; border-left: 3px solid var(--blue);
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .disc-card.gold { border-left-color: var(--gold); }
+  .disc-card.olive { border-left-color: var(--olive); }
+  .disc-card.crimson { border-left-color: var(--crimson); }
+  .disc-card .num {
+    font-family: 'Lora', serif; font-style: italic; font-weight: 700;
+    font-size: 12px; color: var(--blue); letter-spacing: 0.04em;
+  }
+  .disc-card.gold .num { color: var(--gold); }
+  .disc-card.olive .num { color: var(--olive); }
+  .disc-card.crimson .num { color: var(--crimson); }
+  .disc-card h3 {
+    font-family: 'Lora', serif; font-size: 17px; font-weight: 600; line-height: 1.25; margin: 0;
+  }
+  .disc-card h3 em { font-style: italic; color: var(--blue); }
+  .disc-card.gold h3 em { color: var(--gold); }
+  .disc-card.olive h3 em { color: var(--olive); }
+  .disc-card.crimson h3 em { color: var(--crimson); }
+  .disc-card .prompt {
+    font-size: 12.5px; color: var(--ink); line-height: 1.55;
+  }
+  .disc-card .try, .disc-card .deliver {
+    font-size: 11.5px; color: var(--muted); line-height: 1.5;
+    padding-top: 7px; border-top: 1px dashed var(--border); margin-top: 2px;
+  }
+  .disc-card .try strong { color: var(--blue); font-weight: 700; }
+  .disc-card .deliver { padding-top: 0; border-top: none; margin-top: 0; }
+  .disc-card .deliver strong { color: var(--olive); font-weight: 700; }
+  .disc-card .tag-chip {
+    align-self: flex-start; font-family: 'Outfit', sans-serif;
+    font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700;
+    padding: 3px 8px; border-radius: 999px; background: var(--blue-soft); color: var(--blue);
+  }
+  .disc-card.gold .tag-chip { background: var(--gold-soft); color: var(--gold); }
+  .disc-card.olive .tag-chip { background: var(--olive-soft); color: var(--olive); }
+  .disc-card.crimson .tag-chip { background: var(--crimson-soft); color: var(--crimson); }
+
   /* ============ MOBILE ============ */
   @media (max-width: 768px) {
     html, body { overflow: auto; height: auto; }
@@ -221,7 +314,11 @@
     .inputs-col { max-height: none; padding: 12px; }
     .chart-col { min-height: 360px; padding: 12px; }
     .ir { grid-template-columns: 1fr 1fr; gap: 6px; }
-    .concepts-grid { grid-template-columns: 1fr 1fr !important; gap: 8px; }
+    .concepts-grid, .disc-grid { grid-template-columns: 1fr !important; gap: 10px; }
+    .discussion-page { padding: 12px 4px; overflow-y: visible; height: auto; max-height: none; }
+    .discussion-page h2 { font-size: 22px; }
+    .tax-mode-block { padding: 10px 12px; }
+    .tax-mode-block select, .tax-mode-block .std-ded-row input { font-size: 16px !important; min-height: 36px; }
     .metric-row { grid-template-columns: 1fr 1fr !important; gap: 6px; }
     canvas { max-width: 100% !important; height: auto !important; min-height: 260px; }
     input[type="number"], input[type="range"] { font-size: 16px !important; }
@@ -244,6 +341,7 @@
   <div class="tabs">
     <button class="tab" data-tab="concepts">Concepts <span class="tag">read first</span></button>
     <button class="tab active" data-tab="calculator">Calculator <span class="tag">interactive</span></button>
+    <button class="tab" data-tab="discussion">Discussion <span class="tag">homework</span></button>
   </div>
 
   <div class="stage" id="stage"></div>
@@ -323,12 +421,23 @@
     return Math.max(0, P * Math.pow(1+r, m) - A * (Math.pow(1+r, m) - 1) / (r || 1e-9));
   }
 
+  function getTaxMode() {
+    const el = document.getElementById('in-taxMode');
+    return el ? el.value : 'standard';
+  }
+  function getStdDed() {
+    const el = document.getElementById('in-stdDed');
+    return el ? (+el.value || 30000) : 30000;
+  }
+
   function compute(p) {
     const dp = p.homePrice * p.dpPct / 100;
     const closing = p.homePrice * p.closingPct / 100;
     const loan = p.homePrice - dp;
     const annualMtg = monthlyPayment(loan, p.apr, p.term) * 12;
     const marr = p.marr / 100;
+    const taxMode = getTaxMode();
+    const stdDed = getStdDed();
 
     const buyOps = [-(dp + closing)];
     const rentCum = [0];
@@ -340,7 +449,14 @@
       const am = amortizeYear(loan, p.apr, p.term, t);
       const propTax = homeVal * p.propTaxPct / 100;
       const maint = homeVal * p.maintPct / 100;
-      const deduction = (am.interest + propTax) * p.marginalTax / 100;
+      const deductibleTotal = am.interest + propTax;
+      let deduction = 0;
+      if (taxMode === 'itemize') {
+        deduction = deductibleTotal * p.marginalTax / 100;
+      } else if (taxMode === 'standard') {
+        deduction = Math.max(0, deductibleTotal - stdDed) * p.marginalTax / 100;
+      }
+      // taxMode === 'none' -> deduction stays 0
       let buyFlow = -(annualMtg + propTax + maint + p.insurance + p.hoa * 12) + deduction;
       let rentFlow = -(yearlyRent + p.renterIns);
 
@@ -490,12 +606,14 @@
     // verdict (at horizon)
     const horizonDiff = r.buyCum[p.horizon] - r.rentCum[p.horizon];
     const verdict = $('verdict');
+    const taxLabels = { none: 'no tax effects', standard: 'above std. deduction', itemize: 'full itemize' };
+    const taxNote = taxLabels[getTaxMode()] || '';
     if (horizonDiff > 0) {
       verdict.className = 'verdict-line';
-      verdict.innerHTML = `<em>Buying</em> wins by <strong>${fmt(Math.abs(horizonDiff))}</strong> in PV over ${p.horizon} years <span class="small">(NPV of net costs)</span>`;
+      verdict.innerHTML = `<em>Buying</em> wins by <strong>${fmt(Math.abs(horizonDiff))}</strong> in PV over ${p.horizon} years <span class="small">(NPV of net costs &middot; ${taxNote})</span>`;
     } else {
       verdict.className = 'verdict-line rent';
-      verdict.innerHTML = `<em>Renting</em> wins by <strong>${fmt(Math.abs(horizonDiff))}</strong> in PV over ${p.horizon} years <span class="small">(NPV of net costs)</span>`;
+      verdict.innerHTML = `<em>Renting</em> wins by <strong>${fmt(Math.abs(horizonDiff))}</strong> in PV over ${p.horizon} years <span class="small">(NPV of net costs &middot; ${taxNote})</span>`;
     }
 
     // adjust year slider max
@@ -538,6 +656,20 @@
     $('stage').innerHTML = `
       <div class="calc-page">
         <div class="input-panel">
+          <div class="tax-mode-block">
+            <label>Tax treatment</label>
+            <select id="in-taxMode" onchange="onTaxModeChange()">
+              <option value="none">No tax effects &mdash; cleanest classroom model</option>
+              <option value="standard" selected>Itemize only above standard deduction &mdash; honest middle</option>
+              <option value="itemize">Itemize fully &mdash; optimistic, 100% deductible</option>
+            </select>
+            <div class="std-ded-row show" id="std-ded-row">
+              <label for="in-stdDed">Std. deduction</label>
+              <span class="pre">$</span>
+              <input id="in-stdDed" type="number" step="500" value="30000" />
+            </div>
+            <div class="tax-mode-note">In US tax code, only deductions <em>above</em> the standard deduction yield real savings. SALT cap of $10k not modeled.</div>
+          </div>
           ${inputGroup('Property', 'blue', [
             ['homePrice', 'Home price', '$', '', 1000],
             ['dpPct', 'Down', '', '%', 0.5],
@@ -624,11 +756,76 @@
     `;
   }
 
+  // ============ DISCUSSION ============
+  const DISCUSSION = [
+    { color: 'blue', num: 'Topic 01', tag: 'sensitivity · PW',
+      title: 'The <em>breakeven MARR</em>',
+      prompt: 'MARR is the rate at which we discount future cash flows. Move only the MARR slider and find the value where the verdict flips between Buy and Rent.',
+      tryIt: 'Hold every other input at its default. Sweep MARR from <strong>3% to 12%</strong> in 1% steps. Watch the verdict line.',
+      deliver: 'Report the breakeven MARR. In 3&ndash;4 sentences, explain what this rate represents economically and why it doesn\'t equal the mortgage APR (6.5%).' },
+    { color: 'gold', num: 'Topic 02', tag: 'horizon · equity',
+      title: 'The <em>breakeven horizon</em>',
+      prompt: 'Buying punishes you early: you paid closing costs, you\'ll pay selling commission, and you\'ve built almost no equity. At what year does the buy alternative first tie renting?',
+      tryIt: 'Vary <strong>Years to hold</strong> from 3 to 25. Track the verdict at each setting.',
+      deliver: 'Report the breakeven horizon. Explain in plain English why exiting too early is brutal for the homeowner. Reference the shape of the Buy curve.' },
+    { color: 'olive', num: 'Topic 03', tag: 'tax · assumption',
+      title: 'The <em>tax-treatment swing</em>',
+      prompt: 'The Tax-treatment toggle lets you switch among three assumptions. The verdict can move tens of thousands of PV dollars depending on which mode is selected.',
+      tryIt: 'At default settings, record the verdict under <strong>each of the three modes</strong>: None, Above-standard, Full itemize.',
+      deliver: 'Report the three verdicts. Argue which mode is appropriate for an engineering economy <em>classroom</em> problem. Reference the SALT cap and the standard deduction.' },
+    { color: 'crimson', num: 'Topic 04', tag: 'risk · leverage',
+      title: 'The <em>appreciation gamble</em>',
+      prompt: 'A homeowner is implicitly long the housing market. Their leveraged exposure is large because the loan is fixed but the asset moves.',
+      tryIt: 'Sweep <strong>Appreciation</strong> from 0% (flat market) to 6% (boom). Find the breakeven appreciation rate at which buy becomes preferred.',
+      deliver: 'Report the breakeven appreciation. Discuss what a 0% appreciation scenario implies for the &ldquo;always buy&rdquo; advice. Connect to leverage and risk.' },
+    { color: 'gold', num: 'Topic 05', tag: 'inflation · cash flow',
+      title: 'Rent escalation vs. the <em>fixed mortgage</em>',
+      prompt: 'A 30-year fixed mortgage payment doesn\'t move with inflation. Rent does. This asymmetry is the classic &ldquo;inflation hedge&rdquo; argument for owning.',
+      tryIt: 'Hold all else fixed; vary <strong>Rent growth</strong> from 0% to 6%. Note the verdict at each.',
+      deliver: 'Quantify how much of the buy advantage comes from rent escalation alone. Argue whether ownership functions as an inflation hedge in this calculator. Be specific.' },
+    { color: 'blue', num: 'Topic 06', tag: 'leverage · opportunity cost',
+      title: 'The <em>down-payment lever</em>',
+      prompt: 'Putting more down reduces the loan and therefore the mortgage payment. But the larger upfront cash also has a higher opportunity cost.',
+      tryIt: 'Compare verdicts at <strong>Down = 5%, 20%, and 40%</strong>. Note whether the verdict shifts &mdash; and in which direction.',
+      deliver: 'Explain the opportunity-cost argument: at MARR = 7%, what could the extra cash have earned elsewhere? Why does the NPV-at-MARR comparison make the verdict relatively insensitive to down payment?' }
+  ];
+
+  function renderDiscussion() {
+    $('stage').innerHTML = `
+      <div class="discussion-page">
+        <h2>Discussion &amp; <em>Writeup Topics</em></h2>
+        <div class="lede">Six engineering economy questions you can investigate directly with the calculator. Each is a small sensitivity or breakeven analysis &mdash; the kind of thinking a project engineer does before committing capital.</div>
+        <div class="assign-banner"><strong>Assignment:</strong> Pick <strong>at least two</strong> topics. For each, run the analysis described, then write a 200&ndash;300 word response with the numeric result + interpretation. Include a screenshot of the calculator at the verdict-flip setting. Submit a single PDF to Canvas.</div>
+        <div class="disc-grid">
+          ${DISCUSSION.map(d => `
+            <div class="disc-card ${d.color}">
+              <div class="num">${d.num}</div>
+              <h3>${d.title}</h3>
+              <p class="prompt">${d.prompt}</p>
+              <p class="try"><strong>Try this:</strong> ${d.tryIt}</p>
+              <p class="deliver"><strong>Deliverable:</strong> ${d.deliver}</p>
+              <span class="tag-chip">${d.tag}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  // ============ TAX MODE UI ============
+  function onTaxModeChange() {
+    const mode = getTaxMode();
+    const row = document.getElementById('std-ded-row');
+    if (row) row.classList.toggle('show', mode === 'standard');
+    if (typeof update === 'function') update();
+  }
+
   document.querySelectorAll('.tab').forEach(t => {
     t.addEventListener('click', () => {
       document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
       t.classList.add('active');
       if (t.dataset.tab === 'concepts') renderConcepts();
+      else if (t.dataset.tab === 'discussion') renderDiscussion();
       else renderCalculator();
     });
   });
