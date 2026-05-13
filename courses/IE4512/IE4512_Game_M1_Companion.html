@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Module 1 · Mystery Quest · Have You Heard?</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf9f5; --paper: #ffffff; --ink: #1a1a1a; --muted: #5a5247; --soft: #8b7355;
+    --border: #e8e3d4; --line: #d4cfc0;
+    --blue: #1947d6; --blue-deep: #0d2e9e; --blue-light: #4a6fe6; --blue-soft: #eef2ff;
+    --gold: #b8860b; --gold-soft: #faf3e0;
+    --olive: #5c7a4a; --olive-soft: #f0f4ea;
+    --crimson: #8a2828;
+  }
+  html, body { height: 100%; overflow: hidden; }
+  body { background: var(--bg); color: var(--ink); font-family: 'Outfit', -apple-system, system-ui, sans-serif; font-size: 14px; line-height: 1.55; }
+
+  .app { display: flex; flex-direction: column; height: 100vh; padding: 12px 24px 8px; max-width: 1500px; margin: 0 auto; gap: 10px; }
+
+  .head { flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 9px 18px; background: var(--paper); border: 1px solid var(--border); border-radius: 12px; border-top: 3px solid var(--blue); flex-wrap: wrap; }
+  .brand-left { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; min-width: 0; }
+  .brand-left .code { font-size: 10.5px; color: var(--blue); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; }
+  .brand-left h1 { font-family: 'Lora', Georgia, serif; font-size: 19px; font-weight: 700; line-height: 1; white-space: nowrap; }
+  .brand-left h1 em { font-style: italic; color: var(--blue); font-weight: 400; }
+  .brand-left .tag { font-family: 'Lora', serif; font-style: italic; font-size: 12.5px; color: var(--muted); }
+  .head-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .audio-btn { display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px; background: var(--paper); border: 1.5px solid var(--gold); border-radius: 999px; font-family: 'Outfit', sans-serif; font-size: 11.5px; font-weight: 600; color: var(--gold); cursor: pointer; transition: all 0.2s; letter-spacing: 0.04em; }
+  .audio-btn:hover { background: var(--gold-soft); transform: translateY(-1px); }
+  .audio-btn.playing { background: linear-gradient(135deg, var(--gold), #d4a017); color: white; animation: audio-pulse 2.4s ease-in-out infinite; }
+  .audio-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+  @keyframes audio-pulse { 50% { box-shadow: 0 4px 22px rgba(184,134,11,0.6); } }
+  .nav-hint { font-family: 'Outfit', sans-serif; font-size: 11px; color: var(--soft); font-weight: 500; letter-spacing: 0.04em; }
+  .nav-hint kbd { background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; font-size: 10px; margin: 0 2px; }
+
+  .indicator { flex-shrink: 0; display: flex; gap: 10px; align-items: center; padding: 22px 8px 14px; }
+  .seg { flex: 1; height: 6px; background: var(--border); border-radius: 999px; transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; position: relative; }
+  .seg::before { content: attr(data-num); position: absolute; top: -17px; left: 50%; transform: translateX(-50%); font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 700; color: var(--soft); letter-spacing: 0.02em; transition: all 0.25s; pointer-events: none; }
+  .seg::after { content: attr(data-era); position: absolute; bottom: -26px; left: 50%; transform: translateX(-50%); font-size: 10px; font-weight: 600; color: var(--muted); opacity: 0; pointer-events: none; white-space: nowrap; transition: opacity 0.18s; background: var(--paper); padding: 3px 8px; border-radius: 5px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.08); z-index: 10; }
+  .seg:hover::after { opacity: 1; }
+  .seg:hover::before { color: var(--ink); transform: translateX(-50%) translateY(-1px); }
+  .seg.done { background: linear-gradient(90deg, var(--gold) 0%, #d4a017 100%); box-shadow: 0 2px 8px rgba(184,134,11,0.22); }
+  .seg.done::before { color: var(--gold); }
+  .seg.active { background: linear-gradient(90deg, var(--blue) 0%, var(--blue-light) 100%); height: 11px; margin: -2.5px 0; box-shadow: 0 0 16px rgba(25,71,214,0.5), 0 3px 12px rgba(25,71,214,0.32); }
+  .seg.active::before { color: var(--blue); font-weight: 800; font-size: 12px; }
+
+  .stage { flex: 1; min-height: 0; overflow: hidden; position: relative; }
+  .track { display: flex; height: 100%; width: 100%; transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1); }
+  .slide { flex: 0 0 100%; height: 100%; position: relative; padding: 4px 8px; }
+
+  /* MYSTERY STATE */
+  .mystery-state { width: 100%; height: 100%; position: relative; display: grid; grid-template-columns: minmax(260px, 360px) 1fr; gap: 36px; align-items: center; padding: 6px 8px; background: linear-gradient(135deg, var(--paper) 0%, var(--bg) 100%); border: 1px solid var(--border); border-radius: 18px; overflow: hidden; }
+  @media (max-width: 800px) { .mystery-state { grid-template-columns: 1fr; padding: 14px; } }
+  .mystery-state::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 12% 18%, rgba(25,71,214,0.06) 0%, transparent 40%), radial-gradient(circle at 88% 82%, rgba(184,134,11,0.08) 0%, transparent 40%); pointer-events: none; }
+  .mystery-state > * { position: relative; z-index: 1; }
+  .mystery-img-wrap { position: relative; width: 100%; aspect-ratio: 1; padding: 14px; }
+  .mystery-img-inner { width: 100%; height: 100%; border-radius: 18px; overflow: hidden; border: 3px solid var(--gold); box-shadow: 0 16px 50px rgba(184,134,11,0.25), 0 1px 0 rgba(0,0,0,0.04); background: var(--bg); position: relative; }
+  .mystery-img-inner img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .mystery-img-inner::after { content: '?'; position: absolute; top: 12px; right: 12px; z-index: 2; width: 36px; height: 36px; border-radius: 50%; background: rgba(25,71,214,0.92); color: white; display: flex; align-items: center; justify-content: center; font-family: 'Lora', Georgia, serif; font-style: italic; font-weight: 700; font-size: 22px; box-shadow: 0 4px 14px rgba(25,71,214,0.45); }
+  .slide.gold .mystery-img-inner::after { background: rgba(184,134,11,0.92); box-shadow: 0 4px 14px rgba(184,134,11,0.45); }
+  .slide.olive .mystery-img-inner::after { background: rgba(92,122,74,0.92); box-shadow: 0 4px 14px rgba(92,122,74,0.45); }
+  .mystery-era-badge { position: absolute; top: -8px; left: -8px; z-index: 5; background: var(--blue); color: white; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 800; letter-spacing: 0.06em; padding: 7px 14px; border-radius: 999px; box-shadow: 0 4px 14px rgba(25,71,214,0.45); border: 2px solid white; }
+  .slide.gold .mystery-era-badge { background: var(--gold); box-shadow: 0 4px 14px rgba(184,134,11,0.45); }
+  .slide.olive .mystery-era-badge { background: var(--olive); box-shadow: 0 4px 14px rgba(92,122,74,0.45); }
+  .mystery-text { min-width: 0; display: flex; flex-direction: column; gap: 16px; padding-right: 18px; }
+  .mystery-text .stage-label { font-family: 'Outfit', sans-serif; font-size: 11px; color: var(--soft); letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700; }
+  .mystery-text .q { font-family: 'Lora', Georgia, serif; font-style: italic; font-weight: 600; font-size: 38px; line-height: 1.2; color: var(--ink); letter-spacing: -0.02em; }
+  .mystery-text .q em { color: var(--blue); font-style: italic; font-weight: 700; }
+  .slide.gold .mystery-text .q em { color: var(--gold); }
+  .slide.olive .mystery-text .q em { color: var(--olive); }
+  .mystery-text .hint { font-family: 'Outfit', sans-serif; font-size: 11.5px; color: var(--soft); letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+
+  /* ANSWER STATE */
+  .answer-state { width: 100%; height: 100%; display: none; grid-template-columns: minmax(360px, 480px) 1fr; gap: 36px; align-items: center; padding: 4px 8px; animation: reveal-in 0.55s cubic-bezier(0.16, 1, 0.3, 1); }
+  @keyframes reveal-in { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+  @media (max-width: 900px) { .answer-state { grid-template-columns: 1fr; gap: 14px; padding: 6px 4px; align-items: start; } }
+  .slide.revealed .mystery-state { display: none; }
+  .slide.revealed .answer-state { display: grid; }
+  .answer-img { position: relative; width: 100%; align-self: center; padding: 8px; }
+  .image-flip { width: 100%; aspect-ratio: 1; perspective: 1600px; }
+  .image-flip-inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 0.85s cubic-bezier(0.2, 1, 0.3, 1); }
+  .image-flip.flipped .image-flip-inner { transform: rotateY(180deg); }
+  .image-face {
+    position: absolute; inset: 0;
+    backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    border-radius: 20px; overflow: hidden;
+    border: 3px solid var(--gold);
+    box-shadow: 0 18px 56px rgba(184,134,11,0.28), 0 1px 0 rgba(0,0,0,0.04);
+    background: var(--bg);
+  }
+  .image-face.back { transform: rotateY(180deg); }
+  .image-face img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .year-badge { position: absolute; top: -6px; left: -6px; z-index: 5; background: var(--blue); color: white; font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 800; letter-spacing: 0.06em; padding: 8px 16px; border-radius: 999px; box-shadow: 0 6px 18px rgba(25,71,214,0.45); border: 2px solid white; }
+  .slide.gold .year-badge { background: var(--gold); box-shadow: 0 6px 18px rgba(184,134,11,0.45); }
+  .slide.olive .year-badge { background: var(--olive); box-shadow: 0 6px 18px rgba(92,122,74,0.45); }
+  .answer-content { min-width: 0; display: flex; flex-direction: column; gap: 14px; padding-right: 8px; overflow-y: auto; max-height: 100%; }
+  .answer-content::-webkit-scrollbar { width: 6px; }
+  .answer-content::-webkit-scrollbar-thumb { background: var(--line); border-radius: 999px; }
+  .answer-title { flex-shrink: 0; }
+  .answer-title .label { font-size: 11px; color: var(--blue); letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700; margin-bottom: 4px; }
+  .slide.gold .answer-title .label { color: var(--gold); }
+  .slide.olive .answer-title .label { color: var(--olive); }
+  .answer-title h2 { font-family: 'Lora', Georgia, serif; font-size: 34px; font-weight: 700; line-height: 1.1; letter-spacing: -0.025em; }
+  .answer-title h2 em { font-style: italic; color: var(--blue); font-weight: 400; }
+  .slide.gold .answer-title h2 em { color: var(--gold); }
+  .slide.olive .answer-title h2 em { color: var(--olive); }
+  .recap { font-family: 'Lora', serif; font-style: italic; font-size: 13px; color: var(--muted); padding: 7px 12px; background: var(--bg); border-left: 3px solid var(--blue); border-radius: 0 8px 8px 0; margin-top: 8px; }
+  .slide.gold .recap { border-left-color: var(--gold); }
+  .slide.olive .recap { border-left-color: var(--olive); }
+  .recap em { color: var(--blue); font-style: italic; font-weight: 600; }
+  .slide.gold .recap em { color: var(--gold); }
+  .slide.olive .recap em { color: var(--olive); }
+  .answer-cols {
+    display: grid; grid-template-columns: 1fr; gap: 12px;
+  }
+  .col { padding: 16px 20px; background: var(--paper); border: 1px solid var(--border); border-radius: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .col.fact { border-left: 4px solid var(--blue); }
+  .col.story { border-left: 4px solid var(--gold); display: none; }
+  /* When person info is revealed, hide fact and focus on person */
+  .answer-cols.show-story .col.fact { display: none; }
+  .answer-cols.show-story .col.story { display: flex; animation: story-in 0.7s cubic-bezier(0.2, 1, 0.3, 1); }
+  @keyframes story-in { from { opacity: 0; transform: translateX(28px) scale(0.96); } to { opacity: 1; transform: none; } }
+  .col h3 { font-family: 'Lora', Georgia, serif; font-size: 19px; font-weight: 700; font-style: italic; line-height: 1.15; }
+  .col.fact h3 { color: var(--blue); }
+  .col.story h3 { color: var(--gold); }
+  .col p { font-family: 'Lora', serif; font-size: 14.5px; line-height: 1.65; color: var(--ink); }
+  .col.fact p strong { color: var(--blue); }
+  .col.story p strong { color: var(--gold); }
+  .col p em { color: var(--muted); font-style: italic; }
+
+  .story-reveal-btn {
+    align-self: flex-start;
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 12px 22px; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    background: linear-gradient(135deg, var(--gold) 0%, #d4a017 100%);
+    color: white;
+    border: none; border-radius: 999px;
+    cursor: pointer; transition: all 0.2s; outline: none;
+    box-shadow: 0 6px 18px rgba(184,134,11,0.32);
+    animation: btn-pulse 2.6s ease-in-out infinite;
+  }
+  @keyframes btn-pulse {
+    0%, 100% { box-shadow: 0 6px 18px rgba(184,134,11,0.32); }
+    50% { box-shadow: 0 6px 24px rgba(184,134,11,0.55), 0 0 0 4px rgba(184,134,11,0.15); }
+  }
+  .story-reveal-btn:hover { transform: translateY(-1.5px); box-shadow: 0 10px 28px rgba(184,134,11,0.45); }
+  .story-reveal-btn .plus { font-family: 'Lora', Georgia, serif; font-style: italic; font-size: 20px; line-height: 1; }
+  .story-reveal-btn.hidden { display: none; }
+  .fact-box { padding: 11px 14px; background: var(--gold-soft); border-left: 3px solid var(--gold); border-radius: 0 10px 10px 0; font-family: 'Lora', serif; font-style: italic; font-size: 13px; line-height: 1.55; color: var(--ink); }
+  .fact-box .fact-tag { display: block; font-family: 'Outfit', sans-serif; font-style: normal; font-weight: 700; font-size: 9.5px; color: var(--gold); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 4px; }
+  .fact-box strong { color: var(--gold); font-style: normal; font-weight: 700; }
+
+  /* CONTROLS */
+  .controls { flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; gap: 12px; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 22px; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; border: none; border-radius: 999px; cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); outline: none; background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%); color: white; box-shadow: 0 6px 18px rgba(25,71,214,0.28), inset 0 1px 0 rgba(255,255,255,0.2); }
+  .btn:hover { transform: translateY(-1.5px); box-shadow: 0 10px 26px rgba(25,71,214,0.4); }
+  .btn:active { transform: translateY(0); }
+  .btn:disabled { opacity: 0.32; cursor: not-allowed; transform: none; box-shadow: none; }
+  .btn.ghost { background: var(--paper); color: var(--blue); box-shadow: 0 0 0 1.5px var(--blue) inset, 0 4px 12px rgba(25,71,214,0.08); }
+  .btn.ghost:hover { background: var(--blue-soft); }
+  .btn.reveal { background: linear-gradient(135deg, var(--gold) 0%, #d4a017 100%); box-shadow: 0 6px 18px rgba(184,134,11,0.32); font-size: 14px; padding: 13px 28px; }
+  .btn.reveal:hover { box-shadow: 0 10px 26px rgba(184,134,11,0.45); }
+  .counter { font-family: 'Lora', Georgia, serif; font-style: italic; font-size: 16px; color: var(--muted); display: flex; align-items: baseline; gap: 4px; }
+  .counter .now { font-family: 'Outfit', sans-serif; font-style: normal; font-size: 22px; font-weight: 800; color: var(--blue); min-width: 24px; text-align: center; }
+  .counter .total { font-family: 'Outfit', sans-serif; font-style: normal; font-size: 14px; font-weight: 600; color: var(--soft); }
+  .foot { flex-shrink: 0; text-align: center; font-family: 'Outfit', sans-serif; font-size: 10.5px; color: var(--soft); padding: 4px 0; letter-spacing: 0.06em; opacity: 0.85; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="head">
+    <div class="brand-left">
+      <div class="code">Module 1 &middot; Mystery Quest</div>
+      <h1>Have You <em>Heard</em>?</h1>
+      <span class="tag">eight curiosities &middot; the fact + the story</span>
+    </div>
+    <div class="head-right">
+      <button class="audio-btn" id="audio-btn" type="button"><svg viewBox="0 0 24 24" fill="currentColor" id="audio-icon"><polygon points="7 4 20 12 7 20"/></svg><span id="audio-label">Focus music</span></button>
+      <div class="nav-hint">use <kbd>←</kbd> <kbd>→</kbd> &middot; <kbd>space</kbd> to reveal</div>
+    </div>
+  </div>
+  <div class="indicator" id="indicator"></div>
+  <div class="stage"><div class="track" id="track"></div></div>
+  <div class="controls">
+    <button class="btn ghost" id="prev-btn">&lsaquo; &nbsp; Prev</button>
+    <div class="counter"><span class="now" id="counter-now">1</span><span class="sep">/</span><span class="total" id="counter-total">8</span></div>
+    <button class="btn reveal" id="main-btn">Reveal Answer</button>
+  </div>
+  <div class="foot">&copy; Prof. Mohammad Dehghani &nbsp;&middot;&nbsp; All rights reserved</div>
+</div>
+
+<a href="index.html" title="Back to course platform" style="position:fixed;bottom:10px;left:14px;display:inline-flex;align-items:center;gap:7px;padding:6px 13px 6px 10px;background:rgba(255,255,255,0.94);border:1px solid #e8e3d4;border-radius:999px;font-family:'Outfit',-apple-system,sans-serif;font-size:11px;font-weight:600;color:#1947d6;text-decoration:none;box-shadow:0 4px 14px rgba(25,71,214,0.14);z-index:1000;backdrop-filter:blur(6px);transition:all 0.18s" onmouseover="this.style.background='#eef2ff'" onmouseout="this.style.background='rgba(255,255,255,0.94)'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="11 18 5 12 11 6"/></svg>Back to platform</a>
+
+<script>
+  const SLIDES = [
+    { era: '1202', color: 'blue', label: 'Pisa, Italy',
+      mysteryQ: 'Have you heard about <em>Fibonacci\'s rabbits</em>?',
+      mysteryImg: 'images/fibonacci.png',
+      answerImg: 'images/story_fibonacci.png',
+      topicTitle: 'Fibonacci\'s <em>Rabbits</em>',
+      factTitle: 'What are they?',
+      factBody: 'A thought experiment from <em>Liber Abaci</em> (1202). Start with one breeding pair. Each pair produces another pair every month from their second month onward. After 12 months you have <strong>1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144</strong> pairs &mdash; the famous Fibonacci sequence. The first formal treatment of <strong>compound growth</strong> in Western math.',
+      storyTitle: 'Leonardo of Pisa',
+      storyBtn: 'Meet Leonardo of Pisa',
+      storyBody: 'Italian mathematician (c. 1170&ndash;1250). His book <em>Liber Abaci</em> also brought <strong>Hindu-Arabic numerals</strong> to Europe, replacing Roman numerals merchants had been struggling with for centuries.',
+      coolFact: 'He was <strong>never called Fibonacci</strong> in his lifetime &mdash; he signed his work "Leonardo Pisano." The nickname (meaning "son of Bonacci") was coined by a 19th-century historian.'
+    },
+    { era: '1494', color: 'blue', label: 'Math Shortcut',
+      mysteryQ: 'Have you heard about the <em>Rule of 72</em>?',
+      mysteryImg: 'images/rule_of_72.png',
+      answerImg: 'images/story_pacioli.png',
+      topicTitle: 'The <em>Rule of 72</em>',
+      factTitle: 'How does it work?',
+      factBody: '<strong>Divide 72 by your annual interest rate</strong> to estimate how long money takes to double. At 8%: 72 / 8 = <strong>9 years</strong>. Exact: 9.006 years &mdash; off by 0.07%. Accurate within 1% for rates between 4% and 12%.',
+      storyTitle: 'Luca Pacioli',
+      storyBtn: 'Meet Luca Pacioli',
+      storyBody: 'A Franciscan friar who wrote it down in his 1494 <em>Summa de Arithmetica</em> &mdash; the same book that codified <strong>double-entry bookkeeping</strong>. Pacioli also collaborated with <strong>Leonardo da Vinci</strong> on a book about geometric proportions.',
+      coolFact: 'Why 72? It has many divisors (<strong>1, 2, 3, 4, 6, 8, 9, 12...</strong>) which keeps the mental math clean.'
+    },
+    { era: 'Quote', color: 'gold', label: 'Folk Wisdom',
+      mysteryQ: 'Did <em>Einstein</em> really call compound interest the 8th wonder?',
+      mysteryImg: 'images/8th_wonder.png',
+      answerImg: 'images/8th_wonder.png',
+      topicTitle: 'The <em>8th Wonder</em> Quote',
+      factTitle: 'What\'s the quote?',
+      factBody: '<em>"Compound interest is the eighth wonder of the world. He who understands it, earns it; he who doesn\'t, pays it."</em> It is everywhere on finance posters, books, and motivational slides. But the attribution is <strong>apocryphal</strong>.',
+      storyTitle: 'So who said it?',
+      storyBtn: 'Where does it come from?',
+      storyBody: '<strong>No documented source</strong> in Einstein\'s papers, letters, or speeches. The earliest recorded attribution is in a 1983 newspaper ad. Probably coined by a marketer who needed authority for the punchline.',
+      coolFact: 'The math is right, though: <strong>$1,000 at 7% for 30 years grows to $7,612</strong> &mdash; a 7.6× multiplier from doing nothing but waiting.'
+    },
+    { era: 'Today', color: 'gold', label: 'Modern Practice',
+      mysteryQ: 'Have you heard why <em>MARR</em> is often 12%?',
+      mysteryImg: 'images/marr_hurdle.png',
+      answerImg: 'images/marr_hurdle.png',
+      topicTitle: 'The <em>12% Hurdle</em>',
+      factTitle: 'How is 12% built?',
+      factBody: 'A common decomposition: <strong>Cost of capital</strong> (~6&ndash;8%) <strong>+ Risk premium</strong> (~3&ndash;4%) <strong>+ Opportunity premium</strong> (~1&ndash;2%) <strong>&asymp; 12%</strong>. The MARR is the hurdle a project must clear to be worth tying up the firm\'s capital.',
+      storyTitle: 'Where the number comes from',
+      storyBtn: 'Where does 12% come from?',
+      storyBody: 'Not a textbook constant &mdash; an industry rule of thumb that emerged from <strong>modern corporate finance practice</strong>. Each firm calibrates its own MARR. Mature utilities use 6&ndash;8%, aerospace and biotech often run <strong>15&ndash;20%</strong>.',
+      coolFact: 'Set MARR too low &rarr; fund weak projects. Set it too high &rarr; starve good ones. The "right" MARR is firm- and industry-specific.'
+    },
+    { era: 'Medieval', color: 'gold', label: 'Banking History',
+      mysteryQ: 'Have you heard banks use a <em>360-day year</em>?',
+      mysteryImg: 'images/360_day.png',
+      answerImg: 'images/360_day.png',
+      topicTitle: 'The <em>Banker\'s Year</em>',
+      factTitle: 'Why 360 days?',
+      factBody: '<strong>360 = 12 &times; 30</strong> makes daily interest math clean. A 5% annual rate becomes 5%/360 per day exactly. Before calculators existed, this was a huge convenience. The catch: <strong>5% on a 360-day basis is actually 5.07% effective</strong> over a full 365-day year.',
+      storyTitle: 'Origin & current use',
+      storyBtn: 'Where does this come from?',
+      storyBody: 'Origin in <strong>medieval European banking</strong> (Florence, Venice). Today, US commercial banks still use 360 for many corporate loans. Treasury bills and most consumer loans use 365.',
+      coolFact: 'On a <strong>$10M corporate loan</strong>, that 0.07% gap is <strong>$7,000 a year</strong> of quietly extra interest for the lender.'
+    },
+    { era: '1900 → Today', color: 'gold', label: 'Inflation',
+      mysteryQ: 'What can a <em>1900 dollar</em> buy today?',
+      mysteryImg: 'images/inflation_dollar.png',
+      answerImg: 'images/inflation_dollar.png',
+      topicTitle: '<em>A Dollar</em> Through Time',
+      factTitle: 'What does $1 of 1900 buy now?',
+      factBody: '<strong>$1 in 1900</strong> has the purchasing power of about <strong>$36 today</strong> (US, 2024). Average inflation &asymp; 3% per year over 124 years compounds dramatically.',
+      storyTitle: 'Why this matters',
+      storyBtn: 'Mattress vs. invested',
+      storyBody: 'Under a mattress: $1 in 1900 &rarr; still $1 in 2024 &rarr; <strong>lost ~97%</strong> of purchasing power. At 5% / year invested: $1 &rarr; <strong>$424</strong> (over 12&times; the real value). The math punishes inaction.',
+      coolFact: 'This is the central lesson of TVOM: <strong>idle money isn\'t safe</strong>. It silently loses to inflation while invested money compounds away from it.'
+    },
+    { era: '1907', color: 'olive', label: 'Birth of Engineering Economy',
+      mysteryQ: 'Who said engineering means <em>"doing well with one dollar"</em>?',
+      mysteryImg: 'images/story_wellington.png',
+      answerImg: 'images/story_wellington.png',
+      topicTitle: 'The <em>"One Dollar"</em> Quote',
+      factTitle: 'What\'s the full quote?',
+      factBody: '<em>"Engineering is the art of doing well with one dollar what any bungler can do with two."</em> It captures the core claim of engineering economy: design choices must be justified in <strong>dollars</strong>, not just in pounds of steel.',
+      storyTitle: 'Arthur Mellen Wellington',
+      storyBtn: 'Meet Arthur Wellington',
+      storyBody: 'American railroad engineer (1847&ndash;1895). His book <em>The Economic Theory of the Location of Railways</em> (3rd ed. 1887) launched engineering economy as a distinct discipline.',
+      coolFact: 'The line is <strong>still quoted in every EE textbook</strong> more than a century later. It remains the discipline\'s most-cited definition.'
+    },
+    { era: '1958', color: 'olive', label: 'Capital Structure',
+      mysteryQ: 'Have you heard the <em>Nobel theorem</em> on debt vs equity?',
+      mysteryImg: 'images/story_modigliani_miller.png',
+      answerImg: 'images/story_modigliani_miller.png',
+      topicTitle: 'The <em>MM Theorem</em>',
+      factTitle: 'What does it say?',
+      factBody: 'Under perfect markets (no taxes, no bankruptcy costs, no transaction fees), a firm\'s value is <strong>independent of its capital structure</strong>. Whether you finance with debt or equity, only the <strong>underlying cash flows</strong> matter.',
+      storyTitle: 'Modigliani &amp; Miller',
+      storyBtn: 'Meet Modigliani &amp; Miller',
+      storyBody: '<strong>Franco Modigliani</strong> (Italian-American) and <strong>Merton Miller</strong> (American) at Carnegie Tech (now CMU), in a 1958 paper. The theorem reshaped corporate finance.',
+      coolFact: 'Both later won the <strong>Nobel Prize</strong> &mdash; Modigliani in 1985, Miller in 1990 &mdash; for ideas that started as that single 1958 paper.'
+    }
+  ];
+
+  const $ = id => document.getElementById(id);
+  let curr = 0;
+  const revealed = new Set();
+
+  function buildSlides() {
+    const track = $('track'); track.innerHTML = '';
+    SLIDES.forEach((s, i) => {
+      const slide = document.createElement('div');
+      slide.className = 'slide ' + s.color;
+      slide.innerHTML = `
+        <div class="mystery-state">
+          <div class="mystery-img-wrap">
+            <div class="mystery-era-badge">${s.era}</div>
+            <div class="mystery-img-inner"><img src="${s.mysteryImg}" alt="" /></div>
+          </div>
+          <div class="mystery-text">
+            <div class="stage-label">Mystery ${(i+1).toString().padStart(2,'0')} &middot; ${s.label}</div>
+            <div class="q">${s.mysteryQ}</div>
+            <div class="hint">↓ &nbsp; click <strong style="color:var(--gold)">Reveal Answer</strong> below</div>
+          </div>
+        </div>
+        <div class="answer-state">
+          <div class="answer-img">
+            <span class="year-badge">${s.era}</span>
+            <div class="image-flip">
+              <div class="image-flip-inner">
+                <div class="image-face front"><img src="${s.mysteryImg}" alt="" /></div>
+                <div class="image-face back"><img src="${s.answerImg}" alt="${s.topicTitle.replace(/<[^>]+>/g, '')}" /></div>
+              </div>
+            </div>
+          </div>
+          <div class="answer-content">
+            <div class="answer-title">
+              <div class="label">${s.label}</div>
+              <h2>${s.topicTitle}</h2>
+              <div class="recap">${s.mysteryQ}</div>
+            </div>
+            <div class="answer-cols">
+              <div class="col fact">
+                <h3>${s.factTitle}</h3>
+                <p>${s.factBody}</p>
+              </div>
+              <div class="col story">
+                <h3>${s.storyTitle}</h3>
+                <p>${s.storyBody}</p>
+              </div>
+            </div>
+            <button class="story-reveal-btn" data-action="show-story"><span class="plus">+</span> ${s.storyBtn} &nbsp;&rsaquo;</button>
+            <div class="fact-box"><span class="fact-tag">Cool fact</span>${s.coolFact}</div>
+          </div>
+        </div>
+      `;
+      track.appendChild(slide);
+    });
+    const ind = $('indicator'); ind.innerHTML = '';
+    SLIDES.forEach((s, i) => {
+      const seg = document.createElement('div');
+      seg.className = 'seg'; seg.dataset.era = s.era; seg.dataset.num = (i+1).toString().padStart(2, '0');
+      seg.addEventListener('click', () => goTo(i));
+      ind.appendChild(seg);
+    });
+    $('counter-total').textContent = SLIDES.length;
+  }
+
+  function update() {
+    $('track').style.transform = 'translateX(' + (-curr * 100) + '%)';
+    document.querySelectorAll('.slide').forEach((s, i) => s.classList.toggle('revealed', revealed.has(i)));
+    document.querySelectorAll('.seg').forEach((s, i) => { s.classList.toggle('active', i === curr); s.classList.toggle('done', revealed.has(i) && i !== curr); });
+    $('counter-now').textContent = curr + 1;
+    $('prev-btn').disabled = curr === 0;
+    const btn = $('main-btn');
+    if (revealed.has(curr)) { btn.innerHTML = curr === SLIDES.length - 1 ? 'End &nbsp; ✦' : 'Next Mystery &nbsp; &rsaquo;'; btn.className = 'btn'; btn.dataset.action = 'next'; }
+    else { btn.innerHTML = '🔓 &nbsp; Reveal Answer'; btn.className = 'btn reveal'; btn.dataset.action = 'reveal'; }
+  }
+  function goTo(i) { curr = Math.max(0, Math.min(SLIDES.length - 1, i)); update(); }
+  function handleMain() { if ($('main-btn').dataset.action === 'reveal') { revealed.add(curr); update(); } else if (curr < SLIDES.length - 1) goTo(curr + 1); }
+  $('prev-btn').addEventListener('click', () => goTo(curr - 1));
+  $('main-btn').addEventListener('click', handleMain);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft') goTo(curr - 1);
+    if (e.key === 'ArrowRight') { if (!revealed.has(curr)) { revealed.add(curr); update(); } else if (curr < SLIDES.length - 1) goTo(curr + 1); }
+    if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); if (!revealed.has(curr)) { revealed.add(curr); update(); } }
+    if (e.key === 'Home') goTo(0);
+    if (e.key === 'End') goTo(SLIDES.length - 1);
+  });
+  buildSlides(); update();
+
+  // Story reveal: flips image to portrait AND swaps fact → person info (focus shift)
+  document.querySelectorAll('.story-reveal-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const slide = btn.closest('.slide');
+      const cols = slide.querySelector('.answer-cols');
+      const flip = slide.querySelector('.image-flip');
+      if (flip) flip.classList.add('flipped');
+      if (cols) cols.classList.add('show-story');
+      btn.classList.add('hidden');
+    });
+  });
+
+  // Focus music
+  let audioCtx = null, masterGain = null, oscillators = [], audioPlaying = false;
+  function startAmbient() {
+    try {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      masterGain = audioCtx.createGain(); masterGain.gain.value = 0;
+      const comp = audioCtx.createDynamicsCompressor(); comp.threshold.value = -18; comp.ratio.value = 4;
+      masterGain.connect(comp); comp.connect(audioCtx.destination);
+      masterGain.gain.linearRampToValueAtTime(0.075, audioCtx.currentTime + 3);
+      [110, 164.81, 220, 277.18].forEach((freq, i) => {
+        const osc = audioCtx.createOscillator(); osc.type = 'sine'; osc.frequency.value = freq;
+        const osc2 = audioCtx.createOscillator(); osc2.type = 'sine'; osc2.frequency.value = freq * 1.005;
+        const filter = audioCtx.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.value = 500 + i * 150; filter.Q.value = 0.4;
+        const lfo = audioCtx.createOscillator(); lfo.frequency.value = 0.06 + i * 0.03;
+        const lfoGain = audioCtx.createGain(); lfoGain.gain.value = 180;
+        lfo.connect(lfoGain); lfoGain.connect(filter.frequency);
+        const noteGain = audioCtx.createGain(); noteGain.gain.value = 0.27 - i * 0.05;
+        osc.connect(filter); osc2.connect(filter); filter.connect(noteGain); noteGain.connect(masterGain);
+        osc.start(); osc2.start(); lfo.start();
+        oscillators.push(osc, osc2, lfo);
+      });
+      audioPlaying = true;
+    } catch (e) {}
+  }
+  function stopAmbient() {
+    if (!audioCtx) { audioPlaying = false; return; }
+    masterGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1.2);
+    const ctx = audioCtx, oscs = oscillators;
+    setTimeout(() => { oscs.forEach(o => { try { o.stop(); } catch(e){} }); try { ctx.close(); } catch(e){} }, 1400);
+    oscillators = []; audioCtx = null; masterGain = null; audioPlaying = false;
+  }
+  function toggleAudio() {
+    const btn = $('audio-btn'), icon = $('audio-icon'), label = $('audio-label');
+    if (audioPlaying) { stopAmbient(); btn.classList.remove('playing'); icon.innerHTML = '<polygon points="7 4 20 12 7 20"/>'; label.textContent = 'Focus music'; }
+    else { startAmbient(); btn.classList.add('playing'); icon.innerHTML = '<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>'; label.textContent = 'Pause music'; }
+  }
+  $('audio-btn').addEventListener('click', toggleAudio);
+  document.addEventListener('visibilitychange', () => { if (document.hidden && audioPlaying) toggleAudio(); });
+</script>
+
+</body>
+</html>

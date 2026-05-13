@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Module 7 · Sensitivity Slider Lab</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #faf9f5; color: #1a1a1a;
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+    min-height: 100vh; padding: 24px;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; }
+  .hero {
+    padding: 18px 0 22px; border-top: 4px solid #1947d6; border-bottom: 1px solid #d4cfc0;
+    margin-bottom: 24px;
+  }
+  .kicker {
+    font-family: -apple-system, 'Inter', sans-serif; font-size: 11px; color: #1947d6;
+    letter-spacing: 0.22em; text-transform: uppercase; margin-bottom: 12px; font-weight: 600;
+  }
+  .title { font-family: Georgia, serif; font-size: 34px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
+  .title em { font-style: italic; font-weight: 400; color: #1947d6; }
+
+  .grid {
+    display: grid; grid-template-columns: 320px 1fr; gap: 18px;
+  }
+  @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+
+  .panel { padding: 18px; background: #fff; border: 1px solid #e8e3d4; }
+  .panel h3 {
+    font-family: -apple-system, sans-serif; font-size: 10.5px; color: #1947d6;
+    letter-spacing: 0.18em; text-transform: uppercase; font-weight: 600; margin-bottom: 12px;
+  }
+
+  .slider-row {
+    margin-bottom: 18px;
+  }
+  .slider-row label {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: Georgia, serif; font-size: 15px; font-style: italic; margin-bottom: 6px;
+  }
+  .slider-row .val {
+    font-family: -apple-system, sans-serif; font-size: 16px; font-weight: 700; color: #1947d6;
+    font-style: normal;
+  }
+  .slider-row input[type=range] {
+    width: 100%; accent-color: #1947d6;
+  }
+  .slider-row .range-bounds {
+    display: flex; justify-content: space-between;
+    font-family: -apple-system, sans-serif; font-size: 10.5px; color: #8b7355; margin-top: 2px;
+  }
+
+  .readout {
+    padding: 18px; background: #eef2ff; border-left: 3px solid #1947d6; margin-bottom: 14px;
+  }
+  .readout .label {
+    font-family: -apple-system, sans-serif; font-size: 10.5px; color: #1947d6;
+    letter-spacing: 0.18em; text-transform: uppercase; font-weight: 600;
+  }
+  .readout .num {
+    font-family: Georgia, serif; font-size: 32px; font-weight: 700; color: #1947d6;
+    margin-top: 4px;
+  }
+  .readout.negative .num { color: #8a2828; }
+  .readout.olive { background: #f0f4ea; border-left-color: #5c7a4a; }
+  .readout.olive .label, .readout.olive .num { color: #5c7a4a; }
+
+  canvas { width: 100%; height: 200px; display: block; }
+
+  .question {
+    padding: 14px 18px; background: #faf3e0; border-left: 3px solid #b8860b;
+    margin-top: 14px; font-style: italic; line-height: 1.7;
+  }
+  .question strong { font-style: normal; color: #b8860b; }
+
+  .reset {
+    font-family: -apple-system, sans-serif; font-size: 11.5px; font-weight: 600;
+    padding: 6px 14px; border: 1px solid #8b7355; background: #fff; color: #5a5247;
+    cursor: pointer; letter-spacing: 0.05em; text-transform: uppercase;
+  }
+  .reset:hover { background: #5a5247; color: #fff; border-color: #5a5247; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="kicker">Module 7 &middot; Sensitivity Lab</div>
+    <div class="title">Live <em>NPV / IRR</em> Sensitivity</div>
+  </div>
+
+  <div class="grid">
+
+    <div class="panel">
+      <h3>Project parameters</h3>
+
+      <div class="slider-row">
+        <label>Initial Investment <span class="val" id="v-inv">$50,000</span></label>
+        <input type="range" id="s-inv" min="10000" max="100000" step="1000" value="50000" oninput="render()" />
+        <div class="range-bounds"><span>$10k</span><span>$100k</span></div>
+      </div>
+
+      <div class="slider-row">
+        <label>Annual Cash Flow <span class="val" id="v-cf">$12,000</span></label>
+        <input type="range" id="s-cf" min="2000" max="25000" step="500" value="12000" oninput="render()" />
+        <div class="range-bounds"><span>$2k</span><span>$25k</span></div>
+      </div>
+
+      <div class="slider-row">
+        <label>Project Life (n) <span class="val" id="v-n">8 yr</span></label>
+        <input type="range" id="s-n" min="3" max="20" step="1" value="8" oninput="render()" />
+        <div class="range-bounds"><span>3 yr</span><span>20 yr</span></div>
+      </div>
+
+      <div class="slider-row">
+        <label>Salvage Value <span class="val" id="v-sal">$5,000</span></label>
+        <input type="range" id="s-sal" min="0" max="30000" step="500" value="5000" oninput="render()" />
+        <div class="range-bounds"><span>$0</span><span>$30k</span></div>
+      </div>
+
+      <div class="slider-row">
+        <label>MARR <span class="val" id="v-marr">10%</span></label>
+        <input type="range" id="s-marr" min="0" max="25" step="0.5" value="10" oninput="render()" />
+        <div class="range-bounds"><span>0%</span><span>25%</span></div>
+      </div>
+
+      <button class="reset" onclick="resetAll()">Reset Defaults</button>
+    </div>
+
+    <div>
+      <div class="readout" id="r-npv">
+        <div class="label">NPV at MARR</div>
+        <div class="num" id="num-npv">—</div>
+      </div>
+      <div class="readout olive" id="r-irr">
+        <div class="label">IRR (break-even rate)</div>
+        <div class="num" id="num-irr">—</div>
+      </div>
+
+      <div class="panel">
+        <h3>NPV vs. interest rate</h3>
+        <canvas id="chart" width="800" height="200"></canvas>
+      </div>
+
+      <div class="question">
+        <strong>Discussion prompts:</strong> &nbsp; (1) At what MARR does NPV cross zero? &nbsp;
+        (2) Which slider moves NPV most for a 10% change &mdash; investment, cash flow, or life? &nbsp;
+        (3) When does increasing project life <em>not</em> help much?
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  function getParams() {
+    return {
+      inv: +document.getElementById('s-inv').value,
+      cf: +document.getElementById('s-cf').value,
+      n: +document.getElementById('s-n').value,
+      sal: +document.getElementById('s-sal').value,
+      marr: +document.getElementById('s-marr').value / 100
+    };
+  }
+
+  function npv(inv, cf, n, sal, i) {
+    let total = -inv;
+    for (let t = 1; t <= n; t++) total += cf / Math.pow(1+i, t);
+    total += sal / Math.pow(1+i, n);
+    return total;
+  }
+
+  function irr(inv, cf, n, sal) {
+    let lo = -0.99, hi = 5;
+    let fLo = npv(inv, cf, n, sal, lo);
+    let fHi = npv(inv, cf, n, sal, hi);
+    if (fLo * fHi > 0) return null;
+    for (let k = 0; k < 80; k++) {
+      const mid = (lo + hi) / 2;
+      const fMid = npv(inv, cf, n, sal, mid);
+      if (fMid * fLo < 0) { hi = mid; fHi = fMid; }
+      else { lo = mid; fLo = fMid; }
+    }
+    return (lo + hi) / 2;
+  }
+
+  function fmtMoney(x) {
+    const sign = x < 0 ? '−$' : '$';
+    return sign + Math.abs(x).toLocaleString('en-US', { maximumFractionDigits: 0 });
+  }
+
+  function render() {
+    const p = getParams();
+    document.getElementById('v-inv').textContent = '$' + p.inv.toLocaleString();
+    document.getElementById('v-cf').textContent = '$' + p.cf.toLocaleString();
+    document.getElementById('v-n').textContent = p.n + ' yr';
+    document.getElementById('v-sal').textContent = '$' + p.sal.toLocaleString();
+    document.getElementById('v-marr').textContent = (p.marr*100).toFixed(1) + '%';
+
+    const v = npv(p.inv, p.cf, p.n, p.sal, p.marr);
+    const npvEl = document.getElementById('num-npv');
+    npvEl.textContent = fmtMoney(v);
+    document.getElementById('r-npv').classList.toggle('negative', v < 0);
+
+    const r = irr(p.inv, p.cf, p.n, p.sal);
+    document.getElementById('num-irr').textContent = r === null ? '—' : (r*100).toFixed(2) + '%';
+
+    drawChart(p, r);
+  }
+
+  function drawChart(p, irrVal) {
+    const c = document.getElementById('chart');
+    const ctx = c.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const W = c.clientWidth, H = c.clientHeight;
+    c.width = W * dpr; c.height = H * dpr; ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, W, H);
+
+    const padL = 50, padR = 16, padT = 12, padB = 28;
+    const innerW = W - padL - padR;
+    const innerH = H - padT - padB;
+
+    const xs = [];
+    for (let i = 0; i <= 25; i += 0.5) xs.push(i / 100);
+    const ys = xs.map(i => npv(p.inv, p.cf, p.n, p.sal, i));
+
+    const yMax = Math.max(...ys, 0);
+    const yMin = Math.min(...ys, 0);
+    const yRange = yMax - yMin || 1;
+    const xMax = 0.25;
+
+    const xToPx = x => padL + (x / xMax) * innerW;
+    const yToPx = y => padT + (1 - (y - yMin) / yRange) * innerH;
+
+    // axes
+    ctx.strokeStyle = '#d4cfc0'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, H - padB); ctx.lineTo(W - padR, H - padB); ctx.stroke();
+
+    // zero line
+    if (yMin < 0 && yMax > 0) {
+      ctx.strokeStyle = '#8b7355'; ctx.setLineDash([3,3]);
+      ctx.beginPath();
+      const zeroY = yToPx(0);
+      ctx.moveTo(padL, zeroY); ctx.lineTo(W - padR, zeroY); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // marr line
+    ctx.strokeStyle = '#b8860b'; ctx.setLineDash([4,4]); ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    const marrX = xToPx(p.marr);
+    ctx.moveTo(marrX, padT); ctx.lineTo(marrX, H - padB); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // npv curve
+    ctx.strokeStyle = '#1947d6'; ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    xs.forEach((x, idx) => {
+      const px = xToPx(x), py = yToPx(ys[idx]);
+      if (idx === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    });
+    ctx.stroke();
+
+    // irr point
+    if (irrVal !== null && irrVal >= 0 && irrVal <= xMax) {
+      ctx.fillStyle = '#5c7a4a';
+      ctx.beginPath();
+      ctx.arc(xToPx(irrVal), yToPx(0), 5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // labels
+    ctx.fillStyle = '#5a5247'; ctx.font = '11px -apple-system, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(fmtMoney(yMax), padL - 6, padT + 4);
+    ctx.fillText(fmtMoney(yMin), padL - 6, H - padB);
+    ctx.textAlign = 'center';
+    ctx.fillText('0%', padL, H - padB + 14);
+    ctx.fillText('25%', W - padR, H - padB + 14);
+    ctx.fillText('i', (padL + W - padR) / 2, H - padB + 14);
+  }
+
+  function resetAll() {
+    document.getElementById('s-inv').value = 50000;
+    document.getElementById('s-cf').value = 12000;
+    document.getElementById('s-n').value = 8;
+    document.getElementById('s-sal').value = 5000;
+    document.getElementById('s-marr').value = 10;
+    render();
+  }
+
+  render();
+  window.addEventListener('resize', render);
+</script>
+<div style="position: fixed; bottom: 6px; right: 14px; font-family: 'Outfit', sans-serif; font-size: 10px; color: #8b7355; opacity: 0.7; letter-spacing: 0.04em; pointer-events: none; z-index: 1000;">&copy; Prof. Mohammad Dehghani</div>
+<a href="index.html" title="Back to course platform" style="position:fixed;bottom:10px;left:14px;display:inline-flex;align-items:center;gap:7px;padding:6px 13px 6px 10px;background:rgba(255,255,255,0.94);border:1px solid #e8e3d4;border-radius:999px;font-family:'Outfit',-apple-system,sans-serif;font-size:11px;font-weight:600;color:#1947d6;text-decoration:none;box-shadow:0 4px 14px rgba(25,71,214,0.14);z-index:1000;backdrop-filter:blur(6px);transition:all 0.18s" onmouseover="this.style.background='#eef2ff'" onmouseout="this.style.background='rgba(255,255,255,0.94)'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="11 18 5 12 11 6"/></svg>Back to platform</a>
+</body>
+</html>

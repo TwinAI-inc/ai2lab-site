@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Module 5 · PW Decision Simulator</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #faf9f5; color: #1a1a1a;
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+    min-height: 100vh; padding: 24px;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; }
+  .hero {
+    padding: 18px 0 22px; border-top: 4px solid #1947d6; border-bottom: 1px solid #d4cfc0;
+    margin-bottom: 24px;
+  }
+  .kicker {
+    font-family: -apple-system, 'Inter', sans-serif; font-size: 11px; color: #1947d6;
+    letter-spacing: 0.22em; text-transform: uppercase; margin-bottom: 12px; font-weight: 600;
+  }
+  .title { font-family: Georgia, serif; font-size: 34px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
+  .title em { font-style: italic; font-weight: 400; color: #1947d6; }
+
+  .stats {
+    display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 18px;
+  }
+  .stat {
+    font-family: -apple-system, sans-serif; font-size: 12px; color: #5a5247;
+    padding: 6px 12px; background: #fff; border: 1px solid #e8e3d4;
+  }
+  .stat strong { color: #1947d6; font-weight: 700; margin-left: 4px; }
+
+  .marr-row {
+    padding: 16px 20px; background: #eef2ff; border-left: 3px solid #1947d6;
+    margin-bottom: 18px; display: flex; gap: 18px; align-items: center; flex-wrap: wrap;
+  }
+  .marr-row label { font-family: Georgia, serif; font-style: italic; font-size: 16px; }
+  .marr-row input[type=range] { flex: 1; min-width: 200px; accent-color: #1947d6; }
+  .marr-val {
+    font-family: -apple-system, sans-serif; font-size: 18px; font-weight: 700;
+    color: #1947d6; min-width: 60px; text-align: right;
+  }
+
+  .projects {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;
+  }
+  .proj {
+    padding: 18px; background: #fff; border: 1px solid #e8e3d4; border-top: 3px solid #1947d6;
+    cursor: pointer; transition: all 0.15s; position: relative;
+  }
+  .proj:hover { border-color: #1947d6; box-shadow: 0 4px 12px rgba(25,71,214,0.08); }
+  .proj.selected { border-color: #1947d6; box-shadow: 0 0 0 3px rgba(25,71,214,0.2); }
+  .proj.winner { border-color: #5c7a4a; border-top-color: #5c7a4a; background: #f0f4ea; }
+  .proj.loser { opacity: 0.6; }
+  .proj h3 {
+    font-family: Georgia, serif; font-size: 22px; font-style: italic; color: #1a1a1a; margin-bottom: 10px;
+  }
+  .proj table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 12px; }
+  .proj td { padding: 4px 8px 4px 0; border-bottom: 1px dotted #d4cfc0; }
+  .proj td:first-child { color: #5a5247; font-style: italic; }
+  .proj td:last-child { text-align: right; font-family: -apple-system, sans-serif; font-weight: 600; }
+  .proj .neg { color: #8a2828; }
+  .proj .pos { color: #1947d6; }
+  .pw-display {
+    margin-top: 10px; padding: 10px 12px; background: #fdfbf6; border-left: 3px solid #b8860b;
+    font-family: Georgia, serif; font-size: 16px; font-style: italic; color: #1a1a1a;
+    display: none;
+  }
+  .pw-display.show { display: block; }
+  .pw-display strong { color: #1947d6; font-style: normal; font-weight: 700; }
+  .pw-display.negative strong { color: #8a2828; }
+
+  .controls { display: flex; gap: 10px; margin-top: 22px; flex-wrap: wrap; }
+  button {
+    font-family: -apple-system, sans-serif; font-size: 12.5px; font-weight: 600;
+    padding: 8px 18px; border: 1px solid #1947d6; background: #fff; color: #1947d6;
+    cursor: pointer; letter-spacing: 0.05em; text-transform: uppercase; transition: all 0.15s;
+  }
+  button:hover { background: #1947d6; color: #fff; }
+  button.solid { background: #1947d6; color: #fff; }
+  button.solid:hover { background: #0d2e9e; border-color: #0d2e9e; }
+
+  .feedback {
+    margin-top: 18px; padding: 14px 18px; font-style: italic; display: none; border-left: 3px solid;
+    font-size: 15px; line-height: 1.7;
+  }
+  .feedback.show { display: block; }
+  .feedback.correct { background: #f0f4ea; border-color: #5c7a4a; color: #3d5530; }
+  .feedback.wrong { background: #fdf2f3; border-color: #8a2828; color: #6b1f1f; }
+  .feedback strong { font-style: normal; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="kicker">Module 5 &middot; PW Decision Simulator</div>
+    <div class="title">Pick the <em>Best Project</em> by Present Worth</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat">Round<strong id="round-num">1</strong> / <span id="total-rounds">3</span></div>
+    <div class="stat">Score<strong id="score">0</strong></div>
+  </div>
+
+  <div class="marr-row">
+    <label>MARR <em style="color:#1947d6">i</em> =</label>
+    <input type="range" id="marr-slider" min="0" max="20" step="1" value="10" oninput="updateMARR()" />
+    <div class="marr-val" id="marr-val">10%</div>
+  </div>
+
+  <div class="projects" id="projects-grid"></div>
+
+  <div class="controls">
+    <button class="solid" onclick="calculatePWs()">Calculate PW for All</button>
+    <button onclick="nextRound()">Next Round &rarr;</button>
+  </div>
+
+  <div class="feedback" id="feedback"></div>
+
+</div>
+
+<script>
+  const ROUNDS = [
+    {
+      projects: [
+        { name: 'Project A', cf: [-10000, 3000, 3000, 3000, 3000, 3000] },
+        { name: 'Project B', cf: [-12000, 2000, 4000, 4000, 4000, 4000] },
+        { name: 'Project C', cf: [-8000, 2500, 2500, 2500, 2500, 2500] }
+      ]
+    },
+    {
+      projects: [
+        { name: 'Plant Upgrade', cf: [-50000, 12000, 12000, 12000, 12000, 12000, 12000] },
+        { name: 'New Equipment', cf: [-40000, 8000, 9000, 10000, 11000, 12000, 13000] },
+        { name: 'Outsource', cf: [-20000, 5000, 5000, 5000, 5000, 5000, 5000] }
+      ]
+    },
+    {
+      projects: [
+        { name: 'Solar Install', cf: [-25000, 4000, 4500, 5000, 5500, 6000, 6500, 7000, 12000] },
+        { name: 'Gas Turbine', cf: [-18000, 5500, 5500, 5500, 5500, 5500, 5500, 5500, 5500] },
+        { name: 'Battery Bank', cf: [-30000, 6000, 6000, 6000, 6000, 6000, 6000, 6000, 14000] }
+      ]
+    }
+  ];
+
+  let curr = 0; let score = 0; let selected = null;
+
+  function pw(cf, i) {
+    let total = 0;
+    for (let t = 0; t < cf.length; t++) total += cf[t] / Math.pow(1 + i, t);
+    return total;
+  }
+
+  function fmt(x) {
+    const sign = x < 0 ? '−$' : '$';
+    return sign + Math.abs(x).toLocaleString('en-US', { maximumFractionDigits: 0 });
+  }
+
+  function loadRound() {
+    const r = ROUNDS[curr];
+    selected = null;
+    document.getElementById('round-num').textContent = curr + 1;
+    document.getElementById('total-rounds').textContent = ROUNDS.length;
+    document.getElementById('feedback').classList.remove('show');
+
+    const grid = document.getElementById('projects-grid');
+    grid.innerHTML = '';
+    r.projects.forEach((p, idx) => {
+      const card = document.createElement('div');
+      card.className = 'proj';
+      card.dataset.idx = idx;
+      let rows = '';
+      p.cf.forEach((amt, t) => {
+        const cls = amt < 0 ? 'neg' : 'pos';
+        rows += '<tr><td>Year ' + t + '</td><td class="' + cls + '">' + fmt(amt) + '</td></tr>';
+      });
+      card.innerHTML = '<h3>' + p.name + '</h3><table>' + rows + '</table>' +
+        '<div class="pw-display" data-pw></div>';
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.proj').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        selected = idx;
+      });
+      grid.appendChild(card);
+    });
+    document.getElementById('score').textContent = score;
+  }
+
+  function updateMARR() {
+    const v = +document.getElementById('marr-slider').value;
+    document.getElementById('marr-val').textContent = v + '%';
+    document.querySelectorAll('.pw-display').forEach(d => d.classList.remove('show'));
+    document.querySelectorAll('.proj').forEach(c => c.classList.remove('winner', 'loser'));
+  }
+
+  function calculatePWs() {
+    if (selected === null) {
+      const fb = document.getElementById('feedback');
+      fb.className = 'feedback show wrong';
+      fb.innerHTML = '☝ <strong>Pick a project first</strong> by clicking on its card, then calculate.';
+      return;
+    }
+    const r = ROUNDS[curr];
+    const i = +document.getElementById('marr-slider').value / 100;
+    const pws = r.projects.map(p => pw(p.cf, i));
+    const bestIdx = pws.indexOf(Math.max(...pws));
+
+    document.querySelectorAll('.proj').forEach((c, idx) => {
+      const disp = c.querySelector('.pw-display');
+      const v = pws[idx];
+      disp.innerHTML = 'PW @ ' + (i*100).toFixed(0) + '% = <strong>' + fmt(v) + '</strong>';
+      disp.classList.add('show');
+      disp.classList.toggle('negative', v < 0);
+      c.classList.toggle('winner', idx === bestIdx);
+      c.classList.toggle('loser', idx !== bestIdx && idx !== selected);
+    });
+
+    const fb = document.getElementById('feedback');
+    if (selected === bestIdx) {
+      score += 10;
+      fb.className = 'feedback show correct';
+      fb.innerHTML = '✓ <strong>Correct.</strong> &nbsp; ' + r.projects[bestIdx].name +
+        ' has the highest PW at this MARR (' + fmt(pws[bestIdx]) + '). +10 points.';
+    } else {
+      fb.className = 'feedback show wrong';
+      fb.innerHTML = '✗ <strong>Not the best at this MARR.</strong> &nbsp; You picked ' +
+        r.projects[selected].name + ' (' + fmt(pws[selected]) + '). The winner is ' +
+        r.projects[bestIdx].name + ' at ' + fmt(pws[bestIdx]) + '. Try another MARR.';
+    }
+    document.getElementById('score').textContent = score;
+  }
+
+  function nextRound() {
+    curr = (curr + 1) % ROUNDS.length;
+    loadRound();
+  }
+
+  loadRound();
+</script>
+<div style="position: fixed; bottom: 6px; right: 14px; font-family: 'Outfit', sans-serif; font-size: 10px; color: #8b7355; opacity: 0.7; letter-spacing: 0.04em; pointer-events: none; z-index: 1000;">&copy; Prof. Mohammad Dehghani</div>
+<a href="index.html" title="Back to course platform" style="position:fixed;bottom:10px;left:14px;display:inline-flex;align-items:center;gap:7px;padding:6px 13px 6px 10px;background:rgba(255,255,255,0.94);border:1px solid #e8e3d4;border-radius:999px;font-family:'Outfit',-apple-system,sans-serif;font-size:11px;font-weight:600;color:#1947d6;text-decoration:none;box-shadow:0 4px 14px rgba(25,71,214,0.14);z-index:1000;backdrop-filter:blur(6px);transition:all 0.18s" onmouseover="this.style.background='#eef2ff'" onmouseout="this.style.background='rgba(255,255,255,0.94)'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="11 18 5 12 11 6"/></svg>Back to platform</a>
+</body>
+</html>

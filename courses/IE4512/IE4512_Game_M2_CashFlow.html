@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Module 2 · Cash Flow Builder</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #faf9f5; color: #1a1a1a;
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+    min-height: 100vh; padding: 24px;
+  }
+  .wrap { max-width: 1040px; margin: 0 auto; }
+  .hero {
+    padding: 18px 0 22px; border-top: 4px solid #1947d6; border-bottom: 1px solid #d4cfc0;
+    margin-bottom: 24px;
+  }
+  .kicker {
+    font-family: -apple-system, 'Inter', sans-serif; font-size: 11px; color: #1947d6;
+    letter-spacing: 0.22em; text-transform: uppercase; margin-bottom: 12px; font-weight: 600;
+  }
+  .title { font-family: Georgia, serif; font-size: 34px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
+  .title em { font-style: italic; font-weight: 400; color: #1947d6; }
+
+  .scenario {
+    padding: 18px 22px; background: #fff; border: 1px solid #e8e3d4; border-left: 3px solid #1947d6;
+    margin-bottom: 18px;
+  }
+  .scenario .label {
+    font-family: -apple-system, sans-serif; font-size: 10.5px; color: #1947d6;
+    letter-spacing: 0.18em; text-transform: uppercase; font-weight: 600; margin-bottom: 6px;
+  }
+  .scenario p { font-size: 16px; line-height: 1.7; color: #1a1a1a; }
+  .scenario em { color: #1947d6; }
+
+  .palette {
+    display: flex; gap: 10px; flex-wrap: wrap; padding: 14px;
+    background: #fdfbf6; border: 1px solid #e8e3d4; margin-bottom: 14px;
+  }
+  .chip {
+    padding: 8px 14px; background: #fff; border: 1px solid #1947d6;
+    font-family: -apple-system, sans-serif; font-size: 13px; font-weight: 600;
+    color: #1947d6; cursor: grab; user-select: none;
+    transition: all 0.15s;
+  }
+  .chip:active { cursor: grabbing; }
+  .chip.neg { border-color: #8a2828; color: #8a2828; }
+  .chip.placed { opacity: 0.3; cursor: default; }
+
+  .timeline-wrap { padding: 18px; background: #fff; border: 1px solid #e8e3d4; }
+  .timeline {
+    position: relative; height: 200px; padding: 30px 20px;
+    border-bottom: 2px solid #1a1a1a;
+    display: flex; justify-content: space-between; align-items: flex-end;
+  }
+  .year-slot {
+    flex: 1; min-width: 60px; height: 180px; position: relative;
+    display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
+    border-left: 1px dotted #d4cfc0;
+  }
+  .year-slot:first-child { border-left: none; }
+  .year-slot.drop-active { background: #eef2ff; }
+  .year-label {
+    position: absolute; bottom: -24px; font-family: -apple-system, sans-serif;
+    font-size: 12px; color: #5a5247; font-weight: 600;
+  }
+  .year-tick {
+    position: absolute; bottom: 0; width: 2px; height: 8px; background: #1a1a1a;
+  }
+  .arrow {
+    width: 36px; padding: 4px;
+    background: #1947d6; color: #fff; text-align: center;
+    font-family: -apple-system, sans-serif; font-size: 11px; font-weight: 600;
+    cursor: grab; position: relative;
+    margin-bottom: 2px;
+  }
+  .arrow.neg { background: #8a2828; }
+  .arrow::after {
+    content: ''; position: absolute; left: 50%; transform: translateX(-50%);
+    bottom: -10px; width: 0; height: 0;
+    border-left: 8px solid transparent; border-right: 8px solid transparent;
+    border-top: 10px solid #1947d6;
+  }
+  .arrow.neg::after { border-top-color: #8a2828; }
+
+  .controls {
+    display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap;
+  }
+  button {
+    font-family: -apple-system, sans-serif; font-size: 12.5px; font-weight: 600;
+    padding: 8px 18px; border: 1px solid #1947d6; background: #fff; color: #1947d6;
+    cursor: pointer; letter-spacing: 0.05em; text-transform: uppercase; transition: all 0.15s;
+  }
+  button:hover { background: #1947d6; color: #fff; }
+  button.solid { background: #1947d6; color: #fff; }
+  button.solid:hover { background: #0d2e9e; border-color: #0d2e9e; }
+
+  .feedback {
+    margin-top: 16px; padding: 14px 18px; font-style: italic; display: none;
+    border-left: 3px solid;
+  }
+  .feedback.show { display: block; }
+  .feedback.correct { background: #f0f4ea; border-color: #5c7a4a; color: #3d5530; }
+  .feedback.wrong { background: #fdf2f3; border-color: #8a2828; color: #6b1f1f; }
+
+  .stats {
+    display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 18px;
+  }
+  .stat {
+    font-family: -apple-system, sans-serif; font-size: 12px; color: #5a5247;
+    padding: 6px 12px; background: #fff; border: 1px solid #e8e3d4;
+  }
+  .stat strong { color: #1947d6; font-weight: 700; margin-left: 4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="kicker">Module 2 &middot; Cash Flow Builder</div>
+    <div class="title">Build the <em>Cash Flow Diagram</em></div>
+  </div>
+
+  <div class="stats">
+    <div class="stat">Problem<strong id="problem-num">1</strong> / <span id="total-problems">4</span></div>
+    <div class="stat">Score<strong id="score">0</strong></div>
+  </div>
+
+  <div class="scenario">
+    <div class="label">Scenario</div>
+    <p id="scenario-text">Loading...</p>
+  </div>
+
+  <div class="palette" id="palette">
+    <!-- chips injected -->
+  </div>
+
+  <div class="timeline-wrap">
+    <div class="timeline" id="timeline"></div>
+  </div>
+
+  <div class="controls">
+    <button onclick="resetProblem()">Reset</button>
+    <button class="solid" onclick="checkAnswer()">Check</button>
+    <button onclick="downloadPNG()">↓ Download PNG</button>
+    <button onclick="nextProblem()">Next Problem &rarr;</button>
+  </div>
+
+  <div class="feedback" id="feedback"></div>
+
+</div>
+
+<script>
+  const PROBLEMS = [
+    {
+      text: 'You deposit $1,000 today and withdraw $1,200 at the end of year 5.',
+      yearMax: 5,
+      chips: [{amt: 1000, neg: true}, {amt: 1200, neg: false}],
+      answer: { 0: -1000, 5: 1200 }
+    },
+    {
+      text: 'You receive $500 at the end of each year for 4 years (years 1 through 4).',
+      yearMax: 5,
+      chips: [{amt: 500, neg: false}, {amt: 500, neg: false}, {amt: 500, neg: false}, {amt: 500, neg: false}],
+      answer: { 1: 500, 2: 500, 3: 500, 4: 500 }
+    },
+    {
+      text: 'You pay $2,000 today, then receive $1,000 at the end of years 1, 2, and 3.',
+      yearMax: 4,
+      chips: [{amt: 2000, neg: true}, {amt: 1000, neg: false}, {amt: 1000, neg: false}, {amt: 1000, neg: false}],
+      answer: { 0: -2000, 1: 1000, 2: 1000, 3: 1000 }
+    },
+    {
+      text: 'You invest $5,000 now, receive $800/yr for 3 years, then sell for $4,000 in year 4.',
+      yearMax: 5,
+      chips: [{amt: 5000, neg: true}, {amt: 800, neg: false}, {amt: 800, neg: false}, {amt: 800, neg: false}, {amt: 4000, neg: false}],
+      answer: { 0: -5000, 1: 800, 2: 800, 3: 800, 4: 4000 }
+    }
+  ];
+
+  let curr = 0; let score = 0;
+  let placed = {};
+
+  function loadProblem() {
+    const p = PROBLEMS[curr];
+    placed = {};
+    document.getElementById('scenario-text').textContent = p.text;
+    document.getElementById('problem-num').textContent = curr + 1;
+    document.getElementById('total-problems').textContent = PROBLEMS.length;
+
+    const palette = document.getElementById('palette');
+    palette.innerHTML = '';
+    p.chips.forEach((c, i) => {
+      const chip = document.createElement('div');
+      chip.className = 'chip' + (c.neg ? ' neg' : '');
+      chip.draggable = true;
+      chip.textContent = (c.neg ? '−' : '+') + '$' + c.amt;
+      chip.dataset.amt = c.amt;
+      chip.dataset.neg = c.neg ? '1' : '0';
+      chip.dataset.id = i;
+      chip.addEventListener('dragstart', e => {
+        e.dataTransfer.setData('text/plain', JSON.stringify({id: i, amt: c.amt, neg: c.neg}));
+      });
+      palette.appendChild(chip);
+    });
+
+    const timeline = document.getElementById('timeline');
+    timeline.innerHTML = '';
+    for (let y = 0; y <= p.yearMax; y++) {
+      const slot = document.createElement('div');
+      slot.className = 'year-slot';
+      slot.dataset.year = y;
+      const tick = document.createElement('div'); tick.className = 'year-tick'; slot.appendChild(tick);
+      const lbl = document.createElement('div'); lbl.className = 'year-label'; lbl.textContent = y; slot.appendChild(lbl);
+      slot.addEventListener('dragover', e => { e.preventDefault(); slot.classList.add('drop-active'); });
+      slot.addEventListener('dragleave', () => slot.classList.remove('drop-active'));
+      slot.addEventListener('drop', e => {
+        e.preventDefault(); slot.classList.remove('drop-active');
+        const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+        const chip = palette.querySelector('[data-id="' + data.id + '"]');
+        if (!chip || chip.classList.contains('placed')) return;
+        const arrow = document.createElement('div');
+        arrow.className = 'arrow' + (data.neg ? ' neg' : '');
+        arrow.textContent = (data.neg ? '−' : '+') + '$' + data.amt;
+        slot.appendChild(arrow);
+        chip.classList.add('placed');
+        const signed = data.neg ? -data.amt : data.amt;
+        placed[y] = (placed[y] || 0) + signed;
+      });
+      timeline.appendChild(slot);
+    }
+
+    document.getElementById('feedback').classList.remove('show');
+    document.getElementById('score').textContent = score;
+  }
+
+  function checkAnswer() {
+    const p = PROBLEMS[curr];
+    const expected = p.answer;
+    let ok = true;
+    const allYears = new Set([...Object.keys(expected), ...Object.keys(placed)]);
+    allYears.forEach(y => {
+      const exp = expected[y] || 0;
+      const got = placed[y] || 0;
+      if (exp !== got) ok = false;
+    });
+    const fb = document.getElementById('feedback');
+    if (ok) {
+      score += 10;
+      fb.className = 'feedback show correct';
+      fb.innerHTML = '✓ <strong>Correct!</strong> &nbsp; Net at each year matches the scenario.';
+    } else {
+      fb.className = 'feedback show wrong';
+      fb.innerHTML = '✗ <strong>Not quite.</strong> &nbsp; Check the sign and the year of each cash flow, then click Reset to try again.';
+    }
+    document.getElementById('score').textContent = score;
+  }
+
+  function resetProblem() { loadProblem(); }
+  function nextProblem() {
+    curr = (curr + 1) % PROBLEMS.length;
+    loadProblem();
+  }
+
+  // Render the current cash flow diagram as a PNG and trigger download
+  function downloadPNG() {
+    const p = PROBLEMS[curr];
+    const W = 1200, H = 600;
+    const c = document.createElement('canvas');
+    c.width = W; c.height = H;
+    const ctx = c.getContext('2d');
+    // background
+    ctx.fillStyle = '#faf9f5'; ctx.fillRect(0, 0, W, H);
+    // header band
+    ctx.fillStyle = '#1947d6'; ctx.fillRect(0, 0, W, 8);
+    // title
+    ctx.fillStyle = '#1947d6'; ctx.font = '700 14px -apple-system, Inter, sans-serif';
+    ctx.fillText('IE 4512 · MODULE 2 · CASH FLOW BUILDER', 36, 40);
+    ctx.fillStyle = '#1a1a1a'; ctx.font = '700 28px Georgia, serif';
+    ctx.fillText('Problem ' + (curr + 1), 36, 78);
+    // scenario
+    ctx.fillStyle = '#1947d6'; ctx.font = '600 11px -apple-system, sans-serif';
+    ctx.fillText('SCENARIO', 36, 112);
+    ctx.fillStyle = '#1a1a1a'; ctx.font = '16px Georgia, serif';
+    const words = p.text.split(' ');
+    let line = '', y = 138;
+    words.forEach(w => {
+      const test = line + w + ' ';
+      if (ctx.measureText(test).width > W - 72) { ctx.fillText(line, 36, y); line = w + ' '; y += 24; }
+      else line = test;
+    });
+    if (line) ctx.fillText(line, 36, y);
+    // timeline
+    const tlY = 380;
+    const padL = 80, padR = 80;
+    ctx.strokeStyle = '#1a1a1a'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(padL, tlY); ctx.lineTo(W - padR, tlY); ctx.stroke();
+    const n = p.yearMax;
+    const slotW = (W - padL - padR) / n;
+    // year ticks and labels
+    ctx.fillStyle = '#1a1a1a'; ctx.font = '600 13px -apple-system, sans-serif'; ctx.textAlign = 'center';
+    for (let y = 0; y <= n; y++) {
+      const x = padL + y * slotW;
+      ctx.beginPath(); ctx.moveTo(x, tlY); ctx.lineTo(x, tlY + 10); ctx.stroke();
+      ctx.fillText(y.toString(), x, tlY + 30);
+    }
+    // arrows for placed cash flows
+    Object.keys(placed).forEach(yr => {
+      const v = placed[yr];
+      if (!v) return;
+      const x = padL + (+yr) * slotW;
+      const isNeg = v < 0;
+      const arrowH = Math.min(180, 60 + Math.abs(v) / 50);
+      const color = isNeg ? '#8a2828' : '#1947d6';
+      ctx.fillStyle = color;
+      // bar
+      if (isNeg) {
+        // downward arrow (below timeline)
+        ctx.fillRect(x - 18, tlY, 36, arrowH);
+        ctx.beginPath();
+        ctx.moveTo(x - 26, tlY + arrowH);
+        ctx.lineTo(x + 26, tlY + arrowH);
+        ctx.lineTo(x, tlY + arrowH + 18);
+        ctx.closePath(); ctx.fill();
+        // label
+        ctx.fillStyle = '#fff'; ctx.font = '700 13px -apple-system, sans-serif';
+        ctx.fillText('−$' + Math.abs(v), x, tlY + 22);
+      } else {
+        // upward arrow (above timeline)
+        ctx.fillRect(x - 18, tlY - arrowH, 36, arrowH);
+        ctx.beginPath();
+        ctx.moveTo(x - 26, tlY - arrowH);
+        ctx.lineTo(x + 26, tlY - arrowH);
+        ctx.lineTo(x, tlY - arrowH - 18);
+        ctx.closePath(); ctx.fill();
+        // label
+        ctx.fillStyle = '#fff'; ctx.font = '700 13px -apple-system, sans-serif';
+        ctx.fillText('+$' + v, x, tlY - arrowH + 16);
+      }
+    });
+    // footer
+    ctx.fillStyle = '#8b7355'; ctx.font = '11px -apple-system, sans-serif'; ctx.textAlign = 'left';
+    ctx.fillText('© Prof. Mohammad Dehghani', 36, H - 24);
+    ctx.textAlign = 'right';
+    ctx.fillText('Cash Flow Diagram · Problem ' + (curr + 1) + ' of ' + PROBLEMS.length, W - 36, H - 24);
+    // download
+    c.toBlob(blob => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'cashflow_problem_' + (curr + 1) + '.png';
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }, 'image/png');
+  }
+
+  // Prevent browser default drag/drop navigation outside our drop zones
+  // (fixes the "Unsafe attempt to load URL ... from frame" warning when dragging)
+  ['dragover', 'drop'].forEach(ev => {
+    document.addEventListener(ev, e => { if (!e.target.closest('.year-slot')) e.preventDefault(); });
+  });
+
+  loadProblem();
+</script>
+<div style="position: fixed; bottom: 6px; right: 14px; font-family: 'Outfit', sans-serif; font-size: 10px; color: #8b7355; opacity: 0.7; letter-spacing: 0.04em; pointer-events: none; z-index: 1000;">&copy; Prof. Mohammad Dehghani</div>
+<a href="index.html" title="Back to course platform" style="position:fixed;bottom:10px;left:14px;display:inline-flex;align-items:center;gap:7px;padding:6px 13px 6px 10px;background:rgba(255,255,255,0.94);border:1px solid #e8e3d4;border-radius:999px;font-family:'Outfit',-apple-system,sans-serif;font-size:11px;font-weight:600;color:#1947d6;text-decoration:none;box-shadow:0 4px 14px rgba(25,71,214,0.14);z-index:1000;backdrop-filter:blur(6px);transition:all 0.18s" onmouseover="this.style.background='#eef2ff'" onmouseout="this.style.background='rgba(255,255,255,0.94)'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="11 18 5 12 11 6"/></svg>Back to platform</a>
+</body>
+</html>

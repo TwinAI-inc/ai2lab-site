@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Module 1 · Concept Bingo</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #faf9f5; color: #1a1a1a;
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+    min-height: 100vh; padding: 24px;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; }
+  .hero {
+    padding: 18px 0 22px; border-top: 4px solid #1947d6; border-bottom: 1px solid #d4cfc0;
+    margin-bottom: 24px;
+  }
+  .kicker {
+    font-family: -apple-system, 'Inter', sans-serif; font-size: 11px; color: #1947d6;
+    letter-spacing: 0.22em; text-transform: uppercase; margin-bottom: 12px; font-weight: 600;
+  }
+  .title { font-family: Georgia, serif; font-size: 34px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
+  .title em { font-style: italic; font-weight: 400; color: #1947d6; }
+  .sub { color: #5a5247; font-size: 15px; margin-top: 10px; font-style: italic; }
+
+  .controls {
+    display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; align-items: center;
+  }
+  .stat {
+    font-family: -apple-system, sans-serif; font-size: 12px; color: #5a5247;
+    padding: 6px 12px; background: #fff; border: 1px solid #e8e3d4;
+  }
+  .stat strong { color: #1947d6; font-weight: 700; margin-left: 4px; }
+  button {
+    font-family: -apple-system, sans-serif; font-size: 12.5px; font-weight: 600;
+    padding: 7px 16px; border: 1px solid #1947d6; background: #fff; color: #1947d6;
+    cursor: pointer; letter-spacing: 0.05em; text-transform: uppercase;
+    transition: all 0.15s;
+  }
+  button:hover { background: #1947d6; color: #fff; }
+  button.solid { background: #1947d6; color: #fff; }
+  button.solid:hover { background: #0d2e9e; border-color: #0d2e9e; }
+
+  .board {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;
+    background: #1947d6; padding: 8px; border-radius: 4px;
+    aspect-ratio: 1; max-width: 720px; margin: 0 auto;
+  }
+  .cell {
+    background: #fdfbf6; border: 1px solid #e8e3d4; padding: 8px;
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    cursor: pointer; user-select: none; position: relative;
+    font-size: 13px; line-height: 1.3; color: #1a1a1a;
+    transition: all 0.2s;
+    aspect-ratio: 1;
+  }
+  .cell:hover { background: #eef2ff; border-color: #1947d6; }
+  .cell.stamped {
+    background: #1947d6; color: #fff; border-color: #1947d6;
+    font-style: italic; font-weight: 600;
+  }
+  .cell.stamped::after {
+    content: ''; position: absolute; inset: 4px;
+    border: 2px dashed rgba(255,255,255,0.4);
+    pointer-events: none;
+  }
+  .cell.free {
+    background: #f4f0e2; border-color: #b8860b;
+    font-family: Georgia, serif; font-style: italic; font-weight: 700;
+    color: #b8860b;
+  }
+  .cell.free.stamped {
+    background: #b8860b; color: #fff; border-color: #b8860b;
+  }
+  .cell.winning {
+    box-shadow: 0 0 0 3px #b8860b;
+    background: #1947d6 !important; color: #fff !important;
+  }
+
+  .banner {
+    margin: 18px auto 0; max-width: 720px;
+    padding: 16px 20px; border-left: 4px solid #b8860b; background: #faf3e0;
+    font-family: Georgia, serif; font-size: 18px; font-style: italic; color: #1a1a1a;
+    display: none;
+  }
+  .banner.show { display: block; animation: slide-in 0.4s ease-out; }
+  @keyframes slide-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+  .banner strong { color: #b8860b; font-style: normal; font-weight: 700; }
+
+  .hint {
+    margin-top: 16px; padding: 10px 14px; background: #eef2ff;
+    border-left: 3px solid #1947d6; font-size: 13px; color: #1a1a1a; font-style: italic;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="kicker">Module 1 &middot; Concept Bingo</div>
+    <div class="title">Engineering Economy <em>Bingo</em></div>
+    <div class="sub">Stamp a cell when the term is mentioned in the lecture or paper. Get five in a row, column, or diagonal to win.</div>
+  </div>
+
+  <div class="controls">
+    <div class="stat">Stamped<strong id="stamped-count">0</strong> / 25</div>
+    <div class="stat">Bingos<strong id="bingo-count">0</strong></div>
+    <button onclick="resetBoard()">Reset</button>
+    <button class="solid" onclick="shuffleBoard()">Shuffle Terms</button>
+  </div>
+
+  <div class="board" id="board"></div>
+
+  <div class="banner" id="banner"></div>
+
+  <div class="hint">💡 Insight for the instructor: which terms most students stamp first reveals the vocabulary they already know. Terms that go un-stamped flag where students need more grounding.</div>
+
+</div>
+
+<script>
+  const TERMS = [
+    'TVOM', 'MARR', 'NPV', 'IRR', 'B/C Ratio',
+    'Cash Flow', 'Interest Rate', 'Present Worth', 'Annual Worth', 'Future Worth',
+    'Equivalence', 'Planning Horizon', 'Sensitivity', 'Opportunity Cost', 'Sunk Cost',
+    'Inflation', 'Salvage Value', 'Depreciation', 'Payback Period', 'Capital Recovery',
+    'Life Cycle Cost', 'Marginal Cost', 'Alternatives', 'Compounding'
+  ];
+
+  let cells = [];
+  let bingos = new Set();
+
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function buildBoard() {
+    const board = document.getElementById('board');
+    board.innerHTML = '';
+    const shuffled = shuffle(TERMS);
+    cells = [];
+    for (let i = 0; i < 25; i++) {
+      const cell = document.createElement('div');
+      const isFree = i === 12;
+      cell.className = 'cell' + (isFree ? ' free' : '');
+      cell.textContent = isFree ? 'FREE' : shuffled[i < 12 ? i : i - 1];
+      cell.dataset.index = i;
+      cell.dataset.stamped = isFree ? '1' : '0';
+      if (isFree) cell.classList.add('stamped');
+      cell.addEventListener('click', () => toggleCell(i));
+      board.appendChild(cell);
+      cells.push(cell);
+    }
+    bingos = new Set();
+    updateStats();
+    document.getElementById('banner').classList.remove('show');
+  }
+
+  function toggleCell(i) {
+    if (i === 12) return;
+    const c = cells[i];
+    const stamped = c.dataset.stamped === '1';
+    c.dataset.stamped = stamped ? '0' : '1';
+    c.classList.toggle('stamped', !stamped);
+    checkBingos();
+    updateStats();
+  }
+
+  function isStamped(i) { return cells[i].dataset.stamped === '1'; }
+
+  function checkBingos() {
+    cells.forEach(c => c.classList.remove('winning'));
+    const lines = [];
+    for (let r = 0; r < 5; r++) lines.push([0,1,2,3,4].map(c => r*5+c));
+    for (let c = 0; c < 5; c++) lines.push([0,1,2,3,4].map(r => r*5+c));
+    lines.push([0,6,12,18,24]);
+    lines.push([4,8,12,16,20]);
+    let won = false;
+    lines.forEach((line, idx) => {
+      if (line.every(isStamped)) {
+        line.forEach(i => cells[i].classList.add('winning'));
+        if (!bingos.has(idx)) {
+          bingos.add(idx);
+          showBanner('🎉 <strong>BINGO!</strong> &nbsp; That makes ' + bingos.size + ' line' + (bingos.size > 1 ? 's' : '') + ' completed.');
+          won = true;
+        }
+      }
+    });
+  }
+
+  function updateStats() {
+    document.getElementById('stamped-count').textContent =
+      cells.filter(c => c.dataset.stamped === '1').length;
+    document.getElementById('bingo-count').textContent = bingos.size;
+  }
+
+  function showBanner(html) {
+    const b = document.getElementById('banner');
+    b.innerHTML = html;
+    b.classList.add('show');
+  }
+
+  function resetBoard() {
+    cells.forEach((c, i) => {
+      if (i !== 12) {
+        c.dataset.stamped = '0';
+        c.classList.remove('stamped', 'winning');
+      }
+    });
+    bingos = new Set();
+    updateStats();
+    document.getElementById('banner').classList.remove('show');
+  }
+
+  function shuffleBoard() { buildBoard(); }
+
+  buildBoard();
+</script>
+<div style="position: fixed; bottom: 6px; right: 14px; font-family: 'Outfit', sans-serif; font-size: 10px; color: #8b7355; opacity: 0.7; letter-spacing: 0.04em; pointer-events: none; z-index: 1000;">&copy; Prof. Mohammad Dehghani</div>
+<a href="index.html" title="Back to course platform" style="position:fixed;bottom:10px;left:14px;display:inline-flex;align-items:center;gap:7px;padding:6px 13px 6px 10px;background:rgba(255,255,255,0.94);border:1px solid #e8e3d4;border-radius:999px;font-family:'Outfit',-apple-system,sans-serif;font-size:11px;font-weight:600;color:#1947d6;text-decoration:none;box-shadow:0 4px 14px rgba(25,71,214,0.14);z-index:1000;backdrop-filter:blur(6px);transition:all 0.18s" onmouseover="this.style.background='#eef2ff'" onmouseout="this.style.background='rgba(255,255,255,0.94)'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="11 18 5 12 11 6"/></svg>Back to platform</a>
+</body>
+</html>

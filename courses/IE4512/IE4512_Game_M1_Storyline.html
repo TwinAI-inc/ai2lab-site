@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Storyline · 800 Years of Engineering Economy</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf9f5; --paper: #ffffff; --ink: #1a1a1a; --muted: #5a5247; --soft: #8b7355;
+    --border: #e8e3d4; --line: #d4cfc0;
+    --blue: #1947d6; --blue-deep: #0d2e9e; --blue-light: #4a6fe6; --blue-soft: #eef2ff;
+    --gold: #b8860b; --gold-soft: #faf3e0;
+    --olive: #5c7a4a; --olive-soft: #f0f4ea;
+    --crimson: #8a2828;
+  }
+  html, body { height: 100%; overflow: hidden; }
+  body { background: var(--bg); color: var(--ink); font-family: 'Outfit', -apple-system, system-ui, sans-serif; font-size: 14px; line-height: 1.55; }
+
+  .app { display: flex; flex-direction: column; height: 100vh; padding: 14px 24px 8px; max-width: 1500px; margin: 0 auto; gap: 10px; }
+
+  /* ============ HEADER ============ */
+  .head {
+    flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; gap: 14px;
+    padding: 10px 18px; background: var(--paper); border: 1px solid var(--border);
+    border-radius: 12px; border-top: 3px solid var(--blue); flex-wrap: wrap;
+  }
+  .brand-left { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; min-width: 0; }
+  .brand-left .code { font-size: 10.5px; color: var(--blue); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; }
+  .brand-left h1 { font-family: 'Lora', Georgia, serif; font-size: 19px; font-weight: 700; line-height: 1; white-space: nowrap; }
+  .brand-left h1 em { font-style: italic; color: var(--blue); font-weight: 400; }
+  .brand-left .tag { font-family: 'Lora', serif; font-style: italic; font-size: 12.5px; color: var(--muted); }
+  .nav-hint {
+    font-family: 'Outfit', sans-serif; font-size: 11px; color: var(--soft); font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+  .nav-hint kbd {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 4px;
+    padding: 1px 6px; font-size: 10px; font-family: 'Outfit', monospace; margin: 0 2px;
+  }
+  .head-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .audio-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 7px 14px; background: var(--paper); border: 1.5px solid var(--gold);
+    border-radius: 999px; font-family: 'Outfit', sans-serif; font-size: 11.5px; font-weight: 600;
+    color: var(--gold); cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    letter-spacing: 0.04em;
+  }
+  .audio-btn:hover { background: var(--gold-soft); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(184,134,11,0.2); }
+  .audio-btn.playing {
+    background: linear-gradient(135deg, var(--gold) 0%, #d4a017 100%);
+    color: white; border-color: var(--gold);
+    box-shadow: 0 4px 14px rgba(184,134,11,0.35);
+    animation: audio-pulse 2.4s ease-in-out infinite;
+  }
+  .audio-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+  @keyframes audio-pulse {
+    0%, 100% { box-shadow: 0 4px 14px rgba(184,134,11,0.35); }
+    50% { box-shadow: 0 4px 22px rgba(184,134,11,0.6), 0 0 0 4px rgba(184,134,11,0.15); }
+  }
+
+  /* ============ PROGRESS INDICATOR ============ */
+  .indicator {
+    flex-shrink: 0; display: flex; gap: 6px; align-items: center;
+    padding: 4px 6px;
+  }
+  .seg {
+    flex: 1; height: 4px; background: var(--border); border-radius: 2px;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer;
+    position: relative;
+  }
+  .seg::before {
+    content: attr(data-year); position: absolute; top: -22px; left: 50%; transform: translateX(-50%);
+    font-size: 10px; font-weight: 600; color: var(--muted); opacity: 0;
+    pointer-events: none; white-space: nowrap; transition: opacity 0.18s;
+    background: var(--paper); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border);
+  }
+  .seg:hover::before { opacity: 1; }
+  .seg.done { background: var(--gold); }
+  .seg.active {
+    background: var(--blue); height: 7px;
+    box-shadow: 0 0 12px rgba(25,71,214,0.5);
+  }
+
+  /* ============ SLIDE STAGE ============ */
+  .stage { flex: 1; min-height: 0; overflow: hidden; position: relative; }
+  .track {
+    display: flex; height: 100%; width: 100%;
+    transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .slide {
+    flex: 0 0 100%; height: 100%;
+    display: grid; grid-template-columns: minmax(280px, 420px) 1fr; gap: 36px; align-items: center;
+    padding: 6px 8px;
+  }
+  @media (max-width: 800px) {
+    .slide { grid-template-columns: 1fr; gap: 14px; padding: 6px 4px; align-items: start; }
+  }
+
+  .slide-img {
+    position: relative; width: 100%; aspect-ratio: 1; max-height: 100%;
+    transform: scale(0.95) translateX(-12px); opacity: 0;
+    transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.05s, opacity 0.7s ease 0.05s;
+  }
+  .slide.active .slide-img { transform: scale(1) translateX(0); opacity: 1; }
+  .img-inner {
+    width: 100%; height: 100%; border-radius: 18px; overflow: hidden;
+    border: 3px solid var(--gold);
+    box-shadow: 0 16px 50px rgba(184,134,11,0.25), 0 1px 0 rgba(0,0,0,0.04);
+    background: var(--bg);
+  }
+  .slide-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  .year-badge {
+    position: absolute; top: -12px; left: -8px; z-index: 5;
+    background: var(--blue); color: white; font-family: 'Outfit', sans-serif;
+    font-size: 14px; font-weight: 800; letter-spacing: 0.06em;
+    padding: 8px 16px; border-radius: 999px;
+    box-shadow: 0 6px 18px rgba(25,71,214,0.45);
+    border: 2px solid white;
+  }
+  .slide.gold .year-badge { background: var(--gold); box-shadow: 0 6px 18px rgba(184,134,11,0.45); }
+  .slide.olive .year-badge { background: var(--olive); box-shadow: 0 6px 18px rgba(92,122,74,0.45); }
+
+  .slide-text {
+    min-width: 0; display: flex; flex-direction: column; gap: 12px;
+    transform: translateX(20px); opacity: 0;
+    transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.18s, opacity 0.7s ease 0.18s;
+  }
+  .slide.active .slide-text { transform: translateX(0); opacity: 1; }
+
+  .slide-text .label {
+    font-size: 10.5px; color: var(--blue); letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700;
+  }
+  .slide.gold .slide-text .label { color: var(--gold); }
+  .slide.olive .slide-text .label { color: var(--olive); }
+
+  .slide-text h2 {
+    font-family: 'Lora', Georgia, serif; font-size: 38px; font-weight: 700;
+    line-height: 1.05; letter-spacing: -0.025em;
+  }
+  .slide-text h2 em { font-style: italic; color: var(--blue); font-weight: 400; }
+  .slide.gold .slide-text h2 em { color: var(--gold); }
+  .slide.olive .slide-text h2 em { color: var(--olive); }
+
+  .slide-text .lede {
+    font-family: 'Lora', serif; font-size: 16px; line-height: 1.65; color: var(--ink);
+  }
+  .slide-text .lede strong { color: var(--blue); font-weight: 700; }
+  .slide.gold .slide-text .lede strong { color: var(--gold); }
+  .slide.olive .slide-text .lede strong { color: var(--olive); }
+  .slide-text .lede em { font-style: italic; color: var(--muted); }
+
+  .fact-box {
+    padding: 14px 18px; background: var(--gold-soft); border-left: 3px solid var(--gold);
+    border-radius: 0 12px 12px 0;
+    font-family: 'Lora', serif; font-style: italic; font-size: 14px; line-height: 1.6; color: var(--ink);
+  }
+  .fact-box .fact-tag {
+    display: block; font-family: 'Outfit', sans-serif; font-style: normal; font-weight: 700;
+    font-size: 9.5px; color: var(--gold); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 6px;
+  }
+  .fact-box strong { color: var(--gold); font-style: normal; font-weight: 700; }
+
+  /* ============ CONTROLS ============ */
+  .controls {
+    flex-shrink: 0; display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 10px;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 22px; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 600;
+    letter-spacing: 0.06em; text-transform: uppercase; border: none; border-radius: 999px;
+    cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); outline: none;
+    background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
+    color: white; box-shadow: 0 6px 18px rgba(25,71,214,0.28), inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+  .btn:hover { transform: translateY(-1.5px); box-shadow: 0 10px 26px rgba(25,71,214,0.4); }
+  .btn:active { transform: translateY(0); }
+  .btn:disabled { opacity: 0.32; cursor: not-allowed; transform: none; box-shadow: none; }
+  .btn.ghost {
+    background: var(--paper); color: var(--blue);
+    box-shadow: 0 0 0 1.5px var(--blue) inset, 0 4px 12px rgba(25,71,214,0.08);
+  }
+  .btn.ghost:hover { background: var(--blue-soft); }
+
+  .counter {
+    font-family: 'Lora', Georgia, serif; font-style: italic; font-size: 16px;
+    color: var(--muted); display: flex; align-items: baseline; gap: 4px;
+  }
+  .counter .now {
+    font-family: 'Outfit', sans-serif; font-style: normal; font-size: 22px; font-weight: 800;
+    color: var(--blue); letter-spacing: -0.01em; min-width: 24px; text-align: center;
+  }
+  .counter .total {
+    font-family: 'Outfit', sans-serif; font-style: normal; font-size: 14px; font-weight: 600;
+    color: var(--soft);
+  }
+
+  /* ============ FOOTER ============ */
+  .foot {
+    flex-shrink: 0; text-align: center; font-family: 'Outfit', sans-serif; font-size: 10.5px;
+    color: var(--soft); padding: 4px 0; letter-spacing: 0.06em; opacity: 0.85;
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="head">
+    <div class="brand-left">
+      <div class="code">Module 1 &middot; Storyline</div>
+      <h1>800 Years of <em>Engineering Economy</em></h1>
+      <span class="tag">eight people, eight breakthroughs, one path</span>
+    </div>
+    <div class="head-right">
+      <button class="audio-btn" id="audio-btn" type="button">
+        <svg viewBox="0 0 24 24" fill="currentColor" id="audio-icon"><polygon points="7 4 20 12 7 20"/></svg>
+        <span id="audio-label">Focus music</span>
+      </button>
+      <div class="nav-hint">use <kbd>←</kbd> <kbd>→</kbd> or click below</div>
+    </div>
+  </div>
+
+  <!-- INDICATOR -->
+  <div class="indicator" id="indicator"></div>
+
+  <!-- STAGE -->
+  <div class="stage">
+    <div class="track" id="track"></div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <button class="btn ghost" id="prev-btn">&lsaquo; &nbsp; Prev</button>
+    <div class="counter">
+      <span class="now" id="counter-now">1</span>
+      <span class="sep">/</span>
+      <span class="total" id="counter-total">8</span>
+    </div>
+    <button class="btn" id="next-btn">Next &nbsp; &rsaquo;</button>
+  </div>
+
+  <!-- COPYRIGHT -->
+  <div class="foot">&copy; Prof. Mohammad Dehghani &nbsp;&middot;&nbsp; All rights reserved</div>
+
+</div>
+
+<script>
+  const SLIDES = [
+    {
+      year: '1202', color: 'blue',
+      label: 'Pisa, Italy · Stage 01',
+      title: 'Leonardo of Pisa <em>— "Fibonacci"</em>',
+      lede: 'In <em>Liber Abaci</em> (1202), Fibonacci replaced clunky Roman numerals with the Hindu&ndash;Arabic system and introduced <strong>compound interest</strong> to medieval Europe through a problem about breeding rabbits.',
+      fact: 'He was <strong>never called Fibonacci</strong> in his lifetime &mdash; he signed his work "Leonardo Pisano." The nickname (meaning "son of Bonacci") was coined by a 19th-century historian.',
+      img: 'images/story_fibonacci.png'
+    },
+    {
+      year: '1494', color: 'blue',
+      label: 'Tuscany · Stage 02',
+      title: 'Luca <em>Pacioli</em>',
+      lede: 'A Franciscan friar and math professor whose <em>Summa de Arithmetica</em> codified <strong>double-entry bookkeeping</strong> and recorded the <strong>Rule of 72</strong> for the first time in print.',
+      fact: 'Pacioli <strong>collaborated with Leonardo da Vinci</strong> on a book about geometric proportions. Da Vinci illustrated it. He is often called the "father of accounting."',
+      img: 'images/story_pacioli.png'
+    },
+    {
+      year: '1738', color: 'blue',
+      label: 'Basel · Stage 03',
+      title: 'Daniel <em>Bernoulli</em>',
+      lede: 'Solved the famous St. Petersburg paradox by introducing <em>expected utility</em> &mdash; the idea that money\'s worth depends on how much you already have. The foundation of <strong>modern decision theory under risk</strong>.',
+      fact: 'He came from the <strong>Bernoulli mathematical dynasty</strong>: at one point eight Bernoullis in three generations were prominent mathematicians, and the family famously feuded over whose idea was whose.',
+      img: 'images/story_bernoulli.png'
+    },
+    {
+      year: '1907', color: 'gold',
+      label: 'United States · Stage 04 · Birth of EE',
+      title: 'Arthur M. <em>Wellington</em>',
+      lede: 'Wellington\'s <em>Economic Theory of the Location of Railways</em> launched <strong>engineering economy</strong> as a distinct discipline. Engineers, he argued, must justify designs in dollars, not just in pounds of steel.',
+      fact: 'He defined engineering as <em>"the art of doing well with one dollar what any bungler can do with two."</em> The line is still quoted in EE textbooks more than a century later.',
+      img: 'images/story_wellington.png'
+    },
+    {
+      year: '1930', color: 'gold',
+      label: 'Stanford · Stage 05 · Standardization',
+      title: 'Eugene L. <em>Grant</em>',
+      lede: 'His textbook <em>Principles of Engineering Economy</em> (1930) became the standard for half a century, organizing the field around <strong>present worth</strong>, annual cost, and rate of return &mdash; the same toolkit you will learn this term.',
+      fact: 'Grant also pioneered <strong>statistical quality control</strong> in American manufacturing. Stanford named the Eugene L. Grant Award after him &mdash; given to the year\'s best EE textbook.',
+      img: 'images/story_grant.png'
+    },
+    {
+      year: '1958', color: 'olive',
+      label: 'Carnegie Mellon · Stage 06',
+      title: 'Modigliani &amp; <em>Miller</em>',
+      lede: 'The <strong>MM theorem</strong> showed that, under perfect markets, a firm\'s value is independent of its capital structure. Whether you finance with debt or equity, the underlying cash flows are what matter &mdash; a foundational insight for valuing engineering projects.',
+      fact: 'Both later won the <strong>Nobel Prize</strong> in Economics &mdash; Modigliani in 1985, Miller in 1990 &mdash; for ideas that started as that single 1958 paper.',
+      img: 'images/story_modigliani_miller.png'
+    },
+    {
+      year: '1981', color: 'olive',
+      label: 'US Tax Reform Act · Stage 07',
+      title: 'The <em>MACRS</em> Era',
+      lede: 'The 1981 Accelerated Cost Recovery System (predecessor of <strong>MACRS</strong>) cut depreciation lives in half &mdash; a deliberate tax incentive to spur capital investment during the early Reagan years. After-tax engineering economy became unavoidable.',
+      fact: 'ACRS was so generous it triggered a flood of <strong>"tax shelter" partnerships</strong> in the early 80s. The 1986 Tax Reform Act tightened the rules and gave us the modern MACRS we still teach today.',
+      img: 'images/story_macrs.png'
+    },
+    {
+      year: 'Today', color: 'gold',
+      label: 'Frontier · Stage 08 · Where you come in',
+      title: 'Real Options &amp; <em>AI</em>',
+      lede: 'Modern engineering economy borrows from financial options theory (Black&ndash;Scholes, 1973) to value <strong>flexibility</strong>: the right to defer, expand, or abandon a project. Layered with AI-driven sensitivity and scenario analysis, it lets us reason under deep uncertainty.',
+      fact: 'Pharma R&amp;D pipelines and oil exploration leases are routinely valued today using <strong>real options</strong>. The math you learn in this course is one upgrade away from billion-dollar decisions in industry.',
+      img: 'images/story_today.png'
+    }
+  ];
+
+  const $ = id => document.getElementById(id);
+  let curr = 0;
+
+  function buildSlides() {
+    const track = $('track');
+    track.innerHTML = '';
+    SLIDES.forEach((s, i) => {
+      const slide = document.createElement('div');
+      slide.className = 'slide ' + s.color;
+      slide.innerHTML = `
+        <div class="slide-img">
+          <span class="year-badge">${s.year}</span>
+          <div class="img-inner"><img src="${s.img}" alt="${s.title.replace(/<[^>]+>/g, '')}" /></div>
+        </div>
+        <div class="slide-text">
+          <div class="label">${s.label}</div>
+          <h2>${s.title}</h2>
+          <p class="lede">${s.lede}</p>
+          <div class="fact-box">
+            <span class="fact-tag">Cool fact</span>
+            ${s.fact}
+          </div>
+        </div>
+      `;
+      track.appendChild(slide);
+    });
+
+    const ind = $('indicator');
+    ind.innerHTML = '';
+    SLIDES.forEach((s, i) => {
+      const seg = document.createElement('div');
+      seg.className = 'seg';
+      seg.dataset.year = s.year;
+      seg.addEventListener('click', () => goTo(i));
+      ind.appendChild(seg);
+    });
+
+    $('counter-total').textContent = SLIDES.length;
+  }
+
+  function update() {
+    const track = $('track');
+    track.style.transform = 'translateX(' + (-curr * 100) + '%)';
+    document.querySelectorAll('.slide').forEach((s, i) => s.classList.toggle('active', i === curr));
+    document.querySelectorAll('.seg').forEach((s, i) => {
+      s.classList.toggle('active', i === curr);
+      s.classList.toggle('done', i < curr);
+    });
+    $('counter-now').textContent = curr + 1;
+    $('prev-btn').disabled = curr === 0;
+    $('next-btn').disabled = curr === SLIDES.length - 1;
+    $('next-btn').innerHTML = curr === SLIDES.length - 1 ? 'End &nbsp; ✦' : 'Next &nbsp; &rsaquo;';
+  }
+
+  function goTo(i) {
+    curr = Math.max(0, Math.min(SLIDES.length - 1, i));
+    update();
+  }
+
+  $('prev-btn').addEventListener('click', () => goTo(curr - 1));
+  $('next-btn').addEventListener('click', () => goTo(curr + 1));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft') goTo(curr - 1);
+    if (e.key === 'ArrowRight') goTo(curr + 1);
+    if (e.key === 'Home') goTo(0);
+    if (e.key === 'End') goTo(SLIDES.length - 1);
+  });
+
+  buildSlides();
+  update();
+
+  // ===== AMBIENT FOCUS MUSIC (Web Audio, procedural) =====
+  let audioCtx = null, masterGain = null, oscillators = [], audioPlaying = false;
+
+  function startAmbient() {
+    try {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      masterGain = audioCtx.createGain();
+      masterGain.gain.value = 0;
+      // soft compressor to glue the pad
+      const comp = audioCtx.createDynamicsCompressor();
+      comp.threshold.value = -18; comp.ratio.value = 4; comp.attack.value = 0.05; comp.release.value = 0.4;
+      masterGain.connect(comp); comp.connect(audioCtx.destination);
+      // smooth 3s fade-in to gentle volume
+      masterGain.gain.linearRampToValueAtTime(0.075, audioCtx.currentTime + 3);
+
+      // Soothing A-major-ish stack: A2, E3, A3, C#4
+      const notes = [110, 164.81, 220, 277.18];
+      notes.forEach((freq, i) => {
+        // Main oscillator (sine = warm, no harshness)
+        const osc = audioCtx.createOscillator();
+        osc.type = 'sine'; osc.frequency.value = freq;
+        // Detuned partner for thickness
+        const osc2 = audioCtx.createOscillator();
+        osc2.type = 'sine'; osc2.frequency.value = freq * 1.005;
+        // Lowpass filter with slow LFO sweep (breathing)
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 500 + i * 150;
+        filter.Q.value = 0.4;
+        const lfo = audioCtx.createOscillator();
+        lfo.type = 'sine';
+        lfo.frequency.value = 0.06 + i * 0.03;
+        const lfoGain = audioCtx.createGain();
+        lfoGain.gain.value = 180;
+        lfo.connect(lfoGain); lfoGain.connect(filter.frequency);
+        // Note-level gain with slow tremolo
+        const noteGain = audioCtx.createGain();
+        noteGain.gain.value = 0.27 - i * 0.05;
+        const trem = audioCtx.createOscillator();
+        trem.type = 'sine';
+        trem.frequency.value = 0.11 + i * 0.02;
+        const tremGain = audioCtx.createGain();
+        tremGain.gain.value = 0.06;
+        trem.connect(tremGain); tremGain.connect(noteGain.gain);
+        // wire
+        osc.connect(filter); osc2.connect(filter);
+        filter.connect(noteGain); noteGain.connect(masterGain);
+        osc.start(); osc2.start(); lfo.start(); trem.start();
+        oscillators.push(osc, osc2, lfo, trem);
+      });
+      audioPlaying = true;
+    } catch (e) { console.warn('Audio context failed:', e); }
+  }
+
+  function stopAmbient() {
+    if (!audioCtx) { audioPlaying = false; return; }
+    try {
+      masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
+      masterGain.gain.setValueAtTime(masterGain.gain.value, audioCtx.currentTime);
+      masterGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1.2);
+      const ctx = audioCtx, oscs = oscillators;
+      setTimeout(() => {
+        oscs.forEach(o => { try { o.stop(); } catch(e){} });
+        try { ctx.close(); } catch(e){}
+      }, 1400);
+      oscillators = []; audioCtx = null; masterGain = null;
+    } catch (e) {}
+    audioPlaying = false;
+  }
+
+  function toggleAudio() {
+    const btn = document.getElementById('audio-btn');
+    const icon = document.getElementById('audio-icon');
+    const label = document.getElementById('audio-label');
+    if (audioPlaying) {
+      stopAmbient();
+      btn.classList.remove('playing');
+      icon.innerHTML = '<polygon points="7 4 20 12 7 20"/>';
+      label.textContent = 'Focus music';
+    } else {
+      startAmbient();
+      btn.classList.add('playing');
+      icon.innerHTML = '<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>';
+      label.textContent = 'Pause music';
+    }
+  }
+  document.getElementById('audio-btn').addEventListener('click', toggleAudio);
+
+  // Auto-pause if tab is hidden for a while
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden && audioPlaying) {
+      stopAmbient();
+      const btn = document.getElementById('audio-btn');
+      const icon = document.getElementById('audio-icon');
+      const label = document.getElementById('audio-label');
+      btn.classList.remove('playing');
+      icon.innerHTML = '<polygon points="7 4 20 12 7 20"/>';
+      label.textContent = 'Focus music';
+    }
+  });
+</script>
+
+<a href="index.html" title="Back to course platform" style="position:fixed;bottom:10px;left:14px;display:inline-flex;align-items:center;gap:7px;padding:6px 13px 6px 10px;background:rgba(255,255,255,0.94);border:1px solid #e8e3d4;border-radius:999px;font-family:'Outfit',-apple-system,sans-serif;font-size:11px;font-weight:600;color:#1947d6;text-decoration:none;box-shadow:0 4px 14px rgba(25,71,214,0.14);z-index:1000;backdrop-filter:blur(6px);transition:all 0.18s" onmouseover="this.style.background='#eef2ff'" onmouseout="this.style.background='rgba(255,255,255,0.94)'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="11 18 5 12 11 6"/></svg>Back to platform</a>
+</body>
+</html>

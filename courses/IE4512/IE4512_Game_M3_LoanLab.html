@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Module 3 · Loan Repayment Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf9f5; --paper: #ffffff; --ink: #1a1a1a; --muted: #5a5247; --soft: #8b7355;
+    --border: #e8e3d4; --line: #d4cfc0;
+    --blue: #1947d6; --blue-deep: #0d2e9e; --blue-light: #4a6fe6; --blue-soft: #eef2ff;
+    --gold: #b8860b; --gold-soft: #faf3e0;
+    --olive: #5c7a4a; --olive-soft: #f0f4ea;
+    --crimson: #8a2828; --crimson-soft: #fdf2f3;
+  }
+  html, body { height: 100%; overflow: hidden; }
+  body { background: var(--bg); color: var(--ink); font-family: 'Outfit', -apple-system, system-ui, sans-serif; font-size: 13.5px; line-height: 1.5; }
+
+  .app { display: flex; flex-direction: column; height: 100vh; padding: 8px 14px; gap: 7px; max-width: 1500px; margin: 0 auto; }
+
+  /* ============ HEADER ============ */
+  .head {
+    flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; gap: 14px;
+    padding: 7px 14px; background: var(--paper); border: 1px solid var(--border);
+    border-radius: 10px; border-top: 3px solid var(--blue); flex-wrap: wrap;
+  }
+  .brand-left { display: flex; align-items: baseline; gap: 12px; min-width: 0; flex-wrap: wrap; }
+  .brand-left .code { font-size: 10.5px; color: var(--blue); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; }
+  .brand-left h1 { font-family: 'Lora', Georgia, serif; font-size: 17px; font-weight: 700; line-height: 1; white-space: nowrap; }
+  .brand-left h1 em { font-style: italic; color: var(--blue); font-weight: 400; }
+  .brand-left .tag {
+    font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted);
+  }
+  .winner-chip {
+    padding: 6px 14px; background: var(--olive-soft); border: 1px solid var(--olive); border-radius: 999px;
+    font-size: 11.5px; color: var(--olive); font-weight: 600; display: flex; align-items: center; gap: 7px;
+    font-family: 'Outfit', sans-serif;
+  }
+  .winner-chip.crimson { background: var(--crimson-soft); border-color: var(--crimson); color: var(--crimson); }
+  .winner-chip.blue { background: var(--blue-soft); border-color: var(--blue); color: var(--blue); }
+  .winner-chip.gold { background: var(--gold-soft); border-color: var(--gold); color: var(--gold); }
+  .winner-chip .num { font-family: 'Lora', serif; font-style: italic; font-weight: 700; font-size: 13.5px; }
+
+  /* ============ CONTROLS ============ */
+  .controls {
+    flex-shrink: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+    padding: 8px 14px; background: var(--paper); border: 1px solid var(--border); border-radius: 10px;
+  }
+  .ctrl-block { min-width: 0; }
+  .ctrl-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2px; }
+  .ctrl-label { font-family: 'Lora', serif; font-size: 12px; font-style: italic; color: var(--ink); }
+  .ctrl-label .var { color: var(--blue); font-weight: 600; }
+  .ctrl-label.gold .var { color: var(--gold); }
+  .ctrl-value { font-family: 'Outfit', sans-serif; font-size: 14.5px; font-weight: 700; color: var(--blue); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+  .ctrl-value.gold { color: var(--gold); }
+  input[type="range"] {
+    -webkit-appearance: none; appearance: none; width: 100%; height: 6px; outline: none;
+    border-radius: 999px; cursor: pointer;
+    background: linear-gradient(90deg, var(--blue) 0%, var(--blue) var(--pct, 50%), #e8e3d4 var(--pct, 50%), #e8e3d4 100%);
+  }
+  input[type="range"].gold {
+    background: linear-gradient(90deg, var(--gold) 0%, var(--gold) var(--pct, 50%), #e8e3d4 var(--pct, 50%), #e8e3d4 100%);
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none; width: 18px; height: 18px; border-radius: 50%;
+    background: white; border: 2.5px solid var(--blue); cursor: grab;
+    box-shadow: 0 3px 10px rgba(25,71,214,0.32), 0 1px 3px rgba(0,0,0,0.08);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  input[type="range"].gold::-webkit-slider-thumb { border-color: var(--gold); box-shadow: 0 4px 12px rgba(184,134,11,0.32), 0 1px 4px rgba(0,0,0,0.08); }
+  input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.18); box-shadow: 0 6px 16px rgba(25,71,214,0.5); }
+  input[type="range"].gold::-webkit-slider-thumb:hover { box-shadow: 0 6px 16px rgba(184,134,11,0.5); }
+  input[type="range"]::-webkit-slider-thumb:active { transform: scale(1.25); cursor: grabbing; background: var(--blue); }
+  input[type="range"].gold::-webkit-slider-thumb:active { background: var(--gold); }
+  .ctrl-bounds { display: flex; justify-content: space-between; font-size: 10px; color: var(--soft); margin-top: 2px; font-weight: 500; }
+
+  /* ============ PLAN CARDS — COMPACT STRIP ============ */
+  .plans { flex-shrink: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .plan {
+    padding: 7px 10px; background: var(--paper); border: 1px solid var(--border); border-radius: 9px;
+    border-left: 3px solid; display: grid; grid-template-columns: 1fr auto; gap: 8px;
+    align-items: center; min-width: 0;
+  }
+  .plan.p1 { border-left-color: var(--crimson); }
+  .plan.p2 { border-left-color: var(--olive); }
+  .plan.p3 { border-left-color: var(--blue); }
+  .plan.p4 { border-left-color: var(--gold); }
+  .plan-info { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+  .plan-name {
+    font-family: 'Lora', serif; font-size: 12.5px; font-weight: 700; font-style: italic; line-height: 1.1;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .plan.p1 .plan-name { color: var(--crimson); }
+  .plan.p2 .plan-name { color: var(--olive); }
+  .plan.p3 .plan-name { color: var(--blue); }
+  .plan.p4 .plan-name { color: var(--gold); }
+  .plan-stats-inline {
+    font-size: 10px; color: var(--muted); display: flex; gap: 8px; line-height: 1.2;
+  }
+  .plan-stats-inline span strong { color: var(--ink); font-weight: 700; }
+  .pv-block {
+    padding: 4px 8px; border: 1.5px solid; border-radius: 6px; text-align: right;
+    display: flex; flex-direction: column; align-items: flex-end; line-height: 1.05;
+  }
+  .plan.p1 .pv-block { border-color: var(--crimson); }
+  .plan.p2 .pv-block { border-color: var(--olive); }
+  .plan.p3 .pv-block { border-color: var(--blue); }
+  .plan.p4 .pv-block { border-color: var(--gold); }
+  .pv-block .pv-lbl { font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; color: var(--soft); }
+  .pv-block .pv-num { font-family: 'Lora', serif; font-style: italic; font-weight: 700; font-size: 15px; }
+  .plan.p1 .pv-num { color: var(--crimson); }
+  .plan.p2 .pv-num { color: var(--olive); }
+  .plan.p3 .pv-num { color: var(--blue); }
+  .plan.p4 .pv-num { color: var(--gold); }
+  .plan.winner {
+    box-shadow: 0 0 0 2.5px var(--olive), 0 6px 18px rgba(92,122,74,0.22);
+    background: linear-gradient(135deg, var(--olive-soft) 0%, var(--paper) 65%);
+    position: relative;
+  }
+  .plan.winner::after {
+    content: '🏆 CHEAPEST'; position: absolute; top: -9px; right: 8px;
+    font-family: 'Outfit', sans-serif; font-size: 9px; letter-spacing: 0.14em;
+    font-weight: 700; background: var(--olive); color: white;
+    padding: 3px 9px; border-radius: 999px;
+    box-shadow: 0 3px 10px rgba(92,122,74,0.4);
+    animation: trophy-glow 2s ease-in-out infinite;
+  }
+  @keyframes trophy-glow {
+    0%, 100% { box-shadow: 0 3px 10px rgba(92,122,74,0.4); }
+    50% { box-shadow: 0 3px 18px rgba(92,122,74,0.75); }
+  }
+
+  /* ============ COMPARE ============ */
+  .compare {
+    flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 270px; gap: 12px;
+  }
+  .compare-chart {
+    padding: 12px 14px; background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
+    display: flex; flex-direction: column; min-height: 0;
+  }
+  .compare-title { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; flex-wrap: wrap; gap: 8px; }
+  .compare-title h3 { font-size: 11px; color: var(--blue); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; }
+  .compare-title .legend { display: flex; gap: 10px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); font-weight: 500; }
+  .legend-item .dot { width: 10px; height: 10px; border-radius: 2px; }
+  .compare-chart canvas { flex: 1; width: 100%; min-height: 100px; }
+  .cp-table {
+    flex-shrink: 0; margin-top: 8px; width: 100%; border-collapse: collapse;
+    font-family: 'Outfit', sans-serif; font-size: 10.5px;
+  }
+  .cp-table th, .cp-table td { padding: 4px 6px; text-align: right; border-bottom: 1px solid var(--line); }
+  .cp-table th {
+    font-weight: 700; color: var(--soft); letter-spacing: 0.08em; text-transform: uppercase;
+    font-size: 9.5px; border-bottom: 1.5px solid var(--ink);
+  }
+  .cp-table td:first-child, .cp-table th:first-child { text-align: left; font-weight: 700; }
+  .cp-table tbody tr:last-child td { border-bottom: none; }
+  .cp-table tbody td.cheap { background: var(--olive-soft); color: var(--olive); font-weight: 700; }
+  .cp-table .row-p1 td:first-child { color: var(--crimson); }
+  .cp-table .row-p2 td:first-child { color: var(--olive); }
+  .cp-table .row-p3 td:first-child { color: var(--blue); }
+  .cp-table .row-p4 td:first-child { color: var(--gold); }
+
+  .insight {
+    padding: 12px 14px; background: var(--gold-soft); border: 1px solid var(--gold); border-radius: 12px;
+    border-left: 3px solid var(--gold); font-family: 'Lora', serif; font-size: 12px; line-height: 1.55;
+    overflow-y: auto; min-height: 0;
+  }
+  .insight h3 { font-family: 'Outfit', sans-serif; font-size: 10px; color: var(--gold); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; margin-bottom: 6px; }
+  .insight p { margin-bottom: 7px; }
+  .insight strong { color: var(--gold); font-weight: 700; }
+  .insight em { color: var(--ink); font-style: italic; }
+  .insight code { background: var(--paper); padding: 1px 5px; border-radius: 4px; font-family: 'Outfit', sans-serif; font-weight: 600; color: var(--blue); font-size: 11px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <div class="head">
+    <div class="brand-left">
+      <div class="code">Module 3</div>
+      <h1>Loan Repayment <em>Lab</em></h1>
+      <span class="tag">Lender's rate sets payments &middot; Borrower's TVOM discounts them</span>
+    </div>
+    <div class="winner-chip" id="winner-chip">
+      ✓ &nbsp;Best for borrower: <span id="winner-name">—</span> &nbsp;PW <span class="num" id="winner-pv">—</span>
+    </div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <div class="ctrl-block">
+      <div class="ctrl-head">
+        <div class="ctrl-label">Loan amount <span class="var">P</span></div>
+        <div class="ctrl-value" id="v-P">$5,000</div>
+      </div>
+      <input type="range" id="s-P" min="1000" max="20000" step="500" value="5000" />
+      <div class="ctrl-bounds"><span>$1,000</span><span>$20,000</span></div>
+    </div>
+
+    <div class="ctrl-block">
+      <div class="ctrl-head">
+        <div class="ctrl-label">Lender's Rate <span class="var">i<sub>L</sub></span></div>
+        <div class="ctrl-value" id="v-iL">8.0%</div>
+      </div>
+      <input type="range" id="s-iL" min="1" max="25" step="0.5" value="8" />
+      <div class="ctrl-bounds"><span>1%</span><span>25%</span></div>
+    </div>
+
+    <div class="ctrl-block">
+      <div class="ctrl-head">
+        <div class="ctrl-label gold">Borrower's TVOM <span class="var">i<sub>M</sub></span></div>
+        <div class="ctrl-value gold" id="v-iM">15.0%</div>
+      </div>
+      <input type="range" id="s-iM" class="gold" min="1" max="25" step="0.5" value="15" />
+      <div class="ctrl-bounds"><span>1%</span><span>25%</span></div>
+    </div>
+
+    <div class="ctrl-block">
+      <div class="ctrl-head">
+        <div class="ctrl-label">Term <span class="var">n</span></div>
+        <div class="ctrl-value" id="v-n">5 yr</div>
+      </div>
+      <input type="range" id="s-n" min="2" max="10" step="1" value="5" />
+      <div class="ctrl-bounds"><span>2 yr</span><span>10 yr</span></div>
+    </div>
+  </div>
+
+  <!-- PLANS — COMPACT STRIP -->
+  <div class="plans">
+
+    <div class="plan p1" id="card-1">
+      <div class="plan-info">
+        <div class="plan-name">Plan 1 &middot; Interest Only</div>
+        <div class="plan-stats-inline">
+          <span>Cash <strong id="p1-cash">—</strong></span>
+          <span>Int <strong id="p1-int">—</strong></span>
+        </div>
+      </div>
+      <div class="pv-block"><span class="pv-lbl">Borrower's PW</span><span class="pv-num" id="p1-pv">—</span></div>
+    </div>
+
+    <div class="plan p2" id="card-2">
+      <div class="plan-info">
+        <div class="plan-name">Plan 2 &middot; Equal Principal</div>
+        <div class="plan-stats-inline">
+          <span>Cash <strong id="p2-cash">—</strong></span>
+          <span>Int <strong id="p2-int">—</strong></span>
+        </div>
+      </div>
+      <div class="pv-block"><span class="pv-lbl">Borrower's PW</span><span class="pv-num" id="p2-pv">—</span></div>
+    </div>
+
+    <div class="plan p3" id="card-3">
+      <div class="plan-info">
+        <div class="plan-name">Plan 3 &middot; Equal Payment</div>
+        <div class="plan-stats-inline">
+          <span>Cash <strong id="p3-cash">—</strong></span>
+          <span>Int <strong id="p3-int">—</strong></span>
+        </div>
+      </div>
+      <div class="pv-block"><span class="pv-lbl">Borrower's PW</span><span class="pv-num" id="p3-pv">—</span></div>
+    </div>
+
+    <div class="plan p4" id="card-4">
+      <div class="plan-info">
+        <div class="plan-name">Plan 4 &middot; Single Payment</div>
+        <div class="plan-stats-inline">
+          <span>Cash <strong id="p4-cash">—</strong></span>
+          <span>Int <strong id="p4-int">—</strong></span>
+        </div>
+      </div>
+      <div class="pv-block"><span class="pv-lbl">Borrower's PW</span><span class="pv-num" id="p4-pv">—</span></div>
+    </div>
+
+  </div>
+
+  <!-- COMPARE -->
+  <div class="compare">
+    <div class="compare-chart">
+      <div class="compare-title">
+        <h3>Borrower's Present Worth vs. Lender's Rate</h3>
+        <div class="legend">
+          <span class="legend-item"><span class="dot" style="background: var(--crimson);"></span>Plan 1</span>
+          <span class="legend-item"><span class="dot" style="background: var(--olive);"></span>Plan 2</span>
+          <span class="legend-item"><span class="dot" style="background: var(--blue);"></span>Plan 3</span>
+          <span class="legend-item"><span class="dot" style="background: var(--gold);"></span>Plan 4</span>
+        </div>
+      </div>
+      <canvas id="pv-chart"></canvas>
+      <table class="cp-table" id="cp-table"></table>
+    </div>
+
+    <div class="insight">
+      <h3>Insight</h3>
+      <p>All four plans pay back the same loan, but their <em>cash flow timing</em> differs. The borrower's PW depends on the lender's rate (which sets the payments) and the borrower's TVOM (which discounts them).</p>
+      <p>The four curves <strong>cross at zero when Lender's Rate = Borrower's TVOM</strong>. There, every plan is equivalent &mdash; the borrower neither gains nor loses in PW.</p>
+      <p>To the <em>left</em> (Lender's Rate &lt; TVOM): borrower benefits, and deferring payments amplifies the win. Preference: <strong>4 ≻ 1 ≻ 3 ≻ 2</strong>.</p>
+      <p>To the <em>right</em> (Lender's Rate &gt; TVOM): borrower loses, and deferring deepens the loss. Preference flips: <strong>2 ≻ 3 ≻ 1 ≻ 4</strong>.</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  function fmt(x) { return '$' + Math.round(x).toLocaleString('en-US'); }
+
+  // ---------- PLAN PAYMENT STREAMS ----------
+  function plan1(P, i, n) {
+    const pays = [];
+    for (let t = 1; t < n; t++) pays.push(P * i);
+    pays.push(P * i + P);
+    return pays;
+  }
+  function plan2(P, i, n) {
+    const pays = []; const prin = P / n;
+    for (let t = 1; t <= n; t++) {
+      const bal = P - prin * (t - 1);
+      pays.push(prin + bal * i);
+    }
+    return pays;
+  }
+  function plan3(P, i, n) {
+    const A = P * (i * Math.pow(1+i, n)) / (Math.pow(1+i, n) - 1);
+    return Array(n).fill(A);
+  }
+  function plan4(P, i, n) {
+    const pays = Array(n).fill(0);
+    pays[n - 1] = P * Math.pow(1+i, n);
+    return pays;
+  }
+
+  function pv(cf, marr) {
+    return cf.reduce((s, v, idx) => s + v / Math.pow(1 + marr, idx + 1), 0);
+  }
+
+  function currentP() { return +$('s-P').value; }
+  function currentIL() { return +$('s-iL').value / 100; }
+  function currentIM() { return +$('s-iM').value / 100; }
+  function currentN() { return +$('s-n').value; }
+
+  // ---------- MINI BAR CHART ----------
+  function drawMini(canvasId, payments, color) {
+    const c = $(canvasId); if (!c) return;
+    const ctx = c.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const W = c.parentElement.clientWidth - 8, H = 60;
+    c.width = W * dpr; c.height = H * dpr; c.style.width = W + 'px'; c.style.height = H + 'px';
+    ctx.scale(dpr, dpr); ctx.clearRect(0, 0, W, H);
+
+    const padL = 4, padR = 4, padT = 4, padB = 12;
+    const iW = W - padL - padR, iH = H - padT - padB;
+    const max = Math.max(...payments, 1);
+    const n = payments.length;
+    const slot = iW / n;
+    const barW = slot * 0.7;
+
+    payments.forEach((p, idx) => {
+      const x = padL + idx * slot + slot * 0.15;
+      const h = (p / max) * iH;
+      const y = padT + iH - h;
+      const g = ctx.createLinearGradient(0, y, 0, y + h);
+      g.addColorStop(0, color); g.addColorStop(1, color + '99');
+      ctx.fillStyle = g;
+      ctx.fillRect(x, y, barW, Math.max(h, 1));
+      ctx.fillStyle = '#5a5247'; ctx.font = '8.5px Outfit, sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('y' + (idx + 1), x + barW / 2, H - 2);
+    });
+  }
+
+  // ---------- PV vs MARR CHART ----------
+  function drawPVChart() {
+    const c = $('pv-chart'); if (!c) return;
+    const ctx = c.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    // use post-layout dims so the table below doesn't fight for space
+    const rect = c.getBoundingClientRect();
+    const W = rect.width || (c.parentElement.clientWidth - 28);
+    const H = rect.height || 200;
+    c.width = W * dpr; c.height = H * dpr; c.style.width = W + 'px'; c.style.height = H + 'px';
+    ctx.scale(dpr, dpr); ctx.clearRect(0, 0, W, H);
+
+    const P = currentP(), iL = currentIL(), iM = currentIM(), n = currentN();
+
+    const padL = 60, padR = 14, padT = 14, padB = 28;
+    const iW = W - padL - padR, iH = H - padT - padB;
+
+    // X-axis = hypothetical lender's rate (varies)
+    // Y-axis = Borrower's PW = P - PV(payments_at_X, discounted at iM = TVOM)
+    // All four curves cross at zero when X = iM (TVOM)
+    const xMin = 0.005, xMax = 0.30;
+    const xs = []; for (let r = xMin; r <= xMax + 0.001; r += 0.005) xs.push(r);
+    const planFns = [plan1, plan2, plan3, plan4];
+    const colors = ['#8a2828', '#5c7a4a', '#1947d6', '#b8860b'];
+    const series = planFns.map((fn, i) => ({
+      plan_fn: fn, color: colors[i],
+      data: xs.map(r => P - pv(fn(P, r, n), iM))
+    }));
+    const allY = series.flatMap(s => s.data);
+    const yMin = Math.min(...allY), yMax = Math.max(...allY);
+    const yPad = (yMax - yMin) * 0.05;
+    const yLo = yMin - yPad, yHi = yMax + yPad;
+
+    const xToPx = x => padL + (x - xMin) / (xMax - xMin) * iW;
+    const yToPx = y => padT + (1 - (y - yLo) / (yHi - yLo)) * iH;
+
+    // shaded background regions: green above zero (borrower wins), red below (borrower loses)
+    if (yLo < 0 && yHi > 0) {
+      const y0 = yToPx(0);
+      // positive PW region (top) — light olive/green
+      const greenGrad = ctx.createLinearGradient(0, padT, 0, y0);
+      greenGrad.addColorStop(0, 'rgba(92, 122, 74, 0.16)');
+      greenGrad.addColorStop(1, 'rgba(92, 122, 74, 0.04)');
+      ctx.fillStyle = greenGrad;
+      ctx.fillRect(padL, padT, iW, y0 - padT);
+      // negative PW region (bottom) — light crimson/red
+      const redGrad = ctx.createLinearGradient(0, y0, 0, H - padB);
+      redGrad.addColorStop(0, 'rgba(138, 40, 40, 0.04)');
+      redGrad.addColorStop(1, 'rgba(138, 40, 40, 0.16)');
+      ctx.fillStyle = redGrad;
+      ctx.fillRect(padL, y0, iW, (H - padB) - y0);
+      // region labels
+      ctx.font = '700 11px Outfit, sans-serif';
+      ctx.fillStyle = 'rgba(92, 122, 74, 0.6)'; ctx.textAlign = 'left';
+      ctx.fillText('BORROWER WINS', padL + 8, padT + 16);
+      ctx.fillStyle = 'rgba(138, 40, 40, 0.6)'; ctx.textAlign = 'right';
+      ctx.fillText('BORROWER LOSES', W - padR - 8, H - padB - 8);
+    }
+
+    // axes
+    ctx.strokeStyle = '#d4cfc0'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, H - padB); ctx.lineTo(W - padR, H - padB); ctx.stroke();
+
+    // gridlines
+    ctx.fillStyle = '#5a5247'; ctx.font = '10px Outfit, sans-serif'; ctx.textAlign = 'right';
+    for (let frac = 0; frac <= 1; frac += 0.25) {
+      const y = padT + frac * iH;
+      const val = yHi - frac * (yHi - yLo);
+      ctx.strokeStyle = '#f0ece0';
+      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
+      ctx.fillText(fmt(val), padL - 4, y + 3);
+    }
+
+    // zero (PW = 0) line — the crossing line
+    if (yLo < 0 && yHi > 0) {
+      ctx.strokeStyle = '#5a5247'; ctx.setLineDash([3,3]); ctx.lineWidth = 1;
+      const y0 = yToPx(0);
+      ctx.beginPath(); ctx.moveTo(padL, y0); ctx.lineTo(W - padR, y0); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // TVOM vertical (the crossing point where all curves = 0)
+    if (iM >= xMin && iM <= xMax) {
+      ctx.strokeStyle = '#b8860b'; ctx.setLineDash([5,3]); ctx.lineWidth = 1.5;
+      const x = xToPx(iM);
+      ctx.beginPath(); ctx.moveTo(x, padT); ctx.lineTo(x, H - padB); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#b8860b'; ctx.font = '600 10px Outfit, sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('TVOM ' + (iM*100).toFixed(1) + '%', x, padT + 10);
+    }
+
+    // Lender's rate vertical (current marker on curves)
+    if (iL >= xMin && iL <= xMax) {
+      ctx.strokeStyle = '#1947d6'; ctx.setLineDash([5,3]); ctx.lineWidth = 1.5;
+      const x = xToPx(iL);
+      ctx.beginPath(); ctx.moveTo(x, padT); ctx.lineTo(x, H - padB); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#1947d6'; ctx.font = '600 10px Outfit, sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('Lender ' + (iL*100).toFixed(1) + '%', x, H - padB - 3);
+    }
+
+    // preference order text annotations
+    ctx.font = '600 10px Outfit, sans-serif'; ctx.fillStyle = '#5a5247';
+    if (iM > xMin + 0.04 && iM < xMax - 0.04) {
+      ctx.textAlign = 'left';
+      const leftX = padL + 6;
+      const leftY = padT + iH * 0.18;
+      ctx.fillText('Borrower benefits', leftX, leftY);
+      ctx.fillText('Pref: 4 ≻ 1 ≻ 3 ≻ 2', leftX, leftY + 12);
+      ctx.textAlign = 'right';
+      const rightX = W - padR - 6;
+      const rightY = padT + iH * 0.82;
+      ctx.fillText('Borrower loses', rightX, rightY);
+      ctx.fillText('Pref: 2 ≻ 3 ≻ 1 ≻ 4', rightX, rightY + 12);
+    }
+
+    // x labels
+    ctx.fillStyle = '#5a5247'; ctx.font = '10px Outfit, sans-serif'; ctx.textAlign = 'center';
+    [0.05, 0.10, 0.15, 0.20, 0.25].forEach(r => {
+      if (r >= xMin && r <= xMax) ctx.fillText((r*100).toFixed(0) + '%', xToPx(r), H - padB + 14);
+    });
+
+    // checkpoint Lender's Rates to mark
+    const CHECKPOINTS = [0.05, 0.10, 0.15, 0.20, 0.25];
+
+    // draw checkpoint vertical guidelines first (subtle)
+    CHECKPOINTS.forEach(cp => {
+      if (cp >= xMin && cp <= xMax) {
+        ctx.strokeStyle = '#e8e3d4'; ctx.setLineDash([2,3]); ctx.lineWidth = 1;
+        const x = xToPx(cp);
+        ctx.beginPath(); ctx.moveTo(x, padT + 12); ctx.lineTo(x, H - padB); ctx.stroke();
+        ctx.setLineDash([]);
+      }
+    });
+
+    // draw lines + checkpoint dots + current MARR dot
+    series.forEach(s => {
+      // line
+      ctx.strokeStyle = s.color; ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      s.data.forEach((v, idx) => {
+        const px = xToPx(xs[idx]), py = yToPx(v);
+        if (idx === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      });
+      ctx.stroke();
+
+      // small checkpoint dots at 5%, 10%, 15%, 20%, 25% (each is borrower's PW at that lender rate)
+      CHECKPOINTS.forEach(cp => {
+        const cpVal = P - pv(s.plan_fn(P, cp, n), iM);
+        if (cp >= xMin && cp <= xMax) {
+          ctx.fillStyle = s.color;
+          ctx.beginPath(); ctx.arc(xToPx(cp), yToPx(cpVal), 3, 0, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.2; ctx.stroke();
+        }
+      });
+
+      // larger dot at current Lender's rate (where borrower actually is)
+      if (iL >= xMin && iL <= xMax) {
+        const v = P - pv(s.plan_fn(P, iL, n), iM);
+        ctx.fillStyle = s.color;
+        ctx.beginPath(); ctx.arc(xToPx(iL), yToPx(v), 5, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+      }
+    });
+
+    // checkpoint x-labels (override standard ones)
+    ctx.fillStyle = '#5a5247'; ctx.font = '10px Outfit, sans-serif'; ctx.textAlign = 'center';
+    CHECKPOINTS.forEach(cp => {
+      if (cp >= xMin && cp <= xMax) {
+        ctx.fillText((cp*100).toFixed(0) + '%', xToPx(cp), H - padB + 14);
+      }
+    });
+  }
+
+  // ---------- CHECKPOINT TABLE ----------
+  // Shows Borrower's PW (P − PV at TVOM) for each plan at sample Lender's Rates
+  function buildCheckpointTable() {
+    const P = currentP(), iM = currentIM(), n = currentN();
+    const plans = [
+      { name: 'Plan 1 · Interest Only', cls: 'row-p1', fn: plan1 },
+      { name: 'Plan 2 · Equal Principal', cls: 'row-p2', fn: plan2 },
+      { name: 'Plan 3 · Equal Payment', cls: 'row-p3', fn: plan3 },
+      { name: 'Plan 4 · Single Payment', cls: 'row-p4', fn: plan4 }
+    ];
+    const cps = [0.05, 0.10, 0.15, 0.20, 0.25];
+    let html = '<thead><tr><th>Plan / Lender</th>';
+    cps.forEach(c => html += '<th>' + (c*100).toFixed(0) + '%</th>');
+    html += '</tr></thead><tbody>';
+    plans.forEach(p => {
+      const vals = cps.map(lr => P - pv(p.fn(P, lr, n), iM));
+      html += '<tr class="' + p.cls + '"><td>' + p.name + '</td>';
+      cps.forEach((lr, i) => {
+        const allVals = plans.map(pp => P - pv(pp.fn(P, lr, n), iM));
+        const isBest = vals[i] === Math.max(...allVals);
+        html += '<td' + (isBest ? ' class="cheap"' : '') + '>' + fmt(vals[i]) + '</td>';
+      });
+      html += '</tr>';
+    });
+    html += '</tbody>';
+    $('cp-table').innerHTML = html;
+  }
+
+  // ---------- RENDER ----------
+  function render() {
+    const P = currentP(), iL = currentIL(), iM = currentIM(), n = currentN();
+    $('v-P').textContent = fmt(P);
+    $('v-iL').textContent = (iL * 100).toFixed(1) + '%';
+    $('v-iM').textContent = (iM * 100).toFixed(1) + '%';
+    $('v-n').textContent = n + ' yr';
+
+    $('s-P').style.setProperty('--pct', ((P - 1000) / 19000 * 100) + '%');
+    $('s-iL').style.setProperty('--pct', ((iL*100 - 1) / 19 * 100) + '%');
+    $('s-iM').style.setProperty('--pct', ((iM*100 - 1) / 24 * 100) + '%');
+    $('s-n').style.setProperty('--pct', ((n - 2) / 8 * 100) + '%');
+
+    const p1 = plan1(P, iL, n);
+    const p2 = plan2(P, iL, n);
+    const p3 = plan3(P, iL, n);
+    const p4 = plan4(P, iL, n);
+    const sum = a => a.reduce((x,y)=>x+y, 0);
+
+    const totals = [sum(p1), sum(p2), sum(p3), sum(p4)];
+    // Borrower's PW = P - PV(payments at current iL, discounted at iM = TVOM)
+    const pws = [P - pv(p1, iM), P - pv(p2, iM), P - pv(p3, iM), P - pv(p4, iM)];
+
+    [1,2,3,4].forEach((k, i) => {
+      $('p' + k + '-cash').textContent = fmt(totals[i]);
+      $('p' + k + '-int').textContent = fmt(totals[i] - P);
+      $('p' + k + '-pv').textContent = fmt(pws[i]);
+    });
+
+    // winner = highest borrower PW (most positive / least negative)
+    const maxIdx = pws.indexOf(Math.max(...pws));
+    const colors = ['crimson', 'olive', 'blue', 'gold'];
+    const names = ['Plan 1 (Interest Only)', 'Plan 2 (Equal Principal)', 'Plan 3 (Equal Payment)', 'Plan 4 (Single Payment)'];
+    const chip = $('winner-chip');
+    chip.className = 'winner-chip ' + colors[maxIdx];
+    const equivalent = (Math.max(...pws) - Math.min(...pws)) < 0.5;
+    if (equivalent) {
+      chip.className = 'winner-chip blue';
+      $('winner-name').textContent = 'All four equivalent';
+      $('winner-pv').textContent = fmt(pws[0]);
+    } else {
+      $('winner-name').textContent = names[maxIdx];
+      $('winner-pv').textContent = fmt(pws[maxIdx]);
+    }
+    [1,2,3,4].forEach((k, i) => {
+      $('card-' + k).classList.toggle('winner', !equivalent && i === maxIdx);
+    });
+
+    buildCheckpointTable();
+    // wait one frame so the table has measured dimensions before sizing the canvas
+    requestAnimationFrame(() => drawPVChart());
+  }
+
+  ['s-P', 's-iL', 's-iM', 's-n'].forEach(id => $(id).addEventListener('input', render));
+  window.addEventListener('resize', render);
+  render();
+</script>
+<div style="position: fixed; bottom: 6px; right: 14px; font-family: 'Outfit', sans-serif; font-size: 10px; color: #8b7355; opacity: 0.7; letter-spacing: 0.04em; pointer-events: none; z-index: 1000;">&copy; Prof. Mohammad Dehghani</div>
+<a href="index.html" title="Back to course platform" style="position:fixed;bottom:10px;left:14px;display:inline-flex;align-items:center;gap:7px;padding:6px 13px 6px 10px;background:rgba(255,255,255,0.94);border:1px solid #e8e3d4;border-radius:999px;font-family:'Outfit',-apple-system,sans-serif;font-size:11px;font-weight:600;color:#1947d6;text-decoration:none;box-shadow:0 4px 14px rgba(25,71,214,0.14);z-index:1000;backdrop-filter:blur(6px);transition:all 0.18s" onmouseover="this.style.background='#eef2ff'" onmouseout="this.style.background='rgba(255,255,255,0.94)'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="11 18 5 12 11 6"/></svg>Back to platform</a>
+</body>
+</html>

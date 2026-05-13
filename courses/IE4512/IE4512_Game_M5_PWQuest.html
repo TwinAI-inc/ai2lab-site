@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Module 5 · Present Worth Quest</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf9f5;
+    --paper: #ffffff;
+    --ink: #1a1a1a;
+    --muted: #5a5247;
+    --border: #e8e3d4;
+    --blue: #1947d6;
+    --blue-deep: #0d2e9e;
+    --blue-light: #4a6fe6;
+    --blue-soft: #eef2ff;
+    --gold: #b8860b;
+    --gold-soft: #faf3e0;
+    --olive: #5c7a4a;
+    --olive-soft: #f0f4ea;
+    --crimson: #8a2828;
+    --crimson-soft: #fdf2f3;
+  }
+  body {
+    background: var(--bg); color: var(--ink); min-height: 100vh; padding: 24px;
+    font-family: 'Outfit', -apple-system, system-ui, 'Segoe UI', sans-serif;
+    font-size: 15px; line-height: 1.6;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; }
+
+  /* ---------- HEADER ---------- */
+  .header {
+    padding: 16px 0 18px; border-top: 4px solid var(--blue); border-bottom: 1px solid #d4cfc0;
+    margin-bottom: 24px; display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap;
+  }
+  .header-left .kicker {
+    font-size: 11px; color: var(--blue); letter-spacing: 0.22em;
+    text-transform: uppercase; margin-bottom: 8px; font-weight: 700;
+  }
+  .header-left .title {
+    font-family: 'Lora', Georgia, serif; font-size: 30px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1;
+  }
+  .header-left .title em { font-style: italic; font-weight: 400; color: var(--blue); }
+  .hud { display: flex; gap: 10px; flex-wrap: wrap; }
+  .hud-chip {
+    padding: 8px 14px; background: var(--paper); border: 1px solid var(--border);
+    border-radius: 999px; font-size: 12px; color: var(--muted);
+    display: flex; align-items: center; gap: 8px; font-weight: 500;
+  }
+  .hud-chip strong { color: var(--blue); font-weight: 700; font-size: 14px; }
+  .hud-chip.gold strong { color: var(--gold); }
+  .hud-chip.olive strong { color: var(--olive); }
+
+  /* ---------- PROGRESS BAR ---------- */
+  .progress {
+    height: 8px; background: var(--border); border-radius: 999px; overflow: hidden;
+    margin-bottom: 22px; position: relative;
+  }
+  .progress-fill {
+    height: 100%; background: linear-gradient(90deg, var(--blue) 0%, var(--blue-light) 100%);
+    border-radius: 999px; transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 0 12px rgba(25,71,214,0.4);
+  }
+
+  /* ---------- CARD ---------- */
+  .card {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 16px;
+    padding: 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 12px 40px rgba(25,71,214,0.06);
+    animation: fade-in 0.4s ease-out;
+  }
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  .stage-label {
+    font-size: 11px; color: var(--gold); letter-spacing: 0.22em;
+    text-transform: uppercase; font-weight: 700; margin-bottom: 12px;
+  }
+  .stage-title {
+    font-family: 'Lora', Georgia, serif; font-size: 28px; font-weight: 700;
+    letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 16px;
+  }
+  .stage-title em { font-style: italic; color: var(--blue); font-weight: 400; }
+
+  .interp {
+    background: var(--blue-soft); border-left: 3px solid var(--blue);
+    padding: 16px 20px; margin-bottom: 24px; border-radius: 0 12px 12px 0;
+    font-family: 'Lora', Georgia, serif; font-size: 15px; line-height: 1.75; color: var(--ink); font-style: italic;
+  }
+  .interp strong { color: var(--blue); font-style: normal; font-weight: 700; }
+
+  .formula {
+    display: inline-block; padding: 4px 10px; background: var(--paper);
+    border: 1px solid var(--blue); border-radius: 6px; font-family: 'Lora', Georgia, serif;
+    font-style: italic; color: var(--blue); margin: 0 2px;
+  }
+
+  /* ---------- BEAUTIFUL BUTTON ---------- */
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 14px 28px; font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 600;
+    letter-spacing: 0.06em; text-transform: uppercase; border: none; border-radius: 12px;
+    cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); outline: none;
+    background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
+    color: white; box-shadow: 0 6px 18px rgba(25,71,214,0.28), inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(25,71,214,0.4), inset 0 1px 0 rgba(255,255,255,0.25);
+  }
+  .btn:active { transform: translateY(0); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+  .btn.secondary {
+    background: var(--paper); color: var(--blue);
+    box-shadow: 0 0 0 1.5px var(--blue) inset, 0 4px 12px rgba(25,71,214,0.08);
+  }
+  .btn.secondary:hover {
+    background: var(--blue-soft);
+    box-shadow: 0 0 0 1.5px var(--blue) inset, 0 8px 20px rgba(25,71,214,0.18);
+  }
+  .btn.gold {
+    background: linear-gradient(135deg, var(--gold) 0%, #d4a017 100%);
+    box-shadow: 0 6px 18px rgba(184,134,11,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 24px; }
+
+  /* ---------- BEAUTIFUL SLIDER ---------- */
+  .slider-block { margin-bottom: 22px; }
+  .slider-head {
+    display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px;
+  }
+  .slider-label {
+    font-family: 'Lora', Georgia, serif; font-size: 16px; font-style: italic; color: var(--ink);
+  }
+  .slider-label .var { color: var(--blue); font-weight: 600; }
+  .slider-value {
+    font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 700; color: var(--blue);
+    font-variant-numeric: tabular-nums; letter-spacing: -0.01em;
+  }
+  .slider-wrap {
+    position: relative; padding: 10px 0;
+  }
+  input[type="range"] {
+    -webkit-appearance: none; appearance: none;
+    width: 100%; height: 8px; outline: none;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--blue) 0%, var(--blue) var(--pct, 50%), #e8e3d4 var(--pct, 50%), #e8e3d4 100%);
+    transition: background 0.05s linear;
+    cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: white;
+    border: 3px solid var(--blue);
+    cursor: grab;
+    box-shadow: 0 4px 14px rgba(25,71,214,0.35), 0 1px 4px rgba(0,0,0,0.08);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.15); box-shadow: 0 6px 18px rgba(25,71,214,0.5);
+  }
+  input[type="range"]::-webkit-slider-thumb:active {
+    transform: scale(1.25); cursor: grabbing;
+    background: var(--blue);
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: white; border: 3px solid var(--blue);
+    cursor: grab; box-shadow: 0 4px 14px rgba(25,71,214,0.35);
+  }
+  .slider-bounds {
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: var(--muted); margin-top: 6px; font-weight: 500;
+  }
+
+  /* ---------- INPUT ---------- */
+  input[type="text"] {
+    width: 100%; padding: 16px 20px; font-family: 'Outfit', sans-serif; font-size: 18px;
+    background: var(--paper); border: 2px solid var(--border); border-radius: 12px;
+    color: var(--ink); outline: none; transition: all 0.2s;
+  }
+  input[type="text"]:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 4px rgba(25,71,214,0.12);
+  }
+
+  /* ---------- CHOICES ---------- */
+  .choices { display: grid; gap: 10px; margin-top: 14px; }
+  .choice {
+    padding: 14px 18px; background: var(--paper); border: 2px solid var(--border);
+    border-radius: 12px; cursor: pointer; transition: all 0.15s;
+    display: flex; align-items: center; gap: 14px; font-size: 15px; color: var(--ink);
+  }
+  .choice:hover { border-color: var(--blue-light); background: var(--blue-soft); }
+  .choice.selected { border-color: var(--blue); background: var(--blue-soft); }
+  .choice.correct { border-color: var(--olive); background: var(--olive-soft); color: var(--olive); }
+  .choice.wrong { border-color: var(--crimson); background: var(--crimson-soft); color: var(--crimson); }
+  .choice.disabled { pointer-events: none; opacity: 0.6; }
+  .choice .letter {
+    width: 28px; height: 28px; border-radius: 50%; background: var(--blue-soft);
+    color: var(--blue); display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px; flex-shrink: 0;
+  }
+  .choice.selected .letter { background: var(--blue); color: white; }
+  .choice.correct .letter { background: var(--olive); color: white; }
+  .choice.wrong .letter { background: var(--crimson); color: white; }
+
+  /* ---------- FEEDBACK ---------- */
+  .feedback {
+    margin-top: 20px; padding: 16px 20px; border-radius: 12px; border-left: 3px solid;
+    font-family: 'Lora', Georgia, serif; font-size: 15px; line-height: 1.7; display: none;
+    animation: fade-in 0.3s ease-out;
+  }
+  .feedback.show { display: block; }
+  .feedback.correct { background: var(--olive-soft); border-color: var(--olive); color: #3d5530; }
+  .feedback.wrong { background: var(--crimson-soft); border-color: var(--crimson); color: #6b1f1f; }
+  .feedback strong { font-style: normal; font-weight: 700; }
+
+  /* ---------- CHART ---------- */
+  .chart-box {
+    margin-top: 16px; padding: 20px; background: var(--paper); border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .chart-title {
+    font-size: 11px; color: var(--blue); letter-spacing: 0.18em; text-transform: uppercase;
+    font-weight: 700; margin-bottom: 12px;
+  }
+  canvas { width: 100%; max-width: 100%; display: block; }
+
+  /* ---------- BADGES ---------- */
+  .badge-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 14px; margin-top: 20px;
+  }
+  .badge {
+    padding: 18px 14px; background: var(--paper); border: 2px solid var(--border);
+    border-radius: 16px; text-align: center; transition: all 0.3s;
+    opacity: 0.35; filter: grayscale(0.7);
+  }
+  .badge.earned {
+    opacity: 1; filter: none; border-color: var(--gold);
+    background: linear-gradient(135deg, var(--gold-soft) 0%, var(--paper) 100%);
+    box-shadow: 0 8px 24px rgba(184,134,11,0.18);
+    animation: badge-pop 0.5s cubic-bezier(0.16, 1, 0.5, 1);
+  }
+  @keyframes badge-pop {
+    0% { transform: scale(0.7); opacity: 0; }
+    60% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .badge .icon { font-size: 36px; margin-bottom: 8px; }
+  .badge .name {
+    font-family: 'Lora', Georgia, serif; font-style: italic; font-size: 14px;
+    color: var(--ink); font-weight: 600;
+  }
+  .badge .desc { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  /* ---------- WELCOME ---------- */
+  .welcome {
+    text-align: center; padding: 40px 20px;
+  }
+  .welcome .big-title {
+    font-family: 'Lora', Georgia, serif; font-size: 44px; font-weight: 700; line-height: 1.1;
+    margin-bottom: 12px; letter-spacing: -0.02em;
+  }
+  .welcome .big-title em { font-style: italic; color: var(--blue); font-weight: 400; }
+  .welcome .lead {
+    color: var(--muted); font-size: 17px; font-style: italic; max-width: 520px; margin: 0 auto 28px;
+    font-family: 'Lora', Georgia, serif; line-height: 1.6;
+  }
+  .welcome .input-row {
+    display: flex; gap: 10px; max-width: 480px; margin: 0 auto; flex-wrap: wrap;
+  }
+  .welcome .input-row input { flex: 1; min-width: 200px; }
+  .meta-row {
+    margin-top: 28px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+    font-size: 12px; color: var(--muted);
+  }
+  .meta-row span strong { color: var(--blue); font-weight: 700; }
+
+  /* ---------- RESULTS ---------- */
+  .results .big-num {
+    font-family: 'Lora', Georgia, serif; font-size: 64px; font-weight: 700;
+    color: var(--blue); line-height: 1; letter-spacing: -0.03em;
+  }
+  .summary-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 14px; margin: 20px 0;
+  }
+  .summary-cell {
+    padding: 14px 16px; background: var(--paper); border: 1px solid var(--border);
+    border-radius: 12px; text-align: center;
+  }
+  .summary-cell .lbl {
+    font-size: 10.5px; color: var(--muted); letter-spacing: 0.16em;
+    text-transform: uppercase; font-weight: 600; margin-bottom: 4px;
+  }
+  .summary-cell .num {
+    font-family: 'Lora', Georgia, serif; font-size: 28px; font-weight: 700; color: var(--blue);
+  }
+
+  /* ---------- ANIM ---------- */
+  .pulse { animation: pulse 1.4s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="header-left">
+      <div class="kicker">Module 5 &middot; Quest</div>
+      <div class="title">Present Worth <em>Quest</em></div>
+    </div>
+    <div class="hud" id="hud" style="display: none;">
+      <div class="hud-chip">👤 <span id="hud-name">—</span></div>
+      <div class="hud-chip"><span>XP</span><strong id="hud-xp">0</strong></div>
+      <div class="hud-chip gold"><span>🔥 Streak</span><strong id="hud-streak">0</strong></div>
+      <div class="hud-chip olive"><span>Stage</span><strong id="hud-stage">0</strong>/5</div>
+    </div>
+  </div>
+
+  <div class="progress"><div class="progress-fill" id="progress" style="width: 0%"></div></div>
+
+  <div id="app"></div>
+
+</div>
+
+<script>
+  // ============ STATE ============
+  const STATE = {
+    name: '',
+    stage: 0,           // 0=welcome, 1..5=stages, 6=results
+    xp: 0,
+    streak: 0,
+    bestStreak: 0,
+    answers: [],        // {stage, correct, firstTry}
+    badges: new Set(),
+    attempts: 0
+  };
+
+  const TOTAL_STAGES = 5;
+
+  // ============ HELPERS ============
+  const $ = id => document.getElementById(id);
+  const el = (tag, props = {}, children = []) => {
+    const e = document.createElement(tag);
+    Object.entries(props).forEach(([k, v]) => {
+      if (k === 'class') e.className = v;
+      else if (k === 'html') e.innerHTML = v;
+      else if (k.startsWith('on')) e.addEventListener(k.slice(2).toLowerCase(), v);
+      else e.setAttribute(k, v);
+    });
+    children.forEach(c => e.appendChild(c));
+    return e;
+  };
+  const fmt = x => (x < 0 ? '−$' : '$') + Math.abs(x).toLocaleString('en-US', {maximumFractionDigits: 0});
+  const npv = (cf, i) => cf.reduce((s, c, t) => s + c / Math.pow(1+i, t), 0);
+
+  // ============ HUD / PROGRESS ============
+  function updateHUD() {
+    if (STATE.stage > 0) $('hud').style.display = 'flex';
+    $('hud-name').textContent = STATE.name || '—';
+    $('hud-xp').textContent = STATE.xp.toLocaleString();
+    $('hud-streak').textContent = STATE.streak;
+    $('hud-stage').textContent = Math.min(STATE.stage, TOTAL_STAGES);
+    const pct = STATE.stage === 0 ? 0 : Math.min(100, (STATE.stage / TOTAL_STAGES) * 100);
+    $('progress').style.width = pct + '%';
+  }
+
+  // ============ ANSWER LOGIC ============
+  function recordAnswer(correct, stage) {
+    STATE.attempts++;
+    if (correct) {
+      const bonus = STATE.streak * 20;
+      STATE.xp += 100 + bonus;
+      STATE.streak++;
+      STATE.bestStreak = Math.max(STATE.bestStreak, STATE.streak);
+      STATE.answers.push({stage, correct: true, firstTry: STATE.attempts === 1 || true});
+    } else {
+      STATE.streak = 0;
+      STATE.answers.push({stage, correct: false, firstTry: false});
+    }
+    updateHUD();
+  }
+
+  function awardBadges() {
+    const correctCount = STATE.answers.filter(a => a.correct).length;
+    if (correctCount >= 1) STATE.badges.add('starter');
+    if (STATE.bestStreak >= 3) STATE.badges.add('roll');
+    if (correctCount === TOTAL_STAGES && STATE.attempts === TOTAL_STAGES) STATE.badges.add('perfect');
+    if (STATE.xp >= 600) STATE.badges.add('xp_high');
+    if (correctCount >= 4) STATE.badges.add('master');
+  }
+
+  // ============ STAGES ============
+  function renderStage() {
+    updateHUD();
+    const app = $('app');
+    app.innerHTML = '';
+    if (STATE.stage === 0) renderWelcome(app);
+    else if (STATE.stage === 1) renderS1Concept(app);
+    else if (STATE.stage === 2) renderS2Single(app);
+    else if (STATE.stage === 3) renderS3Compare(app);
+    else if (STATE.stage === 4) renderS4Sensitivity(app);
+    else if (STATE.stage === 5) renderS5Boss(app);
+    else renderResults(app);
+  }
+
+  // -------------- STAGE 0: WELCOME --------------
+  function renderWelcome(app) {
+    const card = el('div', {class: 'card'});
+    card.innerHTML = `
+      <div class="welcome">
+        <div class="big-title">Welcome to <em>PW Quest</em></div>
+        <div class="lead">A 5-stage interactive challenge to master <em>Present Worth Analysis</em>. Earn XP, build streaks, unlock badges. Designed for ~20 minutes of focused work.</div>
+        <div class="input-row">
+          <input type="text" id="name-in" placeholder="Enter your name to begin" maxlength="30" />
+          <button class="btn" id="start-btn" disabled>Start &nbsp;&rarr;</button>
+        </div>
+        <div class="meta-row">
+          <span><strong>5</strong> stages</span>
+          <span><strong>~20</strong> min</span>
+          <span><strong>5</strong> badges to earn</span>
+          <span>XP &amp; streak tracking</span>
+        </div>
+      </div>
+    `;
+    app.appendChild(card);
+    const inp = $('name-in'), btn = $('start-btn');
+    inp.focus();
+    inp.addEventListener('input', () => { btn.disabled = !inp.value.trim(); });
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter' && !btn.disabled) btn.click(); });
+    btn.addEventListener('click', () => {
+      STATE.name = inp.value.trim();
+      STATE.stage = 1;
+      renderStage();
+    });
+  }
+
+  // -------------- STAGE 1: CONCEPT (Live PV slider) --------------
+  function renderS1Concept(app) {
+    const card = el('div', {class: 'card'});
+    card.innerHTML = `
+      <div class="stage-label">Stage 1 of 5 &middot; Concept</div>
+      <div class="stage-title">What is <em>Present Worth</em>?</div>
+      <div class="interp"><strong>Present Worth (PW)</strong> tells you what a future cash flow is worth <em>today</em>, after discounting at an interest rate <span class="formula">i</span>. Formula: <span class="formula">PW = F / (1+i)<sup>n</sup></span>. The slider below shows how the PW of $1,000 received in 5 years shrinks as <span class="formula">i</span> rises.</div>
+
+      <div class="slider-block">
+        <div class="slider-head">
+          <div class="slider-label">Interest rate <span class="var">i</span></div>
+          <div class="slider-value" id="s1-val">10%</div>
+        </div>
+        <div class="slider-wrap">
+          <input type="range" id="s1-slider" min="0" max="25" step="0.5" value="10" />
+        </div>
+        <div class="slider-bounds"><span>0%</span><span>25%</span></div>
+      </div>
+
+      <div class="chart-box">
+        <div class="chart-title">PW of $1,000 received in 5 years</div>
+        <div style="display: flex; align-items: center; gap: 24px; flex-wrap: wrap;">
+          <div style="font-family: 'Lora', serif; font-size: 48px; font-weight: 700; color: var(--blue); font-style: italic;" id="s1-pw">$620</div>
+          <canvas id="s1-chart" width="600" height="160"></canvas>
+        </div>
+      </div>
+
+      <div style="margin-top: 26px; padding: 18px 20px; background: var(--gold-soft); border-radius: 12px; border-left: 3px solid var(--gold);">
+        <div style="font-family: 'Lora', Georgia, serif; font-style: italic; font-size: 15px; line-height: 1.7;">📝 <strong style="color: var(--gold); font-style: normal;">Question:</strong> If <em>i = 8%</em>, the PW of $1,000 received in 5 years is closest to:</div>
+      </div>
+      <div class="choices" id="s1-choices"></div>
+
+      <div class="feedback" id="s1-fb"></div>
+      <div class="btn-row" id="s1-actions"></div>
+    `;
+    app.appendChild(card);
+
+    const slider = $('s1-slider'), val = $('s1-val'), pw = $('s1-pw');
+    function update() {
+      const i = +slider.value;
+      const p = 1000 / Math.pow(1 + i/100, 5);
+      val.textContent = i.toFixed(1) + '%';
+      pw.textContent = '$' + p.toFixed(0);
+      slider.style.setProperty('--pct', (i / 25 * 100) + '%');
+      drawS1Chart(i);
+    }
+    slider.addEventListener('input', update);
+    update();
+
+    const opts = [
+      {t: '$1,000', v: false},
+      {t: '$680', v: true},
+      {t: '$870', v: false},
+      {t: '$540', v: false}
+    ];
+    renderChoices('s1-choices', opts, choice => {
+      const fb = $('s1-fb');
+      if (choice.v) {
+        fb.className = 'feedback show correct';
+        fb.innerHTML = '✓ <strong>Correct!</strong> &nbsp; PW = 1000 / (1.08)<sup>5</sup> ≈ $680. The discount cuts ~32% off the future amount.';
+        recordAnswer(true, 1);
+      } else {
+        fb.className = 'feedback show wrong';
+        fb.innerHTML = '✗ <strong>Not quite.</strong> &nbsp; Compute 1000 / (1.08)<sup>5</sup>. Move the slider to 8% to verify.';
+        recordAnswer(false, 1);
+      }
+      $('s1-actions').appendChild(continueBtn());
+    });
+  }
+
+  function drawS1Chart(currI) {
+    const c = $('s1-chart'); if (!c) return;
+    const ctx = c.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const W = 600, H = 160;
+    c.width = W * dpr; c.height = H * dpr; c.style.width = W + 'px'; c.style.height = H + 'px';
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, W, H);
+
+    const padL = 36, padR = 12, padT = 10, padB = 26;
+    const iW = W - padL - padR, iH = H - padT - padB;
+    const xs = []; for (let v = 0; v <= 25; v += 0.5) xs.push(v);
+    const ys = xs.map(i => 1000 / Math.pow(1 + i/100, 5));
+    const yMax = 1000, yMin = 0;
+    const xToPx = x => padL + (x / 25) * iW;
+    const yToPx = y => padT + (1 - (y - yMin) / (yMax - yMin)) * iH;
+
+    // axes
+    ctx.strokeStyle = '#d4cfc0'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, H - padB); ctx.lineTo(W - padR, H - padB); ctx.stroke();
+
+    // gradient fill
+    const grad = ctx.createLinearGradient(0, padT, 0, H - padB);
+    grad.addColorStop(0, 'rgba(25,71,214,0.25)'); grad.addColorStop(1, 'rgba(25,71,214,0.02)');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.moveTo(xToPx(xs[0]), yToPx(ys[0]));
+    xs.forEach((x, i) => ctx.lineTo(xToPx(x), yToPx(ys[i])));
+    ctx.lineTo(xToPx(xs[xs.length-1]), H - padB);
+    ctx.lineTo(xToPx(xs[0]), H - padB);
+    ctx.closePath(); ctx.fill();
+
+    // line
+    ctx.strokeStyle = '#1947d6'; ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    xs.forEach((x, i) => { const px = xToPx(x), py = yToPx(ys[i]); if (i===0) ctx.moveTo(px, py); else ctx.lineTo(px, py); });
+    ctx.stroke();
+
+    // current marker
+    const cx = xToPx(currI), cy = yToPx(1000 / Math.pow(1 + currI/100, 5));
+    ctx.fillStyle = '#b8860b';
+    ctx.beginPath(); ctx.arc(cx, cy, 6, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+
+    // labels
+    ctx.fillStyle = '#5a5247'; ctx.font = '10px Outfit, sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText('$1000', padL - 4, padT + 8);
+    ctx.fillText('$0', padL - 4, H - padB);
+    ctx.textAlign = 'center';
+    ctx.fillText('0%', padL, H - padB + 14);
+    ctx.fillText('25%', W - padR, H - padB + 14);
+  }
+
+  // -------------- STAGE 2: SINGLE PROJECT --------------
+  function renderS2Single(app) {
+    const card = el('div', {class: 'card'});
+    card.innerHTML = `
+      <div class="stage-label">Stage 2 of 5 &middot; Single Project</div>
+      <div class="stage-title">Analyze <em>Project Alpha</em></div>
+      <div class="interp">A project requires <strong>$10,000</strong> upfront and returns <strong>$3,000 per year for 5 years</strong>. The PW depends on your <strong>MARR</strong> &mdash; the minimum return you require. Slide the MARR below and watch the live NPV chart.</div>
+
+      <div class="slider-block">
+        <div class="slider-head">
+          <div class="slider-label">MARR <span class="var">i</span></div>
+          <div class="slider-value" id="s2-val">10.0%</div>
+        </div>
+        <div class="slider-wrap">
+          <input type="range" id="s2-slider" min="0" max="30" step="0.5" value="10" />
+        </div>
+        <div class="slider-bounds"><span>0%</span><span>30%</span></div>
+      </div>
+
+      <div class="chart-box">
+        <div style="display: flex; gap: 24px; align-items: center; flex-wrap: wrap;">
+          <div>
+            <div style="font-size: 10.5px; color: var(--muted); letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">NPV @ MARR</div>
+            <div style="font-family: 'Lora', serif; font-size: 44px; font-weight: 700; line-height: 1;" id="s2-npv">$1,372</div>
+            <div style="margin-top: 8px; font-size: 12px; color: var(--muted); font-style: italic;" id="s2-verdict">Acceptable: NPV &gt; 0</div>
+          </div>
+          <canvas id="s2-chart" width="540" height="180"></canvas>
+        </div>
+      </div>
+
+      <div style="margin-top: 26px; padding: 18px 20px; background: var(--gold-soft); border-radius: 12px; border-left: 3px solid var(--gold);">
+        <div style="font-family: 'Lora', Georgia, serif; font-style: italic; font-size: 15px; line-height: 1.7;">📝 <strong style="color: var(--gold); font-style: normal;">Question:</strong> What is the NPV of this project at <em>MARR = 8%</em>?</div>
+      </div>
+      <div class="choices" id="s2-choices"></div>
+
+      <div class="feedback" id="s2-fb"></div>
+      <div class="btn-row" id="s2-actions"></div>
+    `;
+    app.appendChild(card);
+
+    const cf = [-10000, 3000, 3000, 3000, 3000, 3000];
+    const slider = $('s2-slider'), val = $('s2-val'), n = $('s2-npv'), v = $('s2-verdict');
+    function update() {
+      const i = +slider.value;
+      const p = npv(cf, i/100);
+      val.textContent = i.toFixed(1) + '%';
+      n.textContent = fmt(p);
+      n.style.color = p >= 0 ? 'var(--blue)' : 'var(--crimson)';
+      v.textContent = p >= 0 ? 'Acceptable: NPV ≥ 0' : 'Reject: NPV < 0';
+      slider.style.setProperty('--pct', (i / 30 * 100) + '%');
+      drawS2Chart(i, cf);
+    }
+    slider.addEventListener('input', update); update();
+
+    const trueNPV = npv(cf, 0.08);
+    const opts = [
+      {t: '−$420', v: false},
+      {t: '$1,978', v: Math.abs(trueNPV - 1978) < 50},
+      {t: '$1,372', v: false},
+      {t: '$2,810', v: false}
+    ];
+    renderChoices('s2-choices', opts, choice => {
+      const fb = $('s2-fb');
+      if (choice.v) {
+        fb.className = 'feedback show correct';
+        fb.innerHTML = '✓ <strong>Right.</strong> &nbsp; NPV at 8% ≈ ' + fmt(trueNPV) + '. Annuity of $3k/yr discounted by 8% over 5 yrs = $11,978 PV; minus $10k cost = ~$1,978.';
+        recordAnswer(true, 2);
+      } else {
+        fb.className = 'feedback show wrong';
+        fb.innerHTML = '✗ <strong>Off.</strong> &nbsp; Slide the MARR to 8% above to see the actual value.';
+        recordAnswer(false, 2);
+      }
+      $('s2-actions').appendChild(continueBtn());
+    });
+  }
+
+  function drawS2Chart(currI, cf) {
+    const c = $('s2-chart'); if (!c) return;
+    const ctx = c.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const W = 540, H = 180;
+    c.width = W * dpr; c.height = H * dpr; c.style.width = W + 'px'; c.style.height = H + 'px';
+    ctx.scale(dpr, dpr); ctx.clearRect(0, 0, W, H);
+
+    const padL = 50, padR = 12, padT = 12, padB = 28;
+    const iW = W - padL - padR, iH = H - padT - padB;
+    const xs = []; for (let v = 0; v <= 30; v += 0.5) xs.push(v);
+    const ys = xs.map(i => npv(cf, i/100));
+    const yMax = Math.max(...ys, 0), yMin = Math.min(...ys, 0);
+    const xToPx = x => padL + (x / 30) * iW;
+    const yToPx = y => padT + (1 - (y - yMin) / (yMax - yMin || 1)) * iH;
+
+    ctx.strokeStyle = '#d4cfc0'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, H - padB); ctx.lineTo(W - padR, H - padB); ctx.stroke();
+
+    if (yMin < 0 && yMax > 0) {
+      ctx.strokeStyle = '#8b7355'; ctx.setLineDash([3,3]);
+      const zy = yToPx(0);
+      ctx.beginPath(); ctx.moveTo(padL, zy); ctx.lineTo(W - padR, zy); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    ctx.strokeStyle = '#1947d6'; ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    xs.forEach((x, i) => { const px = xToPx(x), py = yToPx(ys[i]); if (i===0) ctx.moveTo(px, py); else ctx.lineTo(px, py); });
+    ctx.stroke();
+
+    const cx = xToPx(currI), cy = yToPx(npv(cf, currI/100));
+    ctx.fillStyle = '#b8860b';
+    ctx.beginPath(); ctx.arc(cx, cy, 6, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+
+    ctx.fillStyle = '#5a5247'; ctx.font = '10px Outfit, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(fmt(yMax), padL - 4, padT + 8);
+    ctx.fillText(fmt(yMin), padL - 4, H - padB);
+    ctx.textAlign = 'center';
+    ctx.fillText('i', (padL + W - padR) / 2, H - padB + 16);
+  }
+
+  // -------------- STAGE 3: COMPARE --------------
+  function renderS3Compare(app) {
+    const projects = [
+      { name: 'Project A', cf: [-15000, 4500, 4500, 4500, 4500, 4500] },
+      { name: 'Project B', cf: [-22000, 5500, 6000, 6500, 7000, 7500] },
+      { name: 'Project C', cf: [-10000, 3000, 3500, 4000, 4500, 5000] }
+    ];
+    const card = el('div', {class: 'card'});
+    card.innerHTML = `
+      <div class="stage-label">Stage 3 of 5 &middot; Comparison</div>
+      <div class="stage-title">The <em>Three Way Showdown</em></div>
+      <div class="interp">Three projects compete for limited capital. Slide the <strong>MARR</strong> and watch the ranking shift live. <em>Pick the project with the highest NPV at MARR = 12%.</em></div>
+
+      <div class="slider-block">
+        <div class="slider-head">
+          <div class="slider-label">MARR <span class="var">i</span></div>
+          <div class="slider-value" id="s3-val">12.0%</div>
+        </div>
+        <div class="slider-wrap">
+          <input type="range" id="s3-slider" min="0" max="25" step="0.5" value="12" />
+        </div>
+        <div class="slider-bounds"><span>0%</span><span>25%</span></div>
+      </div>
+
+      <div class="chart-box">
+        <div class="chart-title">NPV by project (live)</div>
+        <canvas id="s3-chart" width="600" height="220"></canvas>
+      </div>
+
+      <div style="margin-top: 26px; padding: 18px 20px; background: var(--gold-soft); border-radius: 12px; border-left: 3px solid var(--gold);">
+        <div style="font-family: 'Lora', Georgia, serif; font-style: italic; font-size: 15px; line-height: 1.7;">📝 <strong style="color: var(--gold); font-style: normal;">Question:</strong> Which project has the highest NPV at <em>MARR = 12%</em>?</div>
+      </div>
+      <div class="choices" id="s3-choices"></div>
+
+      <div class="feedback" id="s3-fb"></div>
+      <div class="btn-row" id="s3-actions"></div>
+    `;
+    app.appendChild(card);
+
+    const slider = $('s3-slider'), val = $('s3-val');
+    function update() {
+      const i = +slider.value;
+      val.textContent = i.toFixed(1) + '%';
+      slider.style.setProperty('--pct', (i / 25 * 100) + '%');
+      drawS3Chart(i, projects);
+    }
+    slider.addEventListener('input', update); update();
+
+    const at12 = projects.map(p => ({name: p.name, v: npv(p.cf, 0.12)}));
+    const winnerName = at12.reduce((a, b) => a.v > b.v ? a : b).name;
+    renderChoices('s3-choices', projects.map(p => ({t: p.name, v: p.name === winnerName})), choice => {
+      const fb = $('s3-fb');
+      const txt = at12.map(a => a.name + ' = ' + fmt(a.v)).join(' &middot; ');
+      if (choice.v) {
+        fb.className = 'feedback show correct';
+        fb.innerHTML = '✓ <strong>Sharp pick.</strong> &nbsp; At MARR=12%: ' + txt + '. ' + winnerName + ' wins.';
+        recordAnswer(true, 3);
+      } else {
+        fb.className = 'feedback show wrong';
+        fb.innerHTML = '✗ <strong>Not the winner.</strong> &nbsp; At MARR=12%: ' + txt + '.';
+        recordAnswer(false, 3);
+      }
+      $('s3-actions').appendChild(continueBtn());
+    });
+  }
+
+  function drawS3Chart(currI, projects) {
+    const c = $('s3-chart'); if (!c) return;
+    const ctx = c.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const W = 600, H = 220;
+    c.width = W * dpr; c.height = H * dpr; c.style.width = W + 'px'; c.style.height = H + 'px';
+    ctx.scale(dpr, dpr); ctx.clearRect(0, 0, W, H);
+
+    const padL = 50, padR = 100, padT = 12, padB = 28;
+    const iW = W - padL - padR, iH = H - padT - padB;
+    const xs = []; for (let v = 0; v <= 25; v += 0.5) xs.push(v);
+    const allY = projects.flatMap(p => xs.map(i => npv(p.cf, i/100)));
+    const yMax = Math.max(...allY, 0), yMin = Math.min(...allY, 0);
+    const xToPx = x => padL + (x / 25) * iW;
+    const yToPx = y => padT + (1 - (y - yMin) / (yMax - yMin || 1)) * iH;
+    const colors = ['#1947d6', '#b8860b', '#5c7a4a'];
+
+    ctx.strokeStyle = '#d4cfc0'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, H - padB); ctx.lineTo(W - padR, H - padB); ctx.stroke();
+
+    if (yMin < 0 && yMax > 0) {
+      ctx.strokeStyle = '#8b7355'; ctx.setLineDash([3,3]);
+      ctx.beginPath(); ctx.moveTo(padL, yToPx(0)); ctx.lineTo(W - padR, yToPx(0)); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // current marr line
+    ctx.strokeStyle = '#1947d6'; ctx.setLineDash([4, 4]); ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(xToPx(currI), padT); ctx.lineTo(xToPx(currI), H - padB); ctx.stroke();
+    ctx.setLineDash([]);
+
+    projects.forEach((p, idx) => {
+      ctx.strokeStyle = colors[idx]; ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      xs.forEach((x, i) => { const px = xToPx(x), py = yToPx(npv(p.cf, x/100)); if (i===0) ctx.moveTo(px, py); else ctx.lineTo(px, py); });
+      ctx.stroke();
+      // legend
+      ctx.fillStyle = colors[idx]; ctx.fillRect(W - padR + 8, padT + idx * 22, 12, 12);
+      ctx.fillStyle = '#1a1a1a'; ctx.font = '12px Outfit, sans-serif'; ctx.textAlign = 'left';
+      ctx.fillText(p.name, W - padR + 24, padT + idx * 22 + 10);
+      // marker at currI
+      const cy = yToPx(npv(p.cf, currI/100));
+      ctx.beginPath(); ctx.arc(xToPx(currI), cy, 5, 0, Math.PI * 2);
+      ctx.fillStyle = colors[idx]; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+    });
+
+    ctx.fillStyle = '#5a5247'; ctx.font = '10px Outfit, sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText(fmt(yMax), padL - 4, padT + 8);
+    ctx.fillText(fmt(yMin), padL - 4, H - padB);
+  }
+
+  // -------------- STAGE 4: SENSITIVITY --------------
+  function renderS4Sensitivity(app) {
+    const card = el('div', {class: 'card'});
+    card.innerHTML = `
+      <div class="stage-label">Stage 4 of 5 &middot; Sensitivity</div>
+      <div class="stage-title">Which Lever <em>Moves NPV Most</em>?</div>
+      <div class="interp">Each parameter is shifted ±20% from its base value. The longer the bar, the more sensitive NPV is to that input. <em>Identify the parameter with the largest swing.</em></div>
+
+      <div class="chart-box">
+        <div class="chart-title">Tornado: NPV swing for ±20% change</div>
+        <canvas id="s4-chart" width="700" height="240"></canvas>
+      </div>
+
+      <div style="margin-top: 26px; padding: 18px 20px; background: var(--gold-soft); border-radius: 12px; border-left: 3px solid var(--gold);">
+        <div style="font-family: 'Lora', Georgia, serif; font-style: italic; font-size: 15px; line-height: 1.7;">📝 <strong style="color: var(--gold); font-style: normal;">Question:</strong> Which parameter, when changed ±20%, swings NPV the most?</div>
+      </div>
+      <div class="choices" id="s4-choices"></div>
+
+      <div class="feedback" id="s4-fb"></div>
+      <div class="btn-row" id="s4-actions"></div>
+    `;
+    app.appendChild(card);
+
+    const base = { inv: 50000, cf: 12000, n: 8, sal: 5000, marr: 0.10 };
+    const baseNPV = -base.inv + Array.from({length: base.n}, (_, t) => base.cf / Math.pow(1+base.marr, t+1)).reduce((a,b)=>a+b,0) + base.sal/Math.pow(1+base.marr, base.n);
+
+    const swings = [
+      { label: 'Annual Cash Flow', test: m => {
+          const cf = base.cf * m;
+          return -base.inv + Array.from({length: base.n}, (_, t) => cf / Math.pow(1+base.marr, t+1)).reduce((a,b)=>a+b,0) + base.sal/Math.pow(1+base.marr, base.n);
+        }},
+      { label: 'Initial Investment', test: m => {
+          const inv = base.inv * m;
+          return -inv + Array.from({length: base.n}, (_, t) => base.cf / Math.pow(1+base.marr, t+1)).reduce((a,b)=>a+b,0) + base.sal/Math.pow(1+base.marr, base.n);
+        }},
+      { label: 'MARR', test: m => {
+          const i = base.marr * m;
+          return -base.inv + Array.from({length: base.n}, (_, t) => base.cf / Math.pow(1+i, t+1)).reduce((a,b)=>a+b,0) + base.sal/Math.pow(1+i, base.n);
+        }},
+      { label: 'Salvage Value', test: m => {
+          const sal = base.sal * m;
+          return -base.inv + Array.from({length: base.n}, (_, t) => base.cf / Math.pow(1+base.marr, t+1)).reduce((a,b)=>a+b,0) + sal/Math.pow(1+base.marr, base.n);
+        }},
+    ].map(s => {
+      const lo = s.test(0.8), hi = s.test(1.2);
+      return {label: s.label, lo, hi, swing: Math.abs(hi - lo)};
+    }).sort((a, b) => b.swing - a.swing);
+
+    drawS4Tornado(swings, baseNPV);
+
+    const winner = swings[0].label;
+    renderChoices('s4-choices', swings.map(s => ({t: s.label, v: s.label === winner})), choice => {
+      const fb = $('s4-fb');
+      if (choice.v) {
+        fb.className = 'feedback show correct';
+        fb.innerHTML = '✓ <strong>Sharp Eye.</strong> &nbsp; <em>' + winner + '</em> swings NPV by ' + fmt(swings[0].swing) + ' &mdash; the most leverage. Use it for risk planning.';
+        recordAnswer(true, 4);
+      } else {
+        fb.className = 'feedback show wrong';
+        fb.innerHTML = '✗ <strong>Look at the longest bar.</strong> &nbsp; The widest range = highest sensitivity. Answer: <em>' + winner + '</em>.';
+        recordAnswer(false, 4);
+      }
+      $('s4-actions').appendChild(continueBtn());
+    });
+  }
+
+  function drawS4Tornado(swings, base) {
+    const c = $('s4-chart'); if (!c) return;
+    const ctx = c.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const W = 700, H = 240;
+    c.width = W * dpr; c.height = H * dpr; c.style.width = W + 'px'; c.style.height = H + 'px';
+    ctx.scale(dpr, dpr); ctx.clearRect(0, 0, W, H);
+
+    const padL = 130, padR = 30, padT = 16, padB = 30;
+    const iW = W - padL - padR, iH = H - padT - padB;
+    const allVals = swings.flatMap(s => [s.lo, s.hi]); allVals.push(base);
+    const xMin = Math.min(...allVals), xMax = Math.max(...allVals);
+    const xToPx = x => padL + (x - xMin) / (xMax - xMin) * iW;
+    const baseX = xToPx(base);
+    const rowH = iH / swings.length;
+
+    // base line
+    ctx.strokeStyle = '#1947d6'; ctx.setLineDash([4,4]); ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(baseX, padT); ctx.lineTo(baseX, H - padB); ctx.stroke();
+    ctx.setLineDash([]);
+
+    swings.forEach((s, i) => {
+      const y = padT + i * rowH + rowH * 0.2;
+      const h = rowH * 0.55;
+      const lo = Math.min(s.lo, s.hi), hi = Math.max(s.lo, s.hi);
+      const xLo = xToPx(lo), xHi = xToPx(hi);
+      // bar split at base
+      ctx.fillStyle = '#fdf2f3'; ctx.fillRect(xLo, y, baseX - xLo, h);
+      ctx.fillStyle = '#eef2ff'; ctx.fillRect(baseX, y, xHi - baseX, h);
+      ctx.strokeStyle = '#8a2828'; ctx.lineWidth = 1.5; ctx.strokeRect(xLo, y, baseX - xLo, h);
+      ctx.strokeStyle = '#1947d6'; ctx.strokeRect(baseX, y, xHi - baseX, h);
+      // label
+      ctx.fillStyle = '#1a1a1a'; ctx.font = '600 13px Outfit, sans-serif'; ctx.textAlign = 'right';
+      ctx.fillText(s.label, padL - 8, y + h / 2 + 4);
+      // values
+      ctx.fillStyle = '#5a5247'; ctx.font = '10px Outfit, sans-serif';
+      ctx.textAlign = 'right'; ctx.fillText(fmt(lo), xLo - 3, y + h / 2 + 3);
+      ctx.textAlign = 'left'; ctx.fillText(fmt(hi), xHi + 3, y + h / 2 + 3);
+    });
+
+    ctx.fillStyle = '#1947d6'; ctx.font = '600 11px Outfit, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('Base NPV ' + fmt(base), baseX, H - padB + 14);
+  }
+
+  // -------------- STAGE 5: BOSS --------------
+  function renderS5Boss(app) {
+    const card = el('div', {class: 'card'});
+    card.innerHTML = `
+      <div class="stage-label">Stage 5 of 5 &middot; Final Boss</div>
+      <div class="stage-title">The <em>Capstone Decision</em></div>
+      <div class="interp">A factory must choose between two upgrades. <strong>Plan A</strong>: invest $80k, get $20k/yr for 6 yrs, salvage $10k. <strong>Plan B</strong>: invest $50k, get $14k/yr for 6 yrs, salvage $5k. Slide the MARR to find the <em>break-even rate</em> &mdash; where NPV<sub>A</sub> = NPV<sub>B</sub>.</div>
+
+      <div class="slider-block">
+        <div class="slider-head">
+          <div class="slider-label">MARR <span class="var">i</span></div>
+          <div class="slider-value" id="s5-val">10.0%</div>
+        </div>
+        <div class="slider-wrap">
+          <input type="range" id="s5-slider" min="0" max="30" step="0.25" value="10" />
+        </div>
+        <div class="slider-bounds"><span>0%</span><span>30%</span></div>
+      </div>
+
+      <div class="chart-box">
+        <div style="display: flex; gap: 22px; flex-wrap: wrap; align-items: center;">
+          <div>
+            <div style="font-size: 10.5px; color: var(--blue); letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;">Plan A</div>
+            <div style="font-family: 'Lora', serif; font-size: 28px; font-weight: 700;" id="s5-a">$0</div>
+          </div>
+          <div>
+            <div style="font-size: 10.5px; color: var(--gold); letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;">Plan B</div>
+            <div style="font-family: 'Lora', serif; font-size: 28px; font-weight: 700;" id="s5-b">$0</div>
+          </div>
+          <div>
+            <div style="font-size: 10.5px; color: var(--olive); letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;">Δ A − B</div>
+            <div style="font-family: 'Lora', serif; font-size: 28px; font-weight: 700;" id="s5-d">$0</div>
+          </div>
+          <canvas id="s5-chart" width="380" height="160"></canvas>
+        </div>
+      </div>
+
+      <div style="margin-top: 26px; padding: 18px 20px; background: var(--gold-soft); border-radius: 12px; border-left: 3px solid var(--gold);">
+        <div style="font-family: 'Lora', Georgia, serif; font-style: italic; font-size: 15px; line-height: 1.7;">📝 <strong style="color: var(--gold); font-style: normal;">Question:</strong> At approximately what MARR do <em>Plan A</em> and <em>Plan B</em> have <em>equal NPV</em>?</div>
+      </div>
+      <div class="choices" id="s5-choices"></div>
+
+      <div class="feedback" id="s5-fb"></div>
+      <div class="btn-row" id="s5-actions"></div>
+    `;
+    app.appendChild(card);
+
+    const cfA = [-80000, 20000, 20000, 20000, 20000, 20000, 30000];
+    const cfB = [-50000, 14000, 14000, 14000, 14000, 14000, 19000];
+    const slider = $('s5-slider'), val = $('s5-val');
+    function update() {
+      const i = +slider.value;
+      val.textContent = i.toFixed(2) + '%';
+      const a = npv(cfA, i/100), b = npv(cfB, i/100);
+      $('s5-a').textContent = fmt(a);
+      $('s5-b').textContent = fmt(b);
+      $('s5-d').textContent = fmt(a - b);
+      $('s5-d').style.color = (a - b) >= 0 ? 'var(--olive)' : 'var(--crimson)';
+      slider.style.setProperty('--pct', (i / 30 * 100) + '%');
+      drawS5(i, cfA, cfB);
+    }
+    slider.addEventListener('input', update); update();
+
+    // find break-even
+    let be = 0;
+    for (let i = 0; i <= 30; i += 0.05) {
+      if (Math.abs(npv(cfA, i/100) - npv(cfB, i/100)) < Math.abs(npv(cfA, be/100) - npv(cfB, be/100))) be = i;
+    }
+    const opts = [
+      {t: '~ 4%', v: Math.abs(be - 4) < 1.5},
+      {t: '~ 9%', v: Math.abs(be - 9) < 1.5},
+      {t: '~ 15%', v: Math.abs(be - 15) < 1.5},
+      {t: '~ 22%', v: Math.abs(be - 22) < 1.5}
+    ];
+    renderChoices('s5-choices', opts, choice => {
+      const fb = $('s5-fb');
+      if (choice.v) {
+        fb.className = 'feedback show correct';
+        fb.innerHTML = '✓ <strong>Champion.</strong> &nbsp; The plans cross around <em>' + be.toFixed(1) + '%</em>. Below that rate, Plan A wins; above, Plan B wins.';
+        recordAnswer(true, 5);
+      } else {
+        fb.className = 'feedback show wrong';
+        fb.innerHTML = '✗ <strong>Crossing point</strong> is around <em>' + be.toFixed(1) + '%</em>. That\'s where the Δ line in the chart hits zero.';
+        recordAnswer(false, 5);
+      }
+      $('s5-actions').appendChild(continueBtn(true));
+    });
+  }
+
+  function drawS5(currI, cfA, cfB) {
+    const c = $('s5-chart'); if (!c) return;
+    const ctx = c.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const W = 380, H = 160;
+    c.width = W * dpr; c.height = H * dpr; c.style.width = W + 'px'; c.style.height = H + 'px';
+    ctx.scale(dpr, dpr); ctx.clearRect(0, 0, W, H);
+
+    const padL = 36, padR = 8, padT = 10, padB = 24;
+    const iW = W - padL - padR, iH = H - padT - padB;
+    const xs = []; for (let v = 0; v <= 30; v += 0.5) xs.push(v);
+    const yA = xs.map(i => npv(cfA, i/100)), yB = xs.map(i => npv(cfB, i/100));
+    const all = [...yA, ...yB];
+    const yMax = Math.max(...all, 0), yMin = Math.min(...all, 0);
+    const xToPx = x => padL + (x / 30) * iW;
+    const yToPx = y => padT + (1 - (y - yMin) / (yMax - yMin || 1)) * iH;
+
+    ctx.strokeStyle = '#d4cfc0'; ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, H - padB); ctx.lineTo(W - padR, H - padB); ctx.stroke();
+    if (yMin < 0 && yMax > 0) {
+      ctx.strokeStyle = '#8b7355'; ctx.setLineDash([3,3]);
+      ctx.beginPath(); ctx.moveTo(padL, yToPx(0)); ctx.lineTo(W - padR, yToPx(0)); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    [['#1947d6', yA], ['#b8860b', yB]].forEach(([color, ys]) => {
+      ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.beginPath();
+      xs.forEach((x, i) => { const px = xToPx(x), py = yToPx(ys[i]); if (i===0) ctx.moveTo(px, py); else ctx.lineTo(px, py); });
+      ctx.stroke();
+    });
+
+    ctx.strokeStyle = '#1947d6'; ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(xToPx(currI), padT); ctx.lineTo(xToPx(currI), H - padB); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // -------------- RESULTS --------------
+  function renderResults(app) {
+    awardBadges();
+    const correct = STATE.answers.filter(a => a.correct).length;
+    const card = el('div', {class: 'card results'});
+    const accuracy = Math.round((correct / TOTAL_STAGES) * 100);
+    const verdict = accuracy === 100 ? 'Flawless! You crushed it.' :
+                    accuracy >= 80 ? 'Strong run. Solid grasp of PW analysis.' :
+                    accuracy >= 60 ? 'Good effort. Review the misses, then try again.' :
+                    'Keep practicing. Replay to lock it in.';
+
+    card.innerHTML = `
+      <div class="welcome" style="padding: 20px 0;">
+        <div class="big-title">Quest <em>Complete</em></div>
+        <div class="lead">Well done, <em>${escapeHTML(STATE.name)}</em>. ${verdict}</div>
+        <div style="margin: 22px 0;"><span class="big-num">${STATE.xp.toLocaleString()}</span> <span style="font-size: 22px; color: var(--muted); margin-left: 6px;">XP</span></div>
+      </div>
+
+      <div class="summary-grid">
+        <div class="summary-cell"><div class="lbl">Correct</div><div class="num">${correct} / ${TOTAL_STAGES}</div></div>
+        <div class="summary-cell"><div class="lbl">Accuracy</div><div class="num">${accuracy}%</div></div>
+        <div class="summary-cell"><div class="lbl">Best Streak</div><div class="num">${STATE.bestStreak}</div></div>
+        <div class="summary-cell"><div class="lbl">Badges</div><div class="num">${STATE.badges.size} / 5</div></div>
+      </div>
+
+      <div class="stage-label" style="margin-top: 30px;">Badges</div>
+      <div class="badge-grid">
+        ${badgeHTML('starter', '🥉', 'Initiate', 'Complete a stage')}
+        ${badgeHTML('roll', '🥈', 'On a Roll', '3-streak')}
+        ${badgeHTML('master', '🎯', 'PW Master', '4+ correct')}
+        ${badgeHTML('xp_high', '💎', 'XP Hunter', 'Earn 600+ XP')}
+        ${badgeHTML('perfect', '🏆', 'Perfect Run', 'All correct first try')}
+      </div>
+
+      <div style="margin-top: 26px; padding: 16px 20px; background: var(--blue-soft); border-radius: 12px; border-left: 3px solid var(--blue); font-family: 'Lora', Georgia, serif; font-size: 14.5px; line-height: 1.75; font-style: italic;">
+        <strong style="color: var(--blue); font-style: normal;">Instructor insight:</strong> Aggregate accuracy across the class shows where students struggle. Stages 3 (project ranking) and 4 (sensitivity) are typical sticking points &mdash; flag those for follow-up discussion.
+      </div>
+
+      <div class="btn-row">
+        <button class="btn" onclick="STATE.stage=0;STATE.xp=0;STATE.streak=0;STATE.bestStreak=0;STATE.answers=[];STATE.badges=new Set();STATE.attempts=0;renderStage()">↻ Replay</button>
+        <button class="btn secondary" onclick="window.print()">Print Results</button>
+      </div>
+    `;
+    app.appendChild(card);
+  }
+
+  function badgeHTML(key, icon, name, desc) {
+    const earned = STATE.badges.has(key) ? ' earned' : '';
+    return `<div class="badge${earned}"><div class="icon">${icon}</div><div class="name">${name}</div><div class="desc">${desc}</div></div>`;
+  }
+
+  function escapeHTML(s) {
+    const d = document.createElement('div'); d.textContent = s; return d.innerHTML;
+  }
+
+  // -------------- COMMON --------------
+  function renderChoices(containerId, opts, onPick) {
+    const c = $(containerId);
+    const letters = ['A', 'B', 'C', 'D'];
+    opts.forEach((o, i) => {
+      const ch = el('div', {class: 'choice'}, []);
+      ch.innerHTML = '<div class="letter">' + letters[i] + '</div><div>' + o.t + '</div>';
+      ch.addEventListener('click', () => {
+        const all = c.querySelectorAll('.choice');
+        all.forEach(x => x.classList.add('disabled'));
+        ch.classList.add(o.v ? 'correct' : 'wrong', 'selected');
+        // mark right answer if wrong
+        if (!o.v) {
+          opts.forEach((oo, ii) => { if (oo.v) all[ii].classList.add('correct'); });
+        }
+        onPick(o);
+      });
+      c.appendChild(ch);
+    });
+  }
+
+  function continueBtn(last) {
+    const b = el('button', {class: 'btn'});
+    b.innerHTML = (last ? 'See Results' : 'Continue') + ' &nbsp;&rarr;';
+    b.addEventListener('click', () => {
+      STATE.stage++;
+      STATE.attempts = 0;
+      renderStage();
+    });
+    return b;
+  }
+
+  // ============ INIT ============
+  renderStage();
+</script>
+<div style="position: fixed; bottom: 6px; right: 14px; font-family: 'Outfit', sans-serif; font-size: 10px; color: #8b7355; opacity: 0.7; letter-spacing: 0.04em; pointer-events: none; z-index: 1000;">&copy; Prof. Mohammad Dehghani</div>
+<a href="index.html" title="Back to course platform" style="position:fixed;bottom:10px;left:14px;display:inline-flex;align-items:center;gap:7px;padding:6px 13px 6px 10px;background:rgba(255,255,255,0.94);border:1px solid #e8e3d4;border-radius:999px;font-family:'Outfit',-apple-system,sans-serif;font-size:11px;font-weight:600;color:#1947d6;text-decoration:none;box-shadow:0 4px 14px rgba(25,71,214,0.14);z-index:1000;backdrop-filter:blur(6px);transition:all 0.18s" onmouseover="this.style.background='#eef2ff'" onmouseout="this.style.background='rgba(255,255,255,0.94)'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="11 18 5 12 11 6"/></svg>Back to platform</a>
+</body>
+</html>

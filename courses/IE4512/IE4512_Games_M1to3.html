@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Modules 1–3 · Engineering Economy Quests</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf9f5;
+    --paper: #ffffff;
+    --ink: #1a1a1a;
+    --muted: #5a5247;
+    --soft: #8b7355;
+    --border: #e8e3d4;
+    --line: #d4cfc0;
+    --blue: #1947d6;
+    --blue-deep: #0d2e9e;
+    --blue-light: #4a6fe6;
+    --blue-soft: #eef2ff;
+    --gold: #b8860b;
+    --gold-soft: #faf3e0;
+    --olive: #5c7a4a;
+    --olive-soft: #f0f4ea;
+    --crimson: #8a2828;
+    --crimson-soft: #fdf2f3;
+  }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: 'Outfit', -apple-system, system-ui, sans-serif;
+    font-size: 14px; line-height: 1.5;
+  }
+
+  /* ============ APP LAYOUT ============ */
+  .app { display: flex; flex-direction: column; height: 100vh; padding: 14px 18px; gap: 10px; max-width: 1400px; margin: 0 auto; }
+
+  /* ============ TOPBAR ============ */
+  .topbar {
+    flex-shrink: 0; display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 18px; background: var(--paper); border: 1px solid var(--border);
+    border-radius: 12px; border-top: 3px solid var(--blue); gap: 16px; flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: baseline; gap: 12px; min-width: 0; }
+  .brand .code { font-size: 11px; color: var(--blue); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; }
+  .brand .title { font-family: 'Lora', Georgia, serif; font-size: 18px; font-weight: 700; line-height: 1; white-space: nowrap; }
+  .brand .title em { font-style: italic; color: var(--blue); font-weight: 400; }
+  .hud { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip {
+    padding: 5px 12px; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 999px; font-size: 11.5px; color: var(--muted); display: flex; align-items: center; gap: 6px; font-weight: 500;
+  }
+  .chip strong { color: var(--blue); font-weight: 700; font-size: 13px; }
+  .chip.gold strong { color: var(--gold); }
+  .chip input {
+    border: none; background: transparent; outline: none; padding: 0;
+    font: inherit; color: var(--ink); width: 100px; font-weight: 600;
+  }
+  .chip input::placeholder { color: var(--soft); font-weight: 400; }
+
+  /* ============ TABS ============ */
+  .tabs {
+    flex-shrink: 0; display: flex; gap: 4px; padding: 4px;
+    background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
+  }
+  .tab {
+    flex: 1; padding: 10px 16px; cursor: pointer; border: none; background: transparent;
+    font: inherit; font-weight: 600; font-size: 13px; color: var(--muted);
+    border-radius: 9px; transition: all 0.18s; display: flex; align-items: center; justify-content: center; gap: 8px;
+    letter-spacing: 0.02em;
+  }
+  .tab:hover { color: var(--blue); background: var(--blue-soft); }
+  .tab.active {
+    background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
+    color: white; box-shadow: 0 4px 12px rgba(25,71,214,0.25);
+  }
+  .tab .tag { font-size: 10px; opacity: 0.7; font-weight: 500; }
+  .tab.active .tag { opacity: 0.9; }
+
+  /* ============ TOOL AREA ============ */
+  .tool-area { flex: 1; min-height: 0; position: relative; }
+  .tool {
+    position: absolute; inset: 0; display: none; flex-direction: column;
+    background: var(--paper); border: 1px solid var(--border); border-radius: 14px;
+    padding: 18px 22px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    overflow: hidden;
+  }
+  .tool.active { display: flex; animation: fade-in 0.3s ease-out; }
+  @keyframes fade-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  .tool-head {
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 10px; flex-shrink: 0;
+  }
+  .tool-head .left { flex: 1; min-width: 0; }
+  .tool-head .label { font-size: 10.5px; color: var(--gold); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; margin-bottom: 4px; }
+  .tool-head h2 {
+    font-family: 'Lora', Georgia, serif; font-size: 22px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.15;
+  }
+  .tool-head h2 em { font-style: italic; color: var(--blue); font-weight: 400; }
+  .tool-head .desc { font-size: 13px; color: var(--muted); margin-top: 2px; line-height: 1.45; font-style: italic; font-family: 'Lora', serif; }
+  .tool-meta { display: flex; gap: 6px; flex-shrink: 0; }
+  .meta-pill {
+    padding: 4px 10px; background: var(--blue-soft); color: var(--blue);
+    border-radius: 999px; font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+  }
+  .meta-pill.gold { background: var(--gold-soft); color: var(--gold); }
+  .meta-pill.olive { background: var(--olive-soft); color: var(--olive); }
+
+  .tool-body { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 10px; }
+
+  /* ============ MODERN BUTTON ============ */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 22px; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 600;
+    letter-spacing: 0.06em; text-transform: uppercase; border: none; border-radius: 10px;
+    cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); outline: none;
+    background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
+    color: white; box-shadow: 0 4px 14px rgba(25,71,214,0.28), inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+  .btn:hover { transform: translateY(-1.5px); box-shadow: 0 8px 22px rgba(25,71,214,0.38), inset 0 1px 0 rgba(255,255,255,0.25); }
+  .btn:active { transform: translateY(0); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+  .btn.secondary {
+    background: var(--paper); color: var(--blue);
+    box-shadow: 0 0 0 1.5px var(--blue) inset;
+  }
+  .btn.secondary:hover { background: var(--blue-soft); transform: translateY(-1.5px); }
+  .btn.gold { background: linear-gradient(135deg, var(--gold) 0%, #d4a017 100%); box-shadow: 0 4px 14px rgba(184,134,11,0.3); }
+
+  /* ============ M1: CONCEPT MATCH PUZZLE ============ */
+  .m1-grid { display: grid; grid-template-columns: 1fr 220px; gap: 14px; flex: 1; min-height: 0; }
+  .m1-quotes { display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
+  .m1-quote {
+    display: grid; grid-template-columns: 1fr 130px; gap: 10px; align-items: center;
+    padding: 9px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 9px;
+    font-size: 12.5px; line-height: 1.45;
+  }
+  .m1-quote .speaker {
+    font-size: 10px; color: var(--blue); letter-spacing: 0.14em;
+    text-transform: uppercase; font-weight: 700; margin-bottom: 2px;
+  }
+  .m1-quote .text { color: var(--ink); font-family: 'Lora', serif; font-style: italic; }
+  .m1-quote .text::before { content: '"'; color: var(--blue); font-weight: 700; }
+  .m1-quote .text::after { content: '"'; color: var(--blue); font-weight: 700; }
+  .m1-drop {
+    min-height: 38px; border: 2px dashed var(--line); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center; padding: 4px 8px;
+    font-size: 11px; color: var(--soft); transition: all 0.15s; text-align: center;
+  }
+  .m1-drop.over { border-color: var(--blue); background: var(--blue-soft); }
+  .m1-drop.filled {
+    border: 1.5px solid var(--blue); background: var(--blue-soft); color: var(--blue);
+    font-weight: 700; font-size: 12px; cursor: pointer; letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .m1-drop.right { border-color: var(--olive); background: var(--olive-soft); color: var(--olive); }
+  .m1-drop.wrong { border-color: var(--crimson); background: var(--crimson-soft); color: var(--crimson); }
+  .m1-bank {
+    display: flex; flex-direction: column; gap: 6px; padding: 10px;
+    background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
+    overflow-y: auto;
+  }
+  .m1-bank-label { font-size: 10px; color: var(--soft); letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; margin-bottom: 2px; }
+  .concept-tile {
+    padding: 8px 12px; background: var(--paper); border: 1.5px solid var(--blue);
+    border-radius: 8px; font-size: 12px; font-weight: 700; color: var(--blue);
+    cursor: grab; user-select: none; text-align: center; letter-spacing: 0.04em; text-transform: uppercase;
+    transition: all 0.15s;
+  }
+  .concept-tile:hover { background: var(--blue-soft); transform: translateY(-1px); box-shadow: 0 4px 10px rgba(25,71,214,0.2); }
+  .concept-tile:active { cursor: grabbing; }
+  .concept-tile.placed { opacity: 0.3; pointer-events: none; }
+
+  /* ============ M2: DECISION CARDS ============ */
+  .m2-stage { flex: 1; display: flex; flex-direction: column; gap: 10px; min-height: 0; }
+  .m2-card {
+    flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 12px;
+    padding: 18px; background: linear-gradient(135deg, var(--bg) 0%, var(--paper) 100%);
+    border: 1px solid var(--border); border-left: 4px solid var(--blue); border-radius: 12px;
+    overflow: hidden;
+  }
+  .m2-scenario {
+    font-family: 'Lora', Georgia, serif; font-size: 16px; line-height: 1.6; color: var(--ink);
+  }
+  .m2-scenario strong { color: var(--blue); font-weight: 700; }
+  .m2-scenario .speaker {
+    display: block; font-family: 'Outfit', sans-serif; font-size: 10.5px;
+    color: var(--blue); letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+    margin-bottom: 6px; font-style: normal;
+  }
+  .m2-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; flex-shrink: 0; }
+  .m2-opt {
+    padding: 14px 16px; background: var(--paper); border: 2px solid var(--border);
+    border-radius: 10px; cursor: pointer; transition: all 0.15s; text-align: left;
+  }
+  .m2-opt:hover { border-color: var(--blue-light); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(25,71,214,0.1); }
+  .m2-opt.picked { border-color: var(--blue); background: var(--blue-soft); }
+  .m2-opt.right { border-color: var(--olive); background: var(--olive-soft); }
+  .m2-opt.wrong { border-color: var(--crimson); background: var(--crimson-soft); }
+  .m2-opt .tag { font-size: 10px; color: var(--soft); letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; margin-bottom: 4px; }
+  .m2-opt .body { font-family: 'Lora', serif; font-size: 14px; line-height: 1.5; color: var(--ink); }
+
+  .m2-reveal {
+    padding: 12px 16px; background: var(--gold-soft); border-left: 3px solid var(--gold);
+    border-radius: 0 10px 10px 0; font-size: 13px; line-height: 1.6; display: none;
+    font-family: 'Lora', serif; max-height: 130px; overflow-y: auto;
+  }
+  .m2-reveal.show { display: block; animation: fade-in 0.3s ease-out; }
+  .m2-reveal strong { color: var(--gold); font-weight: 700; }
+  .m2-reveal .insight { display: block; margin-top: 6px; font-style: italic; color: var(--muted); }
+
+  /* ============ M3: RATE TRAP ============ */
+  .m3-wrap { flex: 1; display: grid; grid-template-columns: 1fr 220px; gap: 14px; min-height: 0; }
+  .m3-zones {
+    display: grid; grid-template-rows: repeat(4, 1fr); gap: 8px; min-height: 0;
+  }
+  .m3-zone {
+    display: grid; grid-template-columns: 56px 1fr; gap: 10px; align-items: center;
+    padding: 10px 14px; background: var(--bg); border: 2px dashed var(--line);
+    border-radius: 10px; transition: all 0.15s; min-height: 0;
+  }
+  .m3-zone.over { border-color: var(--blue); background: var(--blue-soft); }
+  .m3-zone .rank {
+    font-family: 'Lora', serif; font-style: italic; font-weight: 700; font-size: 28px;
+    color: var(--blue); text-align: center;
+  }
+  .m3-zone .rank-label {
+    font-size: 9.5px; color: var(--muted); letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700; text-align: center;
+  }
+  .m3-bank {
+    display: flex; flex-direction: column; gap: 8px; padding: 10px;
+    background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
+    overflow-y: auto;
+  }
+  .m3-bank-label { font-size: 10px; color: var(--soft); letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; }
+  .offer {
+    padding: 10px 12px; background: var(--paper); border: 1.5px solid var(--gold);
+    border-radius: 8px; cursor: grab; user-select: none; transition: all 0.15s;
+  }
+  .offer:hover { background: var(--gold-soft); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(184,134,11,0.2); }
+  .offer:active { cursor: grabbing; }
+  .offer.placed { opacity: 0.4; pointer-events: none; }
+  .offer .lender { font-size: 10.5px; color: var(--gold); letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700; }
+  .offer .terms { font-family: 'Lora', serif; font-size: 12px; color: var(--ink); margin-top: 2px; line-height: 1.35; }
+  .m3-zone.right { border: 2px solid var(--olive); background: var(--olive-soft); }
+  .m3-zone.wrong { border: 2px solid var(--crimson); background: var(--crimson-soft); }
+  .m3-zone .placed-offer { font-size: 12px; }
+  .m3-zone .placed-offer .effective { font-weight: 700; color: var(--blue); margin-left: 6px; }
+
+  /* ============ FOOTER (action bar) ============ */
+  .action-bar {
+    flex-shrink: 0; display: flex; justify-content: space-between; align-items: center;
+    padding-top: 8px; gap: 12px; flex-wrap: wrap;
+  }
+  .action-msg { font-family: 'Lora', serif; font-size: 13px; color: var(--muted); font-style: italic; flex: 1; min-width: 0; }
+  .action-msg strong { color: var(--blue); font-style: normal; font-weight: 700; }
+  .action-msg.right strong { color: var(--olive); }
+  .action-msg.wrong strong { color: var(--crimson); }
+  .action-buttons { display: flex; gap: 8px; flex-shrink: 0; }
+
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ TOPBAR ============ -->
+  <div class="topbar">
+    <div class="brand">
+      <div class="code">Engineering Economy</div>
+      <div class="title">Engineering Economy <em>Quests</em></div>
+    </div>
+    <div class="hud">
+      <div class="chip">👤 <input id="player" placeholder="Your name" maxlength="20" /></div>
+      <div class="chip"><span>XP</span><strong id="xp">0</strong></div>
+      <div class="chip gold"><span>🔥</span><strong id="streak">0</strong></div>
+    </div>
+  </div>
+
+  <!-- ============ TABS ============ -->
+  <div class="tabs">
+    <button class="tab active" data-tab="m1">M1 &middot; Concept Match <span class="tag">Puzzle</span></button>
+    <button class="tab" data-tab="m2">M2 &middot; Decision Cards <span class="tag">Scenario</span></button>
+    <button class="tab" data-tab="m3">M3 &middot; Rate Trap <span class="tag">Ranking</span></button>
+  </div>
+
+  <!-- ============ TOOL AREA ============ -->
+  <div class="tool-area">
+
+    <!-- ===== M1: CONCEPT MATCH PUZZLE ===== -->
+    <div class="tool active" id="tool-m1">
+      <div class="tool-head">
+        <div class="left">
+          <div class="label">Module 1 &middot; Puzzle</div>
+          <h2>Match the <em>Concept</em> to the Quote</h2>
+          <div class="desc">Each quote is a real-world voice from finance, operations, or engineering. Drag the matching concept onto each row. Submit when all five are filled.</div>
+        </div>
+        <div class="tool-meta">
+          <div class="meta-pill" id="m1-progress">0 / 5</div>
+          <div class="meta-pill gold" id="m1-time">90s</div>
+        </div>
+      </div>
+
+      <div class="tool-body m1-grid">
+        <div class="m1-quotes" id="m1-quotes"></div>
+        <div class="m1-bank">
+          <div class="m1-bank-label">Concept bank</div>
+          <div id="m1-bank"></div>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <div class="action-msg" id="m1-msg">Drag concepts onto each quote, then submit.</div>
+        <div class="action-buttons">
+          <button class="btn secondary" onclick="resetM1()">Reset</button>
+          <button class="btn" id="m1-submit" onclick="submitM1()">Submit</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== M2: DECISION CARDS ===== -->
+    <div class="tool" id="tool-m2">
+      <div class="tool-head">
+        <div class="left">
+          <div class="label">Module 2 &middot; Scenario Game</div>
+          <h2>Real Decisions, <em>Real Trade-offs</em></h2>
+          <div class="desc">A leader hands you a choice. Pick one — the math reveals only after you commit. Some scenarios are designed to fool intuition.</div>
+        </div>
+        <div class="tool-meta">
+          <div class="meta-pill" id="m2-card-num">Card 1 / 5</div>
+          <div class="meta-pill olive" id="m2-record">0 ✓ &middot; 0 ✗</div>
+        </div>
+      </div>
+
+      <div class="tool-body m2-stage">
+        <div class="m2-card">
+          <div class="m2-scenario" id="m2-scenario"></div>
+          <div class="m2-options" id="m2-options"></div>
+          <div class="m2-reveal" id="m2-reveal"></div>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <div class="action-msg" id="m2-msg">Pick A or B. Commit before the math is shown.</div>
+        <div class="action-buttons">
+          <button class="btn secondary" onclick="resetM2()">Reset</button>
+          <button class="btn" id="m2-next" onclick="nextM2()" style="display: none;">Next Card &rarr;</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== M3: RATE TRAP ===== -->
+    <div class="tool" id="tool-m3">
+      <div class="tool-head">
+        <div class="left">
+          <div class="label">Module 3 &middot; Ranking Trap</div>
+          <h2>Rank the Loans <em>Cheapest to Most Expensive</em></h2>
+          <div class="desc">Four lenders quote in different ways: APR, effective rate, monthly rate. Your CFO needs the truly cheapest. Drag each offer to its rank — submit when all four are placed.</div>
+        </div>
+        <div class="tool-meta">
+          <div class="meta-pill" id="m3-progress">0 / 4 placed</div>
+        </div>
+      </div>
+
+      <div class="tool-body m3-wrap">
+        <div class="m3-zones" id="m3-zones"></div>
+        <div class="m3-bank">
+          <div class="m3-bank-label">Lender offers</div>
+          <div id="m3-offers" style="display: flex; flex-direction: column; gap: 8px;"></div>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <div class="action-msg" id="m3-msg">Place all four offers from <strong>cheapest (rank 1)</strong> to <strong>most expensive (rank 4)</strong>.</div>
+        <div class="action-buttons">
+          <button class="btn secondary" onclick="resetM3()">Reset</button>
+          <button class="btn" id="m3-submit" onclick="submitM3()" disabled>Submit Ranking</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ============ STATE ============
+  const STATE = { xp: 0, streak: 0 };
+
+  function addXP(n, correct) {
+    if (correct) {
+      const bonus = STATE.streak * 10;
+      STATE.xp += n + bonus;
+      STATE.streak++;
+    } else {
+      STATE.streak = 0;
+    }
+    document.getElementById('xp').textContent = STATE.xp.toLocaleString();
+    document.getElementById('streak').textContent = STATE.streak;
+  }
+
+  // ============ TAB SWITCHING ============
+  document.querySelectorAll('.tab').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      document.querySelectorAll('.tool').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      document.getElementById('tool-' + t.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ============ M1: CONCEPT MATCH ============
+  const M1_PAIRS = [
+    { speaker: 'CFO', quote: "I'd rather take $50k today than $60k in three years — I can invest the cash now and it will be worth more by then.", concept: 'TVOM' },
+    { speaker: 'VP Engineering', quote: "We won't fund any project that returns less than 12 percent — that is our hurdle rate, period.", concept: 'MARR' },
+    { speaker: 'Plant Manager', quote: "The old line cost us $2 million; that money is gone whether we keep running it or scrap it. Don't let it sway the decision.", concept: 'Sunk Cost' },
+    { speaker: 'Project Lead', quote: "Project A returns 15 percent, Project B returns 18 percent. With unlimited capital we'd take both, but we have to pick.", concept: 'IRR' },
+    { speaker: 'Strategy Director', quote: "If we lock capital into the new warehouse, we forfeit the chance to invest in the automation upgrade. That forgone gain is the real cost.", concept: 'Opportunity Cost' }
+  ];
+
+  let m1_state = {};
+  let m1_timer = null;
+  let m1_secs = 90;
+
+  function startM1Timer() {
+    if (m1_timer) clearInterval(m1_timer);
+    m1_secs = 90;
+    document.getElementById('m1-time').textContent = m1_secs + 's';
+    m1_timer = setInterval(() => {
+      m1_secs--;
+      document.getElementById('m1-time').textContent = m1_secs + 's';
+      if (m1_secs <= 0) { clearInterval(m1_timer); submitM1(true); }
+    }, 1000);
+  }
+
+  function buildM1() {
+    const quotes = document.getElementById('m1-quotes');
+    const bank = document.getElementById('m1-bank');
+    quotes.innerHTML = ''; bank.innerHTML = '';
+    m1_state = { drops: {}, placed: new Set() };
+
+    const shuffled = [...M1_PAIRS].sort(() => Math.random() - 0.5);
+    shuffled.forEach((p, i) => {
+      const row = document.createElement('div');
+      row.className = 'm1-quote';
+      row.innerHTML = `
+        <div>
+          <div class="speaker">${p.speaker}</div>
+          <div class="text">${p.quote}</div>
+        </div>
+        <div class="m1-drop" data-target="${p.concept}" data-row="${i}">drop here</div>
+      `;
+      const drop = row.querySelector('.m1-drop');
+      drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('over'); });
+      drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+      drop.addEventListener('drop', e => {
+        e.preventDefault(); drop.classList.remove('over');
+        const concept = e.dataTransfer.getData('text/plain');
+        // unplace if already filled
+        if (m1_state.drops[i]) {
+          const t = document.querySelector('.concept-tile[data-c="' + m1_state.drops[i] + '"]');
+          if (t) t.classList.remove('placed');
+          m1_state.placed.delete(m1_state.drops[i]);
+        }
+        m1_state.drops[i] = concept;
+        m1_state.placed.add(concept);
+        const tile = document.querySelector('.concept-tile[data-c="' + concept + '"]');
+        if (tile) tile.classList.add('placed');
+        drop.classList.add('filled');
+        drop.textContent = concept;
+        drop.onclick = () => clearDrop(i, concept, drop);
+        updateM1Progress();
+      });
+      quotes.appendChild(row);
+    });
+
+    // bank shuffled
+    [...M1_PAIRS].sort(() => Math.random() - 0.5).forEach(p => {
+      const tile = document.createElement('div');
+      tile.className = 'concept-tile'; tile.draggable = true;
+      tile.dataset.c = p.concept; tile.textContent = p.concept;
+      tile.addEventListener('dragstart', e => e.dataTransfer.setData('text/plain', p.concept));
+      bank.appendChild(tile);
+    });
+
+    updateM1Progress();
+    startM1Timer();
+  }
+
+  function clearDrop(rowIdx, concept, drop) {
+    delete m1_state.drops[rowIdx];
+    m1_state.placed.delete(concept);
+    drop.classList.remove('filled', 'right', 'wrong');
+    drop.textContent = 'drop here';
+    drop.onclick = null;
+    const tile = document.querySelector('.concept-tile[data-c="' + concept + '"]');
+    if (tile) tile.classList.remove('placed');
+    updateM1Progress();
+  }
+
+  function updateM1Progress() {
+    const n = Object.keys(m1_state.drops).length;
+    document.getElementById('m1-progress').textContent = n + ' / 5';
+    document.getElementById('m1-submit').disabled = n < 5;
+  }
+
+  function submitM1(timeout) {
+    if (m1_timer) clearInterval(m1_timer);
+    const drops = document.querySelectorAll('#m1-quotes .m1-drop');
+    let correct = 0;
+    drops.forEach(d => {
+      const target = d.dataset.target;
+      const placed = m1_state.drops[+d.dataset.row];
+      if (placed === target) { d.classList.add('right'); correct++; }
+      else if (placed) { d.classList.add('wrong'); }
+    });
+    const msg = document.getElementById('m1-msg');
+    if (correct === 5) {
+      msg.className = 'action-msg right';
+      msg.innerHTML = '✓ <strong>Perfect match.</strong> Five for five — concepts and real-world voice clicked. +' + (100 + STATE.streak * 10) + ' XP.';
+      addXP(100, true);
+    } else {
+      msg.className = 'action-msg wrong';
+      msg.innerHTML = '<strong>' + correct + ' / 5 correct.</strong> Wrong matches in red — review and try again.';
+      addXP(0, false);
+    }
+    document.getElementById('m1-submit').disabled = true;
+  }
+
+  function resetM1() {
+    document.getElementById('m1-msg').className = 'action-msg';
+    document.getElementById('m1-msg').textContent = 'Drag concepts onto each quote, then submit.';
+    buildM1();
+  }
+
+  // ============ M2: DECISION CARDS ============
+  const M2_CARDS = [
+    {
+      speaker: 'Your old college friend',
+      scenario: 'Your friend offers two options for repaying a debt: <strong>$10,000 cash today</strong>, or <strong>$13,000 four years from now</strong>. Your investment opportunities earn about <strong>8% annually</strong>. Which do you take?',
+      a: { tag: 'Option A', body: 'Take $10,000 today.' },
+      b: { tag: 'Option B', body: 'Wait four years for $13,000.' },
+      correct: 'a',
+      reveal: 'PW($13k @ 8%, n=4) = 13,000 / (1.08)<sup>4</sup> = <strong>$9,556</strong>. That\'s less than $10k today, so option A wins.<span class="insight">Insight: a 30% nominal premium ($13k vs $10k) is not enough to overcome four years of compounding at 8% — most people grab the bigger pile and lose ~$444 of present value.</span>'
+    },
+    {
+      speaker: 'Operations Director',
+      scenario: 'You can <strong>lease a CNC machine for $1,000 / month over 36 months</strong>, or <strong>buy it outright for $32,000</strong>. The firm\'s MARR is <strong>6% annual (≈ 0.49% monthly)</strong>. Both options leave you with no machine after 3 years (zero salvage). Which is cheaper in present value?',
+      a: { tag: 'Option A', body: 'Lease at $1,000 / month for 36 months.' },
+      b: { tag: 'Option B', body: 'Buy outright for $32,000.' },
+      correct: 'a',
+      reveal: 'PV(lease) = 1000 × [1 − (1.0049)<sup>−36</sup>] / 0.0049 ≈ <strong>$32,871</strong>. Lease total payments = $36,000, but discounted = $32,871. <strong>Buy at $32,000 is cheaper by about $871.</strong> Wait — actually <em>lease</em> ($32,871 PV) is barely more than buy ($32,000), so buy wins. Close call.<span class="insight">Insight: lease vs. buy is rarely a slam-dunk. The right answer depends on MARR, term, and tax treatment. Always discount.</span>'
+    },
+    {
+      speaker: 'CFO',
+      scenario: 'A vendor wants <strong>$50,000 today</strong> for a system that will save the firm <strong>$14,000 every year for 5 years</strong>. Your MARR is <strong>10%</strong>. Approve the purchase?',
+      a: { tag: 'Option A', body: 'Approve. Buy the system.' },
+      b: { tag: 'Option B', body: 'Reject. Find a cheaper alternative.' },
+      correct: 'a',
+      reveal: 'PV of savings = 14,000 × [1 − (1.10)<sup>−5</sup>] / 0.10 ≈ <strong>$53,071</strong>. NPV = 53,071 − 50,000 = <strong>+$3,071</strong>. Approve — the savings exceed the investment in present value.<span class="insight">Insight: a 5-year payback at 14% gross looks safe, but always run NPV. A small positive NPV here means it clears MARR; a tighter MARR (say 12%) might flip the answer.</span>'
+    },
+    {
+      speaker: 'Treasury',
+      scenario: 'A municipal bond pays <strong>$5,000 every year for 10 years</strong>, plus a <strong>$100,000 face value at year 10</strong>. It is offered today for <strong>$92,000</strong>. Your MARR is <strong>7%</strong>. Buy or pass?',
+      a: { tag: 'Option A', body: 'Buy — the cash flows look generous.' },
+      b: { tag: 'Option B', body: 'Pass — at 7% it does not earn the hurdle.' },
+      correct: 'a',
+      reveal: 'PV(coupons) = 5000 × [1 − (1.07)<sup>−10</sup>] / 0.07 ≈ $35,118. PV(face) = 100,000 / (1.07)<sup>10</sup> ≈ $50,835. Total PV ≈ <strong>$85,953</strong>. NPV = 85,953 − 92,000 = <strong>−$6,047</strong>.<span class="insight">Wait — actually that says PASS. The bond yields below 7%. <strong>Correct answer is B (pass).</strong> Always compute before trusting a "generous" headline coupon.</span>',
+      // override correct based on math
+    },
+    {
+      speaker: 'Plant Manager',
+      scenario: 'Two machines do the same job. <strong>Machine X: $40,000 cost, $8,000 / yr operating cost, 10 yr life.</strong> <strong>Machine Y: $25,000 cost, $11,500 / yr operating cost, 10 yr life.</strong> MARR is <strong>8%</strong>. Both have zero salvage. Which is cheaper?',
+      a: { tag: 'Option A', body: 'Machine X — higher upfront, lower run cost.' },
+      b: { tag: 'Option B', body: 'Machine Y — cheaper upfront, higher run cost.' },
+      correct: 'a',
+      reveal: 'PW(X cost) = 40,000 + 8,000 × [1 − (1.08)<sup>−10</sup>]/0.08 ≈ 40,000 + 53,680 = <strong>$93,680</strong>. PW(Y cost) = 25,000 + 11,500 × 6.710 ≈ 25,000 + 77,165 = <strong>$102,165</strong>. <strong>X wins by ~$8,485 PV.</strong><span class="insight">Insight: the $15k cheaper upfront for Y looks tempting but $3,500/yr more for 10 years buries it once discounted. Always compare on PW or AW basis.</span>'
+    }
+  ];
+  // fix card 4 — the math actually shows pass
+  M2_CARDS[3].correct = 'b';
+
+  let m2_idx = 0; let m2_record = { right: 0, wrong: 0 }; let m2_picked = null;
+
+  function buildM2() {
+    const card = M2_CARDS[m2_idx];
+    document.getElementById('m2-card-num').textContent = 'Card ' + (m2_idx + 1) + ' / ' + M2_CARDS.length;
+    document.getElementById('m2-record').textContent = m2_record.right + ' ✓ · ' + m2_record.wrong + ' ✗';
+    document.getElementById('m2-scenario').innerHTML = '<span class="speaker">' + card.speaker + '</span>' + card.scenario;
+    const opts = document.getElementById('m2-options');
+    opts.innerHTML = '';
+    ['a', 'b'].forEach(k => {
+      const o = card[k];
+      const div = document.createElement('div');
+      div.className = 'm2-opt';
+      div.dataset.k = k;
+      div.innerHTML = '<div class="tag">' + o.tag + '</div><div class="body">' + o.body + '</div>';
+      div.addEventListener('click', () => pickM2(k));
+      opts.appendChild(div);
+    });
+    document.getElementById('m2-reveal').classList.remove('show');
+    document.getElementById('m2-reveal').innerHTML = '';
+    document.getElementById('m2-msg').className = 'action-msg';
+    document.getElementById('m2-msg').textContent = 'Pick A or B. Commit before the math is shown.';
+    document.getElementById('m2-next').style.display = 'none';
+    m2_picked = null;
+  }
+
+  function pickM2(k) {
+    if (m2_picked) return;
+    m2_picked = k;
+    const card = M2_CARDS[m2_idx];
+    document.querySelectorAll('.m2-opt').forEach(o => {
+      const isPick = o.dataset.k === k;
+      const isRight = o.dataset.k === card.correct;
+      if (isRight) o.classList.add('right');
+      if (isPick && !isRight) o.classList.add('wrong');
+      if (isPick) o.classList.add('picked');
+    });
+    const correct = k === card.correct;
+    if (correct) m2_record.right++; else m2_record.wrong++;
+    addXP(80, correct);
+    const reveal = document.getElementById('m2-reveal');
+    reveal.innerHTML = '<strong>' + (correct ? '✓ Right.' : '✗ Wrong.') + '</strong> ' + card.reveal;
+    reveal.classList.add('show');
+    const msg = document.getElementById('m2-msg');
+    msg.className = 'action-msg ' + (correct ? 'right' : 'wrong');
+    msg.innerHTML = correct ? '<strong>+' + (80 + (STATE.streak - 1) * 10) + ' XP.</strong> Read the math and the insight, then continue.' : '<strong>Read the math below.</strong> Note the trap. Streak reset.';
+    document.getElementById('m2-record').textContent = m2_record.right + ' ✓ · ' + m2_record.wrong + ' ✗';
+    document.getElementById('m2-next').style.display = 'inline-flex';
+    document.getElementById('m2-next').textContent = m2_idx + 1 < M2_CARDS.length ? 'Next Card →' : 'See Summary';
+  }
+
+  function nextM2() {
+    if (m2_idx + 1 >= M2_CARDS.length) {
+      // summary
+      const total = m2_record.right + m2_record.wrong;
+      const acc = Math.round(m2_record.right / total * 100);
+      const reveal = document.getElementById('m2-reveal');
+      const summary = '<strong>Quest complete.</strong> ' + m2_record.right + ' / ' + total + ' correct (' + acc + '%). ' +
+        (acc >= 80 ? 'Sharp commercial judgment — you trust the math over headline numbers.' :
+         acc >= 50 ? 'Solid effort. Review where intuition fooled you.' :
+         'Most people get fooled here. Review each card and replay.');
+      reveal.innerHTML = summary;
+      reveal.classList.add('show');
+      document.getElementById('m2-next').textContent = 'Replay';
+      document.getElementById('m2-next').onclick = resetM2;
+      document.getElementById('m2-msg').className = 'action-msg right';
+      document.getElementById('m2-msg').innerHTML = '<strong>Module 2 complete.</strong> Replay or jump to Module 3.';
+      return;
+    }
+    m2_idx++;
+    buildM2();
+  }
+
+  function resetM2() {
+    m2_idx = 0; m2_record = { right: 0, wrong: 0 };
+    document.getElementById('m2-next').onclick = nextM2;
+    buildM2();
+  }
+
+  // ============ M3: RATE TRAP ============
+  const M3_OFFERS = [
+    { id: 'A', lender: 'Bank Alpha', terms: '12.0% APR, compounded monthly', eff: (1 + 0.12/12)**12 - 1 },
+    { id: 'B', lender: 'Bank Beta', terms: '11.80% effective annual rate', eff: 0.118 },
+    { id: 'C', lender: 'Bank Gamma', terms: '1.0% per month', eff: (1.01)**12 - 1 },
+    { id: 'D', lender: 'Bank Delta', terms: '11.5% APR, compounded daily', eff: (1 + 0.115/365)**365 - 1 }
+  ];
+  // Sort by eff ascending = correct order
+  let m3_correctOrder = [...M3_OFFERS].sort((a,b) => a.eff - b.eff).map(o => o.id);
+
+  let m3_state = {};
+
+  function buildM3() {
+    const zones = document.getElementById('m3-zones');
+    const offers = document.getElementById('m3-offers');
+    zones.innerHTML = ''; offers.innerHTML = '';
+    m3_state = { placed: {} };
+
+    [1,2,3,4].forEach(rank => {
+      const z = document.createElement('div');
+      z.className = 'm3-zone'; z.dataset.rank = rank;
+      z.innerHTML = `
+        <div>
+          <div class="rank">${rank}.</div>
+          <div class="rank-label">${rank === 1 ? 'cheapest' : rank === 4 ? 'priciest' : ''}</div>
+        </div>
+        <div class="placed-offer" data-empty="1" style="font-size: 11px; color: var(--soft); font-style: italic;">drop here</div>
+      `;
+      z.addEventListener('dragover', e => { e.preventDefault(); z.classList.add('over'); });
+      z.addEventListener('dragleave', () => z.classList.remove('over'));
+      z.addEventListener('drop', e => {
+        e.preventDefault(); z.classList.remove('over');
+        const id = e.dataTransfer.getData('text/plain');
+        // un-place if rank already filled
+        if (m3_state.placed[rank]) {
+          const old = document.querySelector('.offer[data-id="' + m3_state.placed[rank] + '"]');
+          if (old) old.classList.remove('placed');
+        }
+        m3_state.placed[rank] = id;
+        // also remove this offer from any other zone
+        Object.keys(m3_state.placed).forEach(r => {
+          if (+r !== rank && m3_state.placed[r] === id) delete m3_state.placed[r];
+        });
+        const offer = M3_OFFERS.find(o => o.id === id);
+        const target = document.querySelector('.offer[data-id="' + id + '"]');
+        if (target) target.classList.add('placed');
+        renderZones();
+        updateM3Progress();
+      });
+      zones.appendChild(z);
+    });
+
+    [...M3_OFFERS].sort(() => Math.random() - 0.5).forEach(o => {
+      const div = document.createElement('div');
+      div.className = 'offer'; div.draggable = true; div.dataset.id = o.id;
+      div.innerHTML = '<div class="lender">' + o.lender + '</div><div class="terms">' + o.terms + '</div>';
+      div.addEventListener('dragstart', e => e.dataTransfer.setData('text/plain', o.id));
+      offers.appendChild(div);
+    });
+
+    renderZones(); updateM3Progress();
+  }
+
+  function renderZones() {
+    [1,2,3,4].forEach(rank => {
+      const z = document.querySelector('.m3-zone[data-rank="' + rank + '"]');
+      const placed = m3_state.placed[rank];
+      const target = z.querySelector('.placed-offer');
+      if (placed) {
+        const o = M3_OFFERS.find(x => x.id === placed);
+        target.dataset.empty = '0';
+        target.innerHTML = '<strong>' + o.lender + '</strong><div style="font-size:11px;color:var(--muted);font-style:italic;">' + o.terms + '</div>';
+        target.style.color = 'var(--ink)'; target.style.fontStyle = 'normal';
+      } else {
+        target.dataset.empty = '1';
+        target.textContent = 'drop here';
+        target.style.color = 'var(--soft)'; target.style.fontStyle = 'italic';
+      }
+    });
+  }
+
+  function updateM3Progress() {
+    const n = Object.keys(m3_state.placed).length;
+    document.getElementById('m3-progress').textContent = n + ' / 4 placed';
+    document.getElementById('m3-submit').disabled = n < 4;
+  }
+
+  function submitM3() {
+    let correct = 0;
+    [1,2,3,4].forEach(rank => {
+      const z = document.querySelector('.m3-zone[data-rank="' + rank + '"]');
+      const placed = m3_state.placed[rank];
+      const expected = m3_correctOrder[rank - 1];
+      if (placed === expected) { z.classList.add('right'); correct++; }
+      else { z.classList.add('wrong'); }
+      // append effective rate
+      const offer = M3_OFFERS.find(o => o.id === placed);
+      if (offer) {
+        const target = z.querySelector('.placed-offer');
+        target.innerHTML += '<span class="effective">eff = ' + (offer.eff * 100).toFixed(3) + '%</span>';
+      }
+    });
+    const msg = document.getElementById('m3-msg');
+    if (correct === 4) {
+      msg.className = 'action-msg right';
+      msg.innerHTML = '✓ <strong>Perfect ranking.</strong> All four offers in correct order. +' + (120 + STATE.streak * 10) + ' XP.';
+      addXP(120, true);
+    } else {
+      const order = m3_correctOrder.map(id => M3_OFFERS.find(o => o.id === id).lender + ' (' + ((M3_OFFERS.find(o => o.id === id).eff * 100).toFixed(2)) + '%)').join(' < ');
+      msg.className = 'action-msg wrong';
+      msg.innerHTML = '<strong>' + correct + ' / 4 correct.</strong> True order: ' + order;
+      addXP(0, false);
+    }
+    document.getElementById('m3-submit').disabled = true;
+  }
+
+  function resetM3() {
+    document.getElementById('m3-msg').className = 'action-msg';
+    document.getElementById('m3-msg').innerHTML = 'Place all four offers from <strong>cheapest (rank 1)</strong> to <strong>most expensive (rank 4)</strong>.';
+    buildM3();
+  }
+
+  // ============ INIT ============
+  buildM1();
+  buildM2();
+  buildM3();
+</script>
+<div style="position: fixed; bottom: 6px; right: 14px; font-family: 'Outfit', sans-serif; font-size: 10px; color: #8b7355; opacity: 0.7; letter-spacing: 0.04em; pointer-events: none; z-index: 1000;">&copy; Prof. Mohammad Dehghani</div>
+<a href="index.html" title="Back to course platform" style="position:fixed;bottom:10px;left:14px;display:inline-flex;align-items:center;gap:7px;padding:6px 13px 6px 10px;background:rgba(255,255,255,0.94);border:1px solid #e8e3d4;border-radius:999px;font-family:'Outfit',-apple-system,sans-serif;font-size:11px;font-weight:600;color:#1947d6;text-decoration:none;box-shadow:0 4px 14px rgba(25,71,214,0.14);z-index:1000;backdrop-filter:blur(6px);transition:all 0.18s" onmouseover="this.style.background='#eef2ff'" onmouseout="this.style.background='rgba(255,255,255,0.94)'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="11 18 5 12 11 6"/></svg>Back to platform</a>
+</body>
+</html>

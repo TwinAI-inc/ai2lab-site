@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Engineering Economy &middot; Course Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf9f5; --paper: #ffffff; --ink: #1a1a1a; --muted: #5a5247; --soft: #8b7355;
+    --border: #e8e3d4; --line: #d4cfc0;
+    --blue: #1947d6; --blue-deep: #0d2e9e; --blue-light: #4a6fe6; --blue-soft: #eef2ff;
+    --gold: #b8860b; --gold-soft: #faf3e0;
+    --olive: #5c7a4a; --olive-soft: #f0f4ea;
+    --crimson: #8a2828; --crimson-soft: #fdf2f3;
+  }
+  body { background: var(--bg); color: var(--ink); font-family: 'Outfit', -apple-system, system-ui, sans-serif; font-size: 14px; line-height: 1.55; }
+  .app {
+    display: grid; grid-template-columns: 240px 1fr; gap: 18px;
+    max-width: 1500px; margin: 0 auto; padding: 16px 22px 24px;
+    min-height: 100vh;
+  }
+  @media (max-width: 800px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar { position: relative !important; max-height: none !important; }
+  }
+
+  /* ============ SIDEBAR ============ */
+  .sidebar {
+    background: var(--paper); border: 1px solid var(--border);
+    border-top: 3px solid var(--blue); border-radius: 12px;
+    padding: 14px 12px 10px;
+    display: flex; flex-direction: column; gap: 10px;
+    position: sticky; top: 16px; align-self: start;
+    max-height: calc(100vh - 32px); overflow-y: auto;
+  }
+  .sidebar::-webkit-scrollbar { width: 6px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--line); border-radius: 999px; }
+
+  .brand { padding: 0 8px 9px; border-bottom: 1px solid var(--border); }
+  .brand .code {
+    font-family: 'Lora', Georgia, serif; font-size: 18px; font-weight: 700; line-height: 1.1;
+    letter-spacing: -0.01em; color: var(--blue); font-style: italic;
+    white-space: nowrap;
+  }
+  .brand .sub {
+    font-family: 'Lora', Georgia, serif; font-size: 13.5px; font-weight: 700; line-height: 1.2;
+    letter-spacing: -0.01em; color: var(--ink); margin-top: 4px;
+  }
+  .brand .tag {
+    font-family: 'Lora', serif; font-style: italic; font-size: 11px; color: var(--muted); margin-top: 3px;
+  }
+
+  .section-label {
+    font-size: 9px; color: var(--soft); letter-spacing: 0.22em;
+    text-transform: uppercase; font-weight: 700;
+    padding: 0 10px; margin-bottom: 2px; margin-top: 0;
+  }
+
+  .nav-list { display: flex; flex-direction: column; gap: 1px; }
+
+  .quick-link {
+    display: flex; align-items: center; gap: 10px;
+    padding: 6px 10px; border-radius: 7px;
+    font-size: 12px; color: var(--ink); text-decoration: none;
+    transition: all 0.18s; font-weight: 500; cursor: pointer;
+  }
+  .quick-link:hover { background: var(--blue-soft); color: var(--blue); }
+  .quick-link svg { width: 14px; height: 14px; flex-shrink: 0; color: var(--muted); transition: color 0.18s; }
+  .quick-link:hover svg { color: var(--blue); }
+
+  .mod-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 5px 10px; border-radius: 7px;
+    cursor: pointer; position: relative;
+    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .mod-item:hover { background: var(--blue-soft); }
+  .mod-item.active {
+    background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
+    box-shadow: 0 3px 10px rgba(25,71,214,0.22);
+  }
+  .mod-item.locked { opacity: 0.5; }
+  .mod-item.locked:hover { background: var(--gold-soft); opacity: 0.85; }
+  .mod-item .num {
+    font-family: 'Lora', Georgia, serif; font-style: italic; font-weight: 700;
+    font-size: 15px; color: var(--blue); min-width: 18px; text-align: center; line-height: 1;
+  }
+  .mod-item.active .num { color: white; }
+  .mod-item.locked .num { color: var(--soft); }
+  .mod-item .label {
+    flex: 1; min-width: 0;
+    font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 500;
+    color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .mod-item.active .label { color: white; }
+  .mod-item.locked .label { color: var(--muted); }
+  .mod-item .count {
+    background: var(--gold); color: white;
+    font-size: 9px; font-weight: 700; letter-spacing: 0.02em;
+    padding: 1px 6px; border-radius: 999px; min-width: 17px; text-align: center;
+    flex-shrink: 0;
+  }
+  .mod-item.active .count { background: rgba(255,255,255,0.28); color: white; }
+  .mod-item .lock-icon { width: 12px; height: 12px; color: var(--gold); flex-shrink: 0; }
+  .mod-item.active .lock-icon { color: rgba(255,255,255,0.85); }
+
+  .sidebar-foot {
+    margin-top: auto; padding: 10px 8px 0; border-top: 1px solid var(--border);
+    font-family: 'Outfit', sans-serif; font-size: 10px; color: var(--soft);
+    text-align: center; letter-spacing: 0.04em;
+  }
+
+  /* ============ MAIN CONTENT ============ */
+  .main { min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+
+  .module-content {
+    padding: 26px 28px; background: var(--paper); border: 1px solid var(--border); border-radius: 14px;
+    animation: fade-in 0.35s ease-out;
+  }
+  @keyframes fade-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  .mod-header {
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 18px;
+    margin-bottom: 22px; flex-wrap: wrap;
+  }
+  .mod-header .left { min-width: 0; flex: 1; }
+  .mod-header .kicker {
+    font-size: 11px; color: var(--gold); letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .mod-header h2 {
+    font-family: 'Lora', Georgia, serif; font-size: 32px; font-weight: 700;
+    letter-spacing: -0.02em; line-height: 1.1;
+  }
+  .mod-header h2 em { font-style: italic; color: var(--blue); font-weight: 400; }
+  .mod-header .lede {
+    font-family: 'Lora', serif; font-style: italic; font-size: 15px; line-height: 1.7;
+    color: var(--muted); margin-top: 12px; max-width: 760px;
+  }
+  .mod-header .meta { display: flex; gap: 8px; flex-shrink: 0; align-items: flex-start; padding-top: 4px; flex-wrap: wrap; }
+  .meta-chip {
+    font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600;
+    padding: 6px 12px; background: var(--blue-soft); color: var(--blue);
+    border-radius: 999px; letter-spacing: 0.04em;
+  }
+  .meta-chip.gold { background: var(--gold-soft); color: var(--gold); }
+  .meta-chip.crimson { background: var(--crimson-soft); color: var(--crimson); }
+  .meta-chip.olive { background: var(--olive-soft); color: var(--olive); }
+
+  /* optional state */
+  .mod-item.optional .num { font-style: italic; color: var(--olive); }
+  .mod-item.optional.active .num { color: white; }
+  .mod-item .opt-badge {
+    background: var(--olive); color: white;
+    font-size: 8.5px; font-weight: 700; letter-spacing: 0.06em;
+    padding: 2px 7px; border-radius: 999px; text-align: center;
+    flex-shrink: 0;
+  }
+  .mod-item.active .opt-badge { background: rgba(255,255,255,0.28); }
+
+  .optional-banner {
+    padding: 14px 18px; background: var(--olive-soft); border: 1px solid var(--olive);
+    border-radius: 10px; border-left: 4px solid var(--olive);
+    font-family: 'Lora', serif; font-style: italic; font-size: 14px;
+    color: #3d5530; margin-bottom: 18px; line-height: 1.6;
+  }
+  .optional-banner strong { font-style: normal; color: var(--olive); font-weight: 700; }
+
+  .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+  .tool-card {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 14px;
+    overflow: hidden; cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    text-decoration: none; color: inherit; display: flex; flex-direction: column;
+    border-top: 3px solid var(--blue);
+  }
+  .tool-card:hover { transform: translateY(-3px); border-color: var(--blue); box-shadow: 0 14px 36px rgba(25,71,214,0.14); }
+  .tool-card.gold { border-top-color: var(--gold); }
+  .tool-card.olive { border-top-color: var(--olive); }
+  .tool-card.crimson { border-top-color: var(--crimson); }
+
+  .tool-icon { padding: 16px 18px 6px; color: var(--blue); display: flex; align-items: center; gap: 12px; }
+  .tool-icon svg { width: 30px; height: 30px; flex-shrink: 0; }
+  .tool-card.gold .tool-icon { color: var(--gold); }
+  .tool-card.olive .tool-icon { color: var(--olive); }
+  .tool-card.crimson .tool-icon { color: var(--crimson); }
+  .tool-type-row { display: flex; justify-content: space-between; align-items: center; flex: 1; }
+  .tool-type {
+    font-family: 'Outfit', sans-serif; font-size: 10px; color: var(--blue);
+    letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700;
+  }
+  .tool-card.gold .tool-type { color: var(--gold); }
+  .tool-card.olive .tool-type { color: var(--olive); }
+  .tool-card.crimson .tool-type { color: var(--crimson); }
+  .tool-time { font-size: 10.5px; color: var(--soft); font-weight: 500; }
+  .tool-title {
+    font-family: 'Lora', Georgia, serif; font-size: 18px; font-weight: 700; line-height: 1.15;
+    padding: 4px 18px 8px; color: var(--ink);
+  }
+  .tool-title em { font-style: italic; color: var(--blue); font-weight: 400; }
+  .tool-card.gold .tool-title em { color: var(--gold); }
+  .tool-card.olive .tool-title em { color: var(--olive); }
+  .tool-card.crimson .tool-title em { color: var(--crimson); }
+  .tool-desc { font-family: 'Lora', serif; font-size: 13px; line-height: 1.55; color: var(--muted); padding: 0 18px 14px; flex: 1; }
+  .tool-open {
+    padding: 12px 18px; background: var(--bg); border-top: 1px solid var(--border);
+    font-family: 'Outfit', sans-serif; font-size: 11.5px; color: var(--blue); font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    display: flex; justify-content: space-between; align-items: center; transition: all 0.18s;
+  }
+  .tool-open svg { width: 14px; height: 14px; transition: transform 0.2s; }
+  .tool-card:hover .tool-open { background: var(--blue-soft); }
+  .tool-card:hover .tool-open svg { transform: translateX(3px); }
+  .tool-card.gold .tool-open { color: var(--gold); }
+  .tool-card:hover.gold .tool-open { background: var(--gold-soft); }
+  .tool-card.olive .tool-open { color: var(--olive); }
+  .tool-card:hover.olive .tool-open { background: var(--olive-soft); }
+  .tool-card.crimson .tool-open { color: var(--crimson); }
+
+  .placeholder {
+    text-align: center; padding: 50px 24px;
+    font-family: 'Lora', serif; font-style: italic; color: var(--muted);
+    background: var(--bg); border-radius: 12px; border: 1px dashed var(--line);
+  }
+  .placeholder svg { width: 40px; height: 40px; margin-bottom: 12px; color: var(--soft); }
+  .placeholder strong { font-style: normal; color: var(--blue); font-weight: 700; }
+
+  /* ============ LOCK SCREEN ============ */
+  .lock-screen {
+    text-align: center; padding: 40px 28px; background: var(--gold-soft);
+    border: 1px solid var(--gold); border-radius: 14px; border-left: 4px solid var(--gold);
+  }
+  .lock-screen .lock-big {
+    width: 64px; height: 64px; margin: 0 auto 14px; color: var(--gold);
+    background: var(--paper); border-radius: 50%; padding: 14px;
+    box-shadow: 0 6px 20px rgba(184,134,11,0.2);
+  }
+  .lock-screen h3 {
+    font-family: 'Lora', Georgia, serif; font-size: 22px; font-weight: 700; color: var(--ink);
+    letter-spacing: -0.01em; margin-bottom: 6px;
+  }
+  .lock-screen h3 em { font-style: italic; color: var(--gold); font-weight: 400; }
+  .lock-screen .lede {
+    font-family: 'Lora', serif; font-style: italic; font-size: 14px; line-height: 1.65;
+    color: var(--muted); margin-bottom: 20px; max-width: 480px; margin-left: auto; margin-right: auto;
+  }
+  .lock-screen .release {
+    display: inline-block; padding: 7px 16px; background: var(--paper); border: 1px solid var(--gold);
+    border-radius: 999px; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 600;
+    color: var(--gold); letter-spacing: 0.06em; margin-bottom: 22px;
+  }
+  .lock-screen .pw-row {
+    display: flex; gap: 10px; max-width: 380px; margin: 0 auto;
+    flex-wrap: wrap; justify-content: center;
+  }
+  .lock-screen input {
+    flex: 1; min-width: 180px; padding: 11px 16px;
+    font-family: 'Outfit', sans-serif; font-size: 14px;
+    background: var(--paper); border: 1.5px solid var(--border); border-radius: 10px;
+    color: var(--ink); outline: none; transition: all 0.18s;
+  }
+  .lock-screen input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(184,134,11,0.15); }
+  .lock-screen button {
+    padding: 11px 22px; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 600;
+    letter-spacing: 0.06em; text-transform: uppercase; border: none; border-radius: 10px;
+    background: linear-gradient(135deg, var(--gold) 0%, #d4a017 100%);
+    color: white; cursor: pointer; transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(184,134,11,0.3);
+  }
+  .lock-screen button:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(184,134,11,0.4); }
+  .lock-screen .pw-err {
+    margin-top: 12px; font-size: 12px; color: var(--crimson); font-style: italic;
+    min-height: 18px;
+  }
+  .lock-screen .pw-hint {
+    margin-top: 14px; font-size: 11px; color: var(--soft); font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<!-- SVG SPRITE -->
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8v9a2 2 0 01-2 2h-4v-7H9v7H5a2 2 0 01-2-2z"/></symbol>
+  <symbol id="i-megaphone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v2a1 1 0 001 1h1l4 4V6L5 10H4a1 1 0 00-1 1z"/><path d="M14 8c1.5 1 2 2.5 2 4s-.5 3-2 4"/><path d="M18 5c2.5 2 3.5 4 3.5 7s-1 5-3.5 7"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5h7c1.5 0 3 1 3 2.5V19c0-1.5-1.5-2.5-3-2.5H2V5z"/><path d="M22 5h-7c-1.5 0-3 1-3 2.5V19c0-1.5 1.5-2.5 3-2.5h7V5z"/></symbol>
+  <symbol id="i-cards" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="9" rx="1.5"/><rect x="3" y="15" width="7" height="6" rx="1.5"/><rect x="14" y="15" width="7" height="6" rx="1.5"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></symbol>
+  <symbol id="i-cashflow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="18" x2="21" y2="18"/><path d="M7 18v-4M7 14l-2 0M7 14l2 0"/><path d="M12 18v-7M12 11l-2 0M12 11l2 0"/><path d="M17 18v-10M17 8l-2 0M17 8l2 0"/></symbol>
+  <symbol id="i-flask" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v6L4 19c-.5 1 .5 2 1.5 2h13c1 0 2-1 1.5-2L15 9V3"/><line x1="8" y1="3" x2="16" y2="3"/><line x1="6.5" y1="14" x2="17.5" y2="14"/></symbol>
+  <symbol id="i-trophy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 5h10v5a5 5 0 01-10 0V5z"/><path d="M7 7H4a2 2 0 002 4M17 7h3a2 2 0 01-2 4"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="10" cy="6" r="2.5" fill="white"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="16" cy="12" r="2.5" fill="white"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="8" cy="18" r="2.5" fill="white"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="21" x2="21" y2="21"/><line x1="3" y1="21" x2="3" y2="5"/><polyline points="6 14 11 9 14 12 19 6"/><circle cx="6" cy="14" r="1.5" fill="currentColor"/><circle cx="11" cy="9" r="1.5" fill="currentColor"/><circle cx="14" cy="12" r="1.5" fill="currentColor"/><circle cx="19" cy="6" r="1.5" fill="currentColor"/></symbol>
+  <symbol id="i-construction" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="9" rx="1"/><line x1="3" y1="11" x2="21" y2="11"/><line x1="9" y1="11" x2="9" y2="20"/><line x1="15" y1="11" x2="15" y2="20"/><path d="M6 7h12M7 4h10"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></symbol>
+  <symbol id="i-video" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="14" height="12" rx="2"/><polyline points="17 10 21 7 21 17 17 14"/></symbol>
+  <symbol id="i-arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></symbol>
+</svg>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="code">IE 4512 &middot; EMGT 6225</div>
+      <div class="sub">Engineering Economy</div>
+      <div class="tag">course platform</div>
+    </div>
+
+    <div>
+      <div class="section-label">Modules</div>
+      <nav class="nav-list" id="modules-list"></nav>
+    </div>
+
+    <div class="sidebar-foot">&copy; Prof. Mohammad Dehghani</div>
+  </aside>
+
+  <main class="main" id="main"></main>
+
+</div>
+
+<script>
+  // ============ CONFIG ============
+  const ADMIN_PASSWORD = 'dehghani2026';
+  const DEFAULT_AVAILABLE = [1, 2];  // change later as the term progresses
+  const STORAGE_KEY = 'ie4512_unlocked';
+
+  const ICON = {
+    book: '<svg><use href="#i-book"/></svg>',
+    cards: '<svg><use href="#i-cards"/></svg>',
+    grid: '<svg><use href="#i-grid"/></svg>',
+    megaphone: '<svg><use href="#i-megaphone"/></svg>',
+    cashflow: '<svg><use href="#i-cashflow"/></svg>',
+    flask: '<svg><use href="#i-flask"/></svg>',
+    trophy: '<svg><use href="#i-trophy"/></svg>',
+    sliders: '<svg><use href="#i-sliders"/></svg>',
+    chart: '<svg><use href="#i-chart"/></svg>',
+    home: '<svg><use href="#i-home"/></svg>',
+    video: '<svg><use href="#i-video"/></svg>'
+  };
+
+  const MODULES = [
+    { n: 1, short: 'TVOM', name: 'Economic Principles &amp; TVOM', release: 'Week 1',
+      lede: 'Set the foundation: economic principles, the time value of money concept, and 800 years of history that brought us here. Eight mystery cards, eight historical breakthroughs &mdash; one flip per answer.',
+      meta: ['Ch. 1, 2.1–2.3', '~3 hrs'],
+      tools: [
+        { type: 'Mystery Quest', icon: 'cards', title: 'Eight Mysteries of <em>Engineering Economy</em>', desc: 'Storyline + fun facts merged: eight flippable cards. Front asks the question, back reveals the figure behind the answer.', url: 'IE4512_Game_M1_Companion.html', time: '~15 min', color: 'gold' }
+      ]
+    },
+    { n: 2, short: 'Cash Flows', name: 'Analyzing Cash Flows and Series of Cash Flows', release: 'Week 2',
+      lede: 'Draw cash flow diagrams. Analyze single payments, uniform series, gradient series, and geometric series — the vocabulary of every engineering economy problem.',
+      meta: ['Ch. 2.4–end', '~3 hrs'],
+      tools: [
+        { type: 'Game', icon: 'cashflow', title: 'Cash Flow <em>Builder</em>', desc: 'Drag signed-amount chips onto a timeline. Four progressively harder scenarios.', url: 'IE4512_Game_M2_CashFlow.html', time: '~12 min', color: 'blue' }
+      ]
+    },
+    { n: 3, short: 'Borrowing & Lending', name: 'Borrowing, Lending, and Investing', release: 'Week 2',
+      lede: 'Same loan, four ways to pay it back. Discover why all four are equivalent when Lender\'s Rate equals Borrower\'s TVOM, and why one becomes genuinely cheaper otherwise.',
+      meta: ['Ch. 3', '~3 hrs'],
+      tools: [
+        { type: 'Lab', icon: 'flask', title: 'Loan Repayment <em>Lab</em>', desc: 'Borrower\'s PW vs Lender\'s Rate at fixed TVOM. Four-plan crossover with preference annotations.', url: 'IE4512_Game_M3_LoanLab.html', time: '~20 min', color: 'gold' }
+      ]
+    },
+    { n: 4, short: 'MARR & PW', name: 'Planning Horizon, MARR and Present Worth Analysis', release: 'Week 3',
+      lede: 'Apply present worth to rank competing projects at the firm\'s MARR. Real-world capstone: should you buy a house or keep renting? A full multi-factor NPV decision.',
+      meta: ['Ch. 4, 5.1–5.5', '~3 hrs'],
+      tools: [
+        { type: 'Quest', icon: 'trophy', title: 'Present Worth <em>Quest</em>', desc: 'Five-stage Duolingo-style learning game with XP, badges, and live charts.', url: 'IE4512_Game_M5_PWQuest.html', time: '~20 min', color: 'blue' },
+        { type: 'Simulator', icon: 'chart', title: 'PW Decision <em>Simulator</em>', desc: 'Three projects, slide the MARR, pick the winner. Three rounds.', url: 'IE4512_Game_M5_PWSim.html', time: '~12 min', color: 'gold' },
+        { type: 'Decision Lab', icon: 'home', title: 'Buy vs Rent &mdash; <em>NPV Analysis</em>', desc: 'Concepts page (closing costs, APR, opportunity cost) plus interactive multi-factor NPV calculator with chart.', url: 'IE4512_Game_M4_BuyVsRent.html', time: '~25 min', color: 'olive' }
+      ]
+    },
+    { n: 5, short: 'FW & AW', name: 'Future and Annual Worth Analysis', release: 'Week 3',
+      lede: 'Convert irregular cash flows to a uniform annual equivalent. Compare projects with different lives via FW and AW.',
+      meta: ['Ch. 5.6–end, Ch. 6, 7', '~3 hrs'], tools: []
+    },
+    { n: 6, short: 'Rate of Return', name: 'Rate of Return Analysis', release: 'Week 4',
+      lede: 'Find the internal rate of return. Use incremental analysis to compare mutually exclusive projects.',
+      meta: ['Ch. 8', '~3 hrs'], tools: []
+    },
+    { n: 7, short: 'Depreciation', name: 'Depreciation Method', release: 'Week 5',
+      lede: 'Allocate the cost of capital assets over their useful lives. Compare straight-line, declining balance, and MACRS.',
+      meta: ['Ch. 9', '~3 hrs'], tools: []
+    },
+    { n: 8, short: 'After-Tax', name: 'After-Tax Economic Analysis', release: 'Week 5',
+      lede: 'Bring corporate taxes and after-tax cash flows into the analysis. Combine with MACRS depreciation to find true after-tax NPV.',
+      meta: ['Ch. 10', '~3 hrs'], tools: []
+    },
+    { n: 9, short: 'Replacement & Inflation', name: 'Replacement Analysis and Inflation', release: 'Week 6 (optional)',
+      lede: 'When to replace an aging asset? How does inflation distort engineering economic decisions? This module is <em>optional</em> &mdash; released alongside Module 10 for students who want the extra reading. Not part of any quiz, exam, or scheduled class meeting.',
+      meta: ['Ch. 11, 12', 'Optional · video'],
+      optional: true,
+      tools: [
+        { type: 'Video', icon: 'video', title: 'Replacement &amp; <em>Inflation</em>', desc: 'Self-paced lecture video covering replacement analysis and inflation. Watch any time.', url: '#video-coming-soon', time: '~45 min', color: 'olive' }
+      ]
+    },
+    { n: 10, short: 'Breakeven & Sensitivity', name: 'Breakeven and Sensitivity Analysis', release: 'Week 6',
+      lede: 'Find break-even quantities. Rank the parameters that move NPV the most. Build intuition for which inputs matter and which don\'t.',
+      meta: ['Ch. 13.1–13.3', '~3 hrs'],
+      tools: [
+        { type: 'Lab', icon: 'sliders', title: 'Sensitivity <em>Slider Lab</em>', desc: 'Live NPV and IRR readouts as you drag five parameters. With break-even chart.', url: 'IE4512_Game_M7_Sensitivity.html', time: '~15 min', color: 'olive' }
+      ]
+    },
+    { n: 11, short: 'Probabilistic Risk', name: 'Probabilistic Risk Analysis', release: 'Week 6',
+      lede: 'Move beyond deterministic NPV. Use probability distributions, expected value, and decision trees for risk-aware engineering economic analysis.',
+      meta: ['Ch. 13.4', '~3 hrs'], tools: []
+    }
+  ];
+
+  const $ = id => document.getElementById(id);
+  let curr = 1;
+  let unlocked = new Set(DEFAULT_AVAILABLE);
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    saved.forEach(n => unlocked.add(n));
+  } catch (e) {}
+
+  function isAvailable(n) {
+    const m = MODULES.find(x => x.n === n);
+    if (m && m.optional) return true;
+    return unlocked.has(n);
+  }
+
+  function tryUnlock() {
+    const inp = $('pw-input');
+    const err = $('pw-err');
+    if (!inp) return;
+    if (inp.value.trim() === ADMIN_PASSWORD) {
+      MODULES.forEach(m => unlocked.add(m.n));
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...unlocked])); } catch (e) {}
+      render();
+    } else {
+      err.textContent = '✗ Wrong password — try again or contact the instructor.';
+      inp.value = '';
+      inp.focus();
+    }
+  }
+
+  function buildSidebar() {
+    const list = $('modules-list'); list.innerHTML = '';
+    MODULES.forEach(m => {
+      const avail = isAvailable(m.n);
+      const isOpt = !!m.optional;
+      const item = document.createElement('div');
+      item.className = 'mod-item' + (m.n === curr ? ' active' : '') + (!avail ? ' locked' : '') + (isOpt ? ' optional' : '');
+      const right = isOpt
+        ? `<div class="opt-badge">OPT</div>`
+        : avail
+          ? `<div class="count">${m.tools.length}</div>`
+          : `<svg class="lock-icon"><use href="#i-lock"/></svg>`;
+      item.innerHTML = `
+        <div class="num">${m.n}</div>
+        <div class="label">${m.short}</div>
+        ${right}
+      `;
+      item.addEventListener('click', () => { curr = m.n; render(); });
+      list.appendChild(item);
+    });
+  }
+
+  function renderMain() {
+    const m = MODULES.find(x => x.n === curr);
+    const parts = m.name.split(/\s+/);
+    const last = parts.pop();
+    const head = parts.join(' ') + ' <em>' + last + '</em>';
+    const avail = isAvailable(m.n);
+
+    if (!avail) {
+      $('main').innerHTML = `
+        <div class="module-content">
+          <div class="mod-header">
+            <div class="left">
+              <div class="kicker">Module ${m.n} of ${MODULES.length} &middot; Locked</div>
+              <h2>${head}</h2>
+              <p class="lede">${m.lede}</p>
+            </div>
+            <div class="meta">
+              ${m.meta.map((t, i) => `<div class="meta-chip${i === 1 ? ' gold' : ''}">${t}</div>`).join('')}
+              <div class="meta-chip crimson">🔒 Locked</div>
+            </div>
+          </div>
+          <div class="lock-screen">
+            <svg class="lock-big"><use href="#i-lock"/></svg>
+            <h3>Module ${m.n} is <em>not yet released</em></h3>
+            <p class="lede">This module unlocks on the scheduled release date. Instructor preview requires the admin password.</p>
+            <div class="release">Scheduled release &middot; ${m.release}</div>
+            <div class="pw-row">
+              <input type="password" id="pw-input" placeholder="Admin password" autocomplete="off" />
+              <button type="button" onclick="tryUnlock()">Unlock</button>
+            </div>
+            <div class="pw-err" id="pw-err"></div>
+            <div class="pw-hint">Unlock state is remembered in this browser only.</div>
+          </div>
+        </div>
+      `;
+      const pw = $('pw-input');
+      if (pw) {
+        pw.focus();
+        pw.addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+      }
+      return;
+    }
+
+    const optionalBanner = m.optional
+      ? `<div class="optional-banner">📺 <strong>This module is optional.</strong> Watch the video below at your own pace. Not part of any quiz, exam, or scheduled class meeting.</div>`
+      : '';
+
+    $('main').innerHTML = `
+      <div class="module-content">
+        <div class="mod-header">
+          <div class="left">
+            <div class="kicker">Module ${m.n} of ${MODULES.length}${m.optional ? ' &middot; Optional' : ''}</div>
+            <h2>${head}</h2>
+            <p class="lede">${m.lede}</p>
+          </div>
+          <div class="meta">
+            ${m.meta.map((t, i) => `<div class="meta-chip${m.optional ? ' olive' : (i === 1 ? ' gold' : '')}">${t}</div>`).join('')}
+          </div>
+        </div>
+        ${optionalBanner}
+        ${m.tools.length === 0
+          ? `<div class="placeholder">
+               <svg><use href="#i-construction"/></svg>
+               <div><strong>Tools for Module ${m.n} coming soon.</strong></div>
+               <div style="margin-top: 6px;">This module's storyline, lab, and game are queued in the build pipeline.</div>
+             </div>`
+          : `<div class="tools-grid">
+               ${m.tools.map(t => `
+                 <a class="tool-card ${t.color || 'blue'}" href="${t.url}" target="_blank">
+                   <div class="tool-icon">
+                     ${ICON[t.icon]}
+                     <div class="tool-type-row">
+                       <div class="tool-type">${t.type}</div>
+                       <div class="tool-time">${t.time}</div>
+                     </div>
+                   </div>
+                   <div class="tool-title">${t.title}</div>
+                   <div class="tool-desc">${t.desc}</div>
+                   <div class="tool-open"><span>Open</span><svg><use href="#i-arrow-right"/></svg></div>
+                 </a>
+               `).join('')}
+             </div>`
+        }
+      </div>
+    `;
+  }
+
+  function render() { buildSidebar(); renderMain(); }
+
+  document.addEventListener('keydown', e => {
+    if (e.target && (e.target.tagName === 'INPUT')) return;
+    if (e.key === 'ArrowUp' && curr > 1) { curr--; render(); }
+    if (e.key === 'ArrowDown' && curr < MODULES.length) { curr++; render(); }
+  });
+
+  render();
+</script>
+
+</body>
+</html>

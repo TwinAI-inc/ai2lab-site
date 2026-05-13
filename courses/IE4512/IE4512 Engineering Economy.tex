@@ -1,0 +1,468 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Inzane Syllabus Template
+% LaTeX Template
+% Version 1.2 (8.22.2019)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Carmine Spagnuolo (cspagnuolo@unisa.it) with major modifications by 
+% Zane Wolf (zwolf.mlxvi@gmail.com)
+%
+% I (Zane) have left a lot of instructions both in the .tex file and the .cls file that can guide you to customize this document to suite your tastes and requirements. Here is a brief guide: 
+%  - Changing the Main Color: .cls line 39
+%  - Adding more FAQs: .cls line 126 and .tex line 99
+%  - Adding TA emails: uncomment .cls lines 220 & 224 and .tex lines 85 and 89
+%  - Deleting the FAQ sidebar entirely: .tex line 188
+%  - Removing the Lab/TA Info and placing a brief Overview/About section in their place:        uncomment .tex line 91 and .cls line 227, and comment .cls lines for the LAB/TA info        that you no longer want (c. lines 184-227)
+
+%
+% I am also happy to help with crafting/designing modifications to this template to help suite your personal needs in a syllabus. Feel free to reach out! 
+%
+% License:
+% The MIT License (see included LICENSE file)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[letterpaper]{inzane_syllabus} % a4paper for A4
+\documentclass{article}
+\usepackage[T1]{fontenc}
+\usepackage{arydshln}
+\usepackage[latin1]{inputenc}
+\usepackage{tabularx}  % loads also »colortbl«
+\usepackage{booktabs, colortbl}
+\usepackage{enumitem}
+\usepackage{ltablex} 
+\usepackage{multirow}
+\usepackage{pgf-pie}
+\setlist{nolistsep}
+\usepackage{lscape}
+
+\renewcommand{\familydefault}{\sfdefault}
+\renewcommand{\arraystretch}{2.0}
+\AtBeginDocument{\hypersetup{colorlinks, urlcolor=NavyBlue}}
+\usepackage{fontawesome}
+\graphicspath{ {./Images/} }
+
+
+
+
+\renewcommand{\familydefault}{\sfdefault}
+\renewcommand{\arraystretch}{2.0}
+
+\usepackage{fontawesome}
+
+%\newcommand{\faWindows}{\FA\symbol{"F17A}}
+%\newcommand{\faApple}{\FA\symbol{"F179}}
+\newcommand{\faDropBox}{\FA\symbol{"F168}}
+
+
+%----------------------------------------------------------------------------------------
+%	 Personal Info
+%----------------------------------------------------------------------------------------
+
+\profilepic{Images/NUlogo.png} % Profile picture, if the height of the picture is less than that of the circle, it will have a flat bottom. 
+
+
+% To remove any of the following, you need to comment/delete the lines in the .cls file (c. line 186). Commenting/deleting the lines below will produce an error. 
+
+%To add different lines, you will need to create the new command, e.g. \profPhone, in the .cls file c. line 76, and command to create the line in the side bar in the .cls file c. line 186
+
+\classname{Engineering Economy} 
+\classnum{IE4512} 
+
+%%%%%%%%%%%%%%% COURSE  INFO
+\prereq{None}
+%\newline * IE 6200 - Engineering Probability and Statistics.
+%\newline * Computing, particularly use of Excel and basic programming.}
+%\classdays{\textbf{Bi-weekly Sessions:} Mondays}
+%\classhours{2:30pm-3:15pm}
+%\classloc{SH 215}
+\classdays{\textbf{Sessions:} As per the itinerary}
+\classhours{\textbf{Time:} Check the Itinerary}
+
+
+%%%%%%%%%%%%%%% PROF INFO
+\profname{\textbf{\color{myCOLOR}{M}}ohammad \textbf{\color{myCOLOR}{D}}ehghani}
+
+\officehours{\textbf{Office Hrs:} Tuesdays 
+\newline 3:00pm-4:30pm}
+\office{Zoom \textcolor{blue}{\href{https://calendly.com/m-dehghani/office_hrs?month=2021-01}{(\underline{Make an appointment})}}}
+\site{\href{https://coe.northeastern.edu/people/dehghanimohammadabadi-mohammad/}{Website}} 
+\email {\underline {m.dehghani@northeastern.edu}}
+
+
+
+%%%%%%%%%%%%%%% TA INFO
+\taAname{\textbf{\color{myCOLOR}{B}}eatriz \textbf{\color{myCOLOR}{F}}eijoo}
+\taAofficehours{\textbf{Office Hrs:} Monday - Friday: 11am - 12pm}
+\taAoffice{In-person}
+\taAemail{\underline{feijoogomez.b@northeastern.edu}}
+%\taBname{\textbf{Name}}
+%\taBofficehours{\textbf{Office Hrs:} Tues \& Thurs 3-4p}
+%\taBoffice{Location}
+%\taBemail{username@northeastern.edu}
+
+
+\begin{document}
+
+\thispagestyle{empty}
+\newgeometry{left=3cm}
+\begin{center}
+   \textbf{\huge{IE4512: \color{myCOLOR}{Engineering Economy}}}
+\end{center}
+\vspace*{\fill}
+\begin{center}
+    \includegraphics[width=120mm]{Images/CourseLogo.jpg}
+    \textbf{\Large{{\\Prof.  \color{myCOLOR}Mohammad Dehghani}}}
+\end{center}  
+
+%%%% Quote word
+\vspace{2 cm}
+
+
+\textbf{\textit{\normalsize{"The most valuable of all capital is that invested in human beings; and of that capital the most precious part is ..." [Google it]}}}
+\\
+\textbf{\color{myCOLOR}\normalsize{- Alfred Marshall - a British economist}}
+
+\vspace{0.5cm}
+\textbf{\textit{\normalsize{"The best investment you can make is in yourself ... the more you learn, the more you'll earn"}}}
+\\
+\textbf{\color{myCOLOR}\normalsize{- Warren Buffett}}
+
+
+\vspace*{\fill}
+\restoregeometry
+\newpage
+
+
+% No footer
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Cover Page ENDS
+%%  PAGE 2 BEGINS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\newpage
+% Start the syllabus
+
+\makeprofile % Print the sidebar
+\section{Course Overview}
+
+This course explores economic modeling and analysis techniques for selecting alternatives from potential solutions to an engineering problem. The course begins with exploring measures of merit and basic methods of economic comparison, such as present worth, annual worth, rate of return, and benefit/cost techniques. Further moving on to examine recent techniques of economic analysis, especially the tools of decision-making. Along with that, the course considers causes of risk and uncertainty , effects of taxes on investment, decision tree analysis, statistical decision techniques, and multiple attributes of decision making through group case studies.
+
+%------------------------------------------------------------
+%	 Course Objectives
+%------------------------------------------------------------
+\vspace{0.1 cm} 
+\section{Course Objectives}
+\vspace{0.05 cm} 
+%use \begin{outline} or \begin{outline}[enumerate] to create a list with subitems. 
+\begin{itemize}[label= \color{myCOLOR}{$\RHD$}]
+        \item Identify the key financial vehicles that effect how companies do business and describe their impact on economic decisions.
+        \vspace{0.1 cm}
+        \item Analyze projects and ventures using standard economic decision-making techniques such as breakeven and sensitivity analysis, risk analysis and uncertainty, decision trees, and other statistical decision techniques problem solving.
+        \vspace{0.1 cm}
+        \item Analyze and evaluate a variety of complex real -world economic scenarios by applying  multiple attributes of decision-making principles.
+        \vspace{0.1 cm}
+        \item Evaluate projects based on dynamic factors such as depreciation and taxes to choose the optimal alternatives.
+        \item Be able to compare competing projects by understanding time value of money principles to cash flows.
+        \item Apply multi-criteria decision-making techniques to include economical and non-economical factors into the alternatives selection process.
+        \item Determine the economic equivalence and manipulate cash flows in order to make economic projections.
+\end{itemize}
+
+%----------------------------------------------------------------------------------------
+%	 Reference Books
+%----------------------------------------------------------------------------------------
+\vspace{0.3cm}
+\section{Reference Books}
+\vspace{0.05cm}
+
+\begin{itemize}[label= \color{myCOLOR}{$\RHD$}]
+    \item Principles of Engineering Economic Analysis, 6th Edition by John A. White, Kenneth E. Case, and David B. Pratt, March 2012  \href{https://www.amazon.com/Principles-Engineering-Economic-Analysis-White/dp/1118163834}{\color{myCOLOR}{\underline{Amazon}}}
+    \item \color{red}{Note:} \color{black} {An E-book comes with the Wiley-Plus, so there is no need to purchase the hard copy of the text-book}
+\end{itemize}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                WileyPLUS Registration
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\vspace{0.3cm}
+%\section{WileyPLUS Registration}
+%\vspace{0.05cm}
+
+ %You have an option to purchase a registration code to access the WileyPLUS components of this course through the IE4512 Canvas Course Site. You have two options for purchasing this registration:
+ 
+% \begin{enumerate}
+    \item Online textbook with access to WileyPLUS material in Canvas 
+        \begin{itemize}[label= \color{myCOLOR}{$\circ$}]
+            \item Use the digital (online) version of the WileyPLUS text within Canvas, and purchase access online through 
+            \href{www.wileyplus.com}{\color{myCOLOR}{\underline{www.wileyplus.com}}}. You are presented with the option to buy WileyPLUS digital access the first time you click on a link to WileyPLUS material from the IE4512 Canvas course site
+        \end{itemize}
+    \item Printed textbook with access to WileyPLUS material in Canvas
+        \begin{itemize}[label= \color{myCOLOR}{$\circ$}]
+            \item Buy the printed textbook from the NU Online bookstore and a WileyPLUS access code will be included. 
+            \item \color{red}{DO NOT THROW THIS CODE AWAY.}
+        \end{itemize}
+%\end{enumerate}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Class Schedule
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\vspace{0.1cm}
+\section{Class Schedule}
+\vspace{0.05cm}
+
+Please check CANVAS and course itinerary for the daily schedule of the course. If due to unforeseen circumstances the schedule changes, students will be informed prior to the change in schedule. 
+
+
+%Manually Adjusted Footer
+
+%%%%%%%%%  %%%%%%%%%%%%%%%%%%%%%%
+%%  PAGE 2 ENDS
+%%  PAGE 3 BEGINS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\makeFullPage
+%------------------------------------------------------------
+%	 Outline
+%------------------------------------------------------------
+\section{Topical Outline}
+\vspace{0.05cm}
+\begin{center}
+\scalebox{0.9}{
+  \begin{tabular}{c | c | c}
+    \arrayrulecolor{myCOLOR} \hline 
+    \color{myCOLOR}{Module} & \color{myCOLOR}{Topics} & \hspace{0.2cm} \color{myCOLOR}{Readings} \hspace{0.5cm}\\ \rowcolor{myCOLOR!30} \arrayrulecolor{myCOLOR!30} \hline
+    \hspace{1cm} 1 \hspace{1cm} & \hspace{0.001cm} Economic Principles and an Introduction to the Time value of Money (TVOM) \hspace{0.1cm}& \hspace{1cm} Ch. 1 and Ch. 2.1 to 2.3 \hspace{1cm} \\
+    2 & Analyzing Cash Flows and Series of Cash Flows & Ch. 2.4 to end of Ch.2 \\
+    \rowcolor{myCOLOR!30}
+    3 & Borrowing, Lending, and Investing & Ch. 3 \\
+    4 & Planning Horizon, MARR and Present Worth Analysis & Ch. 4 and Ch. 5.1 to 5.5 \\
+    \rowcolor{myCOLOR!30}
+    5 & Present, Future and Annual Worth Analysis & Ch. 5.6 to end of Ch. 5, Ch. 6 and 7 \\
+    6 & Rate of Return Analysis & Ch. 8 \\
+    \rowcolor{myCOLOR!30}
+    7 & Depreciation Method & Ch. 9 \\
+    8 & After-Tax Economic Analysis & Ch. 10 \\
+    \rowcolor{myCOLOR!30}
+    %9 & Economic Analysis and Inflation & Ch. 11 and 12 \\
+    9 & Decision making with uncertainty & Ch. 13.1 to 13.3 \\
+    \rowcolor{myCOLOR!30}
+    %11 & Probabilistic Risk Analysis & Ch. 13.4 \\
+\end{tabular}
+}
+\end{center}
+
+
+%------------------------------------------------------------
+%	 Grading Scheme
+%------------------------------------------------------------
+\vspace{0.1 cm}
+\section{Grading Scheme}
+\vspace{0.05cm}
+
+\begin{center}
+    \begin{tikzpicture}[scale=0.7]
+    \pie[color={myCOLOR!60,myCOLOR!60,myCOLOR!60,myCOLOR!20},text=pin]
+    {30/Quizzes,30/Assignments,30/Exams,10/ Class Participation}
+    \end{tikzpicture}
+\end{center}
+
+\begin{itemize}[label= \color{myCOLOR}{$\RHD$}]
+
+   \item \textbf{\color{myCOLOR}{Excel Assignments (Individual)}} 
+        \begin{itemize}[label= \color{myCOLOR}{$\circ$}]
+            \item	Up to 9 Excel Assignments will be given to you. Students need to follow the provided  instructions/lectures and solve the Excel problems. These problems represent the book examples but require excel skills to solve.
+            \item Assignments submitted have to be labeled as \textbf{\color{myCOLOR}{"IE4512 - HW \# <Student Name>"}}
+            \item Late assignments \textit{\color{red}{will not be}} graded. 
+            \item The worst scored  Excel Assignment will be dropped and will not count towards the final grade.
+        \end{itemize}
+        
+        \item \textbf{\color{myCOLOR}{Quizzes (Individual)}} 
+        \begin{itemize}[label= \color{myCOLOR}{$\circ$}]
+            \item The Quizzes will be assigned through Canvas. These Quizzes will be given after each module is completed.
+            \item Quizzes are due according to the deadlines listed on canvas. The online system will automatically deduct points for late submissions.
+            \item The WORST Quiz grade will be dropped and will not be counted towards the final grade.
+            \item For each quiz you would have 2 attempts. 
+            \item Please refer to the Quiz Excel template provided on canvas under Assignments tab.
+        \end{itemize}
+        
+       \item \textbf{\color{myCOLOR}{Exams: Mini Exam 1  and Mini Exam 2 (Individual)}} 
+        \begin{itemize}[label= \color{myCOLOR}{$\circ$}]
+           
+            \item The exams will be take home and will be announced 1-2 weeks in advance.
+            \item Both exams are equally weighted.
+        \end{itemize}
+        
+    % \item \textbf{\color{myCOLOR}{Project (Group based)}} 
+    %     \begin{itemize}[label= \color{myCOLOR}{$\circ$}]
+    %         \item The projects provide an opportunity to apply core principles learned in the class to a real life problem.
+    %         \item More information on project topic and deliverables will be posted on CANVAS. 
+    %     \end{itemize}
+        
+    \item \textbf{\color{myCOLOR}{Class Participation \& Discussion }}          
+    \begin{itemize}[label= \color{myCOLOR}{$\circ$}]
+             \item The course is synchronous and attendance is mandatory for students taking the course. To have an effective learning experience, students are encouraged to have continuous interaction with the faculty. A discussion question will be given to each section/break-out rooms to stimulate critical thinking. All students need to actively participate in discussions to articulate their ideas and share their thoughts.
+            \item Performance will be evaluated based on their participation and quality of response.
+        \end{itemize}
+\end{itemize}
+
+
+%------------------------------------------------------------
+%	 Grading
+%------------------------------------------------------------
+
+
+Your grades will be posted on CANVAS. You can check your running grade at any time, so there are no surprises. In fact, you should audit the correct entry of your grades. No grade corrections will be made after the last week of the semester. Final Grades and Course Letter Grades are not curved and are assigned as follows:
+\begin{center}
+\scalebox{0.9}{
+  \begin{tabular}{c c | c c | c c}
+    \arrayrulecolor{myCOLOR} \hline 
+    \cellcolor{white}\color{myCOLOR}{Letter Grade} & \color{myCOLOR}{Points} & \color{myCOLOR}{Letter Grade} & \color{myCOLOR}{Points} & \color{myCOLOR}{Letter Grade} & \color{myCOLOR}{Points}\\ \rowcolor{myCOLOR!30}
+    \arrayrulecolor{myCOLOR!30} \hline
+    \hspace{1cm} A \hspace{1cm} & \hspace{0.2cm} 93-100 \hspace{0.1cm} & \hspace{1cm} B \hspace{1cm} & \hspace{0.1cm} 83-86 \hspace{0.1cm} & \hspace{1cm} C \hspace{1cm} & \hspace{0.2cm} 73-76 \hspace{0.1cm}\\
+    A- & 90-92 & B- & 80-82 & C- & 70-72\\
+    \rowcolor{myCOLOR!30}
+    B+ & 87-89 & C+ & 77-79 & F & <70
+\end{tabular}
+}
+\end{center}
+\vspace{0.2 cm}
+\noindent This course prepares students to achieve student outcomes 1, 2, 3, 4, and 7.\\
+
+\begin{center}
+\begin{tabular}{ |c| c| c| c| c| c| c| c| }\hline
+ \textbf{Student Outcome} \ & \ \ \textbf{1} \ & \ \ \textbf{2} \ & \ \ \textbf{3} \ & \ \ \textbf{4}  \ & \ \ \textbf{5} \ &\ \ \textbf{6} \ &\ \ \textbf{7} \ \ \\  \hline
+ \rowcolor{myCOLOR!30}
+ \textbf{Emphasis} & 1 & 3 & 1 & 1 & 1 & - & 2&\hline
+\end{tabular}
+\end{center}
+
+\noindent \textbf{\textcolor{blue}{Emphasis}}
+\begin{itemize}
+    \item 3 Strong Support ; \samelineitem 2 Support ; \samelineitem 1 Somewhat support
+\end{itemize}
+
+%------------------------------------------------------------
+%	 Emailing Us?
+%------------------------------------------------------------
+\vspace{0.1 cm}
+\section{Emailing Us?}
+\vspace{0.05 cm}
+
+Please use the following format for the subject line of your email to avoid miss communication. This subject line will reduce the confusion.
+\begin{center}
+\textbf{\color{myCOLOR}{\Large{IE4512 - Subject Line}}}
+\end{center}
+
+%------------------------------------------------------------
+%	 Make-up Policy
+%------------------------------------------------------------
+\vspace{0.1cm}
+\section{Make-up Policy}
+\vspace{0.05cm}
+\begin{itemize} [label= \color{myCOLOR}{$\circ$}]
+    \item No makeup opportunity will be given for any homeworks/lab assignment/projects. 
+    \item Students unable to attend classes are responsible for obtaining information regarding announcements and lecture content
+\end{itemize}
+
+%------------------------------------------------------------
+%	 Class Policy
+%------------------------------------------------------------
+\vspace{0.1cm}
+\section{Class Policy}
+\vspace{0.05cm}
+
+\begin{itemize} [label= \color{myCOLOR}{$\circ$}]
+    \item Students are expected to attend all class sessions and are responsible for all materials presented in class. Past experience has shown students who attend regularly and interact with instructors/classmates tend to be better overall.
+    \item Laptops: You may need to use your laptop during the class upon the instructor's notes
+    \item Phones/tablets/smart watches: Electronic devices may not be used during the class. If you have class work, social networking or sports-score browsing, that is more important to do, then please skip class. Life is full of such choices.
+    \item Discussion between students for homeworks and projects is permissible. However the ideas / solutions / codes must not be copied. Each individual submission must be an outcome of individual effort
+\end{itemize}
+
+%------------------------------------------------------------
+%	 Recording of Classes
+%------------------------------------------------------------
+%\vspace{0.1cm}
+%\section{Recording of Classes}
+%\vspace{0.05cm}
+
+
+%Classes will be recorded to enable all students to review material covered in synchronous classes. Please contact me if you have any concerns.
+
+%------------------------------------------------------------
+%	 Academic Integrity
+%------------------------------------------------------------
+\vspace{0.1cm}
+\section{Academic Integrity}
+\vspace{0.05cm}
+
+A commitment to the principles of academic integrity is essential to the mission of Northeastern University. The promotion of independent and original scholarship ensures that students derive the most from their educational experience and their pursuit of knowledge. Academic dishonesty violates the most fundamental values of an intellectual community and undermines the achievements of the entire University.
+
+As members of the academic community, students must become familiar with their rights and responsibilities. In each course, they are responsible for knowing the requirements and restrictions regarding research and writing, examinations of whatever kind, collaborative work, the use of study aids, the appropriateness of assistance, and other issues. Students are responsible for learning the conventions of documentation and acknowledgment of sources in their fields. Northeastern University expects students to complete all examinations, tests, papers, creative projects, and assignments of any kind according to the highest ethical standards, as set forth either explicitly or implicitly in this Code or by the direction of instructors. 
+
+Go to Academic Integrity \href{http://www.northeastern.edu/osccr/academic-integrity-policy/}{\color{myCOLOR}{\underline{website}}}  to access the full academic integrity policy.
+
+%------------------------------------------------------------
+%	 Student accommodations
+%------------------------------------------------------------
+\vspace{0.1cm}
+\section{ Student accommodations}
+\vspace{0.05cm}
+
+Northeastern University and the Disability Resource Center (DRC) are committed to providing disability services that enable students who qualify under Section 504 of the Rehabilitation Act and the Americans with Disabilities Act Amendments Act (ADAAA) to participate fully in the activities of the university.  To receive accommodations through the DRC, students must provide appropriate documentation that demonstrates a current substantially limiting disability. 
+ 
+For more information, visit Disability Resource Center \href{http://www.northeastern.edu/drc/getting-started-with-the-drc/}{\color{myCOLOR}{\underline{website}}}
+
+%------------------------------------------------------------
+%	 Northeastern University Copyright Statement
+%------------------------------------------------------------
+\vspace{0.1cm}
+\section{Northeastern University Copyright Statement}
+\vspace{0.05cm}
+
+This course material is copyrighted, and all rights are reserved by Northeastern University. No part of this course material may be reproduced, transmitted, transcribed, stored in a retrieval system, or translated into any language or computer language, in any form or by any means, electronic, mechanical, magnetic, optical, chemical, manual, or otherwise, with the express prior written permission of the University.
+
+%------------------------------------------------------------
+%	 Diversity and Inclusivity Statement
+%------------------------------------------------------------
+\vspace{0.1cm}
+\section{Diversity and Inclusivity Statement}
+\vspace{0.05cm}
+
+Northeastern University is committed to equal opportunity, affirmative action, diversity and social justice while building a climate of inclusion on and beyond campus.  In the classroom, members of the University community work to cultivate an inclusive environment that denounces discrimination through innovation, collaboration and an awareness of global perspectives on social justice. It is my intention that students from all backgrounds and perspectives will be well served by this course, and that the diversity that students bring to this class will be viewed as an asset. I welcome individuals of all ages, backgrounds, beliefs, ethnicities, genders, gender identities, gender expressions, national origins, religious affiliations, sexual orientations, socioeconomic background, family education level, ability - and other visible and nonvisible differences. All members of this class are expected to contribute to a respectful, welcoming and inclusive environment for every other member of the class. Your suggestions are encouraged and appreciated.
+
+Please visit the \href{http://www.northeastern.edu/oidi/}{\color{myCOLOR}{\underline{website}}} for complete information on Diversity and Inclusion.
+
+%------------------------------------------------------------
+%	 TITLE IX
+%------------------------------------------------------------
+\vspace{0.1cm}
+\section{TITLE IX}
+\vspace{0.05cm}
+
+Title IX of the Education Amendments of 1972 protects individuals from sex or gender-based discrimination, including discrimination based on gender-identity, in educational programs and activities that receive federal financial assistance.\\
+Northeastern\textquotesingle s Title IX Policy prohibits Prohibited Offenses, which are defined as sexual harassment, sexual assault, relationship or domestic violence, and stalking. The Title IX Policy applies to the entire community, including male, female, transgender students, faculty and staff.\\
+In case of an emergency, please call 911.
+
+Please visit the \href{http://www.northeastern.edu/titleix}{\color{myCOLOR}{\underline{website}}} for a complete list of reporting options and resources both on- and off-campus
+
+
+%------------------------------------------------------------
+%	 Hybrid Nuflex
+%------------------------------------------------------------
+%\vspace{0.1 cm}
+%\section{Hybrid NUflex}
+%\vspace{0.05cm}
+
+%Hybrid NUflex allows some portion of the students in each class to be remote and others to be in class. If you have the opportunity to attend class in-person, please come as often as it’s possible for you to do so. Remember your commitment to your faculty and classmates:
+
+\begin{itemize} [label= \color{myCOLOR}{$\circ$}]
+   % \item \textbf{Use the \textcolor{myCOLOR}{\href{https://nuflex.northeastern.edu/dynamic-scheduling/}{\underline{{dynamic scheduling tool}}}} to set your preferences for in-person or remote attendance.} Each week between Monday and Wednesday, you' ll select whether you prefer to attend your class sessions remotely or in-person for the following week. You will be able to choose a preference for each individual class session. For example,  you can request to come one of your courses in-person on Monday and Wednesday and remotely on Friday.  
+   % \item \textbf{Follow through when you commit to attend class in-person.} Space in the classroom is limited, and your fellow students and faculty want to see you.
+   % \item \textbf{If you change your mind about in-person class attendance, update your preferences in the dynamic scheduling tool so someone else can take your seat.} The dynamic scheduling tool creates a wait-list for students who would like to attend class in-person but received a remote assignment. Beginning in late January or early February, if you’re assigned an in-person seat in a class session for the following week, you have until Saturday at 11:59pm ET to switch to remote for that class session. Switching from in-person to remote frees up a seat for your fellow students on the wait-list to come to class.
+\end{itemize}
+
+
+\end{document} 
