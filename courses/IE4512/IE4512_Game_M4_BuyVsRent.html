@@ -298,6 +298,50 @@
   .disc-card.olive .tag-chip { background: var(--olive-soft); color: var(--olive); }
   .disc-card.crimson .tag-chip { background: var(--crimson-soft); color: var(--crimson); }
 
+  /* ============ REFERENCE CARD ============ */
+  .ref-card {
+    display: flex; gap: 14px; align-items: flex-start;
+    padding: 13px 16px; margin-bottom: 14px;
+    background: linear-gradient(135deg, var(--paper) 0%, var(--blue-soft) 100%);
+    border: 1px solid var(--blue); border-radius: 10px;
+    text-decoration: none; color: inherit;
+    transition: all 0.18s; cursor: pointer;
+  }
+  .ref-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(25,71,214,0.15);
+    border-color: var(--blue-deep, #0d2e9e);
+  }
+  .ref-card .ref-icon {
+    flex-shrink: 0; width: 36px; height: 36px;
+    background: var(--blue); color: white; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .ref-card .ref-body { flex: 1; min-width: 0; }
+  .ref-card .ref-label {
+    font-family: 'Outfit', sans-serif; font-size: 10px; letter-spacing: 0.18em;
+    text-transform: uppercase; font-weight: 700; color: var(--blue); margin-bottom: 3px;
+  }
+  .ref-card .ref-title {
+    font-family: 'Lora', serif; font-size: 16px; font-weight: 600; line-height: 1.25;
+    color: var(--ink); margin-bottom: 5px;
+  }
+  .ref-card .ref-title em { font-style: italic; color: var(--blue); font-weight: 400; }
+  .ref-card .ref-blurb {
+    font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 5px;
+  }
+  .ref-card .ref-link {
+    font-family: 'JetBrains Mono', Consolas, monospace; font-size: 10.5px;
+    color: var(--blue); letter-spacing: 0; word-break: break-all;
+  }
+  .verdict-ref {
+    margin-top: 4px; font-size: 11px; color: var(--muted); font-family: 'Outfit', sans-serif;
+  }
+  .verdict-ref a {
+    color: var(--blue); text-decoration: none; font-weight: 600; border-bottom: 1px dotted var(--blue);
+  }
+  .verdict-ref a:hover { border-bottom-style: solid; }
+
   /* ============ MOBILE ============ */
   @media (max-width: 768px) {
     html, body { overflow: auto; height: auto; }
@@ -700,6 +744,7 @@
         </div>
         <div class="result-panel">
           <div class="verdict-line" id="verdict"></div>
+          <div class="verdict-ref">Want a more comprehensive treatment? Compare our verdict against the <a href="https://www.nytimes.com/interactive/2024/upshot/buy-rent-calculator.html" target="_blank" rel="noopener">NYT Buy vs. Rent Calculator</a> &mdash; it models inflation, capital gains, SALT, and the &ldquo;invest the difference&rdquo; alternative explicitly.</div>
           <div class="chart-box">
             <div class="chart-head">
               <h3>Cumulative present value of net costs</h3>
@@ -796,6 +841,17 @@
         <h2>Discussion &amp; <em>Writeup Topics</em></h2>
         <div class="lede">Six engineering economy questions you can investigate directly with the calculator. Each is a small sensitivity or breakeven analysis &mdash; the kind of thinking a project engineer does before committing capital.</div>
         <div class="assign-banner"><strong>Assignment:</strong> Pick <strong>at least two</strong> topics. For each, run the analysis described, then write a 200&ndash;300 word response with the numeric result + interpretation. Include a screenshot of the calculator at the verdict-flip setting. Submit a single PDF to Canvas.</div>
+        <a href="https://www.nytimes.com/interactive/2024/upshot/buy-rent-calculator.html" target="_blank" rel="noopener" class="ref-card">
+          <div class="ref-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M14 3h7v7"/><path d="M10 14L21 3"/><path d="M21 14v7H3V3h7"/></svg>
+          </div>
+          <div class="ref-body">
+            <div class="ref-label">Reference &middot; Real-world tool</div>
+            <div class="ref-title">The New York Times <em>Buy vs. Rent Calculator</em></div>
+            <div class="ref-blurb">A more comprehensive version with inflation adjustments, capital gains, SALT cap, and an explicit "invest the difference" assumption. Run our defaults through it and compare verdicts &mdash; the answer will not match exactly, and Topic 03 asks you to explain why.</div>
+            <div class="ref-link">nytimes.com/interactive/2024/upshot/buy-rent-calculator.html</div>
+          </div>
+        </a>
         <div class="disc-grid">
           ${DISCUSSION.map(d => `
             <div class="disc-card ${d.color}">
