@@ -308,6 +308,19 @@
   .pulse { animation: pulse 1.4s ease-in-out infinite; }
   @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
 
+  /* ============ MOBILE ============ */
+  @media (max-width: 768px) {
+    body { font-size: 13px; padding: 0 !important; }
+    .wrap { max-width: 100%; padding: 12px 10px 16px; }
+    h1, .title { font-size: 22px !important; line-height: 1.2; }
+    .grid, .row, .two-col, [class*="cols-2"] { grid-template-columns: 1fr !important; gap: 10px; }
+    canvas, svg { max-width: 100% !important; height: auto !important; }
+    .btn, button { min-height: 40px; padding: 9px 14px; font-size: 14px; }
+    input[type="number"], input[type="text"], input[type="range"] { font-size: 16px !important; }
+    .stage, .panel, .card { padding: 12px 14px; }
+    .stage-header, .head { flex-direction: column; align-items: stretch; gap: 8px; }
+    .xp-bar, .progress-bar { width: 100%; }
+  }
 </style>
 </head>
 <body>

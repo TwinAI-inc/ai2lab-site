@@ -112,6 +112,25 @@
     padding: 6px 12px; background: #fff; border: 1px solid #e8e3d4;
   }
   .stat strong { color: #1947d6; font-weight: 700; margin-left: 4px; }
+
+  /* ============ MOBILE ============ */
+  @media (max-width: 768px) {
+    body { padding: 12px 8px !important; font-size: 13px; }
+    .wrap { max-width: 100%; padding: 0 2px; }
+    .controls { flex-direction: column; align-items: stretch; gap: 8px; }
+    .controls input, .controls select, .controls button { width: 100%; min-height: 40px; font-size: 16px !important; }
+    .palette { flex-wrap: wrap; gap: 6px; justify-content: center; }
+    .chip { font-size: 13px; padding: 8px 10px; min-height: 38px; touch-action: manipulation; }
+    .timeline { overflow-x: auto; min-width: 100%; padding-bottom: 6px; -webkit-overflow-scrolling: touch; }
+    .year-slot { min-width: 64px; }
+    canvas { max-width: 100% !important; height: auto !important; }
+    h1 { font-size: 19px !important; }
+    .btn, button { padding: 9px 14px; font-size: 13px; min-height: 40px; }
+    .stat { font-size: 12px; padding: 6px 10px; }
+    .mobile-note { display: block !important; }
+  }
+  .mobile-note { display: none; background: #faf3e0; border-left: 3px solid #b8860b; padding: 9px 12px; border-radius: 6px; font-size: 12px; color: #5a5247; margin: 8px 0 12px; }
+  .mobile-note strong { color: #b8860b; }
 </style>
 </head>
 <body>

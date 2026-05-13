@@ -204,6 +204,30 @@
   .metric.olive .num { color: var(--olive); }
   .metric.gold .num { color: var(--gold); }
   .metric.blue .num { color: var(--blue); }
+
+  /* ============ MOBILE ============ */
+  @media (max-width: 768px) {
+    html, body { overflow: auto; height: auto; }
+    body { font-size: 13px; }
+    .app { height: auto; min-height: 100vh; padding: 10px 10px 14px; max-width: 100%; gap: 8px; }
+    .head { flex-direction: column; align-items: stretch; gap: 6px; padding: 9px 12px; }
+    .brand { gap: 6px; width: 100%; }
+    .brand h1 { font-size: 17px; line-height: 1.2; }
+    .brand .tag { font-size: 11px; }
+    .tabs { flex-direction: column; }
+    .tab { width: 100%; min-height: 40px; }
+    .stage { min-height: auto; }
+    .calc-page { grid-template-columns: 1fr !important; gap: 10px; height: auto; }
+    .inputs-col { max-height: none; padding: 12px; }
+    .chart-col { min-height: 360px; padding: 12px; }
+    .ir { grid-template-columns: 1fr 1fr; gap: 6px; }
+    .concepts-grid { grid-template-columns: 1fr 1fr !important; gap: 8px; }
+    .metric-row { grid-template-columns: 1fr 1fr !important; gap: 6px; }
+    canvas { max-width: 100% !important; height: auto !important; min-height: 260px; }
+    input[type="number"], input[type="range"] { font-size: 16px !important; }
+    .btn { min-height: 40px; padding: 9px 14px; }
+    .verdict-line { font-size: 14px; }
+  }
 </style>
 </head>
 <body>

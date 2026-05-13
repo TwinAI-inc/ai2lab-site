@@ -167,6 +167,25 @@
   .counter .now { font-family: 'Outfit', sans-serif; font-style: normal; font-size: 22px; font-weight: 800; color: var(--blue); min-width: 24px; text-align: center; }
   .counter .total { font-family: 'Outfit', sans-serif; font-style: normal; font-size: 14px; font-weight: 600; color: var(--soft); }
   .foot { flex-shrink: 0; text-align: center; font-family: 'Outfit', sans-serif; font-size: 10.5px; color: var(--soft); padding: 4px 0; letter-spacing: 0.06em; opacity: 0.85; }
+
+  /* ============ MOBILE ============ */
+  @media (max-width: 768px) {
+    html, body { overflow: auto; height: auto; }
+    body { font-size: 13px; }
+    .app { height: auto; min-height: 100vh; padding: 10px 10px 16px; max-width: 100%; gap: 8px; }
+    .head { flex-direction: column; align-items: stretch; gap: 6px; padding: 9px 12px; }
+    .brand { gap: 6px; width: 100%; }
+    .brand h1 { font-size: 17px; line-height: 1.2; }
+    .brand .tag { font-size: 11px; }
+    .stage { overflow: visible; min-height: 60vh; }
+    .mystery-state, .answer-state { padding: 14px 10px; min-height: 480px; height: auto; gap: 14px; }
+    .mystery-img, .answer-img, .flip-card { max-width: 100%; height: auto !important; max-height: 280px; }
+    .progress-strip { flex-wrap: wrap; gap: 4px; padding: 4px; }
+    .btn { padding: 9px 14px; font-size: 13px; min-height: 40px; }
+    .nav-row, .nav-controls { flex-wrap: wrap; gap: 6px; }
+    .counter { font-size: 14px; }
+    .counter .now { font-size: 20px; }
+  }
 </style>
 </head>
 <body>

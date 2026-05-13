@@ -22,8 +22,22 @@
     min-height: 100vh;
   }
   @media (max-width: 800px) {
-    .app { grid-template-columns: 1fr; }
-    .sidebar { position: relative !important; max-height: none !important; }
+    .app { grid-template-columns: 1fr; padding: 10px 10px 16px; gap: 10px; }
+    .sidebar { position: relative !important; max-height: none !important; padding: 10px; }
+    .brand .code { font-size: 16px; }
+    .brand .sub { font-size: 12.5px; }
+    .nav-list { max-height: 280px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    .mod-item { padding: 8px 10px; }
+    .mod-item .label { font-size: 13px; }
+    .module-content { padding: 16px 14px; }
+    .mod-header { flex-direction: column; align-items: stretch; gap: 10px; margin-bottom: 14px; }
+    .mod-header h2 { font-size: 24px; }
+    .mod-header .lede { font-size: 13.5px; line-height: 1.55; }
+    .mod-header .meta { padding-top: 0; }
+    .tools-grid { grid-template-columns: 1fr !important; gap: 10px; }
+    .tool-card { padding: 14px; }
+    .optional-banner { font-size: 13px; padding: 11px 14px; }
+    .pw-prompt input { font-size: 16px !important; }
   }
 
   /* ============ SIDEBAR ============ */

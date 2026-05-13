@@ -111,6 +111,28 @@
   svg.diagram .arrow-label { font-size: 10px; font-family: 'Outfit', sans-serif; font-weight: 600; }
   svg.diagram .arrow-label.up { fill: var(--olive); }
   svg.diagram .arrow-label.down { fill: var(--crimson); }
+
+  /* ============ MOBILE ============ */
+  @media (max-width: 768px) {
+    html, body { overflow: auto; height: auto; }
+    body { font-size: 13px; }
+    .app { height: auto; min-height: 100vh; padding: 10px 10px 14px; max-width: 100%; gap: 8px; }
+    .head { flex-direction: column; align-items: stretch; gap: 6px; padding: 9px 12px; }
+    .head .right { justify-content: space-between; font-size: 11px; }
+    .brand { gap: 6px; width: 100%; }
+    .brand h1 { font-size: 17px; line-height: 1.2; }
+    .brand .tag { font-size: 11px; }
+    .stage { grid-template-columns: 1fr !important; gap: 10px; }
+    .panel { max-height: none; padding: 12px 13px; }
+    .panel .pbody { overflow-y: visible; max-height: none; }
+    .panel .pbody h2 { font-size: 16px; }
+    svg.diagram { height: auto !important; min-height: 150px; max-height: 200px; }
+    .btn { padding: 10px 14px; font-size: 13px; min-height: 40px; }
+    .btn-row { flex-wrap: wrap; }
+    .answer-row input { font-size: 16px !important; padding: 10px 12px; }
+    .summary-card .big-score { font-size: 44px; }
+    .summary-card .recap { max-width: 100%; }
+  }
 </style>
 </head>
 <body>
