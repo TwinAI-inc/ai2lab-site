@@ -1,7 +1,8 @@
 /* IE 4512 — Focus Music widget
-   Floating bottom-right player with an embedded tiny track list.
-   Click a track to play. Shuffle toggle + next/prev. State persists.
-   To swap or add tracks, edit the TRACKS array below. */
+   Floating bottom-right player. Minimized = mini-player pill (play + title +
+   progress) when a track is loaded; default pill ("Music") otherwise.
+   Expanded = full panel with progress bar, transport, volume, track list.
+   State persists across pages via localStorage. */
 (function () {
   if (window.__fmLoaded) return;
   window.__fmLoaded = true;
@@ -12,7 +13,7 @@
   // 20 curated calm/focus tracks hosted on archive.org (stable permanent URLs):
   //   * 3 Persian santur (Faramarz Payvar)
   //   * 12 calm piano (Max Richter, Yann Tiersen, Einaudi, Nils Frahm, ...)
-  //   * 5 ambient (Calm Pills compilation)
+  //   * 5 ambient (Calm Pills compilation + Eluvium)
   // Tag field categorizes each track (santur / piano / ambient).
   // To swap or add, replace title/artist/tag/url. Auto-skip on load error.
   const TRACKS = [
@@ -39,37 +40,81 @@
   ];
 
   // ============ STATE ============
-  let state = { trackIdx: 0, shuffle: false, volume: 60, expanded: false, isPlaying: false };
+  let state = { trackIdx: -1, shuffle: false, volume: 60, expanded: false, isPlaying: false, currentTime: 0 };
   try { Object.assign(state, JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')); } catch (e) {}
-  function save() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {} }
+  function save() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+  }
+  function fmtTime(s) {
+    if (!isFinite(s) || s < 0) return '0:00';
+    const m = Math.floor(s / 60), sec = Math.floor(s % 60);
+    return m + ':' + String(sec).padStart(2,'0');
+  }
 
   // ============ CSS ============
   const css = `
     .fm-btn {
       position: fixed; bottom: 14px; right: 14px;
-      height: 44px; padding: 0 16px 0 12px; border-radius: 999px;
+      height: 44px; border-radius: 999px;
       background: #1947d6; color: #fff; border: none; cursor: pointer; z-index: 998;
       box-shadow: 0 4px 14px rgba(25,71,214,0.32);
       display: inline-flex; align-items: center; gap: 8px;
       font-family: 'Outfit', -apple-system, system-ui, sans-serif;
       font-size: 12px; font-weight: 700; letter-spacing: 0.04em;
-      transition: all 0.18s;
+      transition: box-shadow 0.18s, transform 0.18s, width 0.22s, padding 0.22s;
+      padding: 0 16px 0 12px;
+      overflow: hidden;
     }
     .fm-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(25,71,214,0.42); }
-    .fm-btn .dot {
-      width: 8px; height: 8px; border-radius: 999px; background: #ffe66d;
-      box-shadow: 0 0 0 0 rgba(255,230,109,0.7); animation: fm-pulse 1.6s ease-in-out infinite;
-    }
+    .fm-btn.has-track { padding: 0 12px 0 4px; width: 296px; max-width: calc(100vw - 28px); }
+    .fm-btn .dot { width: 8px; height: 8px; border-radius: 999px; background: #ffe66d;
+      box-shadow: 0 0 0 0 rgba(255,230,109,0.7); animation: fm-pulse 1.6s ease-in-out infinite; }
     .fm-btn .dot.off { background: rgba(255,255,255,0.45); animation: none; box-shadow: none; }
     @keyframes fm-pulse {
       0%,100% { box-shadow: 0 0 0 0 rgba(255,230,109,0.7); }
       50%     { box-shadow: 0 0 0 7px rgba(255,230,109,0); }
     }
-    .fm-btn svg { width: 15px; height: 15px; }
+    .fm-btn > .icon { width: 15px; height: 15px; flex-shrink: 0; }
+
+    /* Mini-player slots (visible only when .has-track) */
+    .fm-mini-play {
+      width: 34px; height: 34px; border-radius: 999px;
+      background: rgba(255,255,255,0.20); display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: background 0.15s;
+    }
+    .fm-mini-play:hover { background: rgba(255,255,255,0.32); }
+    .fm-mini-play svg { width: 14px; height: 14px; fill: #fff; }
+    .fm-mini-meta {
+      flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;
+      align-items: flex-start; line-height: 1.1;
+    }
+    .fm-mini-title {
+      font-family: 'Lora', Georgia, serif; font-style: italic; font-weight: 600;
+      font-size: 11.5px; max-width: 100%; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis; letter-spacing: 0;
+    }
+    .fm-mini-progress {
+      width: 100%; height: 3px; background: rgba(255,255,255,0.22);
+      border-radius: 999px; position: relative; overflow: hidden;
+    }
+    .fm-mini-fill {
+      position: absolute; left: 0; top: 0; bottom: 0; width: 0%;
+      background: #ffe66d; border-radius: 999px;
+      transition: width 0.2s linear;
+    }
+    .fm-mini-expand { width: 18px; height: 18px; opacity: 0.7; flex-shrink: 0; }
+    .fm-mini-expand:hover { opacity: 1; }
+
+    /* Show/hide based on track-loaded state */
+    .fm-btn.has-track .default-label,
+    .fm-btn.has-track > .icon { display: none; }
+    .fm-btn:not(.has-track) .fm-mini-play,
+    .fm-btn:not(.has-track) .fm-mini-meta,
+    .fm-btn:not(.has-track) .fm-mini-expand { display: none; }
 
     .fm-panel {
       position: fixed; bottom: 14px; right: 14px;
-      width: 320px; max-width: calc(100vw - 28px);
+      width: 340px; max-width: calc(100vw - 28px);
       background: #fff; border-radius: 14px; z-index: 998;
       box-shadow: 0 18px 50px rgba(0,0,0,0.22);
       display: none; flex-direction: column; overflow: hidden;
@@ -112,32 +157,65 @@
       font-size: 10.5px; color: #5a5247; margin-top: 2px;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
+    .fm-now .tag {
+      flex-shrink: 0; font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase;
+      font-weight: 700; padding: 3px 8px; border-radius: 999px;
+      background: #eef2ff; color: #1947d6;
+    }
+    .fm-now .tag.santur  { background: #faf3e0; color: #b8860b; }
+    .fm-now .tag.piano   { background: #eef2ff; color: #1947d6; }
+    .fm-now .tag.ambient { background: #f0f4ea; color: #5c7a4a; }
+
+    /* Expanded progress row */
+    .fm-progress-row {
+      padding: 8px 14px 10px; border-bottom: 1px solid #e8e3d4;
+      display: flex; align-items: center; gap: 9px;
+      font-family: 'JetBrains Mono', Consolas, monospace; font-size: 10px; color: #5a5247;
+    }
+    .fm-progress-bar {
+      flex: 1; height: 4px; background: #e8e3d4; border-radius: 999px;
+      position: relative; cursor: pointer;
+    }
+    .fm-progress-fill {
+      position: absolute; left: 0; top: 0; bottom: 0; width: 0%;
+      background: #1947d6; border-radius: 999px;
+      transition: width 0.15s linear;
+    }
+    .fm-progress-bar:hover .fm-progress-fill { background: #4a6fe6; }
+    .fm-progress-bar::after {
+      content: ''; position: absolute; left: var(--seek-pct, 0%); top: 50%;
+      transform: translate(-50%, -50%);
+      width: 10px; height: 10px; border-radius: 999px; background: #1947d6;
+      opacity: 0; transition: opacity 0.15s;
+      pointer-events: none;
+    }
+    .fm-progress-bar:hover::after { opacity: 1; }
 
     .fm-controls {
       display: flex; align-items: center; justify-content: center; gap: 6px;
-      padding: 9px 12px; border-bottom: 1px solid #e8e3d4;
+      padding: 8px 12px; border-bottom: 1px solid #e8e3d4;
     }
     .fm-controls button {
-      width: 34px; height: 34px; border-radius: 999px; border: none;
+      width: 32px; height: 32px; border-radius: 999px; border: none;
       background: transparent; color: #1a1a1a; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       transition: all 0.15s;
     }
     .fm-controls button:hover { background: #eef2ff; color: #1947d6; }
     .fm-controls button.play {
-      background: #1947d6; color: #fff; width: 40px; height: 40px;
+      background: #1947d6; color: #fff; width: 38px; height: 38px;
       box-shadow: 0 3px 10px rgba(25,71,214,0.3);
     }
     .fm-controls button.play:hover { background: #4a6fe6; color: #fff; }
     .fm-controls button.shuf.active { background: #b8860b; color: #fff; }
-    .fm-controls button svg { width: 16px; height: 16px; }
-    .fm-controls button.play svg { width: 18px; height: 18px; }
+    .fm-controls button svg { width: 15px; height: 15px; }
+    .fm-controls button.play svg { width: 17px; height: 17px; }
 
     .fm-vol {
       display: flex; align-items: center; gap: 8px;
-      padding: 8px 14px; border-bottom: 1px solid #e8e3d4;
+      padding: 7px 14px; border-bottom: 1px solid #e8e3d4;
     }
-    .fm-vol svg { width: 13px; height: 13px; color: #5a5247; flex-shrink: 0; }
+    .fm-vol svg { width: 12px; height: 12px; color: #5a5247; flex-shrink: 0; }
     .fm-vol input[type="range"] {
       flex: 1; height: 4px; -webkit-appearance: none; appearance: none;
       background: linear-gradient(to right, #1947d6 var(--pct, 60%), #e8e3d4 var(--pct, 60%));
@@ -145,17 +223,15 @@
     }
     .fm-vol input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none; appearance: none;
-      width: 13px; height: 13px; border-radius: 999px; background: #1947d6;
+      width: 12px; height: 12px; border-radius: 999px; background: #1947d6;
       cursor: pointer; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     }
     .fm-vol input[type="range"]::-moz-range-thumb {
-      width: 13px; height: 13px; border-radius: 999px; background: #1947d6;
+      width: 12px; height: 12px; border-radius: 999px; background: #1947d6;
       cursor: pointer; border: 2px solid #fff;
     }
 
-    .fm-list {
-      flex: 1; max-height: 240px; overflow-y: auto; padding: 4px 0;
-    }
+    .fm-list { flex: 1; max-height: 220px; overflow-y: auto; padding: 4px 0; }
     .fm-list::-webkit-scrollbar { width: 5px; }
     .fm-list::-webkit-scrollbar-thumb { background: #d4cfc0; border-radius: 999px; }
     .fm-track {
@@ -183,20 +259,26 @@
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .fm-track.active .ti .title { font-weight: 700; color: #1947d6; }
-    .fm-track .ti .artist {
-      font-size: 10px; color: #8b7355; margin-top: 1px;
+    .fm-track .ti .artist { font-size: 10px; color: #8b7355; margin-top: 1px; }
+    .fm-track .tag-mini {
+      flex-shrink: 0; font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase;
+      font-weight: 700; padding: 2px 6px; border-radius: 999px;
+      background: #eef2ff; color: #1947d6;
     }
+    .fm-track .tag-mini.santur  { background: #faf3e0; color: #b8860b; }
+    .fm-track .tag-mini.piano   { background: #eef2ff; color: #1947d6; }
+    .fm-track .tag-mini.ambient { background: #f0f4ea; color: #5c7a4a; }
 
     .fm-foot {
-      padding: 7px 14px; font-size: 10px; color: #8b7355; font-style: italic;
+      padding: 6px 14px; font-size: 9.5px; color: #8b7355; font-style: italic;
       font-family: 'Lora', serif; text-align: center;
       border-top: 1px solid #e8e3d4; background: #faf9f5;
     }
-    .fm-foot a { color: #1947d6; text-decoration: none; border-bottom: 1px dotted #1947d6; }
 
     @media (max-width: 480px) {
       .fm-panel { width: calc(100vw - 16px); right: 8px; bottom: 8px; }
       .fm-btn { right: 8px; bottom: 8px; }
+      .fm-btn.has-track { width: calc(100vw - 16px); max-width: 320px; }
       .fm-list { max-height: 38vh; }
     }
   `;
@@ -208,15 +290,25 @@
   const audio = new Audio();
   audio.preload = 'none';
 
+  // Reset trackIdx to -1 if invalid (e.g. old localStorage with index from a longer list)
+  if (state.trackIdx < 0 || state.trackIdx >= TRACKS.length) state.trackIdx = -1;
+
   function mount() {
-    // ----- floating button -----
-    const btn = document.createElement('button');
+    // ----- floating button (default mode + mini-player slots, hidden until has-track) -----
+    const btn = document.createElement('div');
     btn.className = 'fm-btn';
-    btn.setAttribute('aria-label', 'Focus music');
+    btn.id = 'fm-btn';
+    btn.setAttribute('role', 'button');
     btn.innerHTML = `
       <span class="dot off" id="fm-dot"></span>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-      Music
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      <span class="default-label">Music</span>
+      <div class="fm-mini-play" id="fm-mini-play" title="Play / Pause"><svg id="fm-mini-icon" viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg></div>
+      <div class="fm-mini-meta">
+        <div class="fm-mini-title" id="fm-mini-title">—</div>
+        <div class="fm-mini-progress"><div class="fm-mini-fill" id="fm-mini-fill"></div></div>
+      </div>
+      <svg class="fm-mini-expand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
     `;
     document.body.appendChild(btn);
 
@@ -236,9 +328,16 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
         </div>
         <div class="meta">
-          <div class="title" id="fm-now-title">&mdash;</div>
+          <div class="title" id="fm-now-title">—</div>
           <div class="artist" id="fm-now-artist">pick a track below</div>
         </div>
+        <div class="tag" id="fm-now-tag" style="display:none;"></div>
+      </div>
+
+      <div class="fm-progress-row">
+        <span id="fm-time-cur">0:00</span>
+        <div class="fm-progress-bar" id="fm-progress-bar"><div class="fm-progress-fill" id="fm-progress-fill"></div></div>
+        <span id="fm-time-dur">0:00</span>
       </div>
 
       <div class="fm-controls">
@@ -267,22 +366,39 @@
 
       <div class="fm-list" id="fm-list"></div>
 
-      <div class="fm-foot">10 instrumental tracks &middot; loops and shuffles for as long as you study</div>
+      <div class="fm-foot">20 instrumental tracks &middot; santur · piano · ambient</div>
     `;
     document.body.appendChild(panel);
 
     const $ = id => document.getElementById(id);
-    const elDot = $('fm-dot');
-    const elList = $('fm-list');
-    const elNowT = $('fm-now-title');
-    const elNowA = $('fm-now-artist');
-    const elArt = $('fm-art');
-    const elPlay = $('fm-play');
-    const elPlayIcon = $('fm-play-icon');
-    const elShuf = $('fm-shuf');
-    const elVol = $('fm-vol');
+    const elDot       = $('fm-dot');
+    const elList      = $('fm-list');
+    const elNowT      = $('fm-now-title');
+    const elNowA      = $('fm-now-artist');
+    const elNowTag    = $('fm-now-tag');
+    const elArt       = $('fm-art');
+    const elPlay      = $('fm-play');
+    const elPlayIcon  = $('fm-play-icon');
+    const elShuf      = $('fm-shuf');
+    const elVol       = $('fm-vol');
+    const elProgBar   = $('fm-progress-bar');
+    const elProgFill  = $('fm-progress-fill');
+    const elTimeCur   = $('fm-time-cur');
+    const elTimeDur   = $('fm-time-dur');
+    const elMiniPlay  = $('fm-mini-play');
+    const elMiniIcon  = $('fm-mini-icon');
+    const elMiniTitle = $('fm-mini-title');
+    const elMiniFill  = $('fm-mini-fill');
 
-    // ----- track list -----
+    function setPlayIcons(playing) {
+      const playSvg  = '<polygon points="6,4 20,12 6,20"/>';
+      const pauseSvg = '<rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>';
+      elPlayIcon.innerHTML = playing ? pauseSvg : playSvg;
+      const playMiniSvg  = '<polygon points="6,4 20,12 6,20" fill="#fff"/>';
+      const pauseMiniSvg = '<rect x="6" y="5" width="4" height="14" fill="#fff"/><rect x="14" y="5" width="4" height="14" fill="#fff"/>';
+      elMiniIcon.innerHTML = playing ? pauseMiniSvg : playMiniSvg;
+    }
+
     function renderList() {
       elList.innerHTML = TRACKS.map((t, i) => `
         <div class="fm-track ${i === state.trackIdx ? 'active' : ''} ${i === state.trackIdx && state.isPlaying ? 'playing' : ''}" data-i="${i}">
@@ -291,84 +407,100 @@
             <div class="title">${t.title}</div>
             <div class="artist">${t.artist}</div>
           </div>
+          <span class="tag-mini ${t.tag}">${t.tag}</span>
         </div>
       `).join('');
       Array.from(elList.children).forEach(el => {
-        el.addEventListener('click', () => {
-          const i = +el.dataset.i;
-          loadTrack(i, true);
-        });
+        el.addEventListener('click', () => loadTrack(+el.dataset.i, true));
       });
     }
 
     function updateNow() {
-      const t = TRACKS[state.trackIdx];
-      elNowT.innerHTML = t ? t.title : '—';
-      elNowA.textContent = t ? t.artist : '';
+      const t = state.trackIdx >= 0 ? TRACKS[state.trackIdx] : null;
+      elNowT.textContent = t ? t.title : '—';
+      elNowA.textContent = t ? t.artist : 'pick a track below';
+      if (t) {
+        elNowTag.style.display = '';
+        elNowTag.textContent = t.tag;
+        elNowTag.className = 'tag ' + t.tag;
+      } else {
+        elNowTag.style.display = 'none';
+      }
       elArt.classList.toggle('playing', state.isPlaying);
-      elPlayIcon.innerHTML = state.isPlaying
-        ? '<rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>'
-        : '<polygon points="6,4 20,12 6,20"/>';
       elShuf.classList.toggle('active', !!state.shuffle);
       elDot.classList.toggle('off', !state.isPlaying);
       elVol.style.setProperty('--pct', state.volume + '%');
+      setPlayIcons(state.isPlaying);
+      // mini-player title
+      elMiniTitle.textContent = t ? t.title : '';
+      // toggle pill mode
+      document.getElementById('fm-btn').classList.toggle('has-track', t != null);
       renderList();
     }
 
+    function updateProgress() {
+      const cur = audio.currentTime || 0;
+      const dur = audio.duration || 0;
+      const pct = dur > 0 ? (cur / dur) * 100 : 0;
+      elProgFill.style.width = pct + '%';
+      elMiniFill.style.width = pct + '%';
+      elTimeCur.textContent = fmtTime(cur);
+      elTimeDur.textContent = fmtTime(dur);
+      state.currentTime = cur;
+    }
+
     function loadTrack(i, autoplay) {
-      state.trackIdx = i;
-      save();
+      state.trackIdx = i; save();
       const t = TRACKS[i];
       audio.src = t.url;
       audio.volume = state.volume / 100;
       if (autoplay) {
-        audio.play().then(() => {
-          state.isPlaying = true; save(); updateNow();
-        }).catch(() => {
-          state.isPlaying = false; save(); updateNow();
-        });
+        audio.play().then(() => { state.isPlaying = true; save(); updateNow(); })
+                    .catch(() => { state.isPlaying = false; save(); updateNow(); });
       }
       updateNow();
     }
 
     function togglePlay() {
+      if (state.trackIdx < 0) { loadTrack(0, true); return; }
       if (audio.paused) {
         if (!audio.src) loadTrack(state.trackIdx, true);
         else audio.play().then(() => { state.isPlaying = true; save(); updateNow(); });
       } else {
-        audio.pause();
-        state.isPlaying = false; save(); updateNow();
+        audio.pause(); state.isPlaying = false; save(); updateNow();
       }
     }
-
     function next() {
       let i;
       if (state.shuffle) {
         do { i = Math.floor(Math.random() * TRACKS.length); } while (i === state.trackIdx && TRACKS.length > 1);
       } else {
-        i = (state.trackIdx + 1) % TRACKS.length;
+        i = state.trackIdx < 0 ? 0 : (state.trackIdx + 1) % TRACKS.length;
       }
       loadTrack(i, true);
     }
     function prev() {
-      const i = (state.trackIdx - 1 + TRACKS.length) % TRACKS.length;
+      const i = state.trackIdx <= 0 ? TRACKS.length - 1 : (state.trackIdx - 1);
       loadTrack(i, true);
     }
     function stop() {
-      audio.pause(); audio.currentTime = 0;
-      state.isPlaying = false; save(); updateNow();
+      audio.pause(); audio.currentTime = 0; state.isPlaying = false; save(); updateNow(); updateProgress();
     }
 
     // ----- wire controls -----
-    $('fm-close').addEventListener('click', () => {
-      panel.classList.remove('open'); btn.style.display = '';
+    $('fm-close').addEventListener('click', e => {
+      e.stopPropagation();
+      panel.classList.remove('open');
       state.expanded = false; save();
     });
-    btn.addEventListener('click', () => {
-      panel.classList.add('open'); btn.style.display = 'none';
+    btn.addEventListener('click', e => {
+      // ignore clicks on the mini play button (it has its own handler)
+      if (e.target.closest('#fm-mini-play')) return;
+      panel.classList.add('open');
       state.expanded = true; save();
-      updateNow();
+      updateNow(); updateProgress();
     });
+    elMiniPlay.addEventListener('click', e => { e.stopPropagation(); togglePlay(); });
     elPlay.addEventListener('click', togglePlay);
     $('fm-next').addEventListener('click', next);
     $('fm-prev').addEventListener('click', prev);
@@ -380,13 +512,27 @@
       elVol.style.setProperty('--pct', state.volume + '%');
     });
 
+    // Seek on click anywhere on the progress bar
+    elProgBar.addEventListener('click', e => {
+      const r = elProgBar.getBoundingClientRect();
+      const pct = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+      if (audio.duration) audio.currentTime = pct * audio.duration;
+    });
+    elProgBar.addEventListener('mousemove', e => {
+      const r = elProgBar.getBoundingClientRect();
+      const pct = Math.min(100, Math.max(0, ((e.clientX - r.left) / r.width) * 100));
+      elProgBar.style.setProperty('--seek-pct', pct + '%');
+    });
+
     audio.addEventListener('ended', next);
     audio.addEventListener('error', () => { state.isPlaying = false; save(); updateNow(); });
     audio.addEventListener('play',  () => { state.isPlaying = true;  save(); updateNow(); });
-    audio.addEventListener('pause', () => { /* state already set by togglePlay */ });
+    audio.addEventListener('pause', () => { /* state set in togglePlay/stop */ });
+    audio.addEventListener('timeupdate', updateProgress);
+    audio.addEventListener('loadedmetadata', updateProgress);
 
     elVol.style.setProperty('--pct', state.volume + '%');
-    updateNow();
+    updateNow(); updateProgress();
   }
 
   if (document.readyState === 'loading') {
