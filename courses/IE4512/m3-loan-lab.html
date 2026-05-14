@@ -174,6 +174,173 @@
   .insight em { color: var(--ink); font-style: italic; }
   .insight code { background: var(--paper); padding: 1px 5px; border-radius: 4px; font-family: 'Outfit', sans-serif; font-weight: 600; color: var(--blue); font-size: 11px; }
 
+  /* ============ COVER OVERLAY ============ */
+  .cover {
+    position: fixed; inset: 0; z-index: 200; background: var(--bg);
+    display: flex; flex-direction: column; padding: 14px 22px 12px;
+    animation: fade-in 0.4s ease-out;
+  }
+  .cover.hidden { display: none; }
+  @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+  .cover-head {
+    flex-shrink: 0; text-align: center; padding: 4px 0 14px;
+  }
+  .cover-head .kicker {
+    font-size: 10.5px; letter-spacing: 0.24em; color: var(--blue);
+    text-transform: uppercase; font-weight: 700; margin-bottom: 6px;
+  }
+  .cover-head h2 {
+    font-family: 'Lora', serif; font-size: 28px; font-weight: 700; line-height: 1.15;
+  }
+  .cover-head h2 em { font-style: italic; color: var(--blue); }
+  .cover-head .sub {
+    font-family: 'Lora', serif; font-style: italic; font-size: 13.5px;
+    color: var(--muted); margin-top: 6px; max-width: 720px; margin-left: auto; margin-right: auto;
+    line-height: 1.55;
+  }
+  .cards-grid {
+    flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+    perspective: 1400px; min-height: 0;
+  }
+  @media (max-width: 1100px) { .cards-grid { grid-template-columns: 1fr 1fr; } }
+
+  .plan-card {
+    position: relative; transform-style: preserve-3d;
+    transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer; min-height: 340px;
+  }
+  .plan-card.flipped { transform: rotateY(180deg); }
+  .plan-card .face {
+    position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    border-radius: 12px; overflow: hidden;
+    background: var(--paper); border: 1px solid var(--border);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+    transition: box-shadow 0.18s;
+    display: flex; flex-direction: column;
+  }
+  .plan-card:hover .face { box-shadow: 0 10px 28px rgba(0,0,0,0.10); }
+  .plan-card .face-front {
+    padding: 18px 18px 14px; align-items: center; text-align: center;
+    border-top: 3px solid var(--blue);
+    justify-content: space-between;
+  }
+  .plan-card .face-back {
+    transform: rotateY(180deg); padding: 13px 15px 12px;
+    border-top: 3px solid var(--blue);
+  }
+  .plan-card.p1 .face-front, .plan-card.p1 .face-back { border-top-color: var(--crimson); }
+  .plan-card.p2 .face-front, .plan-card.p2 .face-back { border-top-color: var(--olive); }
+  .plan-card.p3 .face-front, .plan-card.p3 .face-back { border-top-color: var(--blue); }
+  .plan-card.p4 .face-front, .plan-card.p4 .face-back { border-top-color: var(--gold); }
+
+  .plan-card .label {
+    font-family: 'Outfit', sans-serif; font-size: 10px; letter-spacing: 0.24em;
+    text-transform: uppercase; font-weight: 700; color: var(--soft);
+  }
+  .plan-card .plan-num {
+    font-family: 'Lora', serif; font-style: italic; font-weight: 700;
+    font-size: 84px; line-height: 1; opacity: 0.22; margin: 4px 0;
+  }
+  .plan-card.p1 .plan-num { color: var(--crimson); }
+  .plan-card.p2 .plan-num { color: var(--olive); }
+  .plan-card.p3 .plan-num { color: var(--blue); }
+  .plan-card.p4 .plan-num { color: var(--gold); }
+  .plan-card .plan-title {
+    font-family: 'Lora', serif; font-size: 19px; font-weight: 700; line-height: 1.2;
+  }
+  .plan-card.p1 .plan-title em, .plan-card.p1 .face-back .plan-title em { color: var(--crimson); font-style: italic; }
+  .plan-card.p2 .plan-title em { color: var(--olive); font-style: italic; }
+  .plan-card.p3 .plan-title em { color: var(--blue); font-style: italic; }
+  .plan-card.p4 .plan-title em { color: var(--gold); font-style: italic; }
+  .plan-card .plan-subtitle {
+    font-family: 'Lora', serif; font-style: italic; font-size: 12.5px;
+    color: var(--muted); margin-top: 5px; padding: 0 6px;
+  }
+  .plan-card .flip-hint {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 9.5px; color: var(--soft); margin-top: auto;
+    letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+    padding: 4px 10px; background: var(--bg); border-radius: 999px;
+  }
+
+  /* card back */
+  .plan-card .face-back .back-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 6px;
+    margin-bottom: 6px;
+  }
+  .plan-card .face-back .back-head .plan-mini-num {
+    font-family: 'Lora', serif; font-style: italic; font-weight: 700;
+    font-size: 14px;
+  }
+  .plan-card.p1 .face-back .back-head .plan-mini-num { color: var(--crimson); }
+  .plan-card.p2 .face-back .back-head .plan-mini-num { color: var(--olive); }
+  .plan-card.p3 .face-back .back-head .plan-mini-num { color: var(--blue); }
+  .plan-card.p4 .face-back .back-head .plan-mini-num { color: var(--gold); }
+  .plan-card .face-back h4 {
+    font-family: 'Lora', serif; font-size: 14.5px; font-weight: 700; line-height: 1.2;
+    flex: 1; min-width: 0;
+  }
+  .plan-card .face-back h4 em { font-style: italic; }
+  .plan-card.p1 .face-back h4 em { color: var(--crimson); }
+  .plan-card.p2 .face-back h4 em { color: var(--olive); }
+  .plan-card.p3 .face-back h4 em { color: var(--blue); }
+  .plan-card.p4 .face-back h4 em { color: var(--gold); }
+  .plan-card .face-back p {
+    font-size: 11.5px; color: var(--muted); line-height: 1.55; margin-bottom: 6px;
+  }
+  .plan-card .face-back p strong { color: var(--ink); font-weight: 700; }
+  .plan-card .face-back .cfd {
+    width: 100%; height: 105px; display: block; margin: 4px 0;
+  }
+  .plan-card .face-back .rule {
+    font-family: 'JetBrains Mono', Consolas, monospace; font-size: 10.5px;
+    background: var(--bg); padding: 5px 8px; border-radius: 5px;
+    color: var(--ink); margin-top: auto; line-height: 1.4;
+  }
+  .plan-card .face-back .rule .lbl {
+    font-family: 'Outfit', sans-serif; font-size: 8.5px; letter-spacing: 0.16em;
+    text-transform: uppercase; font-weight: 700; color: var(--soft); display: block; margin-bottom: 2px;
+  }
+
+  .start-row {
+    flex-shrink: 0; padding: 14px 0 6px;
+    display: flex; gap: 12px; justify-content: center; align-items: center; flex-wrap: wrap;
+  }
+  .start-btn {
+    background: var(--blue); color: #fff; border: none;
+    padding: 12px 28px; border-radius: 999px;
+    font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 0.03em;
+    cursor: pointer; transition: all 0.18s;
+    box-shadow: 0 4px 14px rgba(25,71,214,0.22);
+  }
+  .start-btn:hover {
+    background: var(--blue-light); transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(25,71,214,0.32);
+  }
+  .start-hint {
+    font-family: 'Lora', serif; font-style: italic; font-size: 11px; color: var(--soft);
+  }
+
+  /* Plans button in head to re-open the cover */
+  .plans-btn {
+    margin-left: 8px;
+    padding: 6px 12px 6px 9px; border: 1px solid var(--border); background: var(--paper);
+    border-radius: 999px; font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600;
+    color: var(--blue); cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+    transition: all 0.15s;
+  }
+  .plans-btn:hover { background: var(--blue-soft); border-color: var(--blue); }
+  .plans-btn svg { width: 13px; height: 13px; }
+
+  /* mobile cover */
+  @media (max-width: 768px) {
+    .cover { padding: 12px 12px 12px; overflow-y: auto; }
+    .cover-head h2 { font-size: 22px; }
+    .cards-grid { grid-template-columns: 1fr; perspective: 1200px; gap: 12px; }
+    .plan-card { min-height: 360px; }
+    .plan-card .plan-num { font-size: 68px; }
+  }
+
   /* ============ MOBILE ============ */
   @media (max-width: 768px) {
     html, body { overflow: auto; height: auto; }
@@ -198,6 +365,223 @@
 </head>
 <body>
 
+<!-- ============ COVER OVERLAY ============ -->
+<div class="cover" id="cover">
+  <div class="cover-head">
+    <div class="kicker">Module 3 &middot; Borrowing, Lending, and Investing</div>
+    <h2>Four ways to repay a <em>loan</em></h2>
+    <div class="sub">Same principal, same interest rate, same term &mdash; but four very different cash flow patterns. Click each card to see how the borrower's money leaves their pocket.</div>
+  </div>
+
+  <div class="cards-grid" id="cards-grid">
+    <!-- Plan 1: Interest Only -->
+    <div class="plan-card p1" data-plan="1">
+      <div class="face face-front">
+        <div class="label">Plan 01</div>
+        <div class="plan-num">1</div>
+        <div>
+          <div class="plan-title">Interest <em>Only</em></div>
+          <div class="plan-subtitle">Pay the interest each year &middot; principal at the end</div>
+        </div>
+        <div class="flip-hint">tap to flip
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:11px;height:11px"><path d="M21 12a9 9 0 1 1-3-6.7"/><polyline points="21 4 21 10 15 10"/></svg>
+        </div>
+      </div>
+      <div class="face face-back">
+        <div class="back-head">
+          <span class="plan-mini-num">Plan 1</span>
+          <h4>Interest <em>Only</em></h4>
+        </div>
+        <p>Each year you pay just the <strong>accrued interest</strong> (constant = <em>i &middot; P</em>). The full principal sits untouched until the very last year, when you pay it as one final lump.</p>
+        <svg class="cfd" viewBox="0 0 240 100" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+          <!-- axis -->
+          <line x1="10" y1="55" x2="230" y2="55" stroke="#1a1a1a" stroke-width="1.5"/>
+          <polygon points="230,55 224,52 224,58" fill="#1a1a1a"/>
+          <!-- yr 0 loan inflow -->
+          <line x1="22" y1="55" x2="22" y2="20" stroke="#5c7a4a" stroke-width="2"/>
+          <polygon points="22,20 18,25 26,25" fill="#5c7a4a"/>
+          <text x="22" y="14" text-anchor="middle" font-family="Outfit" font-size="9" fill="#5c7a4a" font-weight="600">P</text>
+          <!-- yrs 1..3 small interest payments -->
+          <line x1="68" y1="55" x2="68" y2="73" stroke="#8a2828" stroke-width="2"/>
+          <polygon points="68,73 64,69 72,69" fill="#8a2828"/>
+          <line x1="114" y1="55" x2="114" y2="73" stroke="#8a2828" stroke-width="2"/>
+          <polygon points="114,73 110,69 118,69" fill="#8a2828"/>
+          <line x1="160" y1="55" x2="160" y2="73" stroke="#8a2828" stroke-width="2"/>
+          <polygon points="160,73 156,69 164,69" fill="#8a2828"/>
+          <text x="68" y="86" text-anchor="middle" font-family="Outfit" font-size="8.5" fill="#8a2828" font-weight="600">iP</text>
+          <text x="114" y="86" text-anchor="middle" font-family="Outfit" font-size="8.5" fill="#8a2828" font-weight="600">iP</text>
+          <text x="160" y="86" text-anchor="middle" font-family="Outfit" font-size="8.5" fill="#8a2828" font-weight="600">iP</text>
+          <!-- yr 4 big balloon -->
+          <line x1="206" y1="55" x2="206" y2="93" stroke="#8a2828" stroke-width="2.4"/>
+          <polygon points="206,93 201,88 211,88" fill="#8a2828"/>
+          <text x="206" y="14" text-anchor="middle" font-family="Outfit" font-size="9" fill="#8a2828" font-weight="700">iP + P</text>
+          <!-- year ticks -->
+          <text x="22" y="68" text-anchor="middle" font-family="Outfit" font-size="8" fill="#8b7355">0</text>
+          <text x="68" y="68" text-anchor="middle" font-family="Outfit" font-size="8" fill="#8b7355">1</text>
+          <text x="114" y="68" text-anchor="middle" font-family="Outfit" font-size="8" fill="#8b7355">2</text>
+          <text x="160" y="68" text-anchor="middle" font-family="Outfit" font-size="8" fill="#8b7355">3</text>
+          <text x="206" y="68" text-anchor="middle" font-family="Outfit" font-size="8" fill="#8b7355">n</text>
+        </svg>
+        <div class="rule">
+          <span class="lbl">Payment rule</span>
+          A<sub>t</sub> = i &middot; P &nbsp;(yr 1 to n&minus;1) &nbsp;&middot;&nbsp; A<sub>n</sub> = i &middot; P + P
+        </div>
+      </div>
+    </div>
+
+    <!-- Plan 2: Equal Principal -->
+    <div class="plan-card p2" data-plan="2">
+      <div class="face face-front">
+        <div class="label">Plan 02</div>
+        <div class="plan-num">2</div>
+        <div>
+          <div class="plan-title">Equal <em>Principal</em></div>
+          <div class="plan-subtitle">Constant principal chunk &middot; declining interest as balance shrinks</div>
+        </div>
+        <div class="flip-hint">tap to flip
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:11px;height:11px"><path d="M21 12a9 9 0 1 1-3-6.7"/><polyline points="21 4 21 10 15 10"/></svg>
+        </div>
+      </div>
+      <div class="face face-back">
+        <div class="back-head">
+          <span class="plan-mini-num">Plan 2</span>
+          <h4>Equal <em>Principal</em></h4>
+        </div>
+        <p>You retire a <strong>fixed chunk</strong> of principal each year (P/n). Interest is charged on the <em>remaining</em> balance, so payments are largest at the start and shrink each year.</p>
+        <svg class="cfd" viewBox="0 0 240 100" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+          <line x1="10" y1="55" x2="230" y2="55" stroke="#1a1a1a" stroke-width="1.5"/>
+          <polygon points="230,55 224,52 224,58" fill="#1a1a1a"/>
+          <line x1="22" y1="55" x2="22" y2="20" stroke="#5c7a4a" stroke-width="2"/>
+          <polygon points="22,20 18,25 26,25" fill="#5c7a4a"/>
+          <text x="22" y="14" text-anchor="middle" font-family="Outfit" font-size="9" fill="#5c7a4a" font-weight="600">P</text>
+          <!-- yr 1..4 declining -->
+          <line x1="68" y1="55" x2="68" y2="91" stroke="#5c7a4a" stroke-width="2"/>
+          <polygon points="68,91 64,86 72,86" fill="#5c7a4a"/>
+          <line x1="114" y1="55" x2="114" y2="84" stroke="#5c7a4a" stroke-width="2"/>
+          <polygon points="114,84 110,79 118,79" fill="#5c7a4a"/>
+          <line x1="160" y1="55" x2="160" y2="77" stroke="#5c7a4a" stroke-width="2"/>
+          <polygon points="160,77 156,72 164,72" fill="#5c7a4a"/>
+          <line x1="206" y1="55" x2="206" y2="70" stroke="#5c7a4a" stroke-width="2"/>
+          <polygon points="206,70 202,66 210,66" fill="#5c7a4a"/>
+          <!-- declining trend dashed line -->
+          <line x1="68" y1="91" x2="206" y2="70" stroke="#5c7a4a" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+          <text x="22" y="68" text-anchor="middle" font-family="Outfit" font-size="8" fill="#8b7355">0</text>
+          <text x="68" y="68" text-anchor="middle" font-family="Outfit" font-size="8" fill="#8b7355">1</text>
+          <text x="114" y="68" text-anchor="middle" font-family="Outfit" font-size="8" fill="#8b7355">2</text>
+          <text x="160" y="68" text-anchor="middle" font-family="Outfit" font-size="8" fill="#8b7355">3</text>
+          <text x="206" y="68" text-anchor="middle" font-family="Outfit" font-size="8" fill="#8b7355">n</text>
+        </svg>
+        <div class="rule">
+          <span class="lbl">Payment rule</span>
+          A<sub>t</sub> = P/n + i &middot; B<sub>t&minus;1</sub> &nbsp;(B = remaining balance)
+        </div>
+      </div>
+    </div>
+
+    <!-- Plan 3: Equal Payment -->
+    <div class="plan-card p3" data-plan="3">
+      <div class="face face-front">
+        <div class="label">Plan 03</div>
+        <div class="plan-num">3</div>
+        <div>
+          <div class="plan-title">Equal <em>Payment</em></div>
+          <div class="plan-subtitle">Constant total payment &middot; interest portion shrinks, principal grows</div>
+        </div>
+        <div class="flip-hint">tap to flip
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:11px;height:11px"><path d="M21 12a9 9 0 1 1-3-6.7"/><polyline points="21 4 21 10 15 10"/></svg>
+        </div>
+      </div>
+      <div class="face face-back">
+        <div class="back-head">
+          <span class="plan-mini-num">Plan 3</span>
+          <h4>Equal <em>Payment</em></h4>
+        </div>
+        <p>The classic <strong>amortized loan</strong>. Your annual payment is constant. Inside each payment, the interest portion shrinks and the principal-paydown portion grows as the balance shrinks.</p>
+        <svg class="cfd" viewBox="0 0 240 100" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+          <line x1="10" y1="55" x2="230" y2="55" stroke="#1a1a1a" stroke-width="1.5"/>
+          <polygon points="230,55 224,52 224,58" fill="#1a1a1a"/>
+          <line x1="22" y1="55" x2="22" y2="20" stroke="#5c7a4a" stroke-width="2"/>
+          <polygon points="22,20 18,25 26,25" fill="#5c7a4a"/>
+          <text x="22" y="14" text-anchor="middle" font-family="Outfit" font-size="9" fill="#5c7a4a" font-weight="600">P</text>
+          <!-- 4 equal-height payments -->
+          <line x1="68" y1="55" x2="68" y2="82" stroke="#1947d6" stroke-width="2"/>
+          <polygon points="68,82 64,77 72,77" fill="#1947d6"/>
+          <line x1="114" y1="55" x2="114" y2="82" stroke="#1947d6" stroke-width="2"/>
+          <polygon points="114,82 110,77 118,77" fill="#1947d6"/>
+          <line x1="160" y1="55" x2="160" y2="82" stroke="#1947d6" stroke-width="2"/>
+          <polygon points="160,82 156,77 164,77" fill="#1947d6"/>
+          <line x1="206" y1="55" x2="206" y2="82" stroke="#1947d6" stroke-width="2"/>
+          <polygon points="206,82 202,77 210,77" fill="#1947d6"/>
+          <!-- bracket -->
+          <line x1="68" y1="92" x2="206" y2="92" stroke="#1947d6" stroke-width="1" stroke-dasharray="3,2" opacity="0.6"/>
+          <text x="137" y="98" text-anchor="middle" font-family="Outfit" font-size="8.5" fill="#1947d6" font-weight="600">A constant</text>
+          <text x="22" y="68" text-anchor="middle" font-family="Outfit" font-size="8" fill="#8b7355">0</text>
+          <text x="68" y="68" text-anchor="middle" font-family="Outfit" font-size="8" fill="#8b7355">1</text>
+          <text x="114" y="68" text-anchor="middle" font-family="Outfit" font-size="8" fill="#8b7355">2</text>
+          <text x="160" y="68" text-anchor="middle" font-family="Outfit" font-size="8" fill="#8b7355">3</text>
+          <text x="206" y="68" text-anchor="middle" font-family="Outfit" font-size="8" fill="#8b7355">n</text>
+        </svg>
+        <div class="rule">
+          <span class="lbl">Payment rule</span>
+          A = P &middot; i / [1 &minus; (1 + i)<sup>&minus;n</sup>] &nbsp;&middot;&nbsp; (A/P, i, n) factor
+        </div>
+      </div>
+    </div>
+
+    <!-- Plan 4: Single Payment -->
+    <div class="plan-card p4" data-plan="4">
+      <div class="face face-front">
+        <div class="label">Plan 04</div>
+        <div class="plan-num">4</div>
+        <div>
+          <div class="plan-title">Single <em>Payment</em></div>
+          <div class="plan-subtitle">Nothing during the term &middot; principal + accrued interest in one balloon</div>
+        </div>
+        <div class="flip-hint">tap to flip
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:11px;height:11px"><path d="M21 12a9 9 0 1 1-3-6.7"/><polyline points="21 4 21 10 15 10"/></svg>
+        </div>
+      </div>
+      <div class="face face-back">
+        <div class="back-head">
+          <span class="plan-mini-num">Plan 4</span>
+          <h4>Single <em>Payment</em></h4>
+        </div>
+        <p>No periodic payments. Interest <strong>compounds yearly</strong> on the unpaid balance. At year n you owe the original P grown by (F/P, i, n).</p>
+        <svg class="cfd" viewBox="0 0 240 100" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+          <line x1="10" y1="55" x2="230" y2="55" stroke="#1a1a1a" stroke-width="1.5"/>
+          <polygon points="230,55 224,52 224,58" fill="#1a1a1a"/>
+          <line x1="22" y1="55" x2="22" y2="20" stroke="#5c7a4a" stroke-width="2"/>
+          <polygon points="22,20 18,25 26,25" fill="#5c7a4a"/>
+          <text x="22" y="14" text-anchor="middle" font-family="Outfit" font-size="9" fill="#5c7a4a" font-weight="600">P</text>
+          <!-- yrs 1-3 nothing -->
+          <line x1="68" y1="55" x2="68" y2="60" stroke="#8b7355" stroke-width="1" opacity="0.5"/>
+          <line x1="114" y1="55" x2="114" y2="60" stroke="#8b7355" stroke-width="1" opacity="0.5"/>
+          <line x1="160" y1="55" x2="160" y2="60" stroke="#8b7355" stroke-width="1" opacity="0.5"/>
+          <text x="114" y="76" text-anchor="middle" font-family="Outfit" font-size="9" fill="#8b7355" font-style="italic">no payments</text>
+          <!-- huge balloon at n -->
+          <line x1="206" y1="55" x2="206" y2="95" stroke="#b8860b" stroke-width="2.8"/>
+          <polygon points="206,95 200,89 212,89" fill="#b8860b"/>
+          <text x="206" y="14" text-anchor="middle" font-family="Outfit" font-size="9" fill="#b8860b" font-weight="700">P(1+i)ⁿ</text>
+          <text x="22" y="68" text-anchor="middle" font-family="Outfit" font-size="8" fill="#8b7355">0</text>
+          <text x="68" y="68" text-anchor="middle" font-family="Outfit" font-size="8" fill="#8b7355">1</text>
+          <text x="114" y="68" text-anchor="middle" font-family="Outfit" font-size="8" fill="#8b7355">2</text>
+          <text x="160" y="68" text-anchor="middle" font-family="Outfit" font-size="8" fill="#8b7355">3</text>
+          <text x="206" y="68" text-anchor="middle" font-family="Outfit" font-size="8" fill="#8b7355">n</text>
+        </svg>
+        <div class="rule">
+          <span class="lbl">Payment rule</span>
+          A<sub>t</sub> = 0 (yr 1 to n&minus;1) &nbsp;&middot;&nbsp; A<sub>n</sub> = P &middot; (1 + i)<sup>n</sup>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="start-row">
+    <button class="start-btn" id="btn-start-lab">Start the Lab &rarr;</button>
+    <span class="start-hint">click cards to flip &middot; reopen any time from the &ldquo;Plans&rdquo; button</span>
+  </div>
+</div>
+
 <div class="app">
 
   <div class="head">
@@ -206,8 +590,14 @@
       <h1>Loan Repayment <em>Lab</em></h1>
       <span class="tag">Lender's rate sets payments &middot; Borrower's TVOM discounts them</span>
     </div>
-    <div class="winner-chip" id="winner-chip">
-      ✓ &nbsp;Best for borrower: <span id="winner-name">—</span> &nbsp;PW <span class="num" id="winner-pv">—</span>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <div class="winner-chip" id="winner-chip">
+        ✓ &nbsp;Best for borrower: <span id="winner-name">—</span> &nbsp;PW <span class="num" id="winner-pv">—</span>
+      </div>
+      <button class="plans-btn" id="btn-show-cover" title="Show the four plans overview">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Plans
+      </button>
     </div>
   </div>
 
@@ -327,6 +717,28 @@
 </div>
 
 <script>
+  // ============ COVER OVERLAY ============
+  (function () {
+    const cover = document.getElementById('cover');
+    const cards = document.querySelectorAll('.plan-card');
+    const SEEN_KEY = 'ie4512_loanlab_cover_seen_v1';
+    cards.forEach(c => c.addEventListener('click', () => c.classList.toggle('flipped')));
+    const btnStart = document.getElementById('btn-start-lab');
+    if (btnStart) btnStart.addEventListener('click', () => {
+      cover.classList.add('hidden');
+      try { localStorage.setItem(SEEN_KEY, '1'); } catch (e) {}
+    });
+    const btnShow = document.getElementById('btn-show-cover');
+    if (btnShow) btnShow.addEventListener('click', () => {
+      cover.classList.remove('hidden');
+      cards.forEach(c => c.classList.remove('flipped'));
+    });
+    // first visit shows the cover; returning visitors skip it
+    try {
+      if (localStorage.getItem(SEEN_KEY) === '1') cover.classList.add('hidden');
+    } catch (e) {}
+  })();
+
   const $ = id => document.getElementById(id);
   function fmt(x) { return '$' + Math.round(x).toLocaleString('en-US'); }
 
