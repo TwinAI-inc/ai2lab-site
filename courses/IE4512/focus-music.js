@@ -6,22 +6,36 @@
   if (window.__fmLoaded) return;
   window.__fmLoaded = true;
 
-  const STORAGE_KEY = 'ie4512_focus_music_v4';
+  const STORAGE_KEY = 'ie4512_focus_music_v5';
 
   // ============ TRACKS — edit/replace URLs to customize ============
-  // Defaults: SoundHelix demo tracks (verified-stable URLs since 2010s).
-  // Swap any URL with your own MP3 source. Keep the title/artist labels.
+  // 20 curated calm/focus tracks hosted on archive.org (stable permanent URLs):
+  //   * 3 Persian santur (Faramarz Payvar)
+  //   * 12 calm piano (Max Richter, Yann Tiersen, Einaudi, Nils Frahm, ...)
+  //   * 5 ambient (Calm Pills compilation)
+  // Tag field categorizes each track (santur / piano / ambient).
+  // To swap or add, replace title/artist/tag/url. Auto-skip on load error.
   const TRACKS = [
-    { title: 'Crystal Drift',     artist: 'SoundHelix',   url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
-    { title: 'Slow Current',      artist: 'SoundHelix',   url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
-    { title: 'Lantern Walk',      artist: 'SoundHelix',   url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' },
-    { title: 'Paper Sky',         artist: 'SoundHelix',   url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3' },
-    { title: 'Morning Wire',      artist: 'SoundHelix',   url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3' },
-    { title: 'Quiet Loom',        artist: 'SoundHelix',   url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3' },
-    { title: 'Glass Field',       artist: 'SoundHelix',   url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3' },
-    { title: 'Open Notebook',     artist: 'SoundHelix',   url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3' },
-    { title: 'Slate &amp; Pine',  artist: 'SoundHelix',   url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3' },
-    { title: 'Lighthouse',        artist: 'SoundHelix',   url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3' }
+    { title: "Dastgah-e Shur", artist: "Faramarz Payvar (santur)", tag: "santur", url: "https://archive.org/download/santur-faramarz-payvar/01Dastgah_Shur.mp3" },
+    { title: "Dastgah-e Homayoun", artist: "Faramarz Payvar (santur)", tag: "santur", url: "https://archive.org/download/santur-faramarz-payvar/02Dastgah_Homayoun.mp3" },
+    { title: "Khavaran", artist: "Faramarz Payvar (santur)", tag: "santur", url: "https://archive.org/download/santur-faramarz-payvar/04Khavaran.mp3" },
+    { title: "The Departure", artist: "Max Richter", tag: "piano", url: "https://archive.org/download/calm-relaxing-piano-collection/Calm%20Relaxing%20Piano%20-%20Collection%20%282020%29/01%20Max%20Richter%20-%20The%20Departure.mp3" },
+    { title: "Comptine d’un autre été", artist: "Yann Tiersen", tag: "piano", url: "https://archive.org/download/calm-relaxing-piano-collection/Calm%20Relaxing%20Piano%20-%20Collection%20%282020%29/02%20Yann%20Tiersen%20-%20Comptine%20d%27Un%20Autre%20Ete%20%28L%27Apres-Midi%29%20%28Portrait%20Version%29.mp3" },
+    { title: "Una Mattina", artist: "Olga Scheps", tag: "piano", url: "https://archive.org/download/calm-relaxing-piano-collection/Calm%20Relaxing%20Piano%20-%20Collection%20%282020%29/03%20Olga%20Scheps%20-%20Una%20mattina.mp3" },
+    { title: "Serein", artist: "Dmitry Evgrafov", tag: "piano", url: "https://archive.org/download/calm-relaxing-piano-collection/Calm%20Relaxing%20Piano%20-%20Collection%20%282020%29/05%20Dmitry%20Evgrafov%20-%20Serein.mp3" },
+    { title: "Roscian", artist: "Agnes Obel", tag: "piano", url: "https://archive.org/download/calm-relaxing-piano-collection/Calm%20Relaxing%20Piano%20-%20Collection%20%282020%29/08%20Agnes%20Obel%20-%20Roscian.mp3" },
+    { title: "In a Sense", artist: "Eluvium", tag: "ambient", url: "https://archive.org/download/calm-relaxing-piano-collection/Calm%20Relaxing%20Piano%20-%20Collection%20%282020%29/10%20Eluvium%20-%20In%20a%20Sense.mp3" },
+    { title: "Theme for a Dream", artist: "RIOPY", tag: "piano", url: "https://archive.org/download/calm-relaxing-piano-collection/Calm%20Relaxing%20Piano%20-%20Collection%20%282020%29/14%20RIOPY%20-%20Theme%20Music%20for%20a%20Dream.mp3" },
+    { title: "Matin dans Le Marais", artist: "Jef Martens", tag: "piano", url: "https://archive.org/download/calm-relaxing-piano-collection/Calm%20Relaxing%20Piano%20-%20Collection%20%282020%29/20%20Jef%20Martens%20-%20Matin%20dans%20Le%20Marais.mp3" },
+    { title: "Feather", artist: "Dirk Maassen", tag: "piano", url: "https://archive.org/download/calm-relaxing-piano-collection/Calm%20Relaxing%20Piano%20-%20Collection%20%282020%29/25%20Dirk%20Maassen%20-%20Feather.mp3" },
+    { title: "A Shine", artist: "Nils Frahm", tag: "piano", url: "https://archive.org/download/calm-relaxing-piano-collection/Calm%20Relaxing%20Piano%20-%20Collection%20%282020%29/32%20Nils%20Frahm%20-%20A%20Shine.mp3" },
+    { title: "A Sense of Symmetry", artist: "Ludovico Einaudi", tag: "piano", url: "https://archive.org/download/calm-relaxing-piano-collection/Calm%20Relaxing%20Piano%20-%20Collection%20%282020%29/34%20Ludovico%20Einaudi%20-%20A%20Sense%20of%20Symmetry%20%28Day%202%29.mp3" },
+    { title: "Avril 14th", artist: "Martin Jacoby", tag: "piano", url: "https://archive.org/download/calm-relaxing-piano-collection/Calm%20Relaxing%20Piano%20-%20Collection%20%282020%29/35%20Martin%20Jacoby%20-%20Avril%2014th.mp3" },
+    { title: "Still Habitat", artist: "Calm Pills · No. 1", tag: "ambient", url: "https://archive.org/download/CalmPills/Uplifting_Pills_-_Calm_Pill_1_-_Still_Habitat.mp3" },
+    { title: "Planetarium", artist: "Calm Pills · No. 25", tag: "ambient", url: "https://archive.org/download/CalmPills/Uplifting_Pills_-_Calm_Pill_25_-_Guest_Mix_on_Planetarium.mp3" },
+    { title: "Ocean of Stars", artist: "Calm Pills · No. 40", tag: "ambient", url: "https://archive.org/download/CalmPills/Uplifting_Pills_-_Calm_Pill_40_-_An_Ocean_Of_Stars_-_Guest_Mix_by_Tonepoet.mp3" },
+    { title: "Letting Go", artist: "Calm Pills · No. 55", tag: "ambient", url: "https://archive.org/download/CalmPills/Uplifting_Pills_-_Calm_Pill_55_-_Letting_Go.mp3" },
+    { title: "I Wish You Well", artist: "Calm Pills · No. 70", tag: "ambient", url: "https://archive.org/download/CalmPills/Uplifting_Pills_-_Calm_Pill_70_-_Signed_I_Wish_You_Well.mp3" },
   ];
 
   // ============ STATE ============
