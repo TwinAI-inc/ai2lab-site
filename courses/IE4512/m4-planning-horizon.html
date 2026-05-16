@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Module 4 · Planning Horizon Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf9f5; --paper: #ffffff; --ink: #1a1a1a; --muted: #5a5247; --soft: #8b7355;
+    --border: #e8e3d4; --line: #d4cfc0;
+    --blue: #1947d6; --blue-light: #4a6fe6; --blue-soft: #eef2ff;
+    --gold: #b8860b; --gold-soft: #faf3e0;
+    --olive: #5c7a4a; --olive-soft: #f0f4ea;
+    --crimson: #8a2828; --crimson-soft: #fdf2f3;
+    --purple: #7c3aed; --purple-soft: #f3eeff;
+    --teal: #0e7c80;  --teal-soft: #e6f4f4;
+  }
+  body { background: var(--bg); color: var(--ink); font-family: 'Outfit', -apple-system, system-ui, sans-serif; font-size: 13px; line-height: 1.5; }
+  .app { max-width: 1500px; margin: 0 auto; padding: 14px 22px 24px; display: flex; flex-direction: column; gap: 14px; }
+
+  /* HEAD */
+  .head {
+    display: flex; justify-content: space-between; align-items: center; gap: 14px;
+    padding: 9px 16px; background: var(--paper); border: 1px solid var(--border);
+    border-radius: 10px; border-top: 3px solid var(--blue); flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .brand .code { font-size: 10px; color: var(--blue); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; }
+  .brand h1 { font-family: 'Lora', Georgia, serif; font-size: 20px; font-weight: 700; line-height: 1; }
+  .brand h1 em { font-style: italic; color: var(--blue); font-weight: 400; }
+  .brand .tag { font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted); }
+
+  /* HERO */
+  .hero {
+    padding: 18px 22px; background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
+    text-align: center;
+  }
+  .hero .kicker { font-size: 10.5px; letter-spacing: 0.24em; color: var(--blue); text-transform: uppercase; font-weight: 700; margin-bottom: 6px; }
+  .hero h2 { font-family: 'Lora', serif; font-size: 26px; font-weight: 700; line-height: 1.2; }
+  .hero h2 em { font-style: italic; color: var(--blue); }
+  .hero .sub { font-family: 'Lora', serif; font-style: italic; font-size: 14px; color: var(--muted); margin-top: 6px; max-width: 760px; margin-left: auto; margin-right: auto; line-height: 1.55; }
+
+  /* CARDS GRID */
+  .cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; perspective: 1400px; }
+  @media (max-width: 1100px) { .cards-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 720px)  { .cards-grid { grid-template-columns: 1fr; } }
+
+  .ph-card {
+    position: relative; min-height: 400px;
+    transform-style: preserve-3d;
+    transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+  }
+  .ph-card .face-front .img-strip {
+    width: calc(100% + 36px); height: 100px;
+    background-size: cover; background-position: center;
+    border-bottom: 1px solid var(--border);
+    margin: -18px -18px 10px;
+  }
+  .ph-card.flipped { transform: rotateY(180deg); }
+  .ph-card .face {
+    position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    border-radius: 12px; overflow: hidden;
+    background: var(--paper); border: 1px solid var(--border);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+    display: flex; flex-direction: column;
+    transition: box-shadow 0.18s;
+  }
+  .ph-card:hover .face { box-shadow: 0 10px 28px rgba(0,0,0,0.10); }
+  .ph-card .face-front { padding: 18px 18px 14px; align-items: center; text-align: center; border-top: 3px solid var(--blue); justify-content: space-between; }
+  .ph-card .face-back  { transform: rotateY(180deg); padding: 14px 16px; border-top: 3px solid var(--blue); }
+
+  .ph-card.m1 .face-front, .ph-card.m1 .face-back { border-top-color: var(--blue); }
+  .ph-card.m2 .face-front, .ph-card.m2 .face-back { border-top-color: var(--olive); }
+  .ph-card.m3 .face-front, .ph-card.m3 .face-back { border-top-color: var(--crimson); }
+  .ph-card.m4 .face-front, .ph-card.m4 .face-back { border-top-color: var(--gold); }
+  .ph-card.m5 .face-front, .ph-card.m5 .face-back { border-top-color: var(--purple); }
+  .ph-card.m6 .face-front, .ph-card.m6 .face-back { border-top-color: var(--teal); }
+
+  .ph-card .label { font-family: 'Outfit', sans-serif; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700; color: var(--soft); }
+  .ph-card .num { font-family: 'Lora', serif; font-style: italic; font-weight: 700; font-size: 86px; line-height: 1; opacity: 0.22; margin: 6px 0; }
+  .ph-card.m1 .num { color: var(--blue); }
+  .ph-card.m2 .num { color: var(--olive); }
+  .ph-card.m3 .num { color: var(--crimson); }
+  .ph-card.m4 .num { color: var(--gold); }
+  .ph-card.m5 .num { color: var(--purple); }
+  .ph-card.m6 .num { color: var(--teal); }
+
+  .ph-card .ttl { font-family: 'Lora', serif; font-size: 20px; font-weight: 700; line-height: 1.2; }
+  .ph-card .ttl em { font-style: italic; }
+  .ph-card.m1 .ttl em { color: var(--blue); }
+  .ph-card.m2 .ttl em { color: var(--olive); }
+  .ph-card.m3 .ttl em { color: var(--crimson); }
+  .ph-card.m4 .ttl em { color: var(--gold); }
+  .ph-card.m5 .ttl em { color: var(--purple); }
+  .ph-card.m6 .ttl em { color: var(--teal); }
+  .ph-card .sub { font-family: 'Lora', serif; font-style: italic; font-size: 13px; color: var(--muted); margin-top: 5px; padding: 0 6px; line-height: 1.4; }
+  .ph-card .hint { display: inline-flex; align-items: center; gap: 6px; font-size: 10.5px; color: var(--soft); margin-top: auto; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; padding: 5px 12px; background: var(--bg); border-radius: 999px; }
+
+  .ph-card .back-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .ph-card .back-head .mini-num { font-family: 'Lora', serif; font-style: italic; font-weight: 700; font-size: 14px; }
+  .ph-card.m1 .back-head .mini-num { color: var(--blue); }
+  .ph-card.m2 .back-head .mini-num { color: var(--olive); }
+  .ph-card.m3 .back-head .mini-num { color: var(--crimson); }
+  .ph-card.m4 .back-head .mini-num { color: var(--gold); }
+  .ph-card.m5 .back-head .mini-num { color: var(--purple); }
+  .ph-card.m6 .back-head .mini-num { color: var(--teal); }
+  .ph-card .back-head h4 { font-family: 'Lora', serif; font-size: 15px; font-weight: 700; line-height: 1.2; flex: 1; }
+  .ph-card .back-head h4 em { font-style: italic; }
+  .ph-card.m1 .back-head h4 em { color: var(--blue); }
+  .ph-card.m2 .back-head h4 em { color: var(--olive); }
+  .ph-card.m3 .back-head h4 em { color: var(--crimson); }
+  .ph-card.m4 .back-head h4 em { color: var(--gold); }
+  .ph-card.m5 .back-head h4 em { color: var(--purple); }
+  .ph-card.m6 .back-head h4 em { color: var(--teal); }
+  .ph-card .face-back p { font-size: 12px; color: var(--muted); line-height: 1.55; margin-bottom: 7px; }
+  .ph-card .face-back p strong { color: var(--ink); font-weight: 700; }
+  .ph-card .when {
+    font-family: 'Outfit', sans-serif; font-size: 10.5px; letter-spacing: 0.05em; padding: 6px 9px;
+    border-radius: 6px; margin: 6px 0; background: var(--bg); border-left: 2px solid var(--blue);
+  }
+  .ph-card.m1 .when { border-left-color: var(--blue); }
+  .ph-card.m2 .when { border-left-color: var(--olive); }
+  .ph-card.m3 .when { border-left-color: var(--crimson); }
+  .ph-card.m4 .when { border-left-color: var(--gold); }
+  .ph-card.m5 .when { border-left-color: var(--purple); }
+  .ph-card.m6 .when { border-left-color: var(--teal); }
+  .ph-card .when strong { display: block; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; margin-bottom: 3px; color: var(--ink); }
+  .ph-card .formula { font-family: 'JetBrains Mono', Consolas, monospace; font-size: 11px; background: var(--bg); padding: 6px 9px; border-radius: 5px; color: var(--ink); margin-top: auto; line-height: 1.45; }
+  .ph-card .formula .lbl { display: block; font-family: 'Outfit', sans-serif; font-size: 8.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; color: var(--soft); margin-bottom: 3px; }
+
+  /* SECTION DIVIDER */
+  .divider {
+    display: flex; align-items: center; gap: 14px;
+    font-family: 'Outfit', sans-serif; font-size: 11px; letter-spacing: 0.24em;
+    text-transform: uppercase; font-weight: 700; color: var(--soft);
+    padding: 0 4px;
+  }
+  .divider::before, .divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  /* EXAMPLE PANEL */
+  .ex-panel { background: var(--paper); border: 1px solid var(--border); border-radius: 14px; padding: 22px; }
+  .ex-panel .ex-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
+  .ex-panel .ex-head h3 { font-family: 'Lora', serif; font-size: 22px; font-weight: 700; line-height: 1.2; }
+  .ex-panel .ex-head h3 em { font-style: italic; color: var(--blue); }
+  .ex-panel .ex-head .sub { font-family: 'Lora', serif; font-style: italic; font-size: 13px; color: var(--muted); }
+
+  .machines-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+  @media (max-width: 800px) { .machines-grid { grid-template-columns: 1fr; } }
+  .machine {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px;
+  }
+  .machine .m-head {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+    padding-bottom: 6px; border-bottom: 1px solid var(--border);
+  }
+  .machine.A { border-left: 3px solid var(--blue); }
+  .machine.B { border-left: 3px solid var(--olive); }
+  .machine.C { border-left: 3px solid var(--gold); }
+  .machine .m-letter { font-family: 'Lora', serif; font-style: italic; font-weight: 700; font-size: 18px; }
+  .machine.A .m-letter { color: var(--blue); }
+  .machine.B .m-letter { color: var(--olive); }
+  .machine.C .m-letter { color: var(--gold); }
+  .machine .m-name { font-family: 'Outfit', sans-serif; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; color: var(--muted); }
+  .machine .m-row { display: flex; align-items: center; gap: 8px; margin: 5px 0; font-size: 12px; }
+  .machine .m-row label { flex: 1; color: var(--muted); }
+  .machine .m-row .pre { color: var(--muted); font-size: 11px; }
+  .machine .m-row input {
+    width: 90px; padding: 5px 8px; border: 1px solid var(--border); border-radius: 5px;
+    font-family: 'Outfit', sans-serif; font-size: 12.5px; font-weight: 600; color: var(--ink); background: #fff; outline: none;
+    text-align: right;
+  }
+  .machine .m-row input:focus { border-color: var(--blue); }
+
+  .controls-row {
+    display: grid; grid-template-columns: 1fr 2fr; gap: 16px; margin-bottom: 14px;
+  }
+  @media (max-width: 800px) { .controls-row { grid-template-columns: 1fr; } }
+  .marr-block {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px;
+  }
+  .marr-block .mh {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;
+  }
+  .marr-block .mlabel { font-family: 'Outfit', sans-serif; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; color: var(--muted); }
+  .marr-block .mval { font-family: 'Lora', serif; font-size: 22px; font-weight: 700; color: var(--blue); }
+  .marr-block input[type="range"] {
+    width: 100%; height: 5px; -webkit-appearance: none; appearance: none;
+    background: linear-gradient(to right, var(--blue) var(--pct, 12%), var(--border) var(--pct, 12%));
+    border-radius: 999px; outline: none;
+  }
+  .marr-block input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 16px; height: 16px; border-radius: 999px; background: var(--blue);
+    cursor: pointer; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+  }
+  .marr-block .bounds { display: flex; justify-content: space-between; font-size: 10px; color: var(--soft); margin-top: 5px; }
+
+  .horizon-picker {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px;
+  }
+  .horizon-picker .hlabel { font-family: 'Outfit', sans-serif; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; color: var(--muted); margin-bottom: 8px; }
+  .horizon-picker .pills { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; }
+  @media (max-width: 900px) { .horizon-picker .pills { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 480px) { .horizon-picker .pills { grid-template-columns: repeat(2, 1fr); } }
+  .h-pill {
+    padding: 7px 6px; border: 1px solid var(--border); border-radius: 8px;
+    font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600; cursor: pointer; background: #fff;
+    text-align: center; transition: all 0.15s; color: var(--ink);
+  }
+  .h-pill:hover { border-color: var(--blue); }
+  .h-pill .py { display: block; font-family: 'Lora', serif; font-style: italic; font-size: 16px; font-weight: 700; margin-top: 1px; }
+  .h-pill.active { color: #fff; }
+  .h-pill.active.m1 { background: var(--blue); border-color: var(--blue); }
+  .h-pill.active.m2 { background: var(--olive); border-color: var(--olive); }
+  .h-pill.active.m3 { background: var(--crimson); border-color: var(--crimson); }
+  .h-pill.active.m4 { background: var(--gold); border-color: var(--gold); }
+  .h-pill.active.m5 { background: var(--purple); border-color: var(--purple); }
+  .h-pill.active.m6 { background: var(--teal); border-color: var(--teal); }
+  .h-pill input[type="number"] {
+    width: 60px; padding: 2px 5px; margin-top: 3px; border: 1px solid rgba(255,255,255,0.4);
+    border-radius: 4px; font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 700;
+    text-align: center; background: rgba(255,255,255,0.18); color: inherit;
+  }
+  .h-pill input[type="number"]:focus { outline: none; border-color: #fff; background: rgba(255,255,255,0.28); }
+
+  .results-block {
+    background: linear-gradient(135deg, var(--paper) 0%, var(--blue-soft) 100%);
+    border: 1px solid var(--blue); border-radius: 12px; padding: 14px 18px; margin-top: 14px;
+  }
+  .results-block .rh {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+    margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border);
+  }
+  .results-block .rh h4 { font-family: 'Lora', serif; font-size: 16px; font-weight: 700; }
+  .results-block .rh h4 em { font-style: italic; color: var(--blue); }
+  .results-block .horizon-note {
+    font-family: 'Outfit', sans-serif; font-size: 11px; color: var(--muted); padding: 3px 9px;
+    background: var(--paper); border-radius: 999px; border: 1px solid var(--border);
+  }
+  .results-block .horizon-note .h-strong { color: var(--ink); font-weight: 700; }
+  .res-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .res-table th, .res-table td { padding: 7px 10px; text-align: right; border-bottom: 1px dotted var(--border); }
+  .res-table th { font-family: 'Outfit', sans-serif; font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; color: var(--muted); text-align: right; padding-bottom: 5px; }
+  .res-table th:first-child, .res-table td:first-child { text-align: left; font-weight: 600; }
+  .res-table td.num { font-family: 'JetBrains Mono', Consolas, monospace; }
+  .res-table tr.winner { background: rgba(92, 122, 74, 0.10); }
+  .res-table tr.winner td { color: #2d4423; font-weight: 700; }
+  .res-table tr.winner td:first-child::before {
+    content: '✓ ';
+    color: var(--olive); font-weight: 700;
+  }
+  .res-table .ml { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 7px; vertical-align: middle; }
+  .res-table .ml.A { background: var(--blue); }
+  .res-table .ml.B { background: var(--olive); }
+  .res-table .ml.C { background: var(--gold); }
+
+  .winner-callout {
+    margin-top: 12px; padding: 12px 16px; background: var(--olive-soft); border-left: 3px solid var(--olive);
+    border-radius: 8px;
+    font-family: 'Lora', serif; font-size: 14px; line-height: 1.5; color: #3d5530;
+  }
+  .winner-callout strong { color: var(--olive); font-weight: 700; }
+  .winner-callout em { font-style: italic; }
+
+  .insight {
+    margin-top: 12px; padding: 11px 14px; background: var(--gold-soft); border-left: 3px solid var(--gold);
+    border-radius: 8px; font-size: 12.5px; color: var(--muted); line-height: 1.5;
+  }
+  .insight strong { color: var(--gold); font-weight: 700; }
+
+  .foot { text-align: center; font-family: 'Lora', serif; font-style: italic; font-size: 11px; color: var(--soft); padding: 4px; }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    .app { padding: 10px 10px 16px; }
+    .hero h2 { font-size: 22px; }
+    .ex-panel { padding: 16px 14px; }
+    .ex-panel .ex-head h3 { font-size: 19px; }
+    .ph-card { min-height: 360px; }
+    input[type="number"] { font-size: 16px !important; min-height: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <div class="head">
+    <div class="brand">
+      <div>
+        <div class="code">Module 4 &middot; Planning Horizon, MARR and PW Analysis</div>
+        <h1>Planning Horizon <em>Lab</em></h1>
+      </div>
+      <span class="tag">six ways to set the analysis horizon &middot; one example to compare them</span>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="kicker">The setup</div>
+    <h2>How long should we look <em>ahead</em>?</h2>
+    <div class="sub">When competing options have <strong>different useful lives</strong>, we can't just compare them as-is. The analyst picks a <em>planning horizon</em> — and that choice can flip the verdict. Click each card to see the six standard methods, then run them all on the same example below.</div>
+  </div>
+
+  <!-- ============ 6 METHOD CARDS ============ -->
+  <div class="cards-grid" id="cards-grid">
+
+    <div class="ph-card m1" data-key="lcm">
+      <div class="face face-front">
+        <div class="img-strip" style="background-image: url('images/m4/method-lcm.png');"></div>
+        <div class="label">Method 01</div>
+        <div class="num">①</div>
+        <div>
+          <div class="ttl">Least Common <em>Multiple</em></div>
+          <div class="sub">match lives by replication</div>
+        </div>
+        <div class="hint">tap to flip
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:11px;height:11px"><path d="M21 12a9 9 0 1 1-3-6.7"/><polyline points="21 4 21 10 15 10"/></svg>
+        </div>
+      </div>
+      <div class="face face-back">
+        <div class="back-head"><span class="mini-num">Method 1</span><h4>Least Common <em>Multiple</em></h4></div>
+        <p>Use the <strong>LCM of all useful lives</strong> as the horizon. Each option replicates its full life cycle (same P, AOC, SV) until the horizon is reached — every option ends at exactly year LCM with no leftover.</p>
+        <div class="when"><strong>Use when</strong>identical replacements are plausible — stable technology, no obsolescence, repetitive purchase decisions.</div>
+        <div class="formula"><span class="lbl">Horizon</span>T = LCM(n<sub>A</sub>, n<sub>B</sub>, n<sub>C</sub>, &hellip;)</div>
+      </div>
+    </div>
+
+    <div class="ph-card m2" data-key="longest">
+      <div class="face face-front">
+        <div class="img-strip" style="background-image: url('images/m4/method-longest.png');"></div>
+        <div class="label">Method 02</div>
+        <div class="num">②</div>
+        <div>
+          <div class="ttl">Longest <em>Life</em></div>
+          <div class="sub">match the longest-lived option</div>
+        </div>
+        <div class="hint">tap to flip
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:11px;height:11px"><path d="M21 12a9 9 0 1 1-3-6.7"/><polyline points="21 4 21 10 15 10"/></svg>
+        </div>
+      </div>
+      <div class="face face-back">
+        <div class="back-head"><span class="mini-num">Method 2</span><h4>Longest <em>Life</em></h4></div>
+        <p>Set the horizon equal to the <strong>longest useful life</strong>. Shorter-lived options must replicate (and possibly truncate) to fill the horizon; the longest-lived option runs its full cycle once.</p>
+        <div class="when"><strong>Use when</strong>the longest-lived option naturally caps the decision — e.g., a building lease determines how long the equipment matters.</div>
+        <div class="formula"><span class="lbl">Horizon</span>T = max(n<sub>A</sub>, n<sub>B</sub>, n<sub>C</sub>, &hellip;)</div>
+      </div>
+    </div>
+
+    <div class="ph-card m3" data-key="shortest">
+      <div class="face face-front">
+        <div class="img-strip" style="background-image: url('images/m4/method-shortest.png');"></div>
+        <div class="label">Method 03</div>
+        <div class="num">③</div>
+        <div>
+          <div class="ttl">Shortest <em>Life</em></div>
+          <div class="sub">cut at the shortest-lived option</div>
+        </div>
+        <div class="hint">tap to flip
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:11px;height:11px"><path d="M21 12a9 9 0 1 1-3-6.7"/><polyline points="21 4 21 10 15 10"/></svg>
+        </div>
+      </div>
+      <div class="face face-back">
+        <div class="back-head"><span class="mini-num">Method 3</span><h4>Shortest <em>Life</em></h4></div>
+        <p>Use the <strong>shortest useful life</strong>. Longer-lived options must be <em>sold prematurely</em> at the horizon; we estimate a partial-cycle salvage value (linear book-value approximation) for the truncation.</p>
+        <div class="when"><strong>Use when</strong>uncertainty or technology change makes long-term commitments risky — short horizon is conservative.</div>
+        <div class="formula"><span class="lbl">Horizon</span>T = min(n<sub>A</sub>, n<sub>B</sub>, n<sub>C</sub>, &hellip;)</div>
+      </div>
+    </div>
+
+    <div class="ph-card m4" data-key="standard">
+      <div class="face face-front">
+        <div class="img-strip" style="background-image: url('images/m4/method-standard.png');"></div>
+        <div class="label">Method 04</div>
+        <div class="num">④</div>
+        <div>
+          <div class="ttl">Standard <em>Horizon</em></div>
+          <div class="sub">use the firm's policy length</div>
+        </div>
+        <div class="hint">tap to flip
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:11px;height:11px"><path d="M21 12a9 9 0 1 1-3-6.7"/><polyline points="21 4 21 10 15 10"/></svg>
+        </div>
+      </div>
+      <div class="face face-back">
+        <div class="back-head"><span class="mini-num">Method 4</span><h4>Standard <em>Horizon</em></h4></div>
+        <p>Use a <strong>firm-wide policy horizon</strong> (often 5 or 10 years). Every option replicates and truncates as needed to fit. Most common in practice because it makes capital projects comparable across the company.</p>
+        <div class="when"><strong>Use when</strong>your firm has a consistent capital budgeting horizon — keeps the analysis apples-to-apples across all projects.</div>
+        <div class="formula"><span class="lbl">Horizon</span>T = company standard (e.g., 10 yr)</div>
+      </div>
+    </div>
+
+    <div class="ph-card m5" data-key="org">
+      <div class="face face-front">
+        <div class="img-strip" style="background-image: url('images/m4/method-org.png');"></div>
+        <div class="label">Method 05</div>
+        <div class="num">⑤</div>
+        <div>
+          <div class="ttl">Organizational <em>Need</em></div>
+          <div class="sub">match the actual project length</div>
+        </div>
+        <div class="hint">tap to flip
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:11px;height:11px"><path d="M21 12a9 9 0 1 1-3-6.7"/><polyline points="21 4 21 10 15 10"/></svg>
+        </div>
+      </div>
+      <div class="face face-back">
+        <div class="back-head"><span class="mini-num">Method 5</span><h4>Organizational <em>Need</em></h4></div>
+        <p>Set the horizon to the <strong>actual need</strong>: contract length, product lifecycle, expected facility tenure. The most honest method when the decision is project-specific rather than asset-life-driven.</p>
+        <div class="when"><strong>Use when</strong>you can name the real planning need — e.g., "we need this equipment for 7 years to finish the contract".</div>
+        <div class="formula"><span class="lbl">Horizon</span>T = project-specific (user picks)</div>
+      </div>
+    </div>
+
+    <div class="ph-card m6" data-key="infinite">
+      <div class="face face-front">
+        <div class="img-strip" style="background-image: url('images/m4/method-infinite.png');"></div>
+        <div class="label">Method 06</div>
+        <div class="num">⑥</div>
+        <div>
+          <div class="ttl">Infinitely <em>Long</em></div>
+          <div class="sub">capitalized cost &middot; AW comparison</div>
+        </div>
+        <div class="hint">tap to flip
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:11px;height:11px"><path d="M21 12a9 9 0 1 1-3-6.7"/><polyline points="21 4 21 10 15 10"/></svg>
+        </div>
+      </div>
+      <div class="face face-back">
+        <div class="back-head"><span class="mini-num">Method 6</span><h4>Infinitely <em>Long</em></h4></div>
+        <p>Assume <strong>perpetual repetition</strong>. Compare via <em>Annual Worth (AW)</em> directly — smaller AW wins. Equivalent to comparing <em>Capitalized Cost</em> CC = AW / i (the PW of a perpetual cash flow).</p>
+        <div class="when"><strong>Use when</strong>the service is essential indefinitely — utilities, water mains, infrastructure where "we'll always need this".</div>
+        <div class="formula"><span class="lbl">Decision</span>min AW &nbsp; or &nbsp; CC<sub>k</sub> = AW<sub>k</sub> / i</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="divider">Try it · Example 4.1 · three production machines</div>
+
+  <!-- ============ INTERACTIVE EXAMPLE ============ -->
+  <div class="ex-panel">
+
+    <div class="ex-head">
+      <div>
+        <h3>Example 4.1 &mdash; Pick a <em>method</em>, see the verdict shift</h3>
+        <div class="sub">Three production machines, different lives. The cheapest choice depends on the horizon assumption.</div>
+      </div>
+    </div>
+
+    <div class="machines-grid">
+      <div class="machine A">
+        <div class="m-head"><span class="m-letter">A</span><span class="m-name">Machine A</span></div>
+        <div class="m-row"><label>Useful life</label><input id="a-n"    type="number" min="1" max="40" value="4" /><span class="pre">yr</span></div>
+        <div class="m-row"><label>Initial cost P</label><span class="pre">$</span><input id="a-p"  type="number" step="100" value="15500" /></div>
+        <div class="m-row"><label>Annual op. cost</label><span class="pre">$</span><input id="a-aoc" type="number" step="50"  value="8750" /></div>
+        <div class="m-row"><label>Terminal salvage</label><span class="pre">$</span><input id="a-sv"  type="number" step="50"  value="2500" /></div>
+      </div>
+
+      <div class="machine B">
+        <div class="m-head"><span class="m-letter">B</span><span class="m-name">Machine B</span></div>
+        <div class="m-row"><label>Useful life</label><input id="b-n"    type="number" min="1" max="40" value="5" /><span class="pre">yr</span></div>
+        <div class="m-row"><label>Initial cost P</label><span class="pre">$</span><input id="b-p"  type="number" step="100" value="20250" /></div>
+        <div class="m-row"><label>Annual op. cost</label><span class="pre">$</span><input id="b-aoc" type="number" step="50"  value="5850" /></div>
+        <div class="m-row"><label>Terminal salvage</label><span class="pre">$</span><input id="b-sv"  type="number" step="50"  value="3000" /></div>
+      </div>
+
+      <div class="machine C">
+        <div class="m-head"><span class="m-letter">C</span><span class="m-name">Machine C</span></div>
+        <div class="m-row"><label>Useful life</label><input id="c-n"    type="number" min="1" max="40" value="6" /><span class="pre">yr</span></div>
+        <div class="m-row"><label>Initial cost P</label><span class="pre">$</span><input id="c-p"  type="number" step="100" value="30750" /></div>
+        <div class="m-row"><label>Annual op. cost</label><span class="pre">$</span><input id="c-aoc" type="number" step="50"  value="3175" /></div>
+        <div class="m-row"><label>Terminal salvage</label><span class="pre">$</span><input id="c-sv"  type="number" step="50"  value="3250" /></div>
+      </div>
+    </div>
+
+    <div class="controls-row">
+      <div class="marr-block">
+        <div class="mh">
+          <span class="mlabel">MARR (i)</span>
+          <span class="mval" id="marr-val">12%</span>
+        </div>
+        <input type="range" id="marr" min="2" max="25" step="0.5" value="12" />
+        <div class="bounds"><span>2%</span><span>25%</span></div>
+      </div>
+
+      <div class="horizon-picker">
+        <div class="hlabel">Planning horizon method</div>
+        <div class="pills" id="pills">
+          <div class="h-pill m1 active" data-k="lcm">LCM <span class="py" id="py-lcm">60 yr</span></div>
+          <div class="h-pill m2" data-k="longest">Longest <span class="py" id="py-longest">6 yr</span></div>
+          <div class="h-pill m3" data-k="shortest">Shortest <span class="py" id="py-shortest">4 yr</span></div>
+          <div class="h-pill m4" data-k="standard">Standard <input type="number" id="std-n" min="1" max="40" value="10" /></div>
+          <div class="h-pill m5" data-k="org">Org. need <input type="number" id="org-n" min="1" max="40" value="7" /></div>
+          <div class="h-pill m6" data-k="infinite">Infinite <span class="py">AW / CC</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="results-block">
+      <div class="rh">
+        <h4>Result under <em id="rh-method">Least Common Multiple</em></h4>
+        <div class="horizon-note">Horizon: <span class="h-strong" id="rh-horizon">60 yr</span></div>
+      </div>
+
+      <table class="res-table">
+        <thead>
+          <tr>
+            <th style="width:38%;">Machine</th>
+            <th>Annual Worth (AW)</th>
+            <th id="th-col">PW over horizon</th>
+            <th>Δ vs winner</th>
+          </tr>
+        </thead>
+        <tbody id="res-body"></tbody>
+      </table>
+
+      <div class="winner-callout" id="winner-callout">…</div>
+      <div class="insight" id="insight"></div>
+    </div>
+  </div>
+
+  <div class="foot">&copy; Prof. Mohammad Dehghani &middot; IE 4512 / EMGT 6225</div>
+</div>
+
+<a href="index.html" title="Back to course platform" style="position:fixed;bottom:10px;left:14px;display:inline-flex;align-items:center;gap:7px;padding:6px 13px 6px 10px;background:rgba(255,255,255,0.94);border:1px solid #e8e3d4;border-radius:999px;font-family:'Outfit',-apple-system,sans-serif;font-size:11px;font-weight:600;color:#1947d6;text-decoration:none;box-shadow:0 4px 14px rgba(25,71,214,0.14);z-index:1000;backdrop-filter:blur(6px);transition:all 0.18s" onmouseover="this.style.background='#eef2ff'" onmouseout="this.style.background='rgba(255,255,255,0.94)'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="11 18 5 12 11 6"/></svg>Back to platform</a>
+
+<script src="focus-music.js" defer></script>
+
+<script>
+  // ============ HELPERS ============
+  const $ = id => document.getElementById(id);
+  function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) [a, b] = [b, a % b]; return a; }
+  function lcm(a, b) { return a / gcd(a, b) * b; }
+  function pa(i, n) { return i === 0 ? n : (1 - Math.pow(1+i, -n)) / i; }
+  function pf(i, n) { return Math.pow(1+i, -n); }
+  function af(i, n) { return i === 0 ? 1/n : i / (Math.pow(1+i, n) - 1); }
+  function ap(i, n) { return i === 0 ? 1/n : i / (1 - Math.pow(1+i, -n)); }
+
+  // Cost-positive convention: AW = annual equivalent of all costs minus salvage credit
+  function calcAW(P, AOC, SV, n, i) { return P * ap(i, n) + AOC - SV * af(i, n); }
+  function calcPWOneCycle(P, AOC, SV, n, i) { return P + AOC * pa(i, n) - SV * pf(i, n); }
+
+  // PW over horizon T for a machine with full life n (replication + linear-BV truncation if T not a multiple of n)
+  function calcPWOverT(P, AOC, SV, n, T, i) {
+    if (T <= 0) return 0;
+    const cycles = Math.floor(T / n);
+    const leftover = T - cycles * n;
+    let pw = 0;
+    const onePW = calcPWOneCycle(P, AOC, SV, n, i);
+    for (let k = 0; k < cycles; k++) pw += onePW * pf(i, k * n);
+    if (leftover > 0) {
+      // partial cycle: buy at year (cycles*n), pay AOC for `leftover` yrs, sell at year T at linear BV
+      let partial = P;
+      for (let j = 1; j <= leftover; j++) partial += AOC * pf(i, j);
+      const BV = P - (P - SV) * (leftover / n);   // linear book value approximation
+      partial -= BV * pf(i, leftover);
+      pw += partial * pf(i, cycles * n);
+    }
+    return pw;
+  }
+
+  // CC = AW / i  (capitalized cost under perpetual repetition)
+  function calcCC(P, AOC, SV, n, i) { return calcAW(P, AOC, SV, n, i) / i; }
+
+  function fmt(x) {
+    if (!isFinite(x)) return '—';
+    const s = x < 0 ? '−' : '';
+    const a = Math.abs(x);
+    if (a >= 1e6) return s + '$' + (a/1e6).toFixed(2) + 'M';
+    if (a >= 1e3) return s + '$' + Math.round(a/100)/10 + 'k';
+    return s + '$' + Math.round(a).toLocaleString();
+  }
+  function fmtFull(x) {
+    if (!isFinite(x)) return '—';
+    return (x < 0 ? '−$' : '$') + Math.round(Math.abs(x)).toLocaleString();
+  }
+
+  // ============ STATE ============
+  let state = { method: 'lcm' };
+  const METHOD_NAMES = {
+    lcm: 'Least Common Multiple',
+    longest: 'Longest Life',
+    shortest: 'Shortest Life',
+    standard: 'Standard Horizon',
+    org: 'Organizational Need',
+    infinite: 'Infinitely Long'
+  };
+  const METHOD_M = { lcm:'m1', longest:'m2', shortest:'m3', standard:'m4', org:'m5', infinite:'m6' };
+
+  // ============ COMPUTE + RENDER ============
+  function readMachines() {
+    return {
+      A: { P:+$('a-p').value||0, AOC:+$('a-aoc').value||0, SV:+$('a-sv').value||0, n:+$('a-n').value||1 },
+      B: { P:+$('b-p').value||0, AOC:+$('b-aoc').value||0, SV:+$('b-sv').value||0, n:+$('b-n').value||1 },
+      C: { P:+$('c-p').value||0, AOC:+$('c-aoc').value||0, SV:+$('c-sv').value||0, n:+$('c-n').value||1 }
+    };
+  }
+
+  function computeHorizon(m) {
+    const ms = readMachines();
+    const lives = [ms.A.n, ms.B.n, ms.C.n];
+    if (m === 'lcm')      return lcm(lcm(lives[0], lives[1]), lives[2]);
+    if (m === 'longest')  return Math.max(...lives);
+    if (m === 'shortest') return Math.min(...lives);
+    if (m === 'standard') return +$('std-n').value || 10;
+    if (m === 'org')      return +$('org-n').value || 7;
+    if (m === 'infinite') return Infinity;
+    return lcm(lcm(lives[0], lives[1]), lives[2]);
+  }
+
+  function update() {
+    const ms = readMachines();
+    const i = (+$('marr').value || 0) / 100;
+    $('marr-val').textContent = (i*100).toFixed(1) + '%';
+    $('marr').style.setProperty('--pct', ((i*100 - 2) / (25 - 2)) * 100 + '%');
+
+    // Update the dynamic horizon labels on pills
+    const lives = [ms.A.n, ms.B.n, ms.C.n];
+    $('py-lcm').textContent      = lcm(lcm(lives[0], lives[1]), lives[2]) + ' yr';
+    $('py-longest').textContent  = Math.max(...lives) + ' yr';
+    $('py-shortest').textContent = Math.min(...lives) + ' yr';
+
+    // Active pill state
+    Array.from(document.querySelectorAll('.h-pill')).forEach(p => {
+      p.classList.toggle('active', p.dataset.k === state.method);
+    });
+
+    const T = computeHorizon(state.method);
+    const methodName = METHOD_NAMES[state.method];
+    $('rh-method').textContent = methodName;
+    $('rh-horizon').textContent = (state.method === 'infinite') ? '∞ (perpetual)' : (T + ' yr');
+    $('th-col').textContent = (state.method === 'infinite') ? 'Capitalized Cost (CC)' : 'PW over horizon';
+
+    // Compute results per machine
+    const keys = ['A','B','C'];
+    const colors = { A:'var(--blue)', B:'var(--olive)', C:'var(--gold)' };
+    const results = keys.map(k => {
+      const x = ms[k];
+      const AW = calcAW(x.P, x.AOC, x.SV, x.n, i);
+      const second = (state.method === 'infinite') ? calcCC(x.P, x.AOC, x.SV, x.n, i)
+                                                   : calcPWOverT(x.P, x.AOC, x.SV, x.n, T, i);
+      return { k, AW, second };
+    });
+
+    // Determine winner — smallest "second" (cost) wins (or smallest AW if infinite)
+    const winnerKey = (state.method === 'infinite')
+      ? results.reduce((w,r) => r.AW < w.AW ? r : w, results[0]).k
+      : results.reduce((w,r) => r.second < w.second ? r : w, results[0]).k;
+    const winner = results.find(r => r.k === winnerKey);
+
+    // Render table
+    const body = $('res-body');
+    body.innerHTML = '';
+    results.forEach(r => {
+      const tr = document.createElement('tr');
+      if (r.k === winnerKey) tr.classList.add('winner');
+      const delta = r.second - winner.second;
+      tr.innerHTML = `
+        <td><span class="ml ${r.k}"></span>Machine ${r.k} <span style="color:var(--soft);font-weight:400;">(${ms[r.k].n} yr life)</span></td>
+        <td class="num">${fmtFull(r.AW)}</td>
+        <td class="num">${fmtFull(r.second)}</td>
+        <td class="num">${r.k === winnerKey ? '—' : '+' + fmt(Math.abs(delta))}</td>
+      `;
+      body.appendChild(tr);
+    });
+
+    // Winner callout
+    const advanceOver = results.filter(r => r.k !== winnerKey).map(r => `${fmt(Math.abs(r.second - winner.second))} vs ${r.k}`).join(' &middot; ');
+    $('winner-callout').innerHTML = `Under <strong>${methodName}</strong> at MARR = <strong>${(i*100).toFixed(1)}%</strong>, <em>Machine ${winnerKey}</em> is the cheapest option (${state.method === 'infinite' ? 'lowest AW' : 'lowest PW'}). Advantage: ${advanceOver}.`;
+
+    // Per-method insight
+    const lcmT = lcm(lcm(lives[0], lives[1]), lives[2]);
+    let note = '';
+    if (state.method === 'lcm') {
+      note = `<strong>Why it works:</strong> with T = LCM = ${lcmT} yr, each machine runs an integer number of full cycles (A: ${lcmT/lives[0]}× &middot; B: ${lcmT/lives[1]}× &middot; C: ${lcmT/lives[2]}×). No truncation, no salvage estimation — the cleanest math, but only honest if identical replacements really are plausible.`;
+    } else if (state.method === 'longest') {
+      note = `<strong>Truncation alert:</strong> shorter-lived options replicate into the longest life and may end mid-cycle. The partial-last-cycle salvage uses a <em>linear book-value approximation</em> &mdash; defensible but conservative.`;
+    } else if (state.method === 'shortest') {
+      note = `<strong>Heads up:</strong> longer-lived options get cut at year ${T} with a partial-cycle salvage estimate. This typically hurts long-life options (they don't get to realize their full salvage), so this method tends to favor short-life choices.`;
+    } else if (state.method === 'standard') {
+      note = `<strong>Policy method:</strong> matches the firm's standard. With T = ${T} yr, you'll see partial cycles for any machine whose life isn't a divisor of ${T}. The most common method in real corporate capital budgeting.`;
+    } else if (state.method === 'org') {
+      note = `<strong>Honest framing:</strong> T = ${T} yr reflects an actual project need. Try editing this to match a real contract or product cycle — the verdict can flip dramatically with horizon.`;
+    } else {
+      note = `<strong>Perpetual assumption:</strong> at i = ${(i*100).toFixed(1)}%, the AW comparison is what matters &mdash; smaller AW always wins. CC = AW / i is the present value of paying that AW forever.`;
+    }
+    $('insight').innerHTML = note;
+  }
+
+  // ============ WIRE ============
+  document.querySelectorAll('.ph-card').forEach(c => {
+    c.addEventListener('click', () => c.classList.toggle('flipped'));
+  });
+  document.querySelectorAll('.h-pill').forEach(p => {
+    p.addEventListener('click', e => {
+      if (e.target.tagName === 'INPUT') return;  // don't switch when typing in the input
+      state.method = p.dataset.k;
+      update();
+    });
+  });
+  // Standard / Org-need inputs trigger update
+  ['std-n','org-n'].forEach(id => {
+    $(id).addEventListener('input', e => {
+      e.stopPropagation();
+      state.method = (id === 'std-n') ? 'standard' : 'org';
+      update();
+    });
+    $(id).addEventListener('click', e => e.stopPropagation());
+  });
+  // Machine inputs + MARR
+  ['a-p','a-aoc','a-sv','a-n','b-p','b-aoc','b-sv','b-n','c-p','c-aoc','c-sv','c-n','marr'].forEach(id => {
+    $(id).addEventListener('input', update);
+  });
+
+  update();
+</script>
+</body>
+</html>
