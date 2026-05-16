@@ -50,7 +50,7 @@
   .panel-head h3 em { font-style: italic; color: var(--blue); }
   .panel-head .pill { font-size: 8.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; padding: 2px 7px; background: var(--blue-soft); color: var(--blue); border-radius: 999px; }
 
-  .scroll { flex: 1; overflow-y: auto; padding-right: 3px; }
+  .scroll { flex: 1; overflow-y: auto; overflow-x: hidden; padding-right: 3px; }
   .scroll::-webkit-scrollbar { width: 4px; }
   .scroll::-webkit-scrollbar-thumb { background: var(--line); border-radius: 999px; }
 
@@ -96,13 +96,31 @@
   .tax-block label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; color: var(--crimson); }
   .tax-block .val { font-family: 'Lora', serif; font-style: italic; font-size: 15px; font-weight: 700; color: var(--crimson); }
   .tax-block input[type="range"] {
-    grid-column: 1 / -1; width: 100%; height: 4px; -webkit-appearance: none; appearance: none;
-    background: linear-gradient(to right, var(--crimson) var(--tax-pct, 42%), #d4cfc0 var(--tax-pct, 42%));
-    border-radius: 999px; outline: none; margin-top: 2px;
+    grid-column: 1 / -1; width: 100%; height: 8px; -webkit-appearance: none; appearance: none;
+    background: linear-gradient(to right,
+      var(--crimson) 0%,
+      #a83838 var(--tax-pct, 42%),
+      rgba(212, 207, 192, 0.55) var(--tax-pct, 42%),
+      rgba(212, 207, 192, 0.55) 100%);
+    border-radius: 999px; outline: none; margin-top: 6px;
+    box-shadow: inset 0 1px 3px rgba(138,40,40,0.18), inset 0 -1px 0 rgba(255,255,255,0.4);
+    cursor: pointer;
   }
   .tax-block input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none; width: 13px; height: 13px; border-radius: 999px; background: var(--crimson);
-    cursor: pointer; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%;
+    background: radial-gradient(circle at 30% 28%, #c14848, var(--crimson) 70%);
+    cursor: pointer; border: 3px solid #fff;
+    box-shadow: 0 2px 7px rgba(138,40,40,0.45), 0 0 0 1px rgba(138,40,40,0.25);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    margin-top: -6px;
+  }
+  .tax-block input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.12); box-shadow: 0 4px 12px rgba(138,40,40,0.55), 0 0 0 1px rgba(138,40,40,0.35); }
+  .tax-block input[type="range"]::-webkit-slider-thumb:active { transform: scale(0.92); }
+  .tax-block input[type="range"]::-moz-range-thumb {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: radial-gradient(circle at 30% 28%, #c14848, var(--crimson) 70%);
+    cursor: pointer; border: 3px solid #fff;
+    box-shadow: 0 2px 7px rgba(138,40,40,0.45);
   }
 
   .total-row {
@@ -122,11 +140,13 @@
   .capm-grid .cell { padding: 4px 6px; background: #fff; border-radius: 4px; border: 1px solid var(--border); }
   .capm-grid .cell label { display: block; font-size: 8.5px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; color: var(--muted); }
   .capm-grid .cell .vr { display: flex; align-items: center; gap: 2px; }
-  .capm-grid .cell input { flex: 1; padding: 2px 4px; border: none; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 600; text-align: right; background: transparent; outline: none; }
+  .capm-grid .cell input { flex: 1; min-width: 0; padding: 3px 6px; border: 1px solid var(--border); border-radius: 4px; font-family: 'Outfit', sans-serif; font-size: 12.5px; font-weight: 700; color: var(--ink); text-align: right; background: var(--bg); outline: none; }
+  .capm-grid .cell input:focus { border-color: var(--blue); background: #fff; }
   .capm-grid .cell .pre { font-size: 10px; color: var(--muted); }
   .capm-grid .cell.result { background: var(--blue); border-color: var(--blue); }
   .capm-grid .cell.result label { color: rgba(255,255,255,0.85); }
-  .capm-grid .cell.result input { color: #fff; pointer-events: none; }
+  .capm-grid .cell.result input { color: #fff; background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.35); pointer-events: none; }
+  .capm-grid .cell.result .pre { color: rgba(255,255,255,0.85); }
   .capm .apply-btn {
     margin-top: 6px; padding: 5px 10px; background: var(--blue); color: #fff; border: none; border-radius: 5px;
     font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 700; cursor: pointer; width: 100%; letter-spacing: 0.04em;

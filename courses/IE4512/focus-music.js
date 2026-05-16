@@ -55,18 +55,25 @@
   const css = `
     .fm-btn {
       position: fixed; bottom: 14px; right: 14px;
-      height: 44px; border-radius: 999px;
+      height: 44px; width: 44px; border-radius: 999px;
       background: #1947d6; color: #fff; border: none; cursor: pointer; z-index: 998;
       box-shadow: 0 4px 14px rgba(25,71,214,0.32);
-      display: inline-flex; align-items: center; gap: 8px;
+      display: inline-flex; align-items: center; justify-content: center; gap: 0;
       font-family: 'Outfit', -apple-system, system-ui, sans-serif;
       font-size: 12px; font-weight: 700; letter-spacing: 0.04em;
-      transition: box-shadow 0.18s, transform 0.18s, width 0.22s, padding 0.22s;
-      padding: 0 16px 0 12px;
+      transition: box-shadow 0.18s, transform 0.18s, width 0.22s, padding 0.22s, border-radius 0.22s;
+      padding: 0;
       overflow: hidden;
     }
     .fm-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(25,71,214,0.42); }
-    .fm-btn.has-track { padding: 0 12px 0 4px; width: 296px; max-width: calc(100vw - 28px); }
+    .fm-btn.has-track {
+      padding: 0 12px 0 4px; width: 296px; max-width: calc(100vw - 28px);
+      gap: 8px; justify-content: flex-start; border-radius: 999px;
+    }
+    /* Idle state: hide dot + label, show only the music icon */
+    .fm-btn:not(.has-track) .dot,
+    .fm-btn:not(.has-track) .default-label { display: none; }
+    .fm-btn:not(.has-track) > .icon { width: 18px; height: 18px; }
     .fm-btn .dot { width: 8px; height: 8px; border-radius: 999px; background: #ffe66d;
       box-shadow: 0 0 0 0 rgba(255,230,109,0.7); animation: fm-pulse 1.6s ease-in-out infinite; }
     .fm-btn .dot.off { background: rgba(255,255,255,0.45); animation: none; box-shadow: none; }
