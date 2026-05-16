@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Module 4 · MARR Game · Three Firms, Five Projects</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf9f5; --paper: #ffffff; --ink: #1a1a1a; --muted: #5a5247; --soft: #8b7355;
+    --border: #e8e3d4; --line: #d4cfc0;
+    --blue: #1947d6; --blue-light: #4a6fe6; --blue-soft: #eef2ff;
+    --gold: #b8860b; --gold-soft: #faf3e0;
+    --olive: #5c7a4a; --olive-soft: #f0f4ea;
+    --crimson: #8a2828; --crimson-soft: #fdf2f3;
+    --purple: #7c3aed; --purple-soft: #f3eeff;
+    --teal: #0e7c80;  --teal-soft: #e6f4f4;
+    /* Firm accent colors */
+    --c-utility: #0e7c80;
+    --c-tech:    #7c3aed;
+    --c-mfg:     #b8860b;
+  }
+  body { background: var(--bg); color: var(--ink); font-family: 'Outfit', -apple-system, system-ui, sans-serif; font-size: 13px; line-height: 1.5; }
+  .app { max-width: 1500px; margin: 0 auto; padding: 14px 22px 24px; display: flex; flex-direction: column; gap: 14px; }
+
+  .head { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 9px 16px; background: var(--paper); border: 1px solid var(--border); border-radius: 10px; border-top: 3px solid var(--olive); flex-wrap: wrap; }
+  .brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .brand .code { font-size: 10px; color: var(--olive); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; }
+  .brand h1 { font-family: 'Lora', Georgia, serif; font-size: 20px; font-weight: 700; line-height: 1; }
+  .brand h1 em { font-style: italic; color: var(--olive); font-weight: 400; }
+  .brand .tag { font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted); }
+
+  .hero { padding: 16px 22px; background: var(--paper); border: 1px solid var(--border); border-radius: 12px; display: grid; grid-template-columns: 1fr 200px; gap: 18px; align-items: center; }
+  @media (max-width: 800px) { .hero { grid-template-columns: 1fr; } .hero .hero-img { display:none; } }
+  .hero .kicker { font-size: 10.5px; letter-spacing: 0.24em; color: var(--olive); text-transform: uppercase; font-weight: 700; margin-bottom: 6px; }
+  .hero h2 { font-family: 'Lora', serif; font-size: 24px; font-weight: 700; line-height: 1.2; }
+  .hero h2 em { font-style: italic; color: var(--olive); }
+  .hero .sub { font-family: 'Lora', serif; font-style: italic; font-size: 13.5px; color: var(--muted); margin-top: 6px; line-height: 1.55; max-width: 720px; }
+  .hero .hero-img { width: 200px; height: 140px; background-size: cover; background-position: center; border-radius: 10px; border: 1px solid var(--border); }
+
+  /* PROGRESS STRIP */
+  .progress-strip { display: flex; gap: 6px; padding: 0 4px; }
+  .progress-strip .seg { flex: 1; height: 5px; border-radius: 3px; background: var(--border); transition: background 0.3s; }
+  .progress-strip .seg.done { background: var(--olive); }
+  .progress-strip .seg.active { background: linear-gradient(90deg, var(--olive), #6a8e54); }
+
+  /* FIRMS ROW */
+  .firms-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  @media (max-width: 1000px) { .firms-row { grid-template-columns: 1fr; } }
+  .firm-card {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px;
+    border-top: 3px solid;
+  }
+  .firm-card.utility { border-top-color: var(--c-utility); }
+  .firm-card.tech    { border-top-color: var(--c-tech); }
+  .firm-card.mfg     { border-top-color: var(--c-mfg); }
+  .firm-card .fhead { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+  .firm-card .fname { font-family: 'Lora', serif; font-size: 17px; font-weight: 700; line-height: 1.2; }
+  .firm-card .fname em { font-style: italic; }
+  .firm-card.utility .fname em { color: var(--c-utility); }
+  .firm-card.tech    .fname em { color: var(--c-tech); }
+  .firm-card.mfg     .fname em { color: var(--c-mfg); }
+  .firm-card .ftype { font-family: 'Outfit', sans-serif; font-size: 9.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; color: var(--muted); }
+  .firm-card .fblurb { font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted); margin-bottom: 8px; line-height: 1.4; }
+
+  .wacc-display {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px;
+    text-align: center; margin-bottom: 10px;
+  }
+  .wacc-display .wlbl { font-family: 'Outfit', sans-serif; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; color: var(--muted); }
+  .wacc-display .wval { font-family: 'Lora', serif; font-style: italic; font-size: 28px; font-weight: 700; line-height: 1; }
+  .firm-card.utility .wacc-display .wval { color: var(--c-utility); }
+  .firm-card.tech    .wacc-display .wval { color: var(--c-tech); }
+  .firm-card.mfg     .wacc-display .wval { color: var(--c-mfg); }
+
+  /* Capital stack bar (mini) */
+  .mini-stack { display: flex; height: 12px; border-radius: 4px; overflow: hidden; border: 1px solid var(--border); margin-bottom: 8px; }
+  .mini-stack .seg { height: 100%; }
+  .mini-stack .seg.loan   { background: #b8860b; }
+  .mini-stack .seg.bond   { background: #d4a017; }
+  .mini-stack .seg.pref   { background: #5c7a4a; }
+  .mini-stack .seg.common { background: #1947d6; }
+  .mini-stack .seg.retd   { background: #4a6fe6; }
+
+  .stack-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; font-size: 10px; color: var(--muted); margin-bottom: 8px; }
+  .stack-legend .si { display: flex; align-items: center; gap: 5px; }
+  .stack-legend .si .sw { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
+
+  .firm-controls { padding-top: 8px; border-top: 1px dashed var(--border); }
+  .firm-controls .cline { display: grid; grid-template-columns: 1fr 60px; gap: 5px; font-size: 11px; align-items: center; margin: 3px 0; color: var(--muted); }
+  .firm-controls .cline input {
+    padding: 3px 5px; border: 1px solid var(--border); border-radius: 4px;
+    font-family: 'Outfit', sans-serif; font-size: 11px; text-align: right; background: #fff;
+  }
+
+  /* PROJECT PANEL */
+  .project-panel {
+    background: var(--paper); border: 2px solid var(--olive); border-radius: 14px; padding: 18px 22px;
+    background: linear-gradient(135deg, var(--paper) 0%, var(--olive-soft) 100%);
+  }
+  .project-head {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 14px; flex-wrap: wrap;
+    margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border);
+  }
+  .project-head .ph { font-family: 'Outfit', sans-serif; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; color: var(--olive); }
+  .project-head .pround { font-family: 'Lora', serif; font-style: italic; font-size: 18px; font-weight: 700; color: var(--olive); }
+  .project-body { display: grid; grid-template-columns: 1fr 220px; gap: 18px; align-items: center; }
+  @media (max-width: 800px) { .project-body { grid-template-columns: 1fr; } }
+  .project-body .pname { font-family: 'Lora', serif; font-size: 21px; font-weight: 700; margin-bottom: 4px; }
+  .project-body .pdesc { font-family: 'Lora', serif; font-style: italic; font-size: 13.5px; color: var(--muted); line-height: 1.5; }
+  .irr-display {
+    background: var(--paper); border: 2px solid var(--gold); border-radius: 10px; padding: 12px 14px; text-align: center;
+  }
+  .irr-display .il { font-family: 'Outfit', sans-serif; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; color: var(--gold); }
+  .irr-display .iv { font-family: 'Lora', serif; font-style: italic; font-size: 36px; font-weight: 700; color: var(--gold); line-height: 1; }
+  .irr-display .ix { font-family: 'Lora', serif; font-style: italic; font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* Decisions per firm */
+  .decisions { margin-top: 14px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  @media (max-width: 1000px) { .decisions { grid-template-columns: 1fr; } }
+  .decision-card {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px;
+    border-left: 3px solid;
+  }
+  .decision-card.utility { border-left-color: var(--c-utility); }
+  .decision-card.tech    { border-left-color: var(--c-tech); }
+  .decision-card.mfg     { border-left-color: var(--c-mfg); }
+  .decision-card .dch { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+  .decision-card .dname { font-family: 'Lora', serif; font-size: 13px; font-weight: 700; }
+  .decision-card .dwacc { font-family: 'JetBrains Mono', Consolas, monospace; font-size: 11px; color: var(--muted); }
+  .decision-card .btns { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .decision-card .btn {
+    padding: 8px 10px; border-radius: 7px; border: 1px solid var(--border); background: #fff;
+    font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 700; cursor: pointer; text-align: center;
+    transition: all 0.15s; letter-spacing: 0.04em;
+  }
+  .decision-card .btn:hover:not(:disabled):not(.locked) { transform: translateY(-1px); }
+  .decision-card .btn.accept-btn:hover:not(:disabled):not(.locked) { background: var(--olive-soft); border-color: var(--olive); color: var(--olive); }
+  .decision-card .btn.reject-btn:hover:not(:disabled):not(.locked) { background: var(--crimson-soft); border-color: var(--crimson); color: var(--crimson); }
+  .decision-card .btn.locked { cursor: default; opacity: 0.5; }
+  .decision-card .btn.selected.correct { background: var(--olive); color: #fff; border-color: var(--olive); opacity: 1; }
+  .decision-card .btn.selected.wrong   { background: var(--crimson); color: #fff; border-color: var(--crimson); opacity: 1; }
+  .decision-card .feedback {
+    margin-top: 7px; font-size: 10.5px; color: var(--muted); line-height: 1.4; font-style: italic;
+    padding: 6px 8px; border-radius: 5px; display: none;
+  }
+  .decision-card .feedback.show { display: block; }
+  .decision-card .feedback.ok { background: var(--olive-soft); color: #2d4423; font-style: normal; }
+  .decision-card .feedback.bad { background: var(--crimson-soft); color: #6b1f1f; font-style: normal; }
+
+  .next-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+  .scorebar { font-family: 'Outfit', sans-serif; font-size: 12px; color: var(--muted); }
+  .scorebar strong { color: var(--ink); font-weight: 700; }
+  .next-btn {
+    padding: 9px 22px; background: var(--olive); color: #fff; border: none; border-radius: 999px;
+    font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; cursor: pointer;
+    transition: all 0.18s;
+  }
+  .next-btn:hover { background: #6a8e54; transform: translateY(-1px); }
+  .next-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* Final summary */
+  .summary { display: none; padding: 24px; text-align: center; }
+  .summary.active { display: block; }
+  .summary h3 { font-family: 'Lora', serif; font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+  .summary .blurb { font-family: 'Lora', serif; font-style: italic; font-size: 14px; color: var(--muted); margin-bottom: 18px; }
+  .summary .scores { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 520px; margin: 0 auto 18px; }
+  @media (max-width: 600px) { .summary .scores { grid-template-columns: 1fr; } }
+  .summary .scores .sc { padding: 12px; background: var(--bg); border-radius: 8px; border-top: 3px solid; }
+  .summary .scores .sc.utility { border-top-color: var(--c-utility); }
+  .summary .scores .sc.tech    { border-top-color: var(--c-tech); }
+  .summary .scores .sc.mfg     { border-top-color: var(--c-mfg); }
+  .summary .scores .sc .scname { font-family: 'Lora', serif; font-size: 12.5px; font-weight: 700; margin-bottom: 4px; }
+  .summary .scores .sc .scval { font-family: 'Lora', serif; font-style: italic; font-size: 28px; font-weight: 700; }
+  .summary .scores .sc.utility .scval { color: var(--c-utility); }
+  .summary .scores .sc.tech    .scval { color: var(--c-tech); }
+  .summary .scores .sc.mfg     .scval { color: var(--c-mfg); }
+  .summary .restart {
+    padding: 10px 24px; background: var(--olive); color: #fff; border: none; border-radius: 999px;
+    font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; cursor: pointer;
+  }
+
+  .foot { text-align: center; font-family: 'Lora', serif; font-style: italic; font-size: 11px; color: var(--soft); padding: 4px; }
+
+  @media (max-width: 768px) {
+    .app { padding: 10px 10px 16px; }
+    .hero h2 { font-size: 19px; }
+    .project-body .pname { font-size: 18px; }
+    .irr-display .iv { font-size: 30px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <div class="head">
+    <div class="brand">
+      <div>
+        <div class="code">Module 4 &middot; Planning Horizon, MARR and PW</div>
+        <h1>MARR <em>Game</em></h1>
+      </div>
+      <span class="tag">three firms &middot; five projects &middot; one decision rule</span>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div>
+      <div class="kicker">Tool 3 of 3 &middot; MARR &amp; WACC</div>
+      <h2>Same project, <em>three different verdicts</em>.</h2>
+      <div class="sub">A project's IRR doesn't get accepted in isolation — it gets compared to <em>your firm's</em> cost of capital. Here are three real-world firm profiles with very different capital stacks. Same five projects, three independent decisions per round. See how often the <em>right call</em> depends on who's asking.</div>
+    </div>
+    <div class="hero-img" style="background-image: url('images/m4/tool-marr-game.png');"></div>
+  </div>
+
+  <div class="progress-strip" id="progress-strip">
+    <div class="seg active"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div>
+  </div>
+
+  <!-- THREE FIRMS -->
+  <div class="firms-row" id="firms-row"></div>
+
+  <!-- PROJECT PANEL -->
+  <div class="project-panel" id="game-area">
+    <div class="project-head">
+      <span class="ph">Project <span id="round-n">1</span> of 5</span>
+      <span class="pround" id="ptag">capital project</span>
+    </div>
+    <div class="project-body">
+      <div>
+        <div class="pname" id="pname">—</div>
+        <div class="pdesc" id="pdesc">—</div>
+      </div>
+      <div class="irr-display">
+        <div class="il">Project IRR</div>
+        <div class="iv" id="pirr">—</div>
+        <div class="ix">expected return</div>
+      </div>
+    </div>
+
+    <div class="decisions" id="decisions"></div>
+
+    <div class="next-row">
+      <div class="scorebar">Score: <strong id="score-text">— / —</strong></div>
+      <button class="next-btn" id="next-btn" disabled>Next project →</button>
+    </div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="summary panel" id="summary" style="background:var(--paper);border:1px solid var(--border);border-radius:12px;">
+    <h3 id="sum-title">Game complete</h3>
+    <div class="blurb" id="sum-blurb">—</div>
+    <div class="scores" id="sum-scores"></div>
+    <button class="restart" id="restart-btn">Restart game</button>
+  </div>
+
+  <div class="foot">&copy; Prof. Mohammad Dehghani &middot; IE 4512 / EMGT 6225 &middot; <a href="m4-capital-structure.html" style="color:var(--olive);">← Capital Structure Curve</a> &middot; <a href="m4-wacc-builder.html" style="color:var(--olive);">WACC Builder</a></div>
+</div>
+
+<a href="index.html" title="Back to course platform" style="position:fixed;bottom:10px;left:14px;display:inline-flex;align-items:center;gap:7px;padding:6px 13px 6px 10px;background:rgba(255,255,255,0.94);border:1px solid #e8e3d4;border-radius:999px;font-family:'Outfit',-apple-system,sans-serif;font-size:11px;font-weight:600;color:#5c7a4a;text-decoration:none;box-shadow:0 4px 14px rgba(92,122,74,0.18);z-index:1000;backdrop-filter:blur(6px);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="11 18 5 12 11 6"/></svg>Back to platform</a>
+
+<script src="focus-music.js" defer></script>
+
+<script>
+  const $ = id => document.getElementById(id);
+
+  // ===== FIRM PROFILES =====
+  // Each source: { amount, cost (%) }
+  // isDebt array tracks tax-shield eligibility
+  const FIRMS = [
+    {
+      key: 'utility', name: 'Pacific Grid <em>Utility</em>', type: 'regulated utility',
+      blurb: 'Stable cash flows, low beta, heavy infrastructure capex. Lenders happy to fund it.',
+      tax: 0.21,
+      sources: {
+        loan:     { amount: 400000, cost: 5.5 },
+        bond:     { amount: 600000, cost: 5.0 },
+        pref:     { amount: 100000, cost: 6.5 },
+        common:   { amount: 250000, cost: 8.5 },
+        retained: { amount: 150000, cost: 8.0 }
+      }
+    },
+    {
+      key: 'tech', name: 'Lumen Labs <em>Tech</em>', type: 'high-growth tech',
+      blurb: 'High beta, fast growth, limited tangible collateral. Mostly equity-funded.',
+      tax: 0.21,
+      sources: {
+        loan:     { amount: 50000,  cost: 8.5 },
+        bond:     { amount: 100000, cost: 8.0 },
+        pref:     { amount: 50000,  cost: 9.5 },
+        common:   { amount: 550000, cost: 14.0 },
+        retained: { amount: 250000, cost: 13.5 }
+      }
+    },
+    {
+      key: 'mfg', name: 'Northeast Forge <em>Mfg.</em>', type: 'industrial manufacturer',
+      blurb: 'Balanced capital stack, moderate cyclicality, mid-range beta.',
+      tax: 0.21,
+      sources: {
+        loan:     { amount: 200000, cost: 6.5 },
+        bond:     { amount: 250000, cost: 6.0 },
+        pref:     { amount: 100000, cost: 7.5 },
+        common:   { amount: 350000, cost: 11.0 },
+        retained: { amount: 100000, cost: 10.5 }
+      }
+    }
+  ];
+  const SRC_KEYS = [
+    { k: 'loan',     name: 'Loan',     isDebt: true,  color: '#b8860b' },
+    { k: 'bond',     name: 'Bond',     isDebt: true,  color: '#d4a017' },
+    { k: 'pref',     name: 'Preferred',isDebt: false, color: '#5c7a4a' },
+    { k: 'common',   name: 'Common',   isDebt: false, color: '#1947d6' },
+    { k: 'retained', name: 'Retained', isDebt: false, color: '#4a6fe6' }
+  ];
+
+  // ===== PROJECTS =====
+  // 5 projects with IRRs that intentionally fall in different zones relative to the three firms' WACCs
+  const PROJECTS = [
+    {
+      tag: 'energy infrastructure', name: 'Grid Modernization Upgrade',
+      desc: 'Replace 30-year-old substations across the service territory; long payback, regulated returns.',
+      irr: 7.5
+    },
+    {
+      tag: 'manufacturing capex', name: 'Robotic Assembly Line',
+      desc: 'Add 2 robotic cells to the main plant; expected 18% throughput lift.',
+      irr: 10.5
+    },
+    {
+      tag: 'speculative R&D', name: 'AI Inference Chip Tape-Out',
+      desc: 'Fund first silicon tape-out for a custom inference accelerator. High-risk, high-return.',
+      irr: 16.0
+    },
+    {
+      tag: 'cost reduction', name: 'Warehouse Automation Retrofit',
+      desc: 'Retrofit 4 distribution centers with conveyors and pick-to-light. Steady operational savings.',
+      irr: 9.0
+    },
+    {
+      tag: 'growth bet', name: 'New Product Launch',
+      desc: 'Launch a new product line targeted at enterprise customers; mid-risk, multi-year payoff.',
+      irr: 12.5
+    }
+  ];
+
+  // ===== STATE =====
+  let state = { round: 0, results: [] };
+  for (const _ of PROJECTS) state.results.push({});  // results[round][firmKey] = {chose, correct}
+
+  // ===== COMPUTE =====
+  function waccOf(firm) {
+    let V = 0;
+    for (const sk of SRC_KEYS) V += firm.sources[sk.k].amount;
+    if (V === 0) return 0;
+    let w = 0;
+    for (const sk of SRC_KEYS) {
+      const s = firm.sources[sk.k];
+      const c = s.cost / 100;
+      const after = sk.isDebt ? c * (1 - firm.tax) : c;
+      w += (s.amount / V) * after;
+    }
+    return w;
+  }
+
+  // ===== RENDER FIRMS =====
+  function renderFirms() {
+    const row = $('firms-row');
+    row.innerHTML = '';
+    FIRMS.forEach(firm => {
+      const wacc = waccOf(firm);
+      const V = SRC_KEYS.reduce((s, sk) => s + firm.sources[sk.k].amount, 0);
+
+      // mini stack segments
+      const stackSegs = SRC_KEYS.map(sk => {
+        const a = firm.sources[sk.k].amount;
+        return `<div class="seg ${sk.k === 'retained' ? 'retd' : sk.k}" style="flex:${a};" title="${sk.name}: $${a.toLocaleString()}"></div>`;
+      }).join('');
+
+      // legend
+      const legend = SRC_KEYS.map(sk => {
+        const a = firm.sources[sk.k].amount;
+        const pct = V > 0 ? (a / V * 100).toFixed(0) : 0;
+        return `<div class="si"><span class="sw" style="background:${sk.color};"></span>${sk.name} <span style="margin-left:auto;color:var(--ink);font-weight:600;">${pct}%</span></div>`;
+      }).join('');
+
+      // editable cost cells
+      const controls = SRC_KEYS.map(sk =>
+        `<div class="cline"><span>${sk.name} cost ${sk.isDebt ? '(pre-tax)' : ''}</span><input type="number" step="0.1" min="0" data-firm="${firm.key}" data-src="${sk.k}" value="${firm.sources[sk.k].cost.toFixed(1)}" /></div>`
+      ).join('');
+
+      const card = document.createElement('div');
+      card.className = `firm-card ${firm.key}`;
+      card.innerHTML = `
+        <div class="fhead">
+          <div class="fname">${firm.name}</div>
+          <span class="ftype">${firm.type}</span>
+        </div>
+        <div class="fblurb">${firm.blurb}</div>
+        <div class="wacc-display">
+          <div class="wlbl">Cost of capital (WACC)</div>
+          <div class="wval" id="wacc-${firm.key}">${(wacc * 100).toFixed(2)}%</div>
+        </div>
+        <div class="mini-stack">${stackSegs}</div>
+        <div class="stack-legend">${legend}</div>
+        <details class="firm-controls" style="margin-top:8px;">
+          <summary style="font-size:10.5px;color:var(--muted);cursor:pointer;letter-spacing:0.06em;">tweak costs</summary>
+          ${controls}
+          <div class="cline" style="margin-top:6px;"><span>Tax rate</span><input type="number" step="0.5" min="0" max="50" data-firm="${firm.key}" data-src="tax" value="${(firm.tax*100).toFixed(1)}" /></div>
+        </details>
+      `;
+      row.appendChild(card);
+    });
+
+    // Wire firm cost inputs
+    document.querySelectorAll('.firm-controls input').forEach(inp => {
+      inp.addEventListener('input', e => {
+        const fk = inp.dataset.firm;
+        const sk = inp.dataset.src;
+        const firm = FIRMS.find(x => x.key === fk);
+        if (sk === 'tax') firm.tax = (+inp.value || 0) / 100;
+        else firm.sources[sk].cost = +inp.value || 0;
+        // refresh wacc display
+        $('wacc-' + fk).textContent = (waccOf(firm) * 100).toFixed(2) + '%';
+        // refresh decision card label
+        if ($('dwacc-' + fk)) $('dwacc-' + fk).textContent = 'WACC ' + (waccOf(firm)*100).toFixed(2) + '%';
+        // refresh outcome if already answered this round
+        renderDecisions();
+      });
+    });
+  }
+
+  // ===== RENDER PROJECT + DECISIONS =====
+  function renderProject() {
+    if (state.round >= PROJECTS.length) { renderSummary(); return; }
+    const p = PROJECTS[state.round];
+    $('round-n').textContent = state.round + 1;
+    $('ptag').textContent = p.tag;
+    $('pname').textContent = p.name;
+    $('pdesc').textContent = p.desc;
+    $('pirr').textContent = p.irr.toFixed(1) + '%';
+
+    // progress
+    Array.from(document.querySelectorAll('#progress-strip .seg')).forEach((seg, i) => {
+      seg.className = 'seg' + (i < state.round ? ' done' : (i === state.round ? ' active' : ''));
+    });
+
+    renderDecisions();
+    $('score-text').textContent = computeScoreText();
+    $('next-btn').disabled = !allAnsweredThisRound();
+  }
+
+  function renderDecisions() {
+    const p = PROJECTS[state.round];
+    const cont = $('decisions');
+    cont.innerHTML = '';
+    FIRMS.forEach(firm => {
+      const wacc = waccOf(firm);
+      const correctChoice = (p.irr/100 > wacc) ? 'accept' : 'reject';
+      const result = state.results[state.round][firm.key];
+      const answered = result != null;
+      const userChose = answered ? result.chose : null;
+
+      const card = document.createElement('div');
+      card.className = `decision-card ${firm.key}`;
+      card.innerHTML = `
+        <div class="dch">
+          <span class="dname">${firm.name.replace(/<em>|<\/em>/g, '')}</span>
+          <span class="dwacc" id="dwacc-${firm.key}">WACC ${(wacc*100).toFixed(2)}%</span>
+        </div>
+        <div class="btns">
+          <button class="btn accept-btn ${answered ? 'locked' : ''} ${userChose === 'accept' ? 'selected ' + (correctChoice === 'accept' ? 'correct' : 'wrong') : ''}" data-firm="${firm.key}" data-c="accept">✓ ACCEPT</button>
+          <button class="btn reject-btn ${answered ? 'locked' : ''} ${userChose === 'reject' ? 'selected ' + (correctChoice === 'reject' ? 'correct' : 'wrong') : ''}" data-firm="${firm.key}" data-c="reject">✗ REJECT</button>
+        </div>
+        ${answered ? `
+          <div class="feedback show ${result.correct ? 'ok' : 'bad'}">
+            ${result.correct ? '✓ Correct.' : '✗ Not quite.'}
+            IRR <strong>${p.irr.toFixed(1)}%</strong> ${(p.irr/100 > wacc) ? '>' : '≤'} WACC <strong>${(wacc*100).toFixed(2)}%</strong> → ${correctChoice === 'accept' ? 'accept' : 'reject'}.
+          </div>` : ''}
+      `;
+      cont.appendChild(card);
+    });
+
+    cont.querySelectorAll('.btn:not(.locked)').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const fk = btn.dataset.firm;
+        const chose = btn.dataset.c;
+        const firm = FIRMS.find(x => x.key === fk);
+        const wacc = waccOf(firm);
+        const correctChoice = (p.irr/100 > wacc) ? 'accept' : 'reject';
+        state.results[state.round][fk] = { chose, correct: chose === correctChoice };
+        renderDecisions();
+        $('score-text').textContent = computeScoreText();
+        $('next-btn').disabled = !allAnsweredThisRound();
+      });
+    });
+  }
+
+  function allAnsweredThisRound() {
+    return FIRMS.every(f => state.results[state.round][f.key] != null);
+  }
+
+  function computeScoreText() {
+    let correct = 0, total = 0;
+    for (let r = 0; r < state.results.length; r++) {
+      for (const f of FIRMS) {
+        if (state.results[r][f.key] != null) {
+          total++;
+          if (state.results[r][f.key].correct) correct++;
+        }
+      }
+    }
+    return `${correct} / ${total}`;
+  }
+
+  function renderSummary() {
+    $('game-area').style.display = 'none';
+    $('progress-strip').style.display = 'none';
+    $('summary').classList.add('active');
+
+    let total = 0, correct = 0;
+    const perFirm = {};
+    for (const f of FIRMS) perFirm[f.key] = { c: 0, t: 0 };
+    for (let r = 0; r < state.results.length; r++) {
+      for (const f of FIRMS) {
+        const x = state.results[r][f.key];
+        if (x) { total++; perFirm[f.key].t++; if (x.correct) { correct++; perFirm[f.key].c++; } }
+      }
+    }
+    const pct = total > 0 ? (correct / total) * 100 : 0;
+    let blurb = '';
+    if (pct === 100) blurb = 'Perfect — every firm got the right call on every project.';
+    else if (pct >= 80) blurb = 'Strong. The IRR vs WACC rule is internalized.';
+    else if (pct >= 60) blurb = 'Solid foundation. Watch for the close calls (IRR ≈ WACC).';
+    else blurb = 'Worth another pass — pay attention to each firm\'s WACC before deciding.';
+    $('sum-blurb').textContent = blurb;
+    $('sum-title').textContent = `Game complete — ${correct} of ${total} correct`;
+
+    const sums = $('sum-scores');
+    sums.innerHTML = '';
+    FIRMS.forEach(f => {
+      const pf = perFirm[f.key];
+      const div = document.createElement('div');
+      div.className = `sc ${f.key}`;
+      div.innerHTML = `<div class="scname">${f.name.replace(/<em>|<\/em>/g, '')}</div><div class="scval">${pf.c}/${pf.t}</div>`;
+      sums.appendChild(div);
+    });
+  }
+
+  $('next-btn').addEventListener('click', () => {
+    state.round++;
+    renderProject();
+  });
+  $('restart-btn').addEventListener('click', () => {
+    state.round = 0;
+    state.results = [];
+    for (const _ of PROJECTS) state.results.push({});
+    $('summary').classList.remove('active');
+    $('game-area').style.display = '';
+    $('progress-strip').style.display = '';
+    renderProject();
+  });
+
+  renderFirms();
+  renderProject();
+</script>
+</body>
+</html>

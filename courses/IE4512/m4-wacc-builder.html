@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Module 4 · WACC Builder &amp; Project Decision</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf9f5; --paper: #ffffff; --ink: #1a1a1a; --muted: #5a5247; --soft: #8b7355;
+    --border: #e8e3d4; --line: #d4cfc0;
+    --blue: #1947d6; --blue-light: #4a6fe6; --blue-soft: #eef2ff; --blue-deep: #0d2e9e;
+    --gold: #b8860b; --gold-soft: #faf3e0;
+    --olive: #5c7a4a; --olive-soft: #f0f4ea;
+    --crimson: #8a2828; --crimson-soft: #fdf2f3;
+    --purple: #7c3aed; --purple-soft: #f3eeff;
+    --teal: #0e7c80;  --teal-soft: #e6f4f4;
+    /* Capital source colors */
+    --c-loan:     #b8860b;
+    --c-bond:     #d4a017;
+    --c-pref:     #5c7a4a;
+    --c-common:   #1947d6;
+    --c-retained: #4a6fe6;
+  }
+  body { background: var(--bg); color: var(--ink); font-family: 'Outfit', -apple-system, system-ui, sans-serif; font-size: 13px; line-height: 1.5; }
+  .app { max-width: 1500px; margin: 0 auto; padding: 14px 22px 24px; display: flex; flex-direction: column; gap: 14px; }
+
+  .head { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 9px 16px; background: var(--paper); border: 1px solid var(--border); border-radius: 10px; border-top: 3px solid var(--blue); flex-wrap: wrap; }
+  .brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .brand .code { font-size: 10px; color: var(--blue); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; }
+  .brand h1 { font-family: 'Lora', Georgia, serif; font-size: 20px; font-weight: 700; line-height: 1; }
+  .brand h1 em { font-style: italic; color: var(--blue); font-weight: 400; }
+  .brand .tag { font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted); }
+
+  .hero { padding: 16px 22px; background: var(--paper); border: 1px solid var(--border); border-radius: 12px; display: grid; grid-template-columns: 1fr 200px; gap: 18px; align-items: center; }
+  @media (max-width: 800px) { .hero { grid-template-columns: 1fr; } .hero .hero-img { display:none; } }
+  .hero .kicker { font-size: 10.5px; letter-spacing: 0.24em; color: var(--blue); text-transform: uppercase; font-weight: 700; margin-bottom: 6px; }
+  .hero h2 { font-family: 'Lora', serif; font-size: 24px; font-weight: 700; line-height: 1.2; }
+  .hero h2 em { font-style: italic; color: var(--blue); }
+  .hero .sub { font-family: 'Lora', serif; font-style: italic; font-size: 13.5px; color: var(--muted); margin-top: 6px; line-height: 1.55; max-width: 720px; }
+  .hero .hero-img { width: 200px; height: 140px; background-size: cover; background-position: center; border-radius: 10px; border: 1px solid var(--border); }
+
+  .layout { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 14px; }
+  @media (max-width: 1000px) { .layout { grid-template-columns: 1fr; } }
+
+  .panel { background: var(--paper); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; }
+  .panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  .panel-head h3 { font-family: 'Lora', serif; font-size: 16px; font-weight: 700; line-height: 1.2; }
+  .panel-head h3 em { font-style: italic; color: var(--blue); }
+  .panel-head .pill { font-size: 9.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; padding: 3px 9px; background: var(--blue-soft); color: var(--blue); border-radius: 999px; }
+
+  /* Capital sources table */
+  .sources { display: flex; flex-direction: column; gap: 8px; }
+  .src-row {
+    display: grid; grid-template-columns: 24px 1.3fr 1fr 1fr 80px; gap: 8px; align-items: center;
+    padding: 9px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+    border-left-width: 4px;
+  }
+  .src-row.loan      { border-left-color: var(--c-loan); }
+  .src-row.bond      { border-left-color: var(--c-bond); }
+  .src-row.pref      { border-left-color: var(--c-pref); }
+  .src-row.common    { border-left-color: var(--c-common); }
+  .src-row.retained  { border-left-color: var(--c-retained); }
+  .src-row .swatch { width: 18px; height: 18px; border-radius: 4px; }
+  .src-row.loan     .swatch { background: var(--c-loan); }
+  .src-row.bond     .swatch { background: var(--c-bond); }
+  .src-row.pref     .swatch { background: var(--c-pref); }
+  .src-row.common   .swatch { background: var(--c-common); }
+  .src-row.retained .swatch { background: var(--c-retained); }
+  .src-row .name { font-family: 'Lora', serif; font-size: 13px; font-weight: 600; line-height: 1.2; }
+  .src-row .name .small { display: block; font-family: 'Outfit', sans-serif; font-style: normal; font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600; color: var(--muted); margin-top: 1px; }
+  .src-row .ctrl { display: flex; align-items: center; gap: 4px; }
+  .src-row .ctrl .pre { font-size: 11px; color: var(--muted); }
+  .src-row input[type="number"] {
+    width: 100%; padding: 5px 7px; border: 1px solid var(--border); border-radius: 5px;
+    font-family: 'Outfit', sans-serif; font-size: 12.5px; font-weight: 600; color: var(--ink); background: #fff; outline: none;
+    text-align: right;
+  }
+  .src-row input[type="number"]:focus { border-color: var(--blue); }
+  .src-row .pct {
+    font-family: 'JetBrains Mono', Consolas, monospace; font-size: 11px; color: var(--muted);
+    text-align: right;
+  }
+  .src-head {
+    display: grid; grid-template-columns: 24px 1.3fr 1fr 1fr 80px; gap: 8px;
+    padding: 0 12px 4px;
+    font-family: 'Outfit', sans-serif; font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; color: var(--muted);
+  }
+
+  .tax-row {
+    margin-top: 6px; display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: center;
+    padding: 9px 12px; background: var(--crimson-soft); border: 1px solid var(--crimson); border-radius: 8px;
+  }
+  .tax-row label { font-family: 'Outfit', sans-serif; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700; color: var(--crimson); }
+  .tax-row input[type="range"] {
+    width: 200px; height: 4px; -webkit-appearance: none; appearance: none;
+    background: linear-gradient(to right, var(--crimson) var(--tax-pct, 21%), #d4cfc0 var(--tax-pct, 21%));
+    border-radius: 999px; outline: none;
+  }
+  .tax-row input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 14px; height: 14px; border-radius: 999px; background: var(--crimson);
+    cursor: pointer; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  }
+  .tax-row .val { font-family: 'Lora', serif; font-size: 16px; font-weight: 700; color: var(--crimson); min-width: 50px; text-align: right; }
+
+  .total-row {
+    margin-top: 4px; padding: 9px 14px; background: var(--blue);
+    color: #fff; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .total-row .lbl { font-family: 'Outfit', sans-serif; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; opacity: 0.85; }
+  .total-row .v { font-family: 'Lora', serif; font-size: 19px; font-weight: 700; }
+
+  /* CAPM helper */
+  .capm {
+    margin-top: 12px; padding: 12px 14px; background: var(--blue-soft); border: 1px dashed var(--blue); border-radius: 8px;
+  }
+  .capm h4 { font-family: 'Lora', serif; font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .capm h4 em { font-style: italic; color: var(--blue); }
+  .capm .formula { font-family: 'JetBrains Mono', Consolas, monospace; font-size: 11px; color: var(--ink); margin-bottom: 8px; padding: 4px 7px; background: #fff; border-radius: 5px; }
+  .capm-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 7px; }
+  @media (max-width: 600px) { .capm-grid { grid-template-columns: 1fr 1fr; } }
+  .capm-grid .cell label { display: block; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700; color: var(--muted); margin-bottom: 2px; }
+  .capm-grid .cell .vrow { display: flex; align-items: center; gap: 3px; }
+  .capm-grid .cell .vrow input { flex: 1; padding: 5px 6px; border: 1px solid var(--border); border-radius: 5px; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 600; text-align: right; background: #fff; }
+  .capm-grid .cell .vrow .pre { font-size: 11px; color: var(--muted); }
+  .capm-grid .cell.result { background: var(--paper); border: 1px solid var(--blue); border-radius: 6px; padding: 7px 9px; }
+  .capm-grid .cell.result label { color: var(--blue); }
+  .capm-grid .cell.result .vrow input { font-size: 14px; color: var(--blue); font-weight: 700; border: none; padding: 0; background: transparent; pointer-events: none; }
+  .capm .apply-btn {
+    margin-top: 8px; padding: 6px 12px; background: var(--blue); color: #fff; border: none; border-radius: 6px;
+    font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 700; cursor: pointer;
+  }
+  .capm .apply-btn:hover { background: var(--blue-light); }
+
+  /* WACC display */
+  .wacc-big {
+    background: linear-gradient(135deg, var(--paper) 0%, var(--blue-soft) 100%);
+    border: 2px solid var(--blue); border-radius: 12px; padding: 18px 20px;
+    text-align: center;
+  }
+  .wacc-big .lbl { font-family: 'Outfit', sans-serif; font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700; color: var(--blue); margin-bottom: 4px; }
+  .wacc-big .val { font-family: 'Lora', serif; font-size: 56px; font-weight: 700; color: var(--blue); line-height: 1; }
+  .wacc-big .val em { font-style: italic; color: var(--gold); }
+  .wacc-big .sublabel { font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted); margin-top: 4px; }
+
+  /* Capital stack bar */
+  .stack-bar {
+    margin-top: 14px; display: flex; height: 32px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border);
+  }
+  .stack-bar .seg {
+    height: 100%; display: flex; align-items: center; justify-content: center;
+    font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 700; color: #fff;
+    transition: flex-grow 0.3s;
+    overflow: hidden; white-space: nowrap;
+  }
+  .stack-bar .seg.loan      { background: var(--c-loan); }
+  .stack-bar .seg.bond      { background: var(--c-bond); }
+  .stack-bar .seg.pref      { background: var(--c-pref); }
+  .stack-bar .seg.common    { background: var(--c-common); }
+  .stack-bar .seg.retained  { background: var(--c-retained); }
+  .stack-bar .seg.empty { background: var(--border); color: var(--muted); }
+
+  /* Contribution table */
+  .contrib { width: 100%; margin-top: 12px; border-collapse: collapse; font-size: 11.5px; }
+  .contrib th, .contrib td { padding: 5px 7px; text-align: right; border-bottom: 1px dotted var(--border); }
+  .contrib th { font-family: 'Outfit', sans-serif; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700; color: var(--muted); }
+  .contrib th:first-child, .contrib td:first-child { text-align: left; }
+  .contrib td.num { font-family: 'JetBrains Mono', Consolas, monospace; }
+  .contrib .swatch-sm { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 7px; vertical-align: middle; }
+  .contrib tr.total td { border-top: 1.5px solid var(--blue); font-weight: 700; color: var(--blue); padding-top: 6px; }
+
+  /* Decision panel */
+  .decision { margin-top: 14px; padding: 14px 16px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; }
+  .decision .dhead { font-family: 'Lora', serif; font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+  .decision .dhead em { font-style: italic; color: var(--gold); }
+  .decision .irow {
+    display: grid; grid-template-columns: 1fr 100px; gap: 10px; align-items: center; margin-bottom: 10px;
+  }
+  .decision .irow label { font-size: 12px; color: var(--muted); }
+  .decision .irow .iwrap { display: flex; align-items: center; gap: 4px; }
+  .decision .irow input {
+    width: 100%; padding: 7px 9px; border: 1px solid var(--border); border-radius: 6px;
+    font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; color: var(--ink); background: #fff; outline: none;
+    text-align: right;
+  }
+  .decision .irow input:focus { border-color: var(--blue); }
+  .decision .verdict {
+    margin-top: 8px; padding: 12px 14px; border-radius: 8px; text-align: center;
+    font-family: 'Lora', serif; font-size: 16px; font-weight: 700;
+  }
+  .decision .verdict.accept { background: var(--olive-soft); border: 2px solid var(--olive); color: #2d4423; }
+  .decision .verdict.reject { background: var(--crimson-soft); border: 2px solid var(--crimson); color: #6b1f1f; }
+  .decision .verdict .sub { display: block; font-family: 'Outfit', sans-serif; font-style: normal; font-size: 11.5px; font-weight: 500; margin-top: 3px; opacity: 0.8; }
+
+  .foot { text-align: center; font-family: 'Lora', serif; font-style: italic; font-size: 11px; color: var(--soft); padding: 4px; }
+
+  @media (max-width: 768px) {
+    .app { padding: 10px 10px 16px; }
+    .hero h2 { font-size: 19px; }
+    .panel { padding: 14px 13px; }
+    .src-row { grid-template-columns: 18px 1fr 1fr; gap: 6px; padding: 8px 9px; }
+    .src-row .swatch { width: 14px; height: 14px; }
+    .src-row .pct { display: none; }
+    .src-head { display: none; }
+    .src-row .ctrl input { font-size: 16px !important; }
+    .tax-row { grid-template-columns: 1fr 1fr; }
+    .tax-row input[type="range"] { width: 100%; grid-column: 1 / -1; order: 3; }
+    .capm-grid { grid-template-columns: 1fr 1fr; }
+    .wacc-big .val { font-size: 44px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <div class="head">
+    <div class="brand">
+      <div>
+        <div class="code">Module 4 &middot; Planning Horizon, MARR and PW</div>
+        <h1>WACC <em>Builder</em></h1>
+      </div>
+      <span class="tag">capital sources &middot; CAPM &middot; project accept / reject</span>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div>
+      <div class="kicker">Tool 1 of 3 &middot; MARR &amp; WACC</div>
+      <h2>Build your firm's <em>cost of capital</em>, then accept or reject the project.</h2>
+      <div class="sub">Enter the dollar amount and cost of each capital source — two debt sources (loan, bond) and three equity sources (preferred stock, common stock, retained earnings). The tool blends them into a Weighted Average Cost of Capital. Use that as your MARR and compare to any project's IRR.</div>
+    </div>
+    <div class="hero-img" style="background-image: url('images/m4/tool-wacc-builder.png');"></div>
+  </div>
+
+  <div class="layout">
+
+    <!-- LEFT: Capital sources -->
+    <div class="panel">
+      <div class="panel-head">
+        <h3>Capital <em>Stack</em></h3>
+        <span class="pill">5 sources</span>
+      </div>
+
+      <div class="src-head">
+        <div></div><div>Source</div><div>Amount ($)</div><div>Cost (%)</div><div>Share</div>
+      </div>
+
+      <div class="sources">
+        <div class="src-row loan">
+          <div class="swatch"></div>
+          <div class="name">Loan<span class="small">debt &middot; tax-shielded</span></div>
+          <div class="ctrl"><span class="pre">$</span><input id="amt-loan" type="number" step="1000" min="0" value="100000" /></div>
+          <div class="ctrl"><input id="cost-loan" type="number" step="0.1" min="0" value="6.5" /><span class="pre">%</span></div>
+          <div class="pct" id="share-loan">—</div>
+        </div>
+        <div class="src-row bond">
+          <div class="swatch"></div>
+          <div class="name">Bond<span class="small">debt &middot; tax-shielded</span></div>
+          <div class="ctrl"><span class="pre">$</span><input id="amt-bond" type="number" step="1000" min="0" value="150000" /></div>
+          <div class="ctrl"><input id="cost-bond" type="number" step="0.1" min="0" value="5.5" /><span class="pre">%</span></div>
+          <div class="pct" id="share-bond">—</div>
+        </div>
+        <div class="src-row pref">
+          <div class="swatch"></div>
+          <div class="name">Preferred stock<span class="small">equity &middot; fixed dividend</span></div>
+          <div class="ctrl"><span class="pre">$</span><input id="amt-pref" type="number" step="1000" min="0" value="75000" /></div>
+          <div class="ctrl"><input id="cost-pref" type="number" step="0.1" min="0" value="7.5" /><span class="pre">%</span></div>
+          <div class="pct" id="share-pref">—</div>
+        </div>
+        <div class="src-row common">
+          <div class="swatch"></div>
+          <div class="name">Common stock<span class="small">equity &middot; CAPM-priced</span></div>
+          <div class="ctrl"><span class="pre">$</span><input id="amt-common" type="number" step="1000" min="0" value="125000" /></div>
+          <div class="ctrl"><input id="cost-common" type="number" step="0.1" min="0" value="11.0" /><span class="pre">%</span></div>
+          <div class="pct" id="share-common">—</div>
+        </div>
+        <div class="src-row retained">
+          <div class="swatch"></div>
+          <div class="name">Retained earnings<span class="small">equity &middot; same risk as common</span></div>
+          <div class="ctrl"><span class="pre">$</span><input id="amt-retained" type="number" step="1000" min="0" value="50000" /></div>
+          <div class="ctrl"><input id="cost-retained" type="number" step="0.1" min="0" value="10.5" /><span class="pre">%</span></div>
+          <div class="pct" id="share-retained">—</div>
+        </div>
+      </div>
+
+      <div class="tax-row">
+        <label>Corporate tax rate (T) <span style="text-transform:none;letter-spacing:0;font-weight:500;color:var(--muted);font-size:10.5px;">— tax shield on debt only</span></label>
+        <input type="range" id="tax" min="0" max="50" step="0.5" value="21" />
+        <div class="val" id="tax-val">21%</div>
+      </div>
+
+      <div class="total-row">
+        <span class="lbl">Total capital (V)</span>
+        <span class="v" id="total-v">$500,000</span>
+      </div>
+
+      <div class="capm">
+        <h4>CAPM helper <em>for common &amp; retained</em></h4>
+        <div class="formula">k<sub>e</sub> = r<sub>f</sub> + β × (r<sub>m</sub> − r<sub>f</sub>)</div>
+        <div class="capm-grid">
+          <div class="cell">
+            <label>Risk-free r<sub>f</sub></label>
+            <div class="vrow"><input id="capm-rf" type="number" step="0.1" value="4.5" /><span class="pre">%</span></div>
+          </div>
+          <div class="cell">
+            <label>Beta β</label>
+            <div class="vrow"><input id="capm-beta" type="number" step="0.05" value="1.15" /></div>
+          </div>
+          <div class="cell">
+            <label>Market premium</label>
+            <div class="vrow"><input id="capm-mrp" type="number" step="0.1" value="5.5" /><span class="pre">%</span></div>
+          </div>
+          <div class="cell result">
+            <label>k<sub>e</sub> computed</label>
+            <div class="vrow"><input id="capm-ke" type="number" value="10.83" readonly /><span class="pre">%</span></div>
+          </div>
+        </div>
+        <button class="apply-btn" id="apply-capm">↓ Push k<sub>e</sub> to Common &amp; Retained Earnings</button>
+      </div>
+    </div>
+
+    <!-- RIGHT: WACC + Decision -->
+    <div class="panel">
+      <div class="panel-head">
+        <h3>Weighted Average <em>Cost of Capital</em></h3>
+        <span class="pill">live</span>
+      </div>
+
+      <div class="wacc-big">
+        <div class="lbl">WACC</div>
+        <div class="val" id="wacc-val">—</div>
+        <div class="sublabel" id="wacc-sub">your firm's blended cost of capital</div>
+      </div>
+
+      <div class="stack-bar" id="stack-bar"></div>
+
+      <table class="contrib" id="contrib">
+        <thead>
+          <tr><th style="width:38%;">Source</th><th>Amount</th><th>Weight</th><th>Cost (pre)</th><th>Cost (after-tax)</th><th>Contribution</th></tr>
+        </thead>
+        <tbody id="contrib-body"></tbody>
+        <tfoot id="contrib-foot"></tfoot>
+      </table>
+
+      <div class="decision">
+        <div class="dhead">Project decision &mdash; <em>accept or reject?</em></div>
+        <div class="irow">
+          <label>Project IRR</label>
+          <div class="iwrap"><input id="proj-irr" type="number" step="0.1" value="13.0" /><span style="color:var(--muted);font-size:11px;">%</span></div>
+        </div>
+        <div class="verdict" id="verdict">—</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="foot">&copy; Prof. Mohammad Dehghani &middot; IE 4512 / EMGT 6225 &middot; <a href="m4-capital-structure.html" style="color:var(--blue);">next: Capital Structure Curve →</a></div>
+</div>
+
+<a href="index.html" title="Back to course platform" style="position:fixed;bottom:10px;left:14px;display:inline-flex;align-items:center;gap:7px;padding:6px 13px 6px 10px;background:rgba(255,255,255,0.94);border:1px solid #e8e3d4;border-radius:999px;font-family:'Outfit',-apple-system,sans-serif;font-size:11px;font-weight:600;color:#1947d6;text-decoration:none;box-shadow:0 4px 14px rgba(25,71,214,0.14);z-index:1000;backdrop-filter:blur(6px);transition:all 0.18s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="11 18 5 12 11 6"/></svg>Back to platform</a>
+
+<script src="focus-music.js" defer></script>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const SOURCES = [
+    { key:'loan',     name:'Loan',              isDebt:true,  color:'#b8860b' },
+    { key:'bond',     name:'Bond',              isDebt:true,  color:'#d4a017' },
+    { key:'pref',     name:'Preferred stock',   isDebt:false, color:'#5c7a4a' },
+    { key:'common',   name:'Common stock',      isDebt:false, color:'#1947d6' },
+    { key:'retained', name:'Retained earnings', isDebt:false, color:'#4a6fe6' }
+  ];
+
+  function fmt$(x) {
+    if (x >= 1e6) return '$' + (x/1e6).toFixed(2) + 'M';
+    if (x >= 1e3) return '$' + Math.round(x/100)/10 + 'k';
+    return '$' + Math.round(x).toLocaleString();
+  }
+  function fmt$full(x) { return '$' + Math.round(x).toLocaleString(); }
+  function pct(x) { return (x*100).toFixed(2) + '%'; }
+
+  function computeCAPM() {
+    const rf   = +$('capm-rf').value   || 0;
+    const beta = +$('capm-beta').value || 0;
+    const mrp  = +$('capm-mrp').value  || 0;
+    const ke = rf + beta * mrp;
+    $('capm-ke').value = ke.toFixed(2);
+    return ke;
+  }
+
+  function update() {
+    // Tax
+    const T = (+$('tax').value || 0) / 100;
+    $('tax-val').textContent = ($('tax').value || 0) + '%';
+    document.querySelector('.tax-row').style.setProperty('--tax-pct', (T * 100 / 50 * 100) + '%');
+
+    // CAPM
+    computeCAPM();
+
+    // Read all sources
+    const data = SOURCES.map(s => ({
+      ...s,
+      amount: +$('amt-' + s.key).value || 0,
+      cost: (+$('cost-' + s.key).value || 0) / 100
+    }));
+
+    const V = data.reduce((a, b) => a + b.amount, 0);
+    $('total-v').textContent = fmt$full(V);
+
+    // Per-source weight + after-tax cost + contribution
+    let wacc = 0;
+    data.forEach(s => {
+      s.w = V > 0 ? s.amount / V : 0;
+      s.afterCost = s.isDebt ? s.cost * (1 - T) : s.cost;
+      s.contrib = s.w * s.afterCost;
+      wacc += s.contrib;
+      $('share-' + s.key).textContent = V > 0 ? (s.w * 100).toFixed(1) + '%' : '—';
+    });
+
+    // WACC display
+    $('wacc-val').innerHTML = V > 0 ? (wacc * 100).toFixed(2) + '<em>%</em>' : '—';
+
+    // Stack bar
+    const stack = $('stack-bar');
+    stack.innerHTML = '';
+    if (V > 0) {
+      data.forEach(s => {
+        if (s.amount === 0) return;
+        const seg = document.createElement('div');
+        seg.className = 'seg ' + s.key;
+        seg.style.flex = s.amount;
+        seg.textContent = s.w >= 0.06 ? (s.w * 100).toFixed(0) + '%' : '';
+        seg.title = `${s.name}: ${fmt$(s.amount)} (${(s.w*100).toFixed(1)}%)`;
+        stack.appendChild(seg);
+      });
+    } else {
+      const empty = document.createElement('div');
+      empty.className = 'seg empty';
+      empty.style.flex = '1';
+      empty.textContent = 'enter amounts above';
+      stack.appendChild(empty);
+    }
+
+    // Contribution table
+    const tbody = $('contrib-body');
+    tbody.innerHTML = '';
+    data.forEach(s => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><span class="swatch-sm" style="background:${s.color};"></span>${s.name}${s.isDebt ? ' <span style="color:var(--muted);font-size:9px;">(×(1−T))</span>' : ''}</td>
+        <td class="num">${fmt$(s.amount)}</td>
+        <td class="num">${(s.w*100).toFixed(1)}%</td>
+        <td class="num">${(s.cost*100).toFixed(2)}%</td>
+        <td class="num">${(s.afterCost*100).toFixed(2)}%</td>
+        <td class="num">${(s.contrib*100).toFixed(3)}%</td>
+      `;
+      tbody.appendChild(tr);
+    });
+    $('contrib-foot').innerHTML = `
+      <tr class="total"><td colspan="5">WACC =</td><td class="num">${(wacc*100).toFixed(2)}%</td></tr>
+    `;
+
+    // Decision
+    const irr = (+$('proj-irr').value || 0) / 100;
+    const v = $('verdict');
+    if (V === 0) {
+      v.className = 'verdict';
+      v.innerHTML = 'Enter capital amounts above to evaluate.';
+    } else if (irr > wacc) {
+      v.className = 'verdict accept';
+      v.innerHTML = `✓ ACCEPT &mdash; IRR ${(irr*100).toFixed(2)}% > WACC ${(wacc*100).toFixed(2)}%<span class="sub">Project earns more than your blended cost of capital. Margin: +${((irr - wacc)*100).toFixed(2)} pts.</span>`;
+    } else if (Math.abs(irr - wacc) < 1e-6) {
+      v.className = 'verdict';
+      v.innerHTML = `~ TIE &mdash; IRR equals WACC<span class="sub">Indifferent. Look at strategic factors.</span>`;
+    } else {
+      v.className = 'verdict reject';
+      v.innerHTML = `✗ REJECT &mdash; IRR ${(irr*100).toFixed(2)}% &lt; WACC ${(wacc*100).toFixed(2)}%<span class="sub">Project doesn't clear your cost of capital. Shortfall: −${((wacc - irr)*100).toFixed(2)} pts.</span>`;
+    }
+  }
+
+  // Apply CAPM ke to Common + Retained
+  $('apply-capm').addEventListener('click', () => {
+    const ke = computeCAPM();
+    $('cost-common').value = ke.toFixed(2);
+    $('cost-retained').value = (ke - 0.5).toFixed(2);  // retained typically slightly lower (no flotation)
+    update();
+  });
+
+  // Wire all inputs
+  document.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('input', update);
+  });
+
+  update();
+</script>
+</body>
+</html>
