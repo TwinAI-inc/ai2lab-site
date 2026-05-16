@@ -38,7 +38,8 @@
 
   /* MAIN — 2 cols, fills the rest */
   .main { flex: 1; display: grid; grid-template-columns: 360px 1fr; gap: 10px; min-height: 0; }
-  @media (max-width: 920px) { .main { grid-template-columns: 1fr; } html, body { overflow: auto; } .app { height: auto; } }
+  .main > .panel:first-child { align-self: start; max-height: 100%; }
+  @media (max-width: 920px) { .main { grid-template-columns: 1fr; } .main > .panel:first-child { align-self: stretch; max-height: none; } html, body { overflow: auto; } .app { height: auto; } }
 
   .panel {
     background: var(--paper); border: 1px solid var(--border); border-radius: 10px;
@@ -748,24 +749,21 @@
       return;
     }
 
-    // Find cheapest / most expensive (after-tax) source with non-zero amount
     const active = data.sources.filter(s => s.amount > 0);
     const cheapest = active.reduce((a, b) => b.afterCost < a.afterCost ? b : a);
     const dearest  = active.reduce((a, b) => b.afterCost > a.afterCost ? b : a);
 
-    // Tax shield savings: (debt PRE-tax weighted) - (debt AFTER-tax weighted)
-    const debtPre = data.sources.filter(s => s.isDebt).reduce((a, s) => a + s.w * s.cost, 0);
-    const debtAfter = data.sources.filter(s => s.isDebt).reduce((a, s) => a + s.w * s.afterCost, 0);
-    const shield = debtPre - debtAfter;
+    // Pre-tax WACC (no shield): same weights, pre-tax costs everywhere
+    const waccPretax = data.sources.reduce((a, s) => a + s.w * s.cost, 0);
+    const shield = waccPretax - data.wacc;
+    const spread = dearest.afterCost - cheapest.afterCost;
 
-    // Structure character
     const debtPct = data.debtV / data.V;
     let structure, structureClass;
-    if (debtPct > 0.60)      { structure = 'Debt-heavy';        structureClass = 'crimson'; }
-    else if (debtPct < 0.30) { structure = 'Equity-heavy';      structureClass = 'olive'; }
-    else                     { structure = 'Balanced';          structureClass = 'blue'; }
+    if (debtPct > 0.60)      { structure = 'Debt-heavy';   structureClass = 'crimson'; }
+    else if (debtPct < 0.30) { structure = 'Equity-heavy'; structureClass = 'olive'; }
+    else                     { structure = 'Balanced';     structureClass = 'blue'; }
 
-    // Project context note
     const margin = (irr - data.wacc) * 100;
     let projNote;
     if (irr > data.wacc) {
@@ -780,7 +778,15 @@
       <div class="ih">Insight</div>
       <div class="row">
         <span class="lbl">Capital structure</span>
-        <span class="val ${structureClass}">${structure} (D/V = ${(debtPct*100).toFixed(0)}%)</span>
+        <span class="val ${structureClass}">${structure} &middot; D/V = ${(debtPct*100).toFixed(0)}%</span>
+      </div>
+      <div class="row">
+        <span class="lbl">Pre-tax WACC (no shield)</span>
+        <span class="val">${(waccPretax*100).toFixed(2)}%</span>
+      </div>
+      <div class="row">
+        <span class="lbl">After-tax WACC (your firm)</span>
+        <span class="val blue">${(data.wacc*100).toFixed(2)}%</span>
       </div>
       <div class="row">
         <span class="lbl">Tax-shield saving on debt</span>
@@ -788,11 +794,15 @@
       </div>
       <div class="row">
         <span class="lbl">Cheapest source (after-tax)</span>
-        <span class="val olive">${cheapest.name} · ${(cheapest.afterCost*100).toFixed(2)}%</span>
+        <span class="val olive">${cheapest.name} &middot; ${(cheapest.afterCost*100).toFixed(2)}%</span>
       </div>
       <div class="row">
         <span class="lbl">Most expensive source</span>
-        <span class="val crimson">${dearest.name} · ${(dearest.afterCost*100).toFixed(2)}%</span>
+        <span class="val crimson">${dearest.name} &middot; ${(dearest.afterCost*100).toFixed(2)}%</span>
+      </div>
+      <div class="row">
+        <span class="lbl">Cost spread (cheapest → dearest)</span>
+        <span class="val">${(spread*100).toFixed(2)} pts</span>
       </div>
       <div class="note">${projNote}</div>
     `;
