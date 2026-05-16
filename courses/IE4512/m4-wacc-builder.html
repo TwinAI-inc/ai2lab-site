@@ -10,205 +10,251 @@
   :root {
     --bg: #faf9f5; --paper: #ffffff; --ink: #1a1a1a; --muted: #5a5247; --soft: #8b7355;
     --border: #e8e3d4; --line: #d4cfc0;
-    --blue: #1947d6; --blue-light: #4a6fe6; --blue-soft: #eef2ff; --blue-deep: #0d2e9e;
+    --blue: #1947d6; --blue-light: #4a6fe6; --blue-soft: #eef2ff;
     --gold: #b8860b; --gold-soft: #faf3e0;
     --olive: #5c7a4a; --olive-soft: #f0f4ea;
     --crimson: #8a2828; --crimson-soft: #fdf2f3;
-    --purple: #7c3aed; --purple-soft: #f3eeff;
-    --teal: #0e7c80;  --teal-soft: #e6f4f4;
-    /* Capital source colors */
     --c-loan:     #b8860b;
     --c-bond:     #d4a017;
     --c-pref:     #5c7a4a;
     --c-common:   #1947d6;
     --c-retained: #4a6fe6;
   }
-  body { background: var(--bg); color: var(--ink); font-family: 'Outfit', -apple-system, system-ui, sans-serif; font-size: 13px; line-height: 1.5; }
-  .app { max-width: 1500px; margin: 0 auto; padding: 14px 22px 24px; display: flex; flex-direction: column; gap: 14px; }
+  html, body { height: 100%; overflow: hidden; }
+  body { background: var(--bg); color: var(--ink); font-family: 'Outfit', -apple-system, system-ui, sans-serif; font-size: 12.5px; line-height: 1.4; }
+  .app { display: flex; flex-direction: column; height: 100vh; padding: 8px 14px 6px; max-width: 1500px; margin: 0 auto; gap: 8px; }
 
-  .head { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 9px 16px; background: var(--paper); border: 1px solid var(--border); border-radius: 10px; border-top: 3px solid var(--blue); flex-wrap: wrap; }
-  .brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
-  .brand .code { font-size: 10px; color: var(--blue); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; }
-  .brand h1 { font-family: 'Lora', Georgia, serif; font-size: 20px; font-weight: 700; line-height: 1; }
-  .brand h1 em { font-style: italic; color: var(--blue); font-weight: 400; }
-  .brand .tag { font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted); }
-
-  .hero { padding: 16px 22px; background: var(--paper); border: 1px solid var(--border); border-radius: 12px; display: grid; grid-template-columns: 1fr 200px; gap: 18px; align-items: center; }
-  @media (max-width: 800px) { .hero { grid-template-columns: 1fr; } .hero .hero-img { display:none; } }
-  .hero .kicker { font-size: 10.5px; letter-spacing: 0.24em; color: var(--blue); text-transform: uppercase; font-weight: 700; margin-bottom: 6px; }
-  .hero h2 { font-family: 'Lora', serif; font-size: 24px; font-weight: 700; line-height: 1.2; }
-  .hero h2 em { font-style: italic; color: var(--blue); }
-  .hero .sub { font-family: 'Lora', serif; font-style: italic; font-size: 13.5px; color: var(--muted); margin-top: 6px; line-height: 1.55; max-width: 720px; }
-  .hero .hero-img { width: 200px; height: 140px; background-size: cover; background-position: center; border-radius: 10px; border: 1px solid var(--border); }
-
-  .layout { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 14px; }
-  @media (max-width: 1000px) { .layout { grid-template-columns: 1fr; } }
-
-  .panel { background: var(--paper); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; }
-  .panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
-  .panel-head h3 { font-family: 'Lora', serif; font-size: 16px; font-weight: 700; line-height: 1.2; }
-  .panel-head h3 em { font-style: italic; color: var(--blue); }
-  .panel-head .pill { font-size: 9.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; padding: 3px 9px; background: var(--blue-soft); color: var(--blue); border-radius: 999px; }
-
-  /* Capital sources table */
-  .sources { display: flex; flex-direction: column; gap: 8px; }
-  .src-row {
-    display: grid; grid-template-columns: 24px 1.3fr 1fr 1fr 80px; gap: 8px; align-items: center;
-    padding: 9px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
-    border-left-width: 4px;
+  /* HEAD */
+  .head {
+    flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; gap: 14px;
+    padding: 6px 14px; background: var(--paper); border: 1px solid var(--border);
+    border-radius: 10px; border-top: 3px solid var(--blue); flex-wrap: wrap;
   }
-  .src-row.loan      { border-left-color: var(--c-loan); }
-  .src-row.bond      { border-left-color: var(--c-bond); }
-  .src-row.pref      { border-left-color: var(--c-pref); }
-  .src-row.common    { border-left-color: var(--c-common); }
-  .src-row.retained  { border-left-color: var(--c-retained); }
-  .src-row .swatch { width: 18px; height: 18px; border-radius: 4px; }
+  .brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .brand .code { font-size: 9.5px; color: var(--blue); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; }
+  .brand h1 { font-family: 'Lora', Georgia, serif; font-size: 18px; font-weight: 700; line-height: 1; }
+  .brand h1 em { font-style: italic; color: var(--blue); font-weight: 400; }
+  .brand .tag { font-family: 'Lora', serif; font-style: italic; font-size: 11px; color: var(--muted); }
+
+  /* MAIN — 2 cols, fills the rest */
+  .main { flex: 1; display: grid; grid-template-columns: 360px 1fr; gap: 10px; min-height: 0; }
+  @media (max-width: 920px) { .main { grid-template-columns: 1fr; } html, body { overflow: auto; } .app { height: auto; } }
+
+  .panel {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 10px;
+    padding: 11px 12px; display: flex; flex-direction: column; min-height: 0; overflow: hidden;
+  }
+  .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding-bottom: 6px; margin-bottom: 8px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  .panel-head h3 { font-family: 'Lora', serif; font-size: 14px; font-weight: 700; line-height: 1.1; }
+  .panel-head h3 em { font-style: italic; color: var(--blue); }
+  .panel-head .pill { font-size: 8.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; padding: 2px 7px; background: var(--blue-soft); color: var(--blue); border-radius: 999px; }
+
+  .scroll { flex: 1; overflow-y: auto; padding-right: 3px; }
+  .scroll::-webkit-scrollbar { width: 4px; }
+  .scroll::-webkit-scrollbar-thumb { background: var(--line); border-radius: 999px; }
+
+  /* CAPITAL SOURCES (left) */
+  .src-row {
+    display: grid; grid-template-columns: 14px 1fr 80px 70px; gap: 5px; align-items: center;
+    padding: 5px 6px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+    border-left-width: 3px; margin-bottom: 4px;
+  }
+  .src-row.loan     { border-left-color: var(--c-loan); }
+  .src-row.bond     { border-left-color: var(--c-bond); }
+  .src-row.pref     { border-left-color: var(--c-pref); }
+  .src-row.common   { border-left-color: var(--c-common); }
+  .src-row.retained { border-left-color: var(--c-retained); }
+  .src-row .swatch { width: 11px; height: 11px; border-radius: 2px; }
   .src-row.loan     .swatch { background: var(--c-loan); }
   .src-row.bond     .swatch { background: var(--c-bond); }
   .src-row.pref     .swatch { background: var(--c-pref); }
   .src-row.common   .swatch { background: var(--c-common); }
   .src-row.retained .swatch { background: var(--c-retained); }
-  .src-row .name { font-family: 'Lora', serif; font-size: 13px; font-weight: 600; line-height: 1.2; }
-  .src-row .name .small { display: block; font-family: 'Outfit', sans-serif; font-style: normal; font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600; color: var(--muted); margin-top: 1px; }
-  .src-row .ctrl { display: flex; align-items: center; gap: 4px; }
-  .src-row .ctrl .pre { font-size: 11px; color: var(--muted); }
+  .src-row .name { font-size: 11.5px; font-weight: 600; color: var(--ink); line-height: 1.1; }
+  .src-row .name .tax-mark { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--muted); font-weight: 500; }
+  .src-row .ctrl { display: flex; align-items: center; gap: 2px; }
+  .src-row .ctrl .pre { font-size: 10px; color: var(--muted); }
   .src-row input[type="number"] {
-    width: 100%; padding: 5px 7px; border: 1px solid var(--border); border-radius: 5px;
-    font-family: 'Outfit', sans-serif; font-size: 12.5px; font-weight: 600; color: var(--ink); background: #fff; outline: none;
+    width: 100%; padding: 3px 5px; border: 1px solid var(--border); border-radius: 4px;
+    font-family: 'Outfit', sans-serif; font-size: 11.5px; font-weight: 600; color: var(--ink); background: #fff; outline: none;
     text-align: right;
   }
   .src-row input[type="number"]:focus { border-color: var(--blue); }
-  .src-row .pct {
-    font-family: 'JetBrains Mono', Consolas, monospace; font-size: 11px; color: var(--muted);
-    text-align: right;
-  }
-  .src-head {
-    display: grid; grid-template-columns: 24px 1.3fr 1fr 1fr 80px; gap: 8px;
-    padding: 0 12px 4px;
-    font-family: 'Outfit', sans-serif; font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; color: var(--muted);
-  }
 
-  .tax-row {
-    margin-top: 6px; display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: center;
-    padding: 9px 12px; background: var(--crimson-soft); border: 1px solid var(--crimson); border-radius: 8px;
+  .src-header {
+    display: grid; grid-template-columns: 14px 1fr 80px 70px; gap: 5px;
+    padding: 0 6px 3px; font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; color: var(--muted);
   }
-  .tax-row label { font-family: 'Outfit', sans-serif; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700; color: var(--crimson); }
-  .tax-row input[type="range"] {
-    width: 200px; height: 4px; -webkit-appearance: none; appearance: none;
-    background: linear-gradient(to right, var(--crimson) var(--tax-pct, 21%), #d4cfc0 var(--tax-pct, 21%));
-    border-radius: 999px; outline: none;
+  .src-header > div:nth-child(3), .src-header > div:nth-child(4) { text-align: center; }
+
+  /* Tax row */
+  .tax-block {
+    margin: 6px 0; padding: 7px 9px; background: var(--crimson-soft); border: 1px solid var(--crimson); border-radius: 6px;
+    display: grid; grid-template-columns: 1fr auto; gap: 6px; align-items: center;
   }
-  .tax-row input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none; width: 14px; height: 14px; border-radius: 999px; background: var(--crimson);
-    cursor: pointer; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  .tax-block label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; color: var(--crimson); }
+  .tax-block .val { font-family: 'Lora', serif; font-style: italic; font-size: 15px; font-weight: 700; color: var(--crimson); }
+  .tax-block input[type="range"] {
+    grid-column: 1 / -1; width: 100%; height: 4px; -webkit-appearance: none; appearance: none;
+    background: linear-gradient(to right, var(--crimson) var(--tax-pct, 42%), #d4cfc0 var(--tax-pct, 42%));
+    border-radius: 999px; outline: none; margin-top: 2px;
   }
-  .tax-row .val { font-family: 'Lora', serif; font-size: 16px; font-weight: 700; color: var(--crimson); min-width: 50px; text-align: right; }
+  .tax-block input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 13px; height: 13px; border-radius: 999px; background: var(--crimson);
+    cursor: pointer; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
 
   .total-row {
-    margin-top: 4px; padding: 9px 14px; background: var(--blue);
-    color: #fff; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 10px; background: var(--blue); color: #fff; border-radius: 6px;
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;
   }
-  .total-row .lbl { font-family: 'Outfit', sans-serif; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; opacity: 0.85; }
-  .total-row .v { font-family: 'Lora', serif; font-size: 19px; font-weight: 700; }
+  .total-row .lbl { font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; opacity: 0.85; }
+  .total-row .v { font-family: 'Lora', serif; font-size: 15px; font-weight: 700; }
 
-  /* CAPM helper */
+  /* CAPM */
   .capm {
-    margin-top: 12px; padding: 12px 14px; background: var(--blue-soft); border: 1px dashed var(--blue); border-radius: 8px;
+    padding: 7px 9px; background: var(--blue-soft); border: 1px dashed var(--blue); border-radius: 6px;
   }
-  .capm h4 { font-family: 'Lora', serif; font-size: 13px; font-weight: 700; margin-bottom: 6px; }
-  .capm h4 em { font-style: italic; color: var(--blue); }
-  .capm .formula { font-family: 'JetBrains Mono', Consolas, monospace; font-size: 11px; color: var(--ink); margin-bottom: 8px; padding: 4px 7px; background: #fff; border-radius: 5px; }
-  .capm-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 7px; }
-  @media (max-width: 600px) { .capm-grid { grid-template-columns: 1fr 1fr; } }
-  .capm-grid .cell label { display: block; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700; color: var(--muted); margin-bottom: 2px; }
-  .capm-grid .cell .vrow { display: flex; align-items: center; gap: 3px; }
-  .capm-grid .cell .vrow input { flex: 1; padding: 5px 6px; border: 1px solid var(--border); border-radius: 5px; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 600; text-align: right; background: #fff; }
-  .capm-grid .cell .vrow .pre { font-size: 11px; color: var(--muted); }
-  .capm-grid .cell.result { background: var(--paper); border: 1px solid var(--blue); border-radius: 6px; padding: 7px 9px; }
-  .capm-grid .cell.result label { color: var(--blue); }
-  .capm-grid .cell.result .vrow input { font-size: 14px; color: var(--blue); font-weight: 700; border: none; padding: 0; background: transparent; pointer-events: none; }
+  .capm h4 { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; color: var(--blue); margin-bottom: 4px; }
+  .capm .formula { font-family: 'JetBrains Mono', Consolas, monospace; font-size: 10px; color: var(--ink); margin-bottom: 6px; padding: 3px 6px; background: #fff; border-radius: 4px; }
+  .capm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+  .capm-grid .cell { padding: 4px 6px; background: #fff; border-radius: 4px; border: 1px solid var(--border); }
+  .capm-grid .cell label { display: block; font-size: 8.5px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; color: var(--muted); }
+  .capm-grid .cell .vr { display: flex; align-items: center; gap: 2px; }
+  .capm-grid .cell input { flex: 1; padding: 2px 4px; border: none; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 600; text-align: right; background: transparent; outline: none; }
+  .capm-grid .cell .pre { font-size: 10px; color: var(--muted); }
+  .capm-grid .cell.result { background: var(--blue); border-color: var(--blue); }
+  .capm-grid .cell.result label { color: rgba(255,255,255,0.85); }
+  .capm-grid .cell.result input { color: #fff; pointer-events: none; }
   .capm .apply-btn {
-    margin-top: 8px; padding: 6px 12px; background: var(--blue); color: #fff; border: none; border-radius: 6px;
-    font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 700; cursor: pointer;
+    margin-top: 6px; padding: 5px 10px; background: var(--blue); color: #fff; border: none; border-radius: 5px;
+    font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 700; cursor: pointer; width: 100%; letter-spacing: 0.04em;
   }
   .capm .apply-btn:hover { background: var(--blue-light); }
 
-  /* WACC display */
+  /* RIGHT PANEL */
+  .right-grid { display: grid; grid-template-rows: auto auto 1fr auto; gap: 8px; min-height: 0; }
+
   .wacc-big {
     background: linear-gradient(135deg, var(--paper) 0%, var(--blue-soft) 100%);
-    border: 2px solid var(--blue); border-radius: 12px; padding: 18px 20px;
-    text-align: center;
+    border: 2px solid var(--blue); border-radius: 10px; padding: 10px 14px;
+    display: grid; grid-template-columns: 1fr auto; gap: 14px; align-items: center;
   }
-  .wacc-big .lbl { font-family: 'Outfit', sans-serif; font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700; color: var(--blue); margin-bottom: 4px; }
-  .wacc-big .val { font-family: 'Lora', serif; font-size: 56px; font-weight: 700; color: var(--blue); line-height: 1; }
+  .wacc-big .left { text-align: left; }
+  .wacc-big .lbl { font-size: 9.5px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; color: var(--blue); }
+  .wacc-big .val { font-family: 'Lora', serif; font-size: 38px; font-weight: 700; color: var(--blue); line-height: 1; margin: 2px 0; }
   .wacc-big .val em { font-style: italic; color: var(--gold); }
-  .wacc-big .sublabel { font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted); margin-top: 4px; }
+  .wacc-big .sub { font-family: 'Lora', serif; font-style: italic; font-size: 10.5px; color: var(--muted); }
+  .wacc-big .right { text-align: right; }
+  .wacc-big .v-row { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+  .wacc-big .lvl { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700; color: var(--muted); }
+  .wacc-big .lv  { font-family: 'JetBrains Mono', Consolas, monospace; font-size: 13px; color: var(--ink); font-weight: 700; }
 
-  /* Capital stack bar */
-  .stack-bar {
-    margin-top: 14px; display: flex; height: 32px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border);
+  /* Chart toggle */
+  .chart-toggle { display: flex; justify-content: space-between; align-items: center; gap: 6px; padding: 0 2px; }
+  .chart-toggle .toggle-group { display: flex; background: var(--bg); border: 1px solid var(--border); border-radius: 999px; padding: 2px; }
+  .chart-toggle .toggle-btn {
+    padding: 4px 12px; border-radius: 999px; border: none; background: transparent; cursor: pointer;
+    font-family: 'Outfit', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: 0.04em;
   }
-  .stack-bar .seg {
-    height: 100%; display: flex; align-items: center; justify-content: center;
-    font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 700; color: #fff;
-    transition: flex-grow 0.3s;
-    overflow: hidden; white-space: nowrap;
+  .chart-toggle .toggle-btn.active { background: var(--blue); color: #fff; }
+  .chart-toggle .quick-test {
+    padding: 5px 13px; border: 1px solid var(--gold); background: var(--gold-soft); color: var(--gold);
+    border-radius: 999px; font-family: 'Outfit', sans-serif; font-size: 10.5px; font-weight: 700; cursor: pointer; letter-spacing: 0.04em;
+    display: inline-flex; align-items: center; gap: 5px;
   }
-  .stack-bar .seg.loan      { background: var(--c-loan); }
-  .stack-bar .seg.bond      { background: var(--c-bond); }
-  .stack-bar .seg.pref      { background: var(--c-pref); }
-  .stack-bar .seg.common    { background: var(--c-common); }
-  .stack-bar .seg.retained  { background: var(--c-retained); }
-  .stack-bar .seg.empty { background: var(--border); color: var(--muted); }
+  .chart-toggle .quick-test:hover { background: var(--gold); color: #fff; }
+  .chart-toggle .quick-test svg { width: 11px; height: 11px; }
 
-  /* Contribution table */
-  .contrib { width: 100%; margin-top: 12px; border-collapse: collapse; font-size: 11.5px; }
-  .contrib th, .contrib td { padding: 5px 7px; text-align: right; border-bottom: 1px dotted var(--border); }
-  .contrib th { font-family: 'Outfit', sans-serif; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700; color: var(--muted); }
-  .contrib th:first-child, .contrib td:first-child { text-align: left; }
-  .contrib td.num { font-family: 'JetBrains Mono', Consolas, monospace; }
-  .contrib .swatch-sm { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 7px; vertical-align: middle; }
-  .contrib tr.total td { border-top: 1.5px solid var(--blue); font-weight: 700; color: var(--blue); padding-top: 6px; }
+  /* Chart canvas */
+  .chart-panel {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 12px; min-height: 0; display: flex; flex-direction: column;
+  }
+  .chart-wrap { flex: 1; position: relative; min-height: 180px; }
+  canvas { width: 100%; height: 100%; display: block; }
+  .legend { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; padding-top: 8px; font-size: 10px; }
+  @media (max-width: 480px) { .legend { grid-template-columns: 1fr 1fr; } }
+  .legend .it { display: flex; align-items: center; gap: 5px; }
+  .legend .it .sw { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+  .legend .it .nm { font-weight: 600; }
+  .legend .it .pct { color: var(--muted); margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 9.5px; }
 
-  /* Decision panel */
-  .decision { margin-top: 14px; padding: 14px 16px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; }
-  .decision .dhead { font-family: 'Lora', serif; font-size: 14px; font-weight: 700; margin-bottom: 8px; }
-  .decision .dhead em { font-style: italic; color: var(--gold); }
-  .decision .irow {
-    display: grid; grid-template-columns: 1fr 100px; gap: 10px; align-items: center; margin-bottom: 10px;
+  /* Decision row */
+  .decision {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 10px;
+    padding: 9px 12px; display: grid; grid-template-columns: auto 100px 1fr; gap: 10px; align-items: center;
   }
-  .decision .irow label { font-size: 12px; color: var(--muted); }
-  .decision .irow .iwrap { display: flex; align-items: center; gap: 4px; }
-  .decision .irow input {
-    width: 100%; padding: 7px 9px; border: 1px solid var(--border); border-radius: 6px;
-    font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; color: var(--ink); background: #fff; outline: none;
-    text-align: right;
+  .decision .dlbl { font-family: 'Lora', serif; font-size: 13px; font-weight: 700; }
+  .decision .dlbl em { font-style: italic; color: var(--gold); }
+  .decision .ig {
+    display: flex; align-items: center; gap: 3px; background: var(--bg); padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border);
   }
-  .decision .irow input:focus { border-color: var(--blue); }
+  .decision .ig input {
+    width: 60px; border: none; background: transparent; outline: none;
+    font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 700; text-align: right;
+  }
+  .decision .ig .pre { font-size: 11px; color: var(--muted); }
   .decision .verdict {
-    margin-top: 8px; padding: 12px 14px; border-radius: 8px; text-align: center;
-    font-family: 'Lora', serif; font-size: 16px; font-weight: 700;
+    padding: 6px 12px; border-radius: 7px; text-align: center;
+    font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.04em;
   }
   .decision .verdict.accept { background: var(--olive-soft); border: 2px solid var(--olive); color: #2d4423; }
   .decision .verdict.reject { background: var(--crimson-soft); border: 2px solid var(--crimson); color: #6b1f1f; }
-  .decision .verdict .sub { display: block; font-family: 'Outfit', sans-serif; font-style: normal; font-size: 11.5px; font-weight: 500; margin-top: 3px; opacity: 0.8; }
+  .decision .verdict.neutral { background: var(--bg); border: 2px solid var(--border); color: var(--muted); font-weight: 500; }
 
-  .foot { text-align: center; font-family: 'Lora', serif; font-style: italic; font-size: 11px; color: var(--soft); padding: 4px; }
-
-  @media (max-width: 768px) {
-    .app { padding: 10px 10px 16px; }
-    .hero h2 { font-size: 19px; }
-    .panel { padding: 14px 13px; }
-    .src-row { grid-template-columns: 18px 1fr 1fr; gap: 6px; padding: 8px 9px; }
-    .src-row .swatch { width: 14px; height: 14px; }
-    .src-row .pct { display: none; }
-    .src-head { display: none; }
-    .src-row .ctrl input { font-size: 16px !important; }
-    .tax-row { grid-template-columns: 1fr 1fr; }
-    .tax-row input[type="range"] { width: 100%; grid-column: 1 / -1; order: 3; }
-    .capm-grid { grid-template-columns: 1fr 1fr; }
-    .wacc-big .val { font-size: 44px; }
+  /* MODAL — Quick Test */
+  .modal-back {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000;
   }
+  .modal-back.open { display: flex; animation: fadein 0.18s; }
+  @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+  .modal {
+    background: var(--paper); border-radius: 14px; padding: 18px 22px;
+    max-width: 640px; width: calc(100vw - 32px); max-height: calc(100vh - 32px);
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    border-top: 3px solid var(--gold);
+  }
+  .modal h3 { font-family: 'Lora', serif; font-size: 18px; font-weight: 700; }
+  .modal h3 em { font-style: italic; color: var(--gold); }
+  .modal .desc { font-family: 'Lora', serif; font-style: italic; font-size: 13px; color: var(--muted); margin-top: 4px; margin-bottom: 12px; }
+  .modal .wacc-ref { display: inline-block; padding: 3px 9px; background: var(--blue-soft); color: var(--blue); border-radius: 999px; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; margin-bottom: 12px; }
+  .modal .prj-list { display: flex; flex-direction: column; gap: 7px; }
+  .modal .prj {
+    display: grid; grid-template-columns: 1fr 70px 100px; gap: 10px; align-items: center;
+    padding: 9px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+    border-left: 3px solid;
+  }
+  .modal .prj.accept { border-left-color: var(--olive); }
+  .modal .prj.reject { border-left-color: var(--crimson); }
+  .modal .prj .pname { font-family: 'Lora', serif; font-size: 13px; font-weight: 600; line-height: 1.2; }
+  .modal .prj .pname .pdesc { font-family: 'Outfit', sans-serif; font-style: normal; font-size: 10px; color: var(--muted); font-weight: 500; margin-top: 1px; }
+  .modal .prj .irr { font-family: 'Lora', serif; font-style: italic; font-size: 17px; font-weight: 700; color: var(--gold); text-align: right; }
+  .modal .prj .vrd {
+    padding: 4px 10px; border-radius: 5px; text-align: center;
+    font-family: 'Outfit', sans-serif; font-size: 10.5px; font-weight: 700; letter-spacing: 0.04em;
+  }
+  .modal .prj.accept .vrd { background: var(--olive); color: #fff; }
+  .modal .prj.reject .vrd { background: var(--crimson); color: #fff; }
+  .modal .close-row { display: flex; justify-content: space-between; margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border); }
+  .modal .close-btn {
+    padding: 7px 18px; background: var(--ink); color: #fff; border: none; border-radius: 999px;
+    font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 700; cursor: pointer; letter-spacing: 0.04em;
+  }
+  .modal .summary {
+    font-size: 11.5px; color: var(--muted); font-family: 'Lora', serif; font-style: italic;
+  }
+  .modal .summary strong { color: var(--ink); font-family: 'Outfit', sans-serif; font-style: normal; font-weight: 700; }
+
+  /* Self-test button (developer) */
+  .self-test {
+    position: fixed; bottom: 10px; right: 14px;
+    padding: 5px 12px; background: rgba(255,255,255,0.92); border: 1px dashed var(--olive);
+    border-radius: 999px; font-family: 'Outfit', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--olive);
+    cursor: pointer; z-index: 90; letter-spacing: 0.04em;
+  }
+  .self-test:hover { background: var(--olive); color: #fff; border-style: solid; }
 </style>
 </head>
 <body>
@@ -218,280 +264,468 @@
   <div class="head">
     <div class="brand">
       <div>
-        <div class="code">Module 4 &middot; Planning Horizon, MARR and PW</div>
+        <div class="code">Module 4 &middot; MARR &amp; WACC</div>
         <h1>WACC <em>Builder</em></h1>
       </div>
-      <span class="tag">capital sources &middot; CAPM &middot; project accept / reject</span>
+      <span class="tag">build cost of capital &middot; accept or reject &middot; quick-test 5 projects</span>
     </div>
   </div>
 
-  <div class="hero">
-    <div>
-      <div class="kicker">Tool 1 of 3 &middot; MARR &amp; WACC</div>
-      <h2>Build your firm's <em>cost of capital</em>, then accept or reject the project.</h2>
-      <div class="sub">Enter the dollar amount and cost of each capital source — two debt sources (loan, bond) and three equity sources (preferred stock, common stock, retained earnings). The tool blends them into a Weighted Average Cost of Capital. Use that as your MARR and compare to any project's IRR.</div>
-    </div>
-    <div class="hero-img" style="background-image: url('images/m4/tool-wacc-builder.png');"></div>
-  </div>
+  <div class="main">
 
-  <div class="layout">
-
-    <!-- LEFT: Capital sources -->
+    <!-- ============ LEFT: CONTROL PANEL ============ -->
     <div class="panel">
       <div class="panel-head">
         <h3>Capital <em>Stack</em></h3>
-        <span class="pill">5 sources</span>
+        <span class="pill" id="total-pill">$500k</span>
       </div>
+      <div class="scroll">
 
-      <div class="src-head">
-        <div></div><div>Source</div><div>Amount ($)</div><div>Cost (%)</div><div>Share</div>
-      </div>
+        <div class="src-header">
+          <div></div><div>Source</div><div>Amount</div><div>Cost</div>
+        </div>
 
-      <div class="sources">
         <div class="src-row loan">
           <div class="swatch"></div>
-          <div class="name">Loan<span class="small">debt &middot; tax-shielded</span></div>
+          <div class="name">Loan <span class="tax-mark">×(1−T)</span></div>
           <div class="ctrl"><span class="pre">$</span><input id="amt-loan" type="number" step="1000" min="0" value="100000" /></div>
           <div class="ctrl"><input id="cost-loan" type="number" step="0.1" min="0" value="6.5" /><span class="pre">%</span></div>
-          <div class="pct" id="share-loan">—</div>
         </div>
         <div class="src-row bond">
           <div class="swatch"></div>
-          <div class="name">Bond<span class="small">debt &middot; tax-shielded</span></div>
+          <div class="name">Bond <span class="tax-mark">×(1−T)</span></div>
           <div class="ctrl"><span class="pre">$</span><input id="amt-bond" type="number" step="1000" min="0" value="150000" /></div>
           <div class="ctrl"><input id="cost-bond" type="number" step="0.1" min="0" value="5.5" /><span class="pre">%</span></div>
-          <div class="pct" id="share-bond">—</div>
         </div>
         <div class="src-row pref">
           <div class="swatch"></div>
-          <div class="name">Preferred stock<span class="small">equity &middot; fixed dividend</span></div>
+          <div class="name">Preferred stock</div>
           <div class="ctrl"><span class="pre">$</span><input id="amt-pref" type="number" step="1000" min="0" value="75000" /></div>
           <div class="ctrl"><input id="cost-pref" type="number" step="0.1" min="0" value="7.5" /><span class="pre">%</span></div>
-          <div class="pct" id="share-pref">—</div>
         </div>
         <div class="src-row common">
           <div class="swatch"></div>
-          <div class="name">Common stock<span class="small">equity &middot; CAPM-priced</span></div>
+          <div class="name">Common stock</div>
           <div class="ctrl"><span class="pre">$</span><input id="amt-common" type="number" step="1000" min="0" value="125000" /></div>
           <div class="ctrl"><input id="cost-common" type="number" step="0.1" min="0" value="11.0" /><span class="pre">%</span></div>
-          <div class="pct" id="share-common">—</div>
         </div>
         <div class="src-row retained">
           <div class="swatch"></div>
-          <div class="name">Retained earnings<span class="small">equity &middot; same risk as common</span></div>
+          <div class="name">Retained earnings</div>
           <div class="ctrl"><span class="pre">$</span><input id="amt-retained" type="number" step="1000" min="0" value="50000" /></div>
           <div class="ctrl"><input id="cost-retained" type="number" step="0.1" min="0" value="10.5" /><span class="pre">%</span></div>
-          <div class="pct" id="share-retained">—</div>
         </div>
-      </div>
 
-      <div class="tax-row">
-        <label>Corporate tax rate (T) <span style="text-transform:none;letter-spacing:0;font-weight:500;color:var(--muted);font-size:10.5px;">— tax shield on debt only</span></label>
-        <input type="range" id="tax" min="0" max="50" step="0.5" value="21" />
-        <div class="val" id="tax-val">21%</div>
-      </div>
-
-      <div class="total-row">
-        <span class="lbl">Total capital (V)</span>
-        <span class="v" id="total-v">$500,000</span>
-      </div>
-
-      <div class="capm">
-        <h4>CAPM helper <em>for common &amp; retained</em></h4>
-        <div class="formula">k<sub>e</sub> = r<sub>f</sub> + β × (r<sub>m</sub> − r<sub>f</sub>)</div>
-        <div class="capm-grid">
-          <div class="cell">
-            <label>Risk-free r<sub>f</sub></label>
-            <div class="vrow"><input id="capm-rf" type="number" step="0.1" value="4.5" /><span class="pre">%</span></div>
-          </div>
-          <div class="cell">
-            <label>Beta β</label>
-            <div class="vrow"><input id="capm-beta" type="number" step="0.05" value="1.15" /></div>
-          </div>
-          <div class="cell">
-            <label>Market premium</label>
-            <div class="vrow"><input id="capm-mrp" type="number" step="0.1" value="5.5" /><span class="pre">%</span></div>
-          </div>
-          <div class="cell result">
-            <label>k<sub>e</sub> computed</label>
-            <div class="vrow"><input id="capm-ke" type="number" value="10.83" readonly /><span class="pre">%</span></div>
-          </div>
+        <div class="tax-block">
+          <label>Corporate tax T <span style="text-transform:none;letter-spacing:0;font-weight:500;color:var(--muted);font-size:9px;">(shield on debt only)</span></label>
+          <div class="val" id="tax-val">21%</div>
+          <input type="range" id="tax" min="0" max="50" step="0.5" value="21" />
         </div>
-        <button class="apply-btn" id="apply-capm">↓ Push k<sub>e</sub> to Common &amp; Retained Earnings</button>
+
+        <div class="total-row">
+          <span class="lbl">Total capital V</span>
+          <span class="v" id="total-v">$500,000</span>
+        </div>
+
+        <div class="capm">
+          <h4>CAPM helper — for common &amp; retained</h4>
+          <div class="formula">k<sub>e</sub> = r<sub>f</sub> + β × (r<sub>m</sub> − r<sub>f</sub>)</div>
+          <div class="capm-grid">
+            <div class="cell"><label>r<sub>f</sub></label><div class="vr"><input id="capm-rf" type="number" step="0.1" value="4.5" /><span class="pre">%</span></div></div>
+            <div class="cell"><label>β</label><div class="vr"><input id="capm-beta" type="number" step="0.05" value="1.15" /></div></div>
+            <div class="cell"><label>Market premium</label><div class="vr"><input id="capm-mrp" type="number" step="0.1" value="5.5" /><span class="pre">%</span></div></div>
+            <div class="cell result"><label>k<sub>e</sub> computed</label><div class="vr"><input id="capm-ke" type="number" readonly /><span class="pre" style="color:rgba(255,255,255,0.85);">%</span></div></div>
+          </div>
+          <button class="apply-btn" id="apply-capm">↓ push k<sub>e</sub> to common &amp; retained</button>
+        </div>
+
       </div>
     </div>
 
-    <!-- RIGHT: WACC + Decision -->
-    <div class="panel">
-      <div class="panel-head">
-        <h3>Weighted Average <em>Cost of Capital</em></h3>
-        <span class="pill">live</span>
-      </div>
+    <!-- ============ RIGHT: RESULTS ============ -->
+    <div class="right-grid">
 
+      <!-- Big WACC -->
       <div class="wacc-big">
-        <div class="lbl">WACC</div>
-        <div class="val" id="wacc-val">—</div>
-        <div class="sublabel" id="wacc-sub">your firm's blended cost of capital</div>
-      </div>
-
-      <div class="stack-bar" id="stack-bar"></div>
-
-      <table class="contrib" id="contrib">
-        <thead>
-          <tr><th style="width:38%;">Source</th><th>Amount</th><th>Weight</th><th>Cost (pre)</th><th>Cost (after-tax)</th><th>Contribution</th></tr>
-        </thead>
-        <tbody id="contrib-body"></tbody>
-        <tfoot id="contrib-foot"></tfoot>
-      </table>
-
-      <div class="decision">
-        <div class="dhead">Project decision &mdash; <em>accept or reject?</em></div>
-        <div class="irow">
-          <label>Project IRR</label>
-          <div class="iwrap"><input id="proj-irr" type="number" step="0.1" value="13.0" /><span style="color:var(--muted);font-size:11px;">%</span></div>
+        <div class="left">
+          <div class="lbl">Weighted Average Cost of Capital</div>
+          <div class="val" id="wacc-val">—</div>
+          <div class="sub" id="wacc-sub">your firm's blended hurdle rate</div>
         </div>
-        <div class="verdict" id="verdict">—</div>
+        <div class="right">
+          <div class="v-row"><div class="lvl">Equity ratio</div><div class="lv" id="ev-ratio">—</div></div>
+          <div class="v-row" style="margin-top:6px;"><div class="lvl">Debt ratio</div><div class="lv" id="dv-ratio">—</div></div>
+        </div>
       </div>
+
+      <!-- Chart toggle row -->
+      <div class="chart-toggle">
+        <div class="toggle-group">
+          <button class="toggle-btn active" id="tg-donut">Donut</button>
+          <button class="toggle-btn" id="tg-stack">Stacked</button>
+          <button class="toggle-btn" id="tg-contrib">Contribution</button>
+        </div>
+        <button class="quick-test" id="open-test">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Quick test: 5 projects
+        </button>
+      </div>
+
+      <!-- Chart panel -->
+      <div class="chart-panel">
+        <div class="chart-wrap"><canvas id="chart"></canvas></div>
+        <div class="legend" id="legend"></div>
+      </div>
+
+      <!-- Decision -->
+      <div class="decision">
+        <div class="dlbl">Project IRR &mdash; <em>accept?</em></div>
+        <div class="ig"><input id="proj-irr" type="number" step="0.1" value="13.0" /><span class="pre">%</span></div>
+        <div class="verdict neutral" id="verdict">—</div>
+      </div>
+
     </div>
 
   </div>
 
-  <div class="foot">&copy; Prof. Mohammad Dehghani &middot; IE 4512 / EMGT 6225 &middot; <a href="m4-capital-structure.html" style="color:var(--blue);">next: Capital Structure Curve →</a></div>
 </div>
 
-<a href="index.html" title="Back to course platform" style="position:fixed;bottom:10px;left:14px;display:inline-flex;align-items:center;gap:7px;padding:6px 13px 6px 10px;background:rgba(255,255,255,0.94);border:1px solid #e8e3d4;border-radius:999px;font-family:'Outfit',-apple-system,sans-serif;font-size:11px;font-weight:600;color:#1947d6;text-decoration:none;box-shadow:0 4px 14px rgba(25,71,214,0.14);z-index:1000;backdrop-filter:blur(6px);transition:all 0.18s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="11 18 5 12 11 6"/></svg>Back to platform</a>
+<!-- ============ QUICK TEST MODAL ============ -->
+<div class="modal-back" id="modal-back">
+  <div class="modal">
+    <h3>Quick test &mdash; <em>five projects vs your WACC</em></h3>
+    <div class="desc">Sample capital projects with realistic IRRs. Each one is checked against the WACC you built on the main page.</div>
+    <div class="wacc-ref">Current WACC: <span id="mref-wacc">—</span></div>
+    <div class="prj-list" id="mprj-list"></div>
+    <div class="close-row">
+      <div class="summary" id="msummary">…</div>
+      <button class="close-btn" id="modal-close">Close</button>
+    </div>
+  </div>
+</div>
+
+<a href="index.html" title="Back to course platform" style="position:fixed;bottom:10px;left:14px;display:inline-flex;align-items:center;gap:6px;padding:5px 12px 5px 9px;background:rgba(255,255,255,0.94);border:1px solid #e8e3d4;border-radius:999px;font-family:'Outfit',-apple-system,sans-serif;font-size:10.5px;font-weight:600;color:#1947d6;text-decoration:none;box-shadow:0 4px 14px rgba(25,71,214,0.14);z-index:90;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="11 18 5 12 11 6"/></svg>Back</a>
+
+<button class="self-test" id="self-test-btn" title="Run a built-in self test (resets to defaults and checks numbers)">⚙ Self-test</button>
 
 <script src="focus-music.js" defer></script>
 
 <script>
   const $ = id => document.getElementById(id);
+
   const SOURCES = [
     { key:'loan',     name:'Loan',              isDebt:true,  color:'#b8860b' },
     { key:'bond',     name:'Bond',              isDebt:true,  color:'#d4a017' },
-    { key:'pref',     name:'Preferred stock',   isDebt:false, color:'#5c7a4a' },
-    { key:'common',   name:'Common stock',      isDebt:false, color:'#1947d6' },
+    { key:'pref',     name:'Preferred',         isDebt:false, color:'#5c7a4a' },
+    { key:'common',   name:'Common',            isDebt:false, color:'#1947d6' },
     { key:'retained', name:'Retained earnings', isDebt:false, color:'#4a6fe6' }
   ];
 
+  const PROJECTS = [
+    { name: 'Grid Modernization',  desc: 'utility infrastructure',     irr: 7.5  },
+    { name: 'Warehouse Automation', desc: 'cost reduction',             irr: 9.0  },
+    { name: 'Robotic Assembly Line', desc: 'capacity expansion',        irr: 10.5 },
+    { name: 'New Product Launch',  desc: 'growth bet',                  irr: 12.5 },
+    { name: 'AI Inference Chip',   desc: 'speculative R&D',             irr: 16.0 }
+  ];
+
+  let chartMode = 'donut';   // 'donut' | 'stack' | 'contrib'
+  let lastData = null;
+
+  // ===== utilities =====
   function fmt$(x) {
     if (x >= 1e6) return '$' + (x/1e6).toFixed(2) + 'M';
     if (x >= 1e3) return '$' + Math.round(x/100)/10 + 'k';
     return '$' + Math.round(x).toLocaleString();
   }
   function fmt$full(x) { return '$' + Math.round(x).toLocaleString(); }
-  function pct(x) { return (x*100).toFixed(2) + '%'; }
 
   function computeCAPM() {
-    const rf   = +$('capm-rf').value   || 0;
-    const beta = +$('capm-beta').value || 0;
-    const mrp  = +$('capm-mrp').value  || 0;
-    const ke = rf + beta * mrp;
+    const rf = +$('capm-rf').value || 0;
+    const b  = +$('capm-beta').value || 0;
+    const m  = +$('capm-mrp').value || 0;
+    const ke = rf + b * m;
     $('capm-ke').value = ke.toFixed(2);
     return ke;
   }
 
-  function update() {
-    // Tax
+  function readState() {
     const T = (+$('tax').value || 0) / 100;
-    $('tax-val').textContent = ($('tax').value || 0) + '%';
-    document.querySelector('.tax-row').style.setProperty('--tax-pct', (T * 100 / 50 * 100) + '%');
-
-    // CAPM
-    computeCAPM();
-
-    // Read all sources
-    const data = SOURCES.map(s => ({
+    const sources = SOURCES.map(s => ({
       ...s,
       amount: +$('amt-' + s.key).value || 0,
       cost: (+$('cost-' + s.key).value || 0) / 100
     }));
-
-    const V = data.reduce((a, b) => a + b.amount, 0);
-    $('total-v').textContent = fmt$full(V);
-
-    // Per-source weight + after-tax cost + contribution
+    const V = sources.reduce((a, b) => a + b.amount, 0);
     let wacc = 0;
-    data.forEach(s => {
+    sources.forEach(s => {
       s.w = V > 0 ? s.amount / V : 0;
       s.afterCost = s.isDebt ? s.cost * (1 - T) : s.cost;
       s.contrib = s.w * s.afterCost;
       wacc += s.contrib;
-      $('share-' + s.key).textContent = V > 0 ? (s.w * 100).toFixed(1) + '%' : '—';
     });
+    const debtV   = sources.filter(s => s.isDebt).reduce((a, s) => a + s.amount, 0);
+    const equityV = V - debtV;
+    return { T, sources, V, wacc, debtV, equityV };
+  }
 
-    // WACC display
-    $('wacc-val').innerHTML = V > 0 ? (wacc * 100).toFixed(2) + '<em>%</em>' : '—';
+  // ===== chart drawing =====
+  function drawChart() {
+    if (!lastData) return;
+    const data = lastData;
+    const c = $('chart');
+    const ctx = c.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const rect = c.getBoundingClientRect();
+    const W = rect.width, H = rect.height;
+    c.width = W * dpr; c.height = H * dpr; c.style.width = W + 'px'; c.style.height = H + 'px';
+    ctx.scale(dpr, dpr); ctx.clearRect(0, 0, W, H);
 
-    // Stack bar
-    const stack = $('stack-bar');
-    stack.innerHTML = '';
-    if (V > 0) {
-      data.forEach(s => {
-        if (s.amount === 0) return;
-        const seg = document.createElement('div');
-        seg.className = 'seg ' + s.key;
-        seg.style.flex = s.amount;
-        seg.textContent = s.w >= 0.06 ? (s.w * 100).toFixed(0) + '%' : '';
-        seg.title = `${s.name}: ${fmt$(s.amount)} (${(s.w*100).toFixed(1)}%)`;
-        stack.appendChild(seg);
-      });
-    } else {
-      const empty = document.createElement('div');
-      empty.className = 'seg empty';
-      empty.style.flex = '1';
-      empty.textContent = 'enter amounts above';
-      stack.appendChild(empty);
+    if (data.V === 0) {
+      ctx.fillStyle = '#8b7355'; ctx.font = "italic 13px 'Lora', serif"; ctx.textAlign = 'center';
+      ctx.fillText('Enter amounts in the capital stack to see the chart', W/2, H/2);
+      return;
     }
 
-    // Contribution table
-    const tbody = $('contrib-body');
-    tbody.innerHTML = '';
-    data.forEach(s => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td><span class="swatch-sm" style="background:${s.color};"></span>${s.name}${s.isDebt ? ' <span style="color:var(--muted);font-size:9px;">(×(1−T))</span>' : ''}</td>
-        <td class="num">${fmt$(s.amount)}</td>
-        <td class="num">${(s.w*100).toFixed(1)}%</td>
-        <td class="num">${(s.cost*100).toFixed(2)}%</td>
-        <td class="num">${(s.afterCost*100).toFixed(2)}%</td>
-        <td class="num">${(s.contrib*100).toFixed(3)}%</td>
-      `;
-      tbody.appendChild(tr);
+    if (chartMode === 'donut') drawDonut(ctx, W, H, data);
+    else if (chartMode === 'stack') drawStack(ctx, W, H, data);
+    else drawContrib(ctx, W, H, data);
+  }
+
+  function drawDonut(ctx, W, H, data) {
+    const cx = W / 2, cy = H / 2;
+    const R = Math.min(W, H) * 0.42;
+    const r = R * 0.62;
+    let start = -Math.PI / 2;
+    data.sources.forEach(s => {
+      if (s.amount === 0) return;
+      const angle = s.w * Math.PI * 2;
+      ctx.beginPath();
+      ctx.moveTo(cx + Math.cos(start) * r, cy + Math.sin(start) * r);
+      ctx.arc(cx, cy, R, start, start + angle, false);
+      ctx.arc(cx, cy, r, start + angle, start, true);
+      ctx.closePath();
+      ctx.fillStyle = s.color;
+      ctx.fill();
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+      // label slice if big enough
+      if (s.w >= 0.05) {
+        const midA = start + angle / 2;
+        const lr = (R + r) / 2;
+        ctx.fillStyle = '#fff';
+        ctx.font = "700 11px 'Outfit', sans-serif";
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText((s.w*100).toFixed(0) + '%', cx + Math.cos(midA) * lr, cy + Math.sin(midA) * lr);
+      }
+      start += angle;
     });
-    $('contrib-foot').innerHTML = `
-      <tr class="total"><td colspan="5">WACC =</td><td class="num">${(wacc*100).toFixed(2)}%</td></tr>
-    `;
+    // Center: WACC
+    ctx.fillStyle = '#1a1a1a';
+    ctx.font = "italic 700 28px 'Lora', serif";
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText((data.wacc * 100).toFixed(2) + '%', cx, cy - 4);
+    ctx.font = "700 9px 'Outfit', sans-serif";
+    ctx.fillStyle = '#5a5247';
+    ctx.fillText('WACC', cx, cy + 16);
+  }
+
+  function drawStack(ctx, W, H, data) {
+    const padL = 40, padR = 30, padT = 20, padB = 30;
+    const barW = Math.min(120, W * 0.32);
+    const barX = W / 2 - barW / 2;
+    const iH = H - padT - padB;
+    const yTop = padT;
+    // gridlines + labels
+    ctx.font = "10px 'Outfit', sans-serif"; ctx.fillStyle = '#5a5247'; ctx.textAlign = 'right';
+    for (let frac = 0; frac <= 1; frac += 0.25) {
+      const y = padT + frac * iH;
+      ctx.strokeStyle = '#f0ece0'; ctx.beginPath();
+      ctx.moveTo(barX - 8, y); ctx.lineTo(barX + barW + 50, y); ctx.stroke();
+      const v = data.V * (1 - frac);
+      ctx.fillText(fmt$(v), barX - 12, y + 3);
+    }
+    let yCur = padT + iH;
+    data.sources.forEach(s => {
+      if (s.amount === 0) return;
+      const segH = iH * s.w;
+      ctx.fillStyle = s.color;
+      ctx.fillRect(barX, yCur - segH, barW, segH);
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 1; ctx.strokeRect(barX, yCur - segH, barW, segH);
+      // labels right side
+      if (s.w >= 0.04) {
+        const mid = yCur - segH / 2;
+        ctx.fillStyle = '#1a1a1a';
+        ctx.font = "600 11px 'Outfit', sans-serif"; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+        ctx.fillText(`${s.name} · ${fmt$(s.amount)} · ${(s.w*100).toFixed(0)}%`, barX + barW + 10, mid);
+      }
+      yCur -= segH;
+    });
+    // top total
+    ctx.fillStyle = '#1947d6'; ctx.font = "700 11px 'Outfit', sans-serif"; ctx.textAlign = 'center';
+    ctx.fillText('Total V = ' + fmt$(data.V), barX + barW / 2, padT - 6);
+  }
+
+  function drawContrib(ctx, W, H, data) {
+    // Horizontal stacked bar showing weighted contributions to WACC
+    const padL = 12, padR = 30, padT = 22, padB = 50;
+    const barH = 36;
+    const barY = H / 2 - barH / 2;
+    const barW = W - padL - padR;
+    let xCur = padL;
+    let totalContrib = data.wacc;
+    if (totalContrib === 0) return;
+    data.sources.forEach(s => {
+      if (s.contrib <= 0) return;
+      const segW = (s.contrib / totalContrib) * barW;
+      ctx.fillStyle = s.color;
+      ctx.fillRect(xCur, barY, segW, barH);
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5;
+      ctx.strokeRect(xCur, barY, segW, barH);
+      if (segW > 50) {
+        ctx.fillStyle = '#fff'; ctx.font = "700 10px 'Outfit', sans-serif"; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText((s.contrib * 100).toFixed(2) + '%', xCur + segW / 2, barY + barH / 2 - 1);
+        ctx.font = "500 9px 'Outfit', sans-serif"; ctx.fillStyle = 'rgba(255,255,255,0.85)';
+        ctx.fillText(s.name, xCur + segW / 2, barY + barH / 2 + 11);
+      }
+      xCur += segW;
+    });
+    // Label above
+    ctx.fillStyle = '#1947d6'; ctx.font = "700 13px 'Outfit', sans-serif"; ctx.textAlign = 'left';
+    ctx.fillText('Contribution to WACC (after-tax weighted cost)', padL, barY - 8);
+    // WACC bracket
+    ctx.fillStyle = '#1a1a1a'; ctx.font = "italic 700 18px 'Lora', serif"; ctx.textAlign = 'center';
+    ctx.fillText(`Sum = WACC = ${(data.wacc * 100).toFixed(2)}%`, W / 2, barY + barH + 30);
+  }
+
+  function renderLegend(data) {
+    const lg = $('legend');
+    lg.innerHTML = '';
+    data.sources.forEach(s => {
+      if (s.amount === 0) return;
+      const el = document.createElement('div');
+      el.className = 'it';
+      el.innerHTML = `<span class="sw" style="background:${s.color};"></span><span class="nm">${s.name}</span><span class="pct">${fmt$(s.amount)} · ${(s.w*100).toFixed(1)}%</span>`;
+      lg.appendChild(el);
+    });
+  }
+
+  // ===== quick test modal =====
+  function openModal() {
+    const data = lastData;
+    $('mref-wacc').textContent = (data.wacc * 100).toFixed(2) + '%';
+    const list = $('mprj-list');
+    list.innerHTML = '';
+    let nAccept = 0;
+    PROJECTS.forEach(p => {
+      const accept = (p.irr / 100) > data.wacc;
+      if (accept) nAccept++;
+      const div = document.createElement('div');
+      div.className = 'prj ' + (accept ? 'accept' : 'reject');
+      div.innerHTML = `
+        <div class="pname">${p.name}<div class="pdesc">${p.desc}</div></div>
+        <div class="irr">${p.irr.toFixed(1)}%</div>
+        <div class="vrd">${accept ? '✓ ACCEPT' : '✗ REJECT'}</div>
+      `;
+      list.appendChild(div);
+    });
+    $('msummary').innerHTML = `<strong>${nAccept} of ${PROJECTS.length}</strong> projects clear your hurdle.`;
+    $('modal-back').classList.add('open');
+  }
+  function closeModal() { $('modal-back').classList.remove('open'); }
+
+  // ===== self test =====
+  function runSelfTest() {
+    // Reset to defaults
+    const defaults = {
+      'amt-loan': 100000, 'cost-loan': 6.5,
+      'amt-bond': 150000, 'cost-bond': 5.5,
+      'amt-pref': 75000,  'cost-pref': 7.5,
+      'amt-common': 125000, 'cost-common': 11.0,
+      'amt-retained': 50000, 'cost-retained': 10.5,
+      'tax': 21,
+      'capm-rf': 4.5, 'capm-beta': 1.15, 'capm-mrp': 5.5,
+      'proj-irr': 13.0
+    };
+    Object.keys(defaults).forEach(k => { $(k).value = defaults[k]; });
+    update();
+    const d = readState();
+
+    // Expected WACC at defaults:
+    //   loan:    100/500 * 6.5%  * (1 - 0.21) = 0.20 * 5.135% = 1.027%
+    //   bond:    150/500 * 5.5%  * (1 - 0.21) = 0.30 * 4.345% = 1.3035%
+    //   pref:    75/500  * 7.5%                = 0.15 * 7.5%   = 1.125%
+    //   common:  125/500 * 11.0%               = 0.25 * 11.0%  = 2.75%
+    //   retd:    50/500  * 10.5%               = 0.10 * 10.5%  = 1.05%
+    //   Sum WACC =  7.2555%
+    const expected = 0.072555;
+    const actual = d.wacc;
+    const pass = Math.abs(actual - expected) < 0.0001;
+    const msg = pass
+      ? `✓ Self-test PASSED.\n\nExpected WACC = ${(expected*100).toFixed(4)}%\nActual   WACC = ${(actual*100).toFixed(4)}%\nDelta = ${((actual-expected)*100).toFixed(6)} pts\n\nDefault project (IRR 13%) verdict should be ACCEPT (13% > 7.26%).`
+      : `✗ Self-test FAILED.\n\nExpected: ${(expected*100).toFixed(4)}%\nActual:   ${(actual*100).toFixed(4)}%\nDelta:    ${((actual-expected)*100).toFixed(4)} pts`;
+    alert(msg);
+  }
+
+  // ===== main update =====
+  function update() {
+    const T = (+$('tax').value || 0) / 100;
+    $('tax-val').textContent = ($('tax').value || 0) + '%';
+    document.querySelector('.tax-block').style.setProperty('--tax-pct', (T * 100 / 50 * 100) + '%');
+
+    computeCAPM();
+    const data = readState();
+    lastData = data;
+
+    $('total-v').textContent = fmt$full(data.V);
+    $('total-pill').textContent = data.V >= 1000 ? fmt$(data.V) : '$' + data.V;
+    $('wacc-val').innerHTML = data.V > 0 ? (data.wacc * 100).toFixed(2) + '<em>%</em>' : '—';
+
+    const evR = data.V > 0 ? (data.equityV / data.V * 100).toFixed(0) : '—';
+    const dvR = data.V > 0 ? (data.debtV / data.V * 100).toFixed(0)   : '—';
+    $('ev-ratio').textContent = data.V > 0 ? evR + '%' : '—';
+    $('dv-ratio').textContent = data.V > 0 ? dvR + '%' : '—';
+
+    drawChart();
+    renderLegend(data);
 
     // Decision
     const irr = (+$('proj-irr').value || 0) / 100;
     const v = $('verdict');
-    if (V === 0) {
-      v.className = 'verdict';
-      v.innerHTML = 'Enter capital amounts above to evaluate.';
-    } else if (irr > wacc) {
+    if (data.V === 0) {
+      v.className = 'verdict neutral'; v.textContent = 'enter capital amounts';
+    } else if (Math.abs(irr - data.wacc) < 1e-6) {
+      v.className = 'verdict neutral'; v.textContent = 'tie — indifferent';
+    } else if (irr > data.wacc) {
       v.className = 'verdict accept';
-      v.innerHTML = `✓ ACCEPT &mdash; IRR ${(irr*100).toFixed(2)}% > WACC ${(wacc*100).toFixed(2)}%<span class="sub">Project earns more than your blended cost of capital. Margin: +${((irr - wacc)*100).toFixed(2)} pts.</span>`;
-    } else if (Math.abs(irr - wacc) < 1e-6) {
-      v.className = 'verdict';
-      v.innerHTML = `~ TIE &mdash; IRR equals WACC<span class="sub">Indifferent. Look at strategic factors.</span>`;
+      v.textContent = `✓ ACCEPT  +${((irr - data.wacc)*100).toFixed(2)} pts`;
     } else {
       v.className = 'verdict reject';
-      v.innerHTML = `✗ REJECT &mdash; IRR ${(irr*100).toFixed(2)}% &lt; WACC ${(wacc*100).toFixed(2)}%<span class="sub">Project doesn't clear your cost of capital. Shortfall: −${((wacc - irr)*100).toFixed(2)} pts.</span>`;
+      v.textContent = `✗ REJECT  −${((data.wacc - irr)*100).toFixed(2)} pts`;
     }
   }
 
-  // Apply CAPM ke to Common + Retained
+  // ===== wire =====
   $('apply-capm').addEventListener('click', () => {
     const ke = computeCAPM();
     $('cost-common').value = ke.toFixed(2);
-    $('cost-retained').value = (ke - 0.5).toFixed(2);  // retained typically slightly lower (no flotation)
+    $('cost-retained').value = Math.max(0, (ke - 0.5)).toFixed(2);
     update();
   });
-
-  // Wire all inputs
-  document.querySelectorAll('input').forEach(inp => {
-    inp.addEventListener('input', update);
+  document.querySelectorAll('#tg-donut, #tg-stack, #tg-contrib').forEach(b => {
+    b.addEventListener('click', () => {
+      ['tg-donut','tg-stack','tg-contrib'].forEach(id => $(id).classList.remove('active'));
+      b.classList.add('active');
+      chartMode = b.id === 'tg-donut' ? 'donut' : (b.id === 'tg-stack' ? 'stack' : 'contrib');
+      drawChart();
+    });
   });
+  $('open-test').addEventListener('click', openModal);
+  $('modal-close').addEventListener('click', closeModal);
+  $('modal-back').addEventListener('click', e => { if (e.target.id === 'modal-back') closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+  $('self-test-btn').addEventListener('click', runSelfTest);
+  document.querySelectorAll('input').forEach(inp => inp.addEventListener('input', update));
+  window.addEventListener('resize', drawChart);
 
   update();
 </script>
