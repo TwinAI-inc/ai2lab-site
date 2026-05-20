@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Module 5 · Capitalized Cost</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+    chtml: { scale: 1.05 }
+  };
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf9f5; --paper: #ffffff; --ink: #1a1a1a; --muted: #5a5247; --soft: #8b7355;
+    --border: #e8e3d4; --line: #d4cfc0;
+    --blue: #1947d6; --blue-soft: #eef2ff;
+    --gold: #b8860b; --gold-deep: #8a6608; --gold-soft: #faf3e0;
+    --olive: #5c7a4a; --olive-soft: #f0f4ea;
+    --crimson: #8a2828; --crimson-soft: #fdf2f3;
+    --purple: #7c3aed; --purple-soft: #f3eeff;
+  }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: 'Outfit', -apple-system, system-ui, sans-serif; font-size: 13px; line-height: 1.5;
+    overflow: hidden;
+  }
+  .app {
+    height: 100vh; display: flex; flex-direction: column;
+    max-width: 1500px; margin: 0 auto; padding: 12px 22px 10px;
+  }
+
+  /* HEAD bar — gold accent for the CC tool */
+  .head {
+    display: flex; justify-content: space-between; align-items: center; gap: 14px;
+    padding: 8px 16px; background: var(--paper); border: 1px solid var(--border);
+    border-radius: 10px; border-top: 3px solid var(--gold); flex-wrap: wrap; flex-shrink: 0;
+  }
+  .brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .brand .code { font-size: 10px; color: var(--gold); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; }
+  .brand h1 { font-family: 'Lora', Georgia, serif; font-size: 19px; font-weight: 700; line-height: 1; }
+  .brand h1 em { font-style: italic; color: var(--gold); font-weight: 400; }
+  .brand .tag { font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted); }
+  .head .nav { display: flex; gap: 6px; }
+  .head .nav a, .head .nav button {
+    font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft); text-decoration: none; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px;
+    transition: all 0.15s; background: var(--paper); font-family: 'Outfit', sans-serif; cursor: pointer;
+  }
+  .head .nav a:hover, .head .nav button:hover { color: var(--gold); border-color: var(--gold); background: var(--gold-soft); }
+
+  /* DECK */
+  .deck { flex: 1; min-height: 0; position: relative; margin-top: 12px; }
+  .page {
+    position: absolute; inset: 0; opacity: 0; pointer-events: none;
+    transform: translateX(40px);
+    transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    display: flex; flex-direction: column;
+  }
+  .page.active { opacity: 1; pointer-events: auto; transform: translateX(0); }
+  .page.left { transform: translateX(-40px); }
+
+  .page-head {
+    flex-shrink: 0; padding-bottom: 10px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap;
+  }
+  .page-head h2 { font-family: 'Lora', serif; font-size: 26px; font-weight: 700; line-height: 1.15; }
+  .page-head h2 em { font-style: italic; color: var(--gold); }
+  .page-head .sub {
+    font-family: 'Lora', serif; font-style: italic; font-size: 13px; color: var(--muted);
+    max-width: 720px; margin-top: 3px; line-height: 1.5;
+  }
+  .page-head .marker {
+    font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700; color: var(--soft);
+  }
+  .page-head .marker .n { color: var(--gold); }
+
+  .page-body { flex: 1; min-height: 0; padding-top: 14px; display: flex; flex-direction: column; gap: 14px; }
+
+  /* ========= PAGE 1 — Nobel hero (single flip card) ========= */
+  .nobel-stage {
+    flex: 1; min-height: 0; display: flex; align-items: stretch; justify-content: center; gap: 18px;
+  }
+  .nobel-stage .flip-card { perspective: 1600px; cursor: pointer; flex: 1; max-width: 520px; }
+  .flip-inner {
+    position: relative; width: 100%; height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .flip-card.flipped .flip-inner { transform: rotateY(180deg); }
+  .face {
+    position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    border-radius: 14px; overflow: hidden; background: var(--paper);
+    border: 1px solid var(--border); box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    display: flex; flex-direction: column;
+  }
+  .flip-card:hover .face { box-shadow: 0 14px 32px rgba(0,0,0,0.12); }
+  .face-back { transform: rotateY(180deg); }
+
+  /* FRONT — Nobel portrait, sepia treatment */
+  .face-front { padding: 0; }
+  .face-front .photo {
+    flex: 1; background-size: cover; background-position: center top;
+    position: relative; filter: sepia(0.22) contrast(1.05);
+  }
+  .face-front .photo::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(60,40,12,0) 38%, rgba(40,28,8,0.82) 100%);
+  }
+  .face-front .photo .overlay {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 22px 26px 22px;
+    color: #fff; z-index: 1;
+  }
+  .face-front .photo .kicker {
+    font-size: 10.5px; letter-spacing: 0.24em; text-transform: uppercase; font-weight: 700;
+    opacity: 0.92; margin-bottom: 6px; color: #f0d488;
+  }
+  .face-front .photo h3 { font-family: 'Lora', serif; font-size: 30px; font-weight: 700; line-height: 1.05; letter-spacing: -0.01em; }
+  .face-front .photo h3 em { font-style: italic; color: #f0d488; }
+  .face-front .photo .where { font-family: 'Lora', serif; font-style: italic; font-size: 14px; opacity: 0.92; margin-top: 4px; }
+  .face-front .photo .flip-cue {
+    position: absolute; top: 14px; right: 16px;
+    font-family: 'Outfit', sans-serif; font-size: 9.5px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700;
+    color: #fff; background: rgba(60,40,12,0.55); padding: 5px 10px; border-radius: 999px;
+    backdrop-filter: blur(6px);
+  }
+  .face-front .question-strip {
+    padding: 14px 22px; background: var(--gold-soft); border-top: 1px solid #efe1bd;
+  }
+  .face-front .question-strip .q {
+    font-family: 'Lora', serif; font-style: italic; font-size: 14.5px; color: var(--gold-deep); text-align: center; line-height: 1.45;
+  }
+  .face-front .question-strip .q strong { color: var(--ink); font-style: normal; font-weight: 700; }
+
+  /* BACK — facts + will quote */
+  .face-back { padding: 18px 22px 16px; border-top: 4px solid var(--gold); background: var(--paper); }
+  .face-back .back-head { display: flex; flex-direction: column; gap: 2px; margin-bottom: 12px; padding-right: 78px; }
+  .face-back .back-head h4 { font-family: 'Lora', serif; font-size: 20px; font-weight: 700; line-height: 1.15; }
+  .face-back .back-head h4 em { font-style: italic; color: var(--gold); }
+  .face-back .back-head .year {
+    display: inline-block; font-family: 'Outfit', sans-serif; font-size: 10px; letter-spacing: 0.14em;
+    color: var(--muted); background: var(--gold-soft); border: 1px solid #efe1bd; border-radius: 999px;
+    padding: 2px 9px; align-self: flex-start; font-weight: 600;
+  }
+  .face-back .flip-cue {
+    position: absolute; top: 12px; right: 14px;
+    font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft); padding: 3px 8px; border: 1px solid var(--border); border-radius: 999px;
+  }
+  .facts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 14px; }
+  .fact { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 9px 11px; }
+  .fact .lbl { font-size: 9.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--soft); font-weight: 700; margin-bottom: 2px; }
+  .fact .val { font-family: 'Lora', serif; font-size: 17px; font-weight: 700; color: var(--ink); line-height: 1.15; }
+  .fact .sub { font-size: 10px; color: var(--muted); font-style: italic; margin-top: 2px; }
+  .fact.hl .val { color: var(--gold); }
+
+  .will-quote {
+    background: var(--gold-soft); border: 1px solid #efe1bd; border-left: 4px solid var(--gold);
+    border-radius: 8px; padding: 14px 18px; margin-bottom: 10px;
+  }
+  .will-quote .label { font-size: 9.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-deep); font-weight: 700; margin-bottom: 4px; }
+  .will-quote blockquote {
+    font-family: 'Lora', serif; font-style: italic; font-size: 14px; color: var(--ink);
+    line-height: 1.55; padding-left: 0;
+  }
+  .will-quote blockquote strong { color: var(--gold-deep); font-weight: 700; font-style: normal; }
+  .will-quote .attr { font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted); margin-top: 6px; text-align: right; }
+
+  .face-back .src { font-size: 8.5px; color: #b3a99a; padding-top: 4px; border-top: 1px dotted var(--line); letter-spacing: 0.04em; }
+  .face-back .src a { color: #b3a99a; text-decoration: none; border-bottom: 1px dotted var(--line); }
+  .face-back .src a:hover { color: var(--gold); border-bottom-color: var(--gold); }
+
+  .nobel-stage .insight-col {
+    flex: 1; max-width: 460px; display: flex; flex-direction: column; gap: 12px; justify-content: center;
+  }
+  .ins-pill {
+    background: var(--paper); border: 1px solid var(--border); border-left: 3px solid var(--gold);
+    border-radius: 8px; padding: 12px 16px;
+  }
+  .ins-pill .h {
+    font-size: 9.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .ins-pill p { font-family: 'Lora', serif; font-size: 13.5px; color: var(--ink); line-height: 1.55; }
+  .ins-pill p em { color: var(--muted); font-style: italic; }
+  .ins-pill p strong { color: var(--gold-deep); font-weight: 700; }
+  .ins-pill p .big {
+    display: inline-block; font-weight: 700; font-size: 16px; color: var(--gold-deep);
+  }
+
+  /* ========= PAGE 2 — Forever Fund Lab ========= */
+  .lab-grid { flex: 1; min-height: 0; display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 18px; }
+  @media (max-width: 980px) { .lab-grid { grid-template-columns: 1fr; } }
+
+  .lab-info { background: var(--paper); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; display: flex; flex-direction: column; gap: 14px; }
+  .lab-info .label { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700; color: var(--gold); }
+
+  .formula-card {
+    background: var(--bg); border: 1px solid var(--border); border-left: 3px solid var(--gold);
+    padding: 14px 18px 14px; border-radius: 6px;
+  }
+  .formula-card .lead { font-family: 'Lora', serif; font-style: italic; font-size: 14px; color: var(--muted); margin-bottom: 4px; }
+  .formula-card .tex { text-align: center; padding: 8px 0 4px; font-size: 18px; }
+  .formula-card .caption { font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted); text-align: center; margin-top: 4px; }
+  .formula-card .legend {
+    margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line);
+    display: grid; grid-template-columns: auto 1fr; gap: 6px 10px;
+    font-size: 12px; color: var(--ink);
+  }
+  .formula-card .legend dt { font-family: 'Lora', serif; font-style: italic; color: var(--gold-deep); font-weight: 700; text-align: right; }
+  .formula-card .legend dd { color: var(--muted); }
+  .formula-card .legend dd em { font-style: italic; color: var(--ink); }
+
+  .bullet-list { display: flex; flex-direction: column; gap: 9px; }
+  .bullet-item {
+    display: flex; gap: 12px; align-items: flex-start;
+    padding: 10px 12px; background: var(--bg); border-radius: 8px; border: 1px solid var(--border);
+  }
+  .bullet-item .num {
+    flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
+    background: var(--gold-soft); color: var(--gold-deep);
+    font-family: 'Lora', serif; font-style: italic; font-weight: 700; font-size: 16px;
+    display: flex; align-items: center; justify-content: center; margin-top: -1px;
+  }
+  .bullet-item .txt { font-size: 12.5px; color: var(--ink); line-height: 1.5; }
+  .bullet-item .txt strong { color: var(--gold-deep); font-weight: 700; }
+  .bullet-item .txt em { color: var(--muted); font-style: italic; }
+
+  /* RIGHT column — the lab */
+  .lab-demo { background: var(--paper); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px 16px; display: flex; flex-direction: column; gap: 14px; }
+
+  .lab-sliders { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .slider-block { display: flex; flex-direction: column; gap: 5px; }
+  .slider-block .row1 { display: flex; justify-content: space-between; align-items: baseline; }
+  .slider-block .label-main {
+    font-family: 'Outfit', sans-serif; font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700;
+    color: var(--gold);
+  }
+  .slider-block .readout {
+    font-family: 'Lora', serif; font-style: italic; font-size: 18px; font-weight: 700; color: var(--gold-deep);
+  }
+  .slider-block input[type=range] { width: 100%; accent-color: var(--gold); height: 22px; }
+  .slider-block .sub {
+    font-family: 'Lora', serif; font-style: italic; font-size: 11px; color: var(--muted); margin-top: 2px;
+  }
+
+  /* Big CC readout card */
+  .cc-display {
+    background: linear-gradient(135deg, var(--gold-soft) 0%, #f6efd9 100%);
+    border: 1px solid #efe1bd; border-radius: 12px;
+    padding: 18px 22px; display: flex; align-items: center; gap: 22px;
+    box-shadow: 0 4px 12px rgba(184,134,11,0.10);
+  }
+  .cc-display .ribbon {
+    font-family: 'Outfit', sans-serif; font-size: 9px; letter-spacing: 0.28em; text-transform: uppercase;
+    color: var(--gold-deep); font-weight: 700; transform: rotate(-90deg); white-space: nowrap;
+  }
+  .cc-display .formula-mini {
+    font-family: 'Lora', serif; font-style: italic; font-size: 18px; color: var(--gold-deep);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .cc-display .formula-mini .frac { display: inline-flex; flex-direction: column; align-items: center; line-height: 1; }
+  .cc-display .formula-mini .frac .top { border-bottom: 1.5px solid var(--gold-deep); padding: 0 4px 2px; }
+  .cc-display .formula-mini .frac .bot { padding: 2px 4px 0; }
+  .cc-display .arrow { font-size: 22px; color: var(--gold); }
+  .cc-display .big-val {
+    font-family: 'Lora', serif; font-weight: 700; font-size: 36px; line-height: 1; color: var(--gold-deep);
+    letter-spacing: -0.01em;
+  }
+  .cc-display .big-val .unit { font-size: 16px; font-style: italic; color: var(--soft); margin-left: 4px; }
+  .cc-display .label-block { display: flex; flex-direction: column; }
+  .cc-display .label-block .l {
+    font-family: 'Outfit', sans-serif; font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+    font-weight: 700; color: var(--gold-deep); opacity: 0.85;
+  }
+  .cc-display .label-block .desc {
+    font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted); margin-top: 2px; line-height: 1.4;
+  }
+
+  .lab-presets {
+    display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+  }
+  .lab-presets .lbl {
+    font-family: 'Outfit', sans-serif; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--soft); font-weight: 700;
+  }
+  .lab-presets button {
+    font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600;
+    padding: 5px 12px; border: 1px solid var(--border); background: var(--paper);
+    color: var(--ink); cursor: pointer; border-radius: 999px;
+    transition: all 0.15s;
+  }
+  .lab-presets button:hover { border-color: var(--gold); color: var(--gold-deep); background: var(--gold-soft); }
+  .lab-presets button.active { border-color: var(--gold); color: #fff; background: var(--gold); }
+
+  /* Visualization — pile + stream */
+  .lab-viz {
+    flex: 1; min-height: 0; background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 12px; display: flex; flex-direction: column;
+  }
+  .lab-viz .ttl { font-size: 9.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--soft); font-weight: 700; margin-bottom: 4px; }
+  .lab-viz svg { flex: 1; min-height: 0; width: 100%; }
+
+  /* ========= PAGE 3 — Convergence + gallery ========= */
+  .convergence-card {
+    flex-shrink: 0; background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px 20px 12px;
+  }
+  .convergence-card .conv-head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 14px; margin-bottom: 4px; }
+  .convergence-card h4 { font-family: 'Lora', serif; font-size: 17px; font-weight: 700; }
+  .convergence-card h4 em { font-style: italic; color: var(--gold); }
+  .convergence-card .meta { font-size: 10.5px; color: var(--soft); letter-spacing: 0.06em; }
+  .convergence-card svg { width: 100%; height: auto; }
+  .convergence-card .verdict {
+    font-family: 'Lora', serif; font-style: italic; font-size: 13px; color: var(--muted);
+    margin-top: 4px; line-height: 1.55;
+  }
+  .convergence-card .verdict .pill {
+    display: inline-block; padding: 2px 10px; border-radius: 999px;
+    background: var(--gold-soft); color: var(--gold-deep);
+    font-family: 'Outfit', sans-serif; font-style: normal; font-weight: 700; font-size: 11px;
+    letter-spacing: 0.06em; margin: 0 3px;
+  }
+  .convergence-card .verdict strong { color: var(--ink); font-style: normal; font-weight: 700; }
+
+  .gallery {
+    flex: 1; min-height: 0;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  }
+  @media (max-width: 900px) { .gallery { grid-template-columns: 1fr 1fr; } }
+  .g-card {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 10px; padding: 14px 14px 12px;
+    border-top: 3px solid var(--gold); display: flex; flex-direction: column; gap: 4px;
+    transition: all 0.15s; cursor: default;
+  }
+  .g-card:hover { box-shadow: 0 8px 22px rgba(0,0,0,0.08); transform: translateY(-1px); }
+  .g-card .y {
+    font-family: 'Outfit', sans-serif; font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--gold); font-weight: 700;
+  }
+  .g-card h5 { font-family: 'Lora', serif; font-size: 15.5px; font-weight: 700; line-height: 1.2; margin-top: 2px; }
+  .g-card h5 em { font-style: italic; color: var(--gold-deep); }
+  .g-card .desc { font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted); line-height: 1.45; margin: 4px 0 6px; }
+  .g-card .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+  .g-card .stat { background: var(--bg); border-radius: 5px; padding: 5px 8px; }
+  .g-card .stat .l { font-size: 8.5px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--soft); font-weight: 700; }
+  .g-card .stat .v { font-family: 'Lora', serif; font-size: 12.5px; font-weight: 700; color: var(--ink); }
+  .g-card .stat .v.gold { color: var(--gold-deep); }
+  .g-card .age { margin-top: auto; padding-top: 6px; font-size: 9.5px; letter-spacing: 0.08em; color: var(--soft); border-top: 1px dotted var(--line); font-family: 'Outfit', sans-serif; }
+
+  /* FOOTER nav */
+  .footer-nav {
+    flex-shrink: 0; margin-top: 10px;
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    padding: 8px 14px; background: var(--paper); border: 1px solid var(--border); border-radius: 10px;
+  }
+  .footer-nav .ind { display: flex; gap: 8px; align-items: center; }
+  .footer-nav .dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--border); cursor: pointer;
+    transition: all 0.2s;
+  }
+  .footer-nav .dot.active { background: var(--gold); transform: scale(1.3); }
+  .footer-nav .dot:hover { background: var(--gold); }
+  .footer-nav .label { font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted); margin-left: 8px; }
+  .nav-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'Outfit', sans-serif; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+    padding: 7px 14px; border: 1px solid var(--border); border-radius: 7px;
+    background: var(--paper); color: var(--ink); cursor: pointer; transition: all 0.15s;
+  }
+  .nav-btn:hover:not(:disabled) { color: var(--gold-deep); border-color: var(--gold); background: var(--gold-soft); }
+  .nav-btn:disabled { opacity: 0.32; cursor: not-allowed; }
+
+  @media print {
+    body { background: #fff; overflow: visible; }
+    .app { height: auto; max-width: none; padding: 0; }
+    .head, .footer-nav { display: none; }
+    .deck { position: static; }
+    .page { position: static; opacity: 1; pointer-events: auto; transform: none; page-break-after: always; padding: 18px 22px; }
+    .page:last-of-type { page-break-after: auto; }
+    .flip-card .flip-inner { transform: none !important; }
+    .face-back { display: none; }
+    @page { size: landscape; margin: 0.4in; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="head">
+    <div class="brand">
+      <span class="code">IE 4512 · Module 5</span>
+      <h1>Capitalized <em>Cost</em></h1>
+      <span class="tag">three pages &mdash; a will, a lab, a long view</span>
+    </div>
+    <nav class="nav">
+      <a href="index.html">← Course</a>
+      <button onclick="window.print()">Print</button>
+    </nav>
+  </header>
+
+  <div class="deck">
+
+    <!-- ========= PAGE 1 — Nobel hero ========= -->
+    <section class="page active" data-page="1">
+      <div class="page-head">
+        <div>
+          <h2>One will, paying out for <em>130 years</em></h2>
+          <div class="sub">In 1895, a Swedish chemist signed a will that has paid annual prizes every year since 1901 &mdash; and the fund is bigger today than it was at the start. <em>Click the card to see the math.</em></div>
+        </div>
+        <div class="marker"><span class="n">1</span> / 3 &middot; the will</div>
+      </div>
+
+      <div class="page-body">
+        <div class="nobel-stage">
+
+          <div class="flip-card" onclick="this.classList.toggle('flipped')">
+            <div class="flip-inner">
+              <!-- FRONT -->
+              <div class="face face-front">
+                <div class="photo" style="background-image: url('images/m5/alfred-nobel.jpg');">
+                  <div class="flip-cue">click to reveal</div>
+                  <div class="overlay">
+                    <div class="kicker">Stockholm &middot; Paris &middot; San Remo</div>
+                    <h3>Alfred <em>Nobel</em></h3>
+                    <div class="where">Signed his will 27 Nov 1895 &middot; died 1896</div>
+                  </div>
+                </div>
+                <div class="question-strip">
+                  <div class="q">His will named <strong>five prizes a year, forever</strong>. <br>How much money did he need to leave behind to make "forever" actually work?</div>
+                </div>
+              </div>
+
+              <!-- BACK -->
+              <div class="face face-back">
+                <div class="flip-cue">flip back</div>
+                <div class="back-head">
+                  <h4>The arithmetic of <em>forever</em></h4>
+                  <span class="year">1895 &rarr; today</span>
+                </div>
+
+                <div class="facts-grid">
+                  <div class="fact hl">
+                    <div class="lbl">Original bequest</div>
+                    <div class="val">31 M SEK</div>
+                    <div class="sub">94% of his fortune (≈ $186 M in 2008 dollars)</div>
+                  </div>
+                  <div class="fact">
+                    <div class="lbl">First prize ceremony</div>
+                    <div class="val">1901</div>
+                    <div class="sub">5 prizes: physics, chemistry, medicine, literature, peace</div>
+                  </div>
+                  <div class="fact">
+                    <div class="lbl">Foundation assets, 2024</div>
+                    <div class="val">6.6 B SEK</div>
+                    <div class="sub">≈ $700 M USD &mdash; <em>larger</em> than the bequest, after 130 years of paying out</div>
+                  </div>
+                  <div class="fact">
+                    <div class="lbl">Prize today</div>
+                    <div class="val">11 M SEK</div>
+                    <div class="sub">per category, &times; 6 categories (Economics added 1968)</div>
+                  </div>
+                </div>
+
+                <div class="will-quote">
+                  <div class="label">From the will</div>
+                  <blockquote>"The capital shall be invested by my executors in safe securities and shall constitute a fund, <strong>the interest on which shall be annually distributed</strong> in the form of prizes to those who, during the preceding year, shall have conferred the greatest benefit on mankind."</blockquote>
+                  <div class="attr">&mdash; Alfred Nobel, 27 November 1895</div>
+                </div>
+
+                <div class="src">ref: <a href="https://en.wikipedia.org/wiki/Nobel_Foundation" target="_blank">Wikipedia &mdash; Nobel Foundation</a> &middot; <a href="https://en.wikipedia.org/wiki/Alfred_Nobel" target="_blank">Alfred Nobel</a></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="insight-col">
+            <div class="ins-pill">
+              <div class="h">Pattern recognition</div>
+              <p>"The interest on which shall be annually distributed" is the textbook definition of a <strong>perpetual cash flow</strong>: a fixed annual payout <em>A</em> drawn from a fund earning interest <em>i</em>, never touching the principal.</p>
+            </div>
+            <div class="ins-pill">
+              <div class="h">The trick of the math</div>
+              <p>The fund size needed for an infinite stream is not infinite. It is finite, and surprisingly small: <span class="big">CC = A / i</span></p>
+            </div>
+            <div class="ins-pill">
+              <div class="h">A sanity check</div>
+              <p>5 prizes &times; ~310 k SEK each (the original prize size) &asymp; 1.55 M SEK / yr. At i &asymp; 5% safe-bond rates of 1895, that needs a fund of <strong>~31 M SEK</strong> &mdash; <em>exactly what Nobel left.</em></p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ========= PAGE 2 — Forever Fund Lab ========= -->
+    <section class="page" data-page="2">
+      <div class="page-head">
+        <div>
+          <h2>The <em>Forever Fund</em> Lab</h2>
+          <div class="sub">Pick an annual payout. Pick a MARR. The lump sum you need today &mdash; the capitalized cost &mdash; is the principal whose interest exactly pays the stream forever.</div>
+        </div>
+        <div class="marker"><span class="n">2</span> / 3 &middot; play with it</div>
+      </div>
+
+      <div class="page-body">
+        <div class="lab-grid">
+
+          <div class="lab-info">
+            <div class="label">Definition</div>
+            <div class="formula-card">
+              <div class="lead">For a uniform perpetual cash flow <em>A</em> at MARR <em>i</em>:</div>
+              <div class="tex">$$\mathrm{CC} \;=\; \frac{A}{i}$$</div>
+              <div class="caption">i.e., the present worth of an infinite series of equal payments.</div>
+              <dl class="legend">
+                <dt>CC</dt><dd>capitalized cost &mdash; the lump sum needed today</dd>
+                <dt>A</dt><dd>the recurring annual payment, <em>forever</em></dd>
+                <dt>i</dt><dd>the MARR (per period)</dd>
+              </dl>
+            </div>
+
+            <div class="bullet-list">
+              <div class="bullet-item">
+                <div class="num">1</div>
+                <div class="txt">CC is just <strong>PW of an infinite annuity</strong>. The (P/A, i, n) factor converges to <em>1/i</em> as <em>n &rarr; ∞</em>.</div>
+              </div>
+              <div class="bullet-item">
+                <div class="num">2</div>
+                <div class="txt">CC is <strong>extremely sensitive to i</strong>: halving the MARR doubles the fund you need. <em>Pick i carefully.</em></div>
+              </div>
+              <div class="bullet-item">
+                <div class="num">3</div>
+                <div class="txt">For one-time costs that <em>repeat every L years</em> (e.g. replacing a roof every 30 yr), use <strong>A = cost &times; (A/F, i, L)</strong> first, then CC = A / i.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="lab-demo">
+            <div class="lab-sliders">
+              <div class="slider-block">
+                <div class="row1">
+                  <span class="label-main">Annual payout · A</span>
+                  <span class="readout" id="a-val">$1.55 M</span>
+                </div>
+                <input type="range" id="a-slider" min="0" max="200" step="1" value="62" aria-label="Annual payout">
+                <div class="sub">all 5 Nobel prizes at original 1901 size</div>
+              </div>
+              <div class="slider-block">
+                <div class="row1">
+                  <span class="label-main">MARR · i</span>
+                  <span class="readout" id="i-val">5.0%</span>
+                </div>
+                <input type="range" id="i-slider" min="1" max="120" step="1" value="50" aria-label="MARR">
+                <div class="sub">safe long-term real return</div>
+              </div>
+            </div>
+
+            <div class="cc-display">
+              <div class="formula-mini">
+                <span>CC =</span>
+                <span class="frac"><span class="top" id="cc-a-show">$1.55 M</span><span class="bot" id="cc-i-show">0.050</span></span>
+                <span class="arrow">&rarr;</span>
+              </div>
+              <div>
+                <div class="big-val" id="cc-big">$31.0 M</div>
+                <div class="label-block">
+                  <span class="l">Capitalized Cost</span>
+                  <span class="desc" id="cc-context">Matches Nobel's actual 31 M SEK bequest at i = 5%.</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="lab-presets">
+              <span class="lbl">Try a preset:</span>
+              <button data-a="1.55" data-i="5"  data-ctx="Matches Nobel's actual 31 M SEK bequest at i = 5%.">Nobel · 1895</button>
+              <button data-a="0.05" data-i="5"  data-ctx="A $1 M endowment can pay a $50 k/yr scholarship forever, at 5%.">$50 k scholarship</button>
+              <button data-a="0.20" data-i="5"  data-ctx="A city perpetual fund of $4 M covers $200 k/yr bridge upkeep at 5%.">Bridge maintenance</button>
+              <button data-a="1.00" data-i="3"  data-ctx="At a 3% real safe rate, $1 M/yr forever needs $33 M today.">$1 M/yr at 3%</button>
+              <button data-a="1.00" data-i="10" data-ctx="At 10% MARR, the same $1 M/yr only needs $10 M today &mdash; rate matters far more than payout.">$1 M/yr at 10%</button>
+            </div>
+
+            <div class="lab-viz">
+              <div class="ttl">The lump sum · the stream · in balance</div>
+              <svg id="balance-viz" viewBox="0 0 600 130" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"></svg>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ========= PAGE 3 — Convergence + Gallery ========= -->
+    <section class="page" data-page="3">
+      <div class="page-head">
+        <div>
+          <h2>How much of <em>forever</em> do you actually pay for?</h2>
+          <div class="sub">A perpetuity sounds expensive, but at typical MARRs the long tail is almost free. You buy most of "forever" in the first 30 to 50 years.</div>
+        </div>
+        <div class="marker"><span class="n">3</span> / 3 &middot; the long view</div>
+      </div>
+
+      <div class="page-body">
+
+        <div class="convergence-card">
+          <div class="conv-head">
+            <h4>Fraction of CC you have captured after <em>n</em> years</h4>
+            <span class="meta">PW(<em>n</em>) / CC = 1 &minus; (1 + i)<sup>&minus;<em>n</em></sup></span>
+          </div>
+          <svg viewBox="0 0 1100 240" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="1100" height="240" fill="#faf9f5" rx="6"/>
+
+            <!-- Axes -->
+            <line x1="70" y1="20" x2="70" y2="200" stroke="#5a5247" stroke-width="0.9"/>
+            <line x1="70" y1="200" x2="1060" y2="200" stroke="#5a5247" stroke-width="0.9"/>
+
+            <!-- y gridlines (0%, 25%, 50%, 75%, 91%, 100%) -->
+            <g font-family="Outfit,sans-serif" font-size="10" fill="#5a5247">
+              <line x1="70" y1="200" x2="1060" y2="200" stroke="#e8e3d4" stroke-width="0.6"/>
+              <text x="64" y="204" text-anchor="end">0%</text>
+              <line x1="70" y1="155" x2="1060" y2="155" stroke="#e8e3d4" stroke-width="0.6"/>
+              <text x="64" y="159" text-anchor="end">25%</text>
+              <line x1="70" y1="110" x2="1060" y2="110" stroke="#e8e3d4" stroke-width="0.6"/>
+              <text x="64" y="114" text-anchor="end">50%</text>
+              <line x1="70" y1="65"  x2="1060" y2="65"  stroke="#e8e3d4" stroke-width="0.6"/>
+              <text x="64" y="69" text-anchor="end">75%</text>
+              <line x1="70" y1="36.2" x2="1060" y2="36.2" stroke="#b8860b" stroke-width="0.8" stroke-dasharray="4 3"/>
+              <text x="64" y="40" text-anchor="end" fill="#b8860b" font-weight="700">91%</text>
+              <line x1="70" y1="20"  x2="1060" y2="20"  stroke="#5c7a4a" stroke-width="0.8" stroke-dasharray="2 2"/>
+              <text x="64" y="24" text-anchor="end" fill="#5c7a4a" font-weight="700">100%</text>
+              <text x="1056" y="14" text-anchor="end" font-size="9.5" fill="#5c7a4a" font-weight="700">CC asymptote</text>
+            </g>
+
+            <!-- x ticks: 0, 25, 50, 100, 150, 200 yrs -->
+            <g font-family="Outfit,sans-serif" font-size="10" fill="#5a5247">
+              <line x1="70"   y1="20" x2="70"   y2="200" stroke="#e8e3d4" stroke-width="0.6"/>
+              <text x="70"   y="218" text-anchor="middle">0</text>
+              <line x1="194"  y1="20" x2="194"  y2="200" stroke="#e8e3d4" stroke-width="0.6"/>
+              <text x="194"  y="218" text-anchor="middle">25</text>
+              <line x1="318"  y1="20" x2="318"  y2="200" stroke="#e8e3d4" stroke-width="0.6"/>
+              <text x="318"  y="218" text-anchor="middle">50</text>
+              <line x1="566"  y1="20" x2="566"  y2="200" stroke="#e8e3d4" stroke-width="0.6"/>
+              <text x="566"  y="218" text-anchor="middle">100</text>
+              <line x1="814"  y1="20" x2="814"  y2="200" stroke="#e8e3d4" stroke-width="0.6"/>
+              <text x="814"  y="218" text-anchor="middle">150</text>
+              <line x1="1062" y1="20" x2="1062" y2="200" stroke="#e8e3d4" stroke-width="0.6"/>
+              <text x="1062" y="218" text-anchor="middle">200</text>
+              <text x="566" y="232" text-anchor="middle" font-size="11" font-weight="700" letter-spacing="0.18em" fill="#8b7355">YEARS · n</text>
+            </g>
+
+            <!-- Curves: PW(n)/CC = 1 - (1+i)^-n, scaled to y in [20, 200], where y=20 is 100% and y=200 is 0%
+                 plot for i = 3%, 5%, 10%
+                 x = 70 + (n/200) * (1062-70) = 70 + n * 4.96
+                 y = 200 - frac * 180   where frac = 1 - (1+i)^-n -->
+            <!-- i=3% (slow convergence, less perpetuity-like) — olive -->
+            <path id="curve-3" stroke="#5c7a4a" stroke-width="2" fill="none" stroke-linecap="round"
+                  d="M 70 200 L 75 186 L 80 173 L 85 161 L 90 150 L 95 139 L 100 129 L 110 110 L 120 94 L 140 67 L 160 47 L 180 32 L 200 22 L 230 14 L 280 9 L 380 6 L 480 5.5 L 600 5.2 L 800 5.1 L 1062 5"/>
+            <!-- i=5% — gold (the Nobel rate) -->
+            <path id="curve-5" stroke="#b8860b" stroke-width="2.6" fill="none" stroke-linecap="round"
+                  d="M 70 200 L 75 178 L 80 158 L 85 141 L 90 126 L 95 113 L 100 101 L 110 82 L 120 67 L 140 47 L 160 36.2 L 180 28 L 200 24 L 230 22 L 280 21 L 380 20.2 L 480 20 L 600 20 L 800 20 L 1062 20"/>
+            <!-- i=10% (fast convergence) — purple -->
+            <path id="curve-10" stroke="#7c3aed" stroke-width="2" fill="none" stroke-linecap="round"
+                  d="M 70 200 L 75 162 L 80 134 L 85 113 L 90 97 L 95 85 L 100 75 L 110 62 L 120 53 L 140 41 L 160 34 L 180 29 L 200 26 L 230 23 L 280 21 L 380 20.2 L 480 20 L 600 20 L 800 20 L 1062 20"/>
+
+            <!-- Marker: where i=5% curve hits 91% (year 50) -->
+            <circle cx="318" cy="36.2" r="5" fill="#fff" stroke="#b8860b" stroke-width="2.4"/>
+            <line x1="318" y1="36.2" x2="318" y2="200" stroke="#b8860b" stroke-width="0.8" stroke-dasharray="2 3" opacity="0.55"/>
+            <text x="324" y="32" font-family="Outfit,sans-serif" font-size="11" font-weight="700" fill="#b8860b">at 5%, year 50 = 91% of CC</text>
+
+            <!-- Legend -->
+            <g transform="translate(820, 70)">
+              <rect x="0" y="0" width="220" height="78" fill="#ffffff" stroke="#e8e3d4" rx="5"/>
+              <text x="10" y="16" font-family="Outfit,sans-serif" font-size="9.5" letter-spacing="0.18em" font-weight="700" fill="#8b7355">MARR</text>
+              <line x1="10" y1="32" x2="34" y2="32" stroke="#5c7a4a" stroke-width="2"/>
+              <text x="42" y="35" font-family="Outfit,sans-serif" font-size="11" fill="#1a1a1a">i = 3% &middot; <tspan font-style="italic" fill="#5a5247">slow</tspan></text>
+              <line x1="10" y1="50" x2="34" y2="50" stroke="#b8860b" stroke-width="2.6"/>
+              <text x="42" y="53" font-family="Outfit,sans-serif" font-size="11" fill="#1a1a1a" font-weight="700">i = 5% &middot; Nobel rate</text>
+              <line x1="10" y1="68" x2="34" y2="68" stroke="#7c3aed" stroke-width="2"/>
+              <text x="42" y="71" font-family="Outfit,sans-serif" font-size="11" fill="#1a1a1a">i = 10% &middot; <tspan font-style="italic" fill="#5a5247">fast</tspan></text>
+            </g>
+          </svg>
+          <div class="verdict">
+            At MARR 5%, the first <span class="pill">50 years</span> of a perpetual stream already captures <strong>91%</strong> of its present worth. The remaining <em>centuries</em> are worth less than the first half-century. <strong>You buy most of "forever" in the first lifetime.</strong>
+          </div>
+        </div>
+
+        <div class="gallery">
+          <div class="g-card">
+            <span class="y">1441 &middot; UK</span>
+            <h5>King's College <em>Cambridge</em></h5>
+            <div class="desc">Founded by Henry VI with a perpetual endowment to fund scholars in perpetuity. Still operating.</div>
+            <div class="stats">
+              <div class="stat"><div class="l">Founded</div><div class="v">1441</div></div>
+              <div class="stat"><div class="l">Still paying</div><div class="v gold">585 yr</div></div>
+            </div>
+            <div class="age">A capitalized cost still cashing.</div>
+          </div>
+          <div class="g-card">
+            <span class="y">1895 &middot; Sweden</span>
+            <h5>Nobel <em>Foundation</em></h5>
+            <div class="desc">31 M SEK bequest. Five prizes from 1901, six since 1968. Endowment is now larger than the original.</div>
+            <div class="stats">
+              <div class="stat"><div class="l">Bequest</div><div class="v">31 M SEK</div></div>
+              <div class="stat"><div class="l">Today (2024)</div><div class="v gold">6.6 B SEK</div></div>
+            </div>
+            <div class="age">130 years and growing.</div>
+          </div>
+          <div class="g-card">
+            <span class="y">1903 &middot; UK</span>
+            <h5>Rhodes <em>Scholarship</em></h5>
+            <div class="desc">Cecil Rhodes left £6 million to fund scholars at Oxford in perpetuity. Roughly 100 awarded each year since 1903.</div>
+            <div class="stats">
+              <div class="stat"><div class="l">Bequest</div><div class="v">£6 M</div></div>
+              <div class="stat"><div class="l">Awarded / yr</div><div class="v gold">~100</div></div>
+            </div>
+            <div class="age">120+ years of scholars.</div>
+          </div>
+          <div class="g-card">
+            <span class="y">1701 &middot; USA</span>
+            <h5>Yale <em>Endowment</em></h5>
+            <div class="desc">A 320-year endowment that funds ~35% of Yale's annual budget. Famously managed by David Swensen 1985 to 2021.</div>
+            <div class="stats">
+              <div class="stat"><div class="l">Endowment</div><div class="v">$40 B</div></div>
+              <div class="stat"><div class="l">Annual draw</div><div class="v gold">~5%</div></div>
+            </div>
+            <div class="age">The "Yale model" of perpetuity.</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+
+  <!-- FOOTER nav -->
+  <nav class="footer-nav">
+    <button class="nav-btn" id="prev"><span>&larr;</span> Prev</button>
+    <div class="ind">
+      <span class="dot active" data-go="1"></span>
+      <span class="dot" data-go="2"></span>
+      <span class="dot" data-go="3"></span>
+      <span class="label" id="page-label">A will from 1895</span>
+    </div>
+    <button class="nav-btn" id="next">Next <span>&rarr;</span></button>
+  </nav>
+
+</div>
+
+<script>
+  // ===== Paged-deck navigation =====
+  const pages = document.querySelectorAll('.page');
+  const dots = document.querySelectorAll('.footer-nav .dot');
+  const prevBtn = document.getElementById('prev');
+  const nextBtn = document.getElementById('next');
+  const label = document.getElementById('page-label');
+  const labels = { 1: 'A will from 1895', 2: 'Play with the formula', 3: 'How much is forever?' };
+  let current = 1;
+  const N = pages.length;
+
+  function go(n) {
+    if (n < 1 || n > N || n === current) return;
+    pages.forEach(p => {
+      const i = +p.dataset.page;
+      p.classList.remove('active', 'left');
+      if (i === n) p.classList.add('active');
+      else if (i < n) p.classList.add('left');
+    });
+    dots.forEach(d => d.classList.toggle('active', +d.dataset.go === n));
+    label.textContent = labels[n];
+    prevBtn.disabled = n === 1;
+    nextBtn.disabled = n === N;
+    current = n;
+  }
+
+  prevBtn.addEventListener('click', () => go(current - 1));
+  nextBtn.addEventListener('click', () => go(current + 1));
+  dots.forEach(d => d.addEventListener('click', () => go(+d.dataset.go)));
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); go(current + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(current - 1); }
+    else if (e.key === 'Home') { go(1); }
+    else if (e.key === 'End') { go(N); }
+  });
+  prevBtn.disabled = true;
+
+  // ===== PAGE 2 — Forever Fund Lab =====
+  (function () {
+    const aSlider = document.getElementById('a-slider');
+    const iSlider = document.getElementById('i-slider');
+    const aVal = document.getElementById('a-val');
+    const iVal = document.getElementById('i-val');
+    const ccBig = document.getElementById('cc-big');
+    const ccAShow = document.getElementById('cc-a-show');
+    const ccIShow = document.getElementById('cc-i-show');
+    const ccContext = document.getElementById('cc-context');
+    const viz = document.getElementById('balance-viz');
+    if (!aSlider) return;
+
+    // Slider mapping: a-slider 0..200 -> A in $millions, 0.01M to 10M (log-ish)
+    // We'll use 0..200 maps to 0.01M..10M via piecewise: 0->0.01, 50->0.5, 100->1, 150->3, 200->10
+    function sliderToA(v) {
+      // simple smooth: A = 0.01 * exp((v/200) * ln(1000)) gives 0.01 -> 10
+      return 0.01 * Math.exp((v / 200) * Math.log(1000));
+    }
+    // i-slider 1..120 -> i in % from 0.5% to 15%
+    function sliderToI(v) { return 0.5 + (v / 120) * 14.5; }
+    function aToSlider(a) { return Math.round(200 * Math.log(a / 0.01) / Math.log(1000)); }
+    function iToSlider(i) { return Math.round(120 * (i - 0.5) / 14.5); }
+
+    function fmtMoney(M) {
+      // M is in millions
+      if (M >= 1000) return '$' + (M/1000).toFixed(2) + ' B';
+      if (M >= 1)    return '$' + M.toFixed(M >= 100 ? 0 : (M >= 10 ? 1 : 2)) + ' M';
+      if (M >= 0.001) return '$' + (M*1000).toFixed(0) + ' k';
+      return '$' + (M*1e6).toFixed(0);
+    }
+
+    function render() {
+      const A = sliderToA(+aSlider.value);        // $ in millions
+      const iPct = sliderToI(+iSlider.value);     // %
+      const i = iPct / 100;
+      const CC = A / i;                            // $ in millions
+
+      aVal.textContent  = fmtMoney(A) + (A >= 1 ? '' : '');
+      iVal.textContent  = iPct.toFixed(1) + '%';
+      ccAShow.textContent = fmtMoney(A);
+      ccIShow.textContent = i.toFixed(3);
+      ccBig.textContent  = fmtMoney(CC);
+
+      // Visualization: lump on left, stream on right.
+      // Make lump bar height proportional to log of CC, stream bars proportional to A.
+      const W = 600, H = 130;
+      const lumpW = 130;
+      const lumpH = Math.max(20, Math.min(H - 30, 18 + 60 * Math.log10(Math.max(CC, 0.1) + 1)));
+      const streamY = H - 30 - Math.max(8, Math.min(50, 14 + 22 * Math.log10(Math.max(A, 0.1) + 1)));
+      const streamH = H - 30 - streamY;
+
+      let parts = [];
+      // Background
+      parts.push(`<rect x="0" y="0" width="${W}" height="${H}" fill="#faf9f5" rx="4"/>`);
+
+      // LEFT — lump sum stack
+      const lumpX = 30;
+      const lumpYTop = H - 25 - lumpH;
+      // Stack of bands
+      for (let b = 0; b < 5; b++) {
+        const by = lumpYTop + b * (lumpH / 5);
+        parts.push(`<rect x="${lumpX}" y="${by}" width="${lumpW}" height="${(lumpH / 5) - 2}" rx="3" fill="#b8860b" opacity="${0.55 + b * 0.08}"/>`);
+      }
+      parts.push(`<text x="${lumpX + lumpW/2}" y="${H - 9}" text-anchor="middle" font-family="Outfit,sans-serif" font-size="10.5" letter-spacing="0.18em" font-weight="700" fill="#8a6608">CC TODAY</text>`);
+      parts.push(`<text x="${lumpX + lumpW/2}" y="${lumpYTop - 6}" text-anchor="middle" font-family="Lora,serif" font-size="15" font-weight="700" fill="#8a6608">${fmtMoney(CC)}</text>`);
+
+      // ARROW + interest label in middle
+      const midX = lumpX + lumpW + 20;
+      const arrowEndX = W - 250;
+      parts.push(`<line x1="${midX}" y1="${H/2}" x2="${arrowEndX}" y2="${H/2}" stroke="#5a5247" stroke-width="1.2" stroke-dasharray="4 3"/>`);
+      parts.push(`<text x="${(midX + arrowEndX)/2}" y="${H/2 - 8}" text-anchor="middle" font-family="Lora,serif" font-style="italic" font-size="11.5" fill="#5a5247">earns i = ${iPct.toFixed(1)}% / yr</text>`);
+      parts.push(`<text x="${(midX + arrowEndX)/2}" y="${H/2 + 14}" text-anchor="middle" font-family="Lora,serif" font-style="italic" font-size="11.5" fill="#b8860b" font-weight="700">pays A = ${fmtMoney(A)} / yr</text>`);
+
+      // RIGHT — stream (infinity)
+      const streamStartX = arrowEndX + 10;
+      const streamEndX = W - 30;
+      const barW = 6;
+      const gap = 10;
+      let x = streamStartX;
+      let count = 0;
+      while (x < streamEndX - 50) {
+        const fade = Math.max(0.18, 1 - count * 0.05);
+        parts.push(`<rect x="${x}" y="${streamY}" width="${barW}" height="${streamH}" fill="#b8860b" opacity="${fade}" rx="1.5"/>`);
+        x += barW + gap;
+        count++;
+      }
+      // Infinity glyph
+      parts.push(`<text x="${streamEndX - 8}" y="${H - 13}" text-anchor="end" font-family="Lora,serif" font-style="italic" font-size="26" font-weight="700" fill="#b8860b">&#8734;</text>`);
+      parts.push(`<text x="${streamEndX - 8}" y="${H - 4}" text-anchor="end" font-family="Outfit,sans-serif" font-size="9" letter-spacing="0.18em" font-weight="700" fill="#8a6608">FOREVER</text>`);
+
+      // Ground line
+      parts.push(`<line x1="20" y1="${H - 25}" x2="${W - 20}" y2="${H - 25}" stroke="#d4cfc0" stroke-width="0.7"/>`);
+
+      viz.innerHTML = parts.join('');
+    }
+
+    aSlider.addEventListener('input', () => { activePresetClear(); render(); });
+    iSlider.addEventListener('input', () => { activePresetClear(); render(); });
+
+    function activePresetClear() {
+      document.querySelectorAll('.lab-presets button').forEach(b => b.classList.remove('active'));
+      ccContext.textContent = 'Drag the sliders, or pick a preset.';
+    }
+
+    document.querySelectorAll('.lab-presets button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const a = +btn.dataset.a;
+        const i = +btn.dataset.i;
+        const ctx = btn.dataset.ctx;
+        aSlider.value = aToSlider(a);
+        iSlider.value = iToSlider(i);
+        document.querySelectorAll('.lab-presets button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        render();
+        ccContext.textContent = ctx;
+      });
+    });
+
+    // Initial state: programmatically trigger the Nobel preset so all values agree
+    document.querySelector('.lab-presets button[data-a="1.55"]').click();
+  })();
+</script>
+<script src="/assets/focus-music.js" defer></script>
+</body>
+</html>
