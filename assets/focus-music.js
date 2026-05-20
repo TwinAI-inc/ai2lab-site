@@ -1,12 +1,16 @@
-/* IE 4512 — Focus Music widget
+/* AI2Lab — Focus Music widget (platform-wide)
    Floating bottom-right player. Minimized = mini-player pill (play + title +
    progress) when a track is loaded; default pill ("Music") otherwise.
    Expanded = full panel with progress bar, transport, volume, track list.
-   State persists across pages via localStorage. */
+   State persists across pages via localStorage. Include from any page via:
+     <script src="/assets/focus-music.js" defer></script>
+*/
 (function () {
   if (window.__fmLoaded) return;
   window.__fmLoaded = true;
 
+  // Storage key kept stable so existing user state (volume, last track, etc.)
+  // carries over from the previous IE4512-scoped widget without a reset.
   const STORAGE_KEY = 'ie4512_focus_music_v5';
 
   // ============ TRACKS — edit/replace URLs to customize ============
