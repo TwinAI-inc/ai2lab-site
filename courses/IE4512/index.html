@@ -338,7 +338,7 @@
 <script>
   // ============ CONFIG ============
   const ADMIN_PASSWORD = 'dehghani2026';
-  const DEFAULT_AVAILABLE = [1, 2, 3];  // change later as the term progresses
+  const DEFAULT_AVAILABLE = [1, 2, 3, 4, 5];  // change later as the term progresses
   const STORAGE_KEY = 'ie4512_unlocked_v2';
 
   const ICON = {
@@ -391,7 +391,10 @@
     },
     { n: 5, short: 'FW & AW', name: 'Future and Annual Worth Analysis', release: 'Week 3',
       lede: 'Convert irregular cash flows to a uniform annual equivalent. Compare projects with different lives via FW and AW.',
-      meta: ['Ch. 5.6–end, Ch. 6, 7', '~3 hrs'], tools: []
+      meta: ['Ch. 5.6–end, Ch. 6, 7', '~3 hrs'],
+      tools: [
+        { type: 'Slides', icon: 'book', title: 'Discounted <em>Payback Period</em>', desc: 'Three-page brief: definition + PP-vs-DPP worked example, two real-life megaprojects side by side (Golden Gate Bridge vs Channel Tunnel — verified Wikipedia numbers), and the ranking method (not incremental) with a PW/DPP-disagreement worked example.', url: 'm5-discounted-payback.html', time: '~10 min', color: 'purple' }
+      ]
     },
     { n: 6, short: 'Rate of Return', name: 'Rate of Return Analysis', release: 'Week 4',
       lede: 'Find the internal rate of return. Use incremental analysis to compare mutually exclusive projects.',

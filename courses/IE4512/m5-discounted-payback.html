@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Module 5 · Discounted Payback Period</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf9f5; --paper: #ffffff; --ink: #1a1a1a; --muted: #5a5247; --soft: #8b7355;
+    --border: #e8e3d4; --line: #d4cfc0;
+    --blue: #1947d6; --blue-light: #4a6fe6; --blue-soft: #eef2ff;
+    --gold: #b8860b; --gold-soft: #faf3e0;
+    --olive: #5c7a4a; --olive-soft: #f0f4ea;
+    --crimson: #8a2828; --crimson-soft: #fdf2f3;
+    --purple: #7c3aed; --purple-soft: #f3eeff;
+  }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: 'Outfit', -apple-system, system-ui, sans-serif; font-size: 13px; line-height: 1.5;
+    overflow: hidden;
+  }
+
+  .app {
+    height: 100vh; display: flex; flex-direction: column;
+    max-width: 1500px; margin: 0 auto; padding: 12px 22px 10px;
+  }
+
+  /* HEAD bar — matches m4 pattern */
+  .head {
+    display: flex; justify-content: space-between; align-items: center; gap: 14px;
+    padding: 8px 16px; background: var(--paper); border: 1px solid var(--border);
+    border-radius: 10px; border-top: 3px solid var(--purple); flex-wrap: wrap; flex-shrink: 0;
+  }
+  .brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .brand .code { font-size: 10px; color: var(--purple); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; }
+  .brand h1 { font-family: 'Lora', Georgia, serif; font-size: 19px; font-weight: 700; line-height: 1; }
+  .brand h1 em { font-style: italic; color: var(--purple); font-weight: 400; }
+  .brand .tag { font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted); }
+  .head .nav { display: flex; gap: 6px; }
+  .head .nav a, .head .nav button {
+    font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft); text-decoration: none; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px;
+    transition: all 0.15s; background: var(--paper); font-family: 'Outfit', sans-serif; cursor: pointer;
+  }
+  .head .nav a:hover, .head .nav button:hover { color: var(--purple); border-color: var(--purple); background: var(--purple-soft); }
+
+  /* DECK area */
+  .deck {
+    flex: 1; min-height: 0; position: relative; margin-top: 12px;
+  }
+  .page {
+    position: absolute; inset: 0; opacity: 0; pointer-events: none;
+    transform: translateX(40px);
+    transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    display: flex; flex-direction: column;
+  }
+  .page.active { opacity: 1; pointer-events: auto; transform: translateX(0); }
+  .page.left { transform: translateX(-40px); }
+
+  /* SHARED page elements */
+  .page-head {
+    flex-shrink: 0; padding-bottom: 10px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap;
+  }
+  .page-head h2 {
+    font-family: 'Lora', serif; font-size: 26px; font-weight: 700; line-height: 1.15;
+  }
+  .page-head h2 em { font-style: italic; color: var(--purple); }
+  .page-head .sub {
+    font-family: 'Lora', serif; font-style: italic; font-size: 13px; color: var(--muted);
+    max-width: 720px; margin-top: 3px; line-height: 1.5;
+  }
+  .page-head .marker {
+    font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft);
+  }
+  .page-head .marker .n { color: var(--purple); }
+
+  .page-body { flex: 1; min-height: 0; padding-top: 14px; display: flex; flex-direction: column; gap: 14px; }
+
+  /* ========= PAGE 1 — Flip cards ========= */
+  .flip-row { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: stretch; }
+  @media (max-width: 900px) { .flip-row { grid-template-columns: 1fr; } }
+
+  .flip-card { perspective: 1600px; cursor: pointer; }
+  .flip-inner {
+    position: relative; width: 100%; height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .flip-card.flipped .flip-inner { transform: rotateY(180deg); }
+  .face {
+    position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    border-radius: 14px; overflow: hidden; background: var(--paper);
+    border: 1px solid var(--border); box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    display: flex; flex-direction: column;
+  }
+  .flip-card:hover .face { box-shadow: 0 14px 32px rgba(0,0,0,0.12); }
+  .face-back { transform: rotateY(180deg); }
+
+  /* FRONT — full bleed photo */
+  .face-front { padding: 0; }
+  .face-front .photo {
+    flex: 1; background-size: cover; background-position: center; position: relative;
+  }
+  .face-front .photo::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(0,0,0,0.78) 100%);
+  }
+  .face-front .photo .overlay {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 22px 24px 22px;
+    color: #fff; z-index: 1;
+  }
+  .face-front .photo .kicker {
+    font-size: 10.5px; letter-spacing: 0.24em; text-transform: uppercase; font-weight: 700;
+    opacity: 0.88; margin-bottom: 6px;
+  }
+  .face-front .photo h3 {
+    font-family: 'Lora', serif; font-size: 32px; font-weight: 700; line-height: 1.05; letter-spacing: -0.01em;
+  }
+  .face-front .photo h3 em { font-style: italic; }
+  .face-front .photo .where {
+    font-family: 'Lora', serif; font-style: italic; font-size: 14px; opacity: 0.92; margin-top: 4px;
+  }
+  .face-front .photo .flip-cue {
+    position: absolute; top: 14px; right: 16px;
+    font-family: 'Outfit', sans-serif; font-size: 9.5px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700;
+    color: #fff; background: rgba(0,0,0,0.42); padding: 5px 10px; border-radius: 999px;
+    backdrop-filter: blur(6px);
+  }
+  .face-front .tag-strip {
+    display: flex; gap: 8px; padding: 11px 18px; background: var(--paper);
+    border-top: 1px solid var(--border); font-size: 11px;
+  }
+  .face-front .tag-strip .chip {
+    font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    padding: 4px 10px; border-radius: 999px;
+  }
+  .flip-card.win  .face-front .tag-strip .chip.outcome { background: var(--olive-soft);  color: var(--olive); }
+  .flip-card.lose .face-front .tag-strip .chip.outcome { background: var(--crimson-soft); color: var(--crimson); }
+  .face-front .tag-strip .chip.neutral { background: var(--bg); color: var(--soft); border: 1px solid var(--border); }
+
+  /* BACK — financial story */
+  .face-back { padding: 16px 18px 14px; border-top: 4px solid var(--olive); background: var(--paper); }
+  .flip-card.lose .face-back { border-top-color: var(--crimson); }
+  .face-back .back-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; gap: 10px; }
+  .face-back .back-head h4 { font-family: 'Lora', serif; font-size: 18px; font-weight: 700; line-height: 1.2; }
+  .face-back .back-head h4 em { font-style: italic; }
+  .flip-card.win  .face-back .back-head h4 em { color: var(--blue); }
+  .flip-card.lose .face-back .back-head h4 em { color: var(--crimson); }
+  .face-back .back-head .year { font-family: 'Lora', serif; font-style: italic; font-size: 13px; color: var(--muted); }
+
+  .facts-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 10px; }
+  .fact { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 7px 9px; }
+  .fact .lbl { font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--soft); font-weight: 700; margin-bottom: 1px; }
+  .fact .val { font-family: 'Lora', serif; font-size: 14.5px; font-weight: 700; color: var(--ink); line-height: 1.15; }
+  .fact .sub { font-size: 9.5px; color: var(--muted); font-style: italic; margin-top: 1px; }
+  .flip-card.win  .fact.hl .val { color: var(--blue); }
+  .flip-card.lose .fact.hl .val { color: var(--crimson); }
+
+  .chart-wrap { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px 2px; margin-bottom: 8px; }
+  .chart-wrap .ttl { font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--soft); font-weight: 700; margin-bottom: 4px; }
+  .chart-wrap svg { width: 100%; height: auto; display: block; }
+
+  .face-back ul.bullets { list-style: none; padding: 0; margin: 4px 0 0; font-size: 11.5px; color: var(--muted); line-height: 1.45; }
+  .face-back ul.bullets li { padding-left: 12px; position: relative; margin-bottom: 2px; }
+  .face-back ul.bullets li::before { content: '·'; position: absolute; left: 4px; color: var(--purple); font-weight: 700; }
+  .face-back ul.bullets li strong { color: var(--ink); font-weight: 700; }
+
+  .face-back .src { font-size: 8.5px; color: #b3a99a; margin-top: 6px; padding-top: 4px; border-top: 1px dotted var(--line); letter-spacing: 0.04em; }
+  .face-back .src a { color: #b3a99a; text-decoration: none; border-bottom: 1px dotted var(--line); }
+  .face-back .src a:hover { color: var(--purple); border-bottom-color: var(--purple); }
+
+  .face-back .flip-cue {
+    position: absolute; top: 10px; right: 12px;
+    font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft); padding: 3px 8px; border: 1px solid var(--border); border-radius: 999px;
+  }
+
+  .hook-line {
+    flex-shrink: 0; padding: 12px 16px; background: var(--paper); border: 1px solid var(--border); border-left: 4px solid var(--purple);
+    border-radius: 10px; font-family: 'Lora', serif; font-style: italic; font-size: 14px; color: var(--ink); line-height: 1.5;
+  }
+  .hook-line strong { color: var(--purple); font-style: normal; font-weight: 700; }
+
+  /* ========= PAGE 2 — Concept ========= */
+  .concept-grid {
+    flex: 1; min-height: 0;
+    display: grid; grid-template-columns: 1.05fr 1.1fr; gap: 16px;
+  }
+  @media (max-width: 980px) { .concept-grid { grid-template-columns: 1fr; } }
+
+  .def-card { background: var(--paper); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; display: flex; flex-direction: column; }
+  .def-card .label { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700; color: var(--purple); margin-bottom: 8px; }
+  .formula-box {
+    background: var(--bg); border: 1px solid var(--border); border-left: 3px solid var(--purple);
+    padding: 14px 16px; border-radius: 6px; margin-bottom: 12px;
+  }
+  .formula-box .lead { font-family: 'Lora', serif; font-style: italic; font-size: 15px; color: var(--ink); }
+  .formula-box .formula-main { text-align: center; font-family: 'Lora', serif; font-size: 22px; margin: 10px 0 6px; }
+  .formula-box .formula-sub { font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted); text-align: center; }
+  .def-card p { font-size: 13px; color: var(--muted); line-height: 1.55; margin-bottom: 6px; }
+  .def-card p strong { color: var(--ink); font-weight: 700; }
+  .def-card .compare-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px; }
+  .compare-cell { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 9px 12px; }
+  .compare-cell .h { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; margin-bottom: 3px; }
+  .compare-cell.pp .h { color: var(--gold); }
+  .compare-cell.dpp .h { color: var(--purple); }
+  .compare-cell p { font-size: 11.5px; margin: 0; line-height: 1.45; }
+
+  .ex-card { background: var(--paper); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; display: flex; flex-direction: column; }
+  .ex-card .ex-head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+  .ex-card h4 { font-family: 'Lora', serif; font-size: 16px; font-weight: 700; }
+  .ex-card h4 em { font-style: italic; color: var(--purple); }
+  .ex-card .meta { font-size: 10.5px; color: var(--soft); letter-spacing: 0.06em; }
+  .ex-card table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+  .ex-card th, .ex-card td { padding: 5px 6px; border-bottom: 1px solid var(--border); text-align: right; }
+  .ex-card th:first-child, .ex-card td:first-child { text-align: left; color: var(--muted); font-style: italic; }
+  .ex-card th { font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--soft); font-weight: 700; border-bottom: 1px solid var(--line); }
+  .ex-card td.pos { color: var(--olive); font-weight: 600; }
+  .ex-card td.neg { color: var(--crimson); font-weight: 600; }
+  .ex-card tr.hit td { background: var(--purple-soft); font-weight: 700; color: var(--ink); }
+  .ex-card tr.hit td:first-child { color: var(--purple); font-style: italic; }
+  .ex-card .legend {
+    font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted);
+    margin-top: 8px; padding-top: 6px; border-top: 1px dashed var(--line);
+  }
+  .ex-card .legend strong { color: var(--purple); font-style: normal; font-weight: 700; }
+
+  .keypoints { flex-shrink: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  @media (max-width: 820px) { .keypoints { grid-template-columns: 1fr; } }
+  .kp { padding: 10px 12px; background: var(--paper); border: 1px solid var(--border); border-left: 3px solid var(--purple); border-radius: 6px; }
+  .kp .h { font-size: 9.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--purple); font-weight: 700; margin-bottom: 3px; }
+  .kp p { font-size: 11.5px; color: var(--ink); line-height: 1.5; }
+  .kp p em { color: var(--muted); font-style: italic; }
+
+  /* ========= PAGE 3 — Ranking ========= */
+  .rank-grid { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1.15fr; gap: 16px; align-items: stretch; }
+  @media (max-width: 980px) { .rank-grid { grid-template-columns: 1fr; } }
+
+  .rule-box {
+    background: var(--purple-soft); border: 1px solid #d8ccef; border-left: 4px solid var(--purple);
+    border-radius: 10px; padding: 16px 20px; display: flex; flex-direction: column;
+  }
+  .rule-box .h { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--purple); font-weight: 700; margin-bottom: 8px; }
+  .rule-box h3 { font-family: 'Lora', serif; font-size: 19px; font-weight: 700; line-height: 1.25; margin-bottom: 10px; }
+  .rule-box h3 em { font-style: italic; color: var(--purple); }
+  .rule-box ol { margin-left: 18px; }
+  .rule-box ol li { font-size: 12.5px; color: var(--ink); margin-bottom: 5px; line-height: 1.5; }
+  .rule-box ol li strong { color: var(--purple); font-weight: 700; }
+
+  .rank-table { background: var(--paper); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px 12px; display: flex; flex-direction: column; }
+  .rank-table h4 { font-family: 'Lora', serif; font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .rank-table h4 em { font-style: italic; color: var(--purple); }
+  .rank-table .meta { font-size: 10.5px; color: var(--soft); margin-bottom: 8px; letter-spacing: 0.06em; }
+  .rank-table table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .rank-table th, .rank-table td { padding: 6px 8px; border-bottom: 1px solid var(--border); text-align: right; }
+  .rank-table th:first-child, .rank-table td:first-child { text-align: left; font-style: italic; color: var(--muted); }
+  .rank-table th { font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--soft); font-weight: 700; border-bottom: 1px solid var(--line); }
+  .rank-table tr.winner-dpp td.dpp { color: var(--purple); font-weight: 700; background: var(--purple-soft); }
+  .rank-table tr.winner-pw td.pw { color: var(--olive); font-weight: 700; background: var(--olive-soft); }
+  .rank-table .verdict {
+    margin-top: 10px; font-family: 'Lora', serif; font-style: italic; font-size: 12.5px; color: var(--muted); line-height: 1.5;
+  }
+  .rank-table .verdict strong { color: var(--ink); font-style: normal; font-weight: 700; }
+
+  .warns { flex-shrink: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 820px) { .warns { grid-template-columns: 1fr; } }
+  .warn { padding: 11px 14px; background: var(--gold-soft); border: 1px solid #efe1bd; border-left: 3px solid var(--gold); border-radius: 6px; }
+  .warn.crimson { background: var(--crimson-soft); border-color: #f0d2d4; border-left-color: var(--crimson); }
+  .warn .h { font-size: 9.5px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; color: var(--gold); margin-bottom: 3px; }
+  .warn.crimson .h { color: var(--crimson); }
+  .warn p { font-size: 11.5px; color: var(--ink); line-height: 1.5; }
+  .warn p em { font-style: italic; color: var(--muted); }
+  .warn p strong { font-weight: 700; }
+
+  /* FOOTER nav bar */
+  .footer-nav {
+    flex-shrink: 0; margin-top: 10px;
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    padding: 8px 14px; background: var(--paper); border: 1px solid var(--border); border-radius: 10px;
+  }
+  .footer-nav .ind { display: flex; gap: 8px; align-items: center; }
+  .footer-nav .dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--border); cursor: pointer;
+    transition: all 0.2s;
+  }
+  .footer-nav .dot.active { background: var(--purple); transform: scale(1.3); }
+  .footer-nav .dot:hover { background: var(--purple); }
+  .footer-nav .label {
+    font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted);
+    margin-left: 8px;
+  }
+  .nav-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'Outfit', sans-serif; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+    padding: 7px 14px; border: 1px solid var(--border); border-radius: 7px;
+    background: var(--paper); color: var(--ink); cursor: pointer; transition: all 0.15s;
+  }
+  .nav-btn:hover:not(:disabled) { color: var(--purple); border-color: var(--purple); background: var(--purple-soft); }
+  .nav-btn:disabled { opacity: 0.32; cursor: not-allowed; }
+  .nav-btn .arr { font-size: 14px; line-height: 1; }
+
+  /* PRINT */
+  @media print {
+    body { background: #fff; overflow: visible; }
+    .app { height: auto; max-width: none; padding: 0; }
+    .head, .footer-nav { display: none; }
+    .deck { position: static; }
+    .page { position: static; opacity: 1; pointer-events: auto; transform: none; page-break-after: always; padding: 18px 22px; }
+    .page:last-of-type { page-break-after: auto; }
+    .flip-card .flip-inner { transform: none !important; }
+    .face-back { display: none; }
+    @page { size: landscape; margin: 0.4in; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="head">
+    <div class="brand">
+      <span class="code">IE 4512 · Module 5</span>
+      <h1>Discounted <em>Payback Period</em></h1>
+      <span class="tag">three pages &mdash; observe, define, rank</span>
+    </div>
+    <nav class="nav">
+      <a href="index.html">← Course</a>
+      <button onclick="window.print()">Print</button>
+    </nav>
+  </header>
+
+  <div class="deck" id="deck">
+
+    <!-- ========= PAGE 1 — Observational hook (flip cards) ========= -->
+    <section class="page active" data-page="1">
+      <div class="page-head">
+        <div>
+          <h2>Two megaprojects, two <em>stories</em></h2>
+          <div class="sub">Same metric, opposite outcomes. Click either card to flip and see how each one paid back &mdash; or didn't.</div>
+        </div>
+        <div class="marker"><span class="n">1</span> / 3 &middot; observe</div>
+      </div>
+
+      <div class="page-body">
+        <div class="flip-row">
+
+          <!-- WIN CARD -->
+          <div class="flip-card win" onclick="this.classList.toggle('flipped')">
+            <div class="flip-inner">
+              <div class="face face-front">
+                <div class="photo" style="background-image: url('images/m5/golden-gate-bridge.jpg');">
+                  <div class="flip-cue">click to flip</div>
+                  <div class="overlay">
+                    <div class="kicker">San Francisco · opened 1937</div>
+                    <h3>Golden Gate <em>Bridge</em></h3>
+                    <div class="where">$35 million span · paid off in 34 years</div>
+                  </div>
+                </div>
+                <div class="tag-strip">
+                  <span class="chip outcome">Paid off ✓</span>
+                  <span class="chip neutral">Tolls only</span>
+                  <span class="chip neutral">Private bonds</span>
+                </div>
+              </div>
+              <div class="face face-back">
+                <div class="flip-cue">flip back</div>
+                <div class="back-head">
+                  <h4>Golden Gate <em>Bridge</em></h4>
+                  <span class="year">1937 &rarr; 1971</span>
+                </div>
+                <div class="facts-2">
+                  <div class="fact">
+                    <div class="lbl">Construction cost</div>
+                    <div class="val">$35 M</div>
+                    <div class="sub">1933&ndash;37, $1.3 M under budget</div>
+                  </div>
+                  <div class="fact hl">
+                    <div class="lbl">DPP (bonds retired)</div>
+                    <div class="val">~34 yrs</div>
+                    <div class="sub">last bond retired 1971</div>
+                  </div>
+                  <div class="fact">
+                    <div class="lbl">Total tolls collected</div>
+                    <div class="val">$74 M</div>
+                    <div class="sub">$35 M principal + ~$39 M interest</div>
+                  </div>
+                  <div class="fact">
+                    <div class="lbl">Verdict</div>
+                    <div class="val" style="color:var(--olive);">Fully self-financed</div>
+                    <div class="sub">no federal subsidy</div>
+                  </div>
+                </div>
+                <div class="chart-wrap">
+                  <div class="ttl">Cumulative discounted cash flow · $M · illustrative</div>
+                  <svg viewBox="0 0 460 110" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="40" y1="14" x2="40" y2="92" stroke="#5a5247" stroke-width="0.8"/>
+                    <line x1="40" y1="92" x2="450" y2="92" stroke="#5a5247" stroke-width="0.8"/>
+                    <line x1="40" y1="28" x2="450" y2="28" stroke="#1947d6" stroke-width="0.6" stroke-dasharray="3 3" opacity="0.55"/>
+                    <text x="44" y="25" font-size="8.5" fill="#1947d6" font-family="Outfit,sans-serif" font-weight="700">PW = 0</text>
+                    <text x="36" y="30" text-anchor="end" font-size="8" fill="#5a5247" font-family="Outfit,sans-serif">0</text>
+                    <text x="36" y="62" text-anchor="end" font-size="8" fill="#5a5247" font-family="Outfit,sans-serif">-20</text>
+                    <text x="36" y="92" text-anchor="end" font-size="8" fill="#5a5247" font-family="Outfit,sans-serif">-40</text>
+                    <text x="40"  y="104" text-anchor="middle" font-size="8" fill="#5a5247" font-family="Outfit,sans-serif">1937</text>
+                    <text x="166" y="104" text-anchor="middle" font-size="8" fill="#5a5247" font-family="Outfit,sans-serif">1950</text>
+                    <text x="287" y="104" text-anchor="middle" font-size="8" fill="#5a5247" font-family="Outfit,sans-serif">1960</text>
+                    <text x="408" y="104" text-anchor="middle" font-size="8" fill="#5a5247" font-family="Outfit,sans-serif">1971</text>
+                    <path d="M 40 84 C 80 80, 130 73, 170 65 S 260 45, 320 35 S 390 30, 415 28"
+                          stroke="#1947d6" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <circle cx="415" cy="28" r="3.4" fill="#1947d6"/>
+                    <line x1="415" y1="28" x2="415" y2="92" stroke="#1947d6" stroke-width="0.6" stroke-dasharray="2 3" opacity="0.5"/>
+                    <text x="408" y="22" text-anchor="end" font-size="9" fill="#1947d6" font-family="Outfit,sans-serif" font-weight="700">DPP &approx; 34 yr</text>
+                    <circle cx="40" cy="84" r="2.8" fill="#8a2828"/>
+                    <text x="48" y="86" font-size="9" fill="#8a2828" font-family="Outfit,sans-serif" font-weight="700">-$35 M (1937)</text>
+                  </svg>
+                </div>
+                <ul class="bullets">
+                  <li><strong>Financing:</strong> $30 M bond measure (1930). Bank of America bought the full issue, 1932.</li>
+                  <li><strong>Cash flow:</strong> tolls only; toll revenue covered all principal + interest.</li>
+                </ul>
+                <div class="src">ref: <a href="https://en.wikipedia.org/wiki/Golden_Gate_Bridge" target="_blank">Wikipedia &mdash; Golden Gate Bridge</a></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- LOSE CARD -->
+          <div class="flip-card lose" onclick="this.classList.toggle('flipped')">
+            <div class="flip-inner">
+              <div class="face face-front">
+                <div class="photo" style="background-image: url('images/m5/channel-tunnel.jpg');">
+                  <div class="flip-cue">click to flip</div>
+                  <div class="overlay">
+                    <div class="kicker">Folkestone &harr; Coquelles · opened 1994</div>
+                    <h3>Channel <em>Tunnel</em></h3>
+                    <div class="where">£4.65 B · DPP never reached</div>
+                  </div>
+                </div>
+                <div class="tag-strip">
+                  <span class="chip outcome">Restructured</span>
+                  <span class="chip neutral">Private equity</span>
+                  <span class="chip neutral">80% over budget</span>
+                </div>
+              </div>
+              <div class="face face-back">
+                <div class="flip-cue">flip back</div>
+                <div class="back-head">
+                  <h4>Channel <em>Tunnel</em></h4>
+                  <span class="year">1994 &rarr; 2007 &hellip;</span>
+                </div>
+                <div class="facts-2">
+                  <div class="fact">
+                    <div class="lbl">Construction cost</div>
+                    <div class="val">£4.65 B</div>
+                    <div class="sub">80% over £2.6 B budget</div>
+                  </div>
+                  <div class="fact hl">
+                    <div class="lbl">DPP for equity</div>
+                    <div class="val">Not reached</div>
+                    <div class="sub">original investors wiped out</div>
+                  </div>
+                  <div class="fact">
+                    <div class="lbl">Financing costs</div>
+                    <div class="val">+140%</div>
+                    <div class="sub">over original forecast</div>
+                  </div>
+                  <div class="fact">
+                    <div class="lbl">Verdict</div>
+                    <div class="val" style="color:var(--crimson);">Debt-for-equity 2007</div>
+                    <div class="sub">restructured, equity holders displaced</div>
+                  </div>
+                </div>
+                <div class="chart-wrap">
+                  <div class="ttl">Cumulative discounted cash flow · £B · illustrative</div>
+                  <svg viewBox="0 0 460 110" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="40" y1="14" x2="40" y2="92" stroke="#5a5247" stroke-width="0.8"/>
+                    <line x1="40" y1="92" x2="450" y2="92" stroke="#5a5247" stroke-width="0.8"/>
+                    <line x1="40" y1="28" x2="450" y2="28" stroke="#8a2828" stroke-width="0.6" stroke-dasharray="3 3" opacity="0.55"/>
+                    <text x="44" y="25" font-size="8.5" fill="#8a2828" font-family="Outfit,sans-serif" font-weight="700">PW = 0</text>
+                    <text x="36" y="30" text-anchor="end" font-size="8" fill="#5a5247" font-family="Outfit,sans-serif">0</text>
+                    <text x="36" y="62" text-anchor="end" font-size="8" fill="#5a5247" font-family="Outfit,sans-serif">-2.5</text>
+                    <text x="36" y="92" text-anchor="end" font-size="8" fill="#5a5247" font-family="Outfit,sans-serif">-5</text>
+                    <text x="40"  y="104" text-anchor="middle" font-size="8" fill="#5a5247" font-family="Outfit,sans-serif">1994</text>
+                    <text x="170" y="104" text-anchor="middle" font-size="8" fill="#5a5247" font-family="Outfit,sans-serif">2000</text>
+                    <text x="287" y="104" text-anchor="middle" font-size="8" fill="#5a5247" font-family="Outfit,sans-serif">2007</text>
+                    <text x="408" y="104" text-anchor="middle" font-size="8" fill="#5a5247" font-family="Outfit,sans-serif">2020</text>
+                    <path d="M 40 88 C 80 76, 120 60, 170 50 S 230 42, 280 42 C 297 50, 310 53, 320 53 C 360 50, 400 47, 440 44"
+                          stroke="#8a2828" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <circle cx="287" cy="42" r="3" fill="#8a2828"/>
+                    <text x="287" y="36" text-anchor="middle" font-size="9" fill="#8a2828" font-family="Outfit,sans-serif" font-weight="700">2007 restructure</text>
+                    <text x="445" y="40" text-anchor="end" font-size="9" fill="#8a2828" font-family="Outfit,sans-serif" font-weight="700">DPP: not reached</text>
+                    <circle cx="40" cy="88" r="2.8" fill="#8a2828"/>
+                    <text x="48" y="84" font-size="9" fill="#8a2828" font-family="Outfit,sans-serif" font-weight="700">-£4.65 B (1994)</text>
+                  </svg>
+                </div>
+                <ul class="bullets">
+                  <li><strong>Equity raised:</strong> £45 M founders + £206 M placement + £770 M IPO + bank debt.</li>
+                  <li><strong>Endpoint:</strong> 2007 debt restructuring transferred ownership; original shareholders took near-total losses.</li>
+                </ul>
+                <div class="src">ref: <a href="https://en.wikipedia.org/wiki/Channel_Tunnel" target="_blank">Wikipedia &mdash; Channel Tunnel</a></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="hook-line">
+          <strong>The question.</strong> Same engineering ambition, same era of finance, both opened on schedule. Yet one project's discounted cash flow climbed to zero and the other's stalled forever. <em>What is the metric that tells these two stories apart &mdash; and how do you compute it before you spend the money?</em>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========= PAGE 2 — Concept ========= -->
+    <section class="page" data-page="2">
+      <div class="page-head">
+        <div>
+          <h2>What <em>is</em> the Discounted Payback Period?</h2>
+          <div class="sub">Same discounting as Present Worth &mdash; but the question is the calendar, not the verdict. <em>When am I made whole, in present-worth terms?</em></div>
+        </div>
+        <div class="marker"><span class="n">2</span> / 3 &middot; define</div>
+      </div>
+
+      <div class="page-body">
+        <div class="concept-grid">
+
+          <div class="def-card">
+            <div class="label">Definition</div>
+            <div class="formula-box">
+              <div class="lead">DPP is the smallest <em>n</em> such that</div>
+              <div class="formula-main">&sum;<sub>t=0..n</sub> A<sub>t</sub> &middot; (P/F, i, t) &nbsp;&ge;&nbsp; 0</div>
+              <div class="formula-sub">i.e., the year the cumulative <em>discounted</em> cash flow first turns non-negative at the MARR.</div>
+            </div>
+
+            <div class="compare-row">
+              <div class="compare-cell pp">
+                <div class="h">Plain Payback</div>
+                <p>Sums <strong>raw</strong> cash flows until they reach the initial cost. Ignores the time value of money.</p>
+              </div>
+              <div class="compare-cell dpp">
+                <div class="h">Discounted Payback</div>
+                <p>Sums <strong>present-worth equivalents</strong>. Late dollars count less. Hence <strong>DPP &gt; PP</strong> for any positive MARR.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="ex-card">
+            <div class="ex-head">
+              <h4>Mini example &middot; <em>PP vs. DPP</em></h4>
+              <span class="meta">Cost $10 000 · A<sub>t</sub> = $3 000/yr · MARR = 10%</span>
+            </div>
+            <table>
+              <thead>
+                <tr><th>Year t</th><th>A<sub>t</sub></th><th>(P/F, 10%, t)</th><th>P-equiv</th><th>Cum PP</th><th>Cum DPP</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>0</td><td class="neg">-$10 000</td><td>1.0000</td><td class="neg">-$10 000</td><td class="neg">-$10 000</td><td class="neg">-$10 000</td></tr>
+                <tr><td>1</td><td class="pos">+$3 000</td><td>0.9091</td><td class="pos">+$2 727</td><td class="neg">-$7 000</td><td class="neg">-$7 273</td></tr>
+                <tr><td>2</td><td class="pos">+$3 000</td><td>0.8264</td><td class="pos">+$2 479</td><td class="neg">-$4 000</td><td class="neg">-$4 793</td></tr>
+                <tr><td>3</td><td class="pos">+$3 000</td><td>0.7513</td><td class="pos">+$2 254</td><td class="neg">-$1 000</td><td class="neg">-$2 539</td></tr>
+                <tr class="hit"><td>4</td><td class="pos">+$3 000</td><td>0.6830</td><td class="pos">+$2 049</td><td class="pos">+$2 000</td><td class="neg">-$490</td></tr>
+                <tr class="hit"><td>5</td><td class="pos">+$3 000</td><td>0.6209</td><td class="pos">+$1 863</td><td class="pos">+$5 000</td><td class="pos">+$1 372</td></tr>
+              </tbody>
+            </table>
+            <div class="legend">
+              <strong>PP &approx; 3.33 yr</strong> (cum hits 0 between yr 3 and 4) &nbsp;|&nbsp;
+              <strong>DPP &approx; 4.26 yr</strong> (cum-discounted hits 0 between yr 4 and 5). <em>The extra year is the cost of money.</em>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="keypoints">
+          <div class="kp">
+            <div class="h">Decision rule</div>
+            <p>Accept if DPP &le; the analyst's max allowable payback window. <em>Reject if the curve never reaches zero within the planning horizon.</em></p>
+          </div>
+          <div class="kp">
+            <div class="h">DPP vs. PW</div>
+            <p>Same discount factors, different question. A project can have <strong>PW &gt; 0</strong> but a DPP <em>longer than the planning horizon</em>.</p>
+          </div>
+          <div class="kp">
+            <div class="h">What DPP is good for</div>
+            <p>Liquidity and risk. <em>"How long is my capital exposed?"</em> &mdash; not a profitability ranker. That is PW's job.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========= PAGE 3 — Ranking ========= -->
+    <section class="page" data-page="3">
+      <div class="page-head">
+        <div>
+          <h2>Ranking with DPP &mdash; use the <em>ranking method</em>, not incremental</h2>
+          <div class="sub">Compute each project's DPP <em>independently</em> at the MARR and pick the shortest one that meets the planning horizon. Do not form &Delta;(B&minus;A) cash flows the way you would for IRR.</div>
+        </div>
+        <div class="marker"><span class="n">3</span> / 3 &middot; rank</div>
+      </div>
+
+      <div class="page-body">
+        <div class="rank-grid">
+
+          <div class="rule-box">
+            <div class="h">Procedure</div>
+            <h3>The <em>ranking method</em> for DPP</h3>
+            <ol>
+              <li><strong>For each alternative</strong>, compute the cumulative discounted cash flow at the MARR.</li>
+              <li><strong>Read off DPP</strong> as the year the cumulative first turns non-negative.</li>
+              <li><strong>Discard</strong> any alternative whose DPP exceeds the planning horizon.</li>
+              <li><strong>Among survivors</strong>, pick the one with the shortest DPP &mdash; that is your DPP-best choice.</li>
+              <li><strong>Cross-check with PW.</strong> If DPP and PW disagree on a mutually exclusive choice, <em>PW wins.</em> DPP is a liquidity overlay, not the profitability metric.</li>
+            </ol>
+          </div>
+
+          <div class="rank-table">
+            <h4>Worked example &middot; <em>three mutually exclusive projects</em></h4>
+            <div class="meta">Initial cost $10 000 each &middot; MARR = 10% &middot; 6-yr horizon &middot; equal life</div>
+            <table>
+              <thead>
+                <tr><th>Project</th><th>Receipt profile (yr 1&ndash;6)</th><th class="dpp">DPP</th><th class="pw">PW at yr 6</th></tr>
+              </thead>
+              <tbody>
+                <tr class="winner-dpp">
+                  <td>A &mdash; front-loaded</td>
+                  <td>5000, 4000, 2000, 1000, 500, 500</td>
+                  <td class="dpp">3.95 yr ✓</td>
+                  <td class="pw">+$630</td>
+                </tr>
+                <tr class="winner-pw">
+                  <td>B &mdash; even</td>
+                  <td>3000 / yr</td>
+                  <td class="dpp">4.26 yr</td>
+                  <td class="pw">+$3 066 ✓</td>
+                </tr>
+                <tr>
+                  <td>C &mdash; back-loaded</td>
+                  <td>0, 0, 0, 6000, 6000, 6000</td>
+                  <td class="dpp">5.64 yr</td>
+                  <td class="pw">+$1 210</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="verdict">
+              <strong>DPP-best = A</strong> (3.95 yr) &nbsp;|&nbsp; <strong>PW-best = B</strong> (+$3 066). <em>They disagree.</em>
+              All three survive the 6-yr screen; A returns capital fastest, but B creates 5&times; the present-worth wealth. <strong>For a mutually exclusive choice, PW is the tie-breaker.</strong> A's short DPP buys liquidity, not value. <em>Note we never formed &Delta;(B&minus;A) incremental cash flows.</em>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="warns">
+          <div class="warn">
+            <div class="h">Why not incremental?</div>
+            <p>Incremental analysis works for IRR because the return on (B &minus; A) genuinely answers <em>"is the extra investment in B worth it?"</em>. DPP has no such interpretation &mdash; the year a difference-in-cash-flows series first turns non-negative is not <em>any</em> alternative's payback. <strong>Mixing cash flows across projects produces a number with no decision meaning.</strong></p>
+          </div>
+          <div class="warn crimson">
+            <div class="h">When DPP and PW disagree</div>
+            <p>DPP rewards <em>front-loaded</em> projects; PW rewards <em>total wealth</em>. In the table, A has the shortest DPP (3.95 yr) but B has 5&times; the PW. <strong>In a mutually exclusive choice, PW is the economically correct tie-breaker.</strong> Treat DPP as a risk filter, not a ranker.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- FOOTER nav -->
+  <nav class="footer-nav">
+    <button class="nav-btn" id="prev"><span class="arr">&larr;</span> Prev</button>
+    <div class="ind">
+      <span class="dot active" data-go="1"></span>
+      <span class="dot" data-go="2"></span>
+      <span class="dot" data-go="3"></span>
+      <span class="label" id="page-label">Observe the contrast</span>
+    </div>
+    <button class="nav-btn" id="next">Next <span class="arr">&rarr;</span></button>
+  </nav>
+
+</div>
+
+<script>
+  const pages = document.querySelectorAll('.page');
+  const dots = document.querySelectorAll('.footer-nav .dot');
+  const prevBtn = document.getElementById('prev');
+  const nextBtn = document.getElementById('next');
+  const label = document.getElementById('page-label');
+  const labels = { 1: 'Observe the contrast', 2: 'Define the metric', 3: 'Rank the choices' };
+  let current = 1;
+  const N = pages.length;
+
+  function go(n) {
+    if (n < 1 || n > N || n === current) return;
+    pages.forEach(p => {
+      const i = +p.dataset.page;
+      p.classList.remove('active', 'left');
+      if (i === n) p.classList.add('active');
+      else if (i < n) p.classList.add('left');
+    });
+    dots.forEach(d => d.classList.toggle('active', +d.dataset.go === n));
+    label.textContent = labels[n];
+    prevBtn.disabled = n === 1;
+    nextBtn.disabled = n === N;
+    current = n;
+  }
+
+  prevBtn.addEventListener('click', () => go(current - 1));
+  nextBtn.addEventListener('click', () => go(current + 1));
+  dots.forEach(d => d.addEventListener('click', () => go(+d.dataset.go)));
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); go(current + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(current - 1); }
+    else if (e.key === 'Home') { go(1); }
+    else if (e.key === 'End') { go(N); }
+  });
+
+  prevBtn.disabled = true;
+</script>
+</body>
+</html>
