@@ -44,7 +44,9 @@
   ];
 
   // ============ STATE ============
-  let state = { trackIdx: -1, shuffle: false, volume: 60, expanded: false, isPlaying: false, currentTime: 0 };
+  // pos: { x, y } in CSS pixels from the top-left of the viewport. null = default
+  // bottom-right placement. Persisted across pages via localStorage.
+  let state = { trackIdx: -1, shuffle: false, volume: 60, expanded: false, isPlaying: false, currentTime: 0, pos: null };
   try { Object.assign(state, JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')); } catch (e) {}
   function save() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
@@ -59,8 +61,8 @@
   const css = `
     .fm-btn {
       position: fixed; bottom: 14px; right: 14px;
-      height: 44px; width: 44px; border-radius: 999px;
-      background: #1947d6; color: #fff; border: none; cursor: pointer; z-index: 998;
+      height: 40px; width: 40px; border-radius: 999px;
+      background: #1947d6; color: #fff; border: none; cursor: grab; z-index: 998;
       box-shadow: 0 4px 14px rgba(25,71,214,0.32);
       display: inline-flex; align-items: center; justify-content: center; gap: 0;
       font-family: 'Outfit', -apple-system, system-ui, sans-serif;
@@ -68,12 +70,24 @@
       transition: box-shadow 0.18s, transform 0.18s, width 0.22s, padding 0.22s, border-radius 0.22s;
       padding: 0;
       overflow: hidden;
+      touch-action: none;
+      user-select: none; -webkit-user-select: none;
     }
-    .fm-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(25,71,214,0.42); }
+    .fm-btn:hover { box-shadow: 0 8px 22px rgba(25,71,214,0.42); }
+    .fm-btn.dragging { cursor: grabbing; transition: none; opacity: 0.92; }
     .fm-btn.has-track {
-      padding: 0 12px 0 4px; width: 296px; max-width: calc(100vw - 28px);
-      gap: 8px; justify-content: flex-start; border-radius: 999px;
+      padding: 0 8px 0 4px; width: 210px; max-width: calc(100vw - 28px);
+      gap: 6px; justify-content: flex-start; border-radius: 999px;
     }
+    .fm-grip {
+      flex-shrink: 0; width: 8px; height: 18px; opacity: 0.5;
+      display: flex; flex-direction: column; justify-content: center; gap: 2.5px;
+      margin-right: 1px;
+    }
+    .fm-grip span { display: block; width: 3px; height: 3px; border-radius: 999px; background: #fff; }
+    .fm-grip span:nth-child(odd) { margin-left: 0; }
+    .fm-grip span:nth-child(even) { margin-left: 4px; }
+    .fm-btn:not(.has-track) .fm-grip { display: none; }
     /* Idle state: hide dot + label, show only the music icon */
     .fm-btn:not(.has-track) .dot,
     .fm-btn:not(.has-track) .default-label { display: none; }
@@ -314,6 +328,7 @@
       <span class="dot off" id="fm-dot"></span>
       <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
       <span class="default-label">Music</span>
+      <span class="fm-grip" aria-hidden="true" title="Drag to move"><span></span><span></span><span></span><span></span><span></span><span></span></span>
       <div class="fm-mini-play" id="fm-mini-play" title="Play / Pause"><svg id="fm-mini-icon" viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg></div>
       <div class="fm-mini-meta">
         <div class="fm-mini-title" id="fm-mini-title">—</div>
@@ -507,10 +522,128 @@
     btn.addEventListener('click', e => {
       // ignore clicks on the mini play button (it has its own handler)
       if (e.target.closest('#fm-mini-play')) return;
+      // ignore the synthetic click that follows a drag
+      if (btn.dataset.justDragged === '1') { btn.dataset.justDragged = '0'; return; }
       panel.classList.add('open');
       state.expanded = true; save();
+      positionPanel();
       updateNow(); updateProgress();
     });
+
+    // ----- DRAG: make the pill floatable so it can be moved out of the way -----
+    function applyBtnPosition() {
+      if (state.pos && Number.isFinite(state.pos.x) && Number.isFinite(state.pos.y)) {
+        const { x, y } = clampPos(state.pos.x, state.pos.y);
+        btn.style.left = x + 'px';
+        btn.style.top  = y + 'px';
+        btn.style.right = 'auto';
+        btn.style.bottom = 'auto';
+      } else {
+        // default: bottom-right
+        btn.style.left = 'auto';
+        btn.style.top  = 'auto';
+        btn.style.right = '14px';
+        btn.style.bottom = '14px';
+      }
+      positionPanel();
+    }
+    function clampPos(x, y) {
+      const r = btn.getBoundingClientRect();
+      const w = r.width || 210, h = r.height || 40;
+      const maxX = window.innerWidth  - w - 4;
+      const maxY = window.innerHeight - h - 4;
+      return {
+        x: Math.max(4, Math.min(maxX, x)),
+        y: Math.max(4, Math.min(maxY, y))
+      };
+    }
+    function positionPanel() {
+      // Anchor the panel near the pill. If pill is in the lower half, panel goes above;
+      // otherwise below. Horizontal: align the panel to whichever side of the pill leaves
+      // it inside the viewport.
+      if (!panel.classList.contains('open')) return;
+      const br = btn.getBoundingClientRect();
+      const pw = 340, ph = panel.offsetHeight || 460;
+      const margin = 10;
+      let x, y;
+      // vertical
+      if (br.top > window.innerHeight / 2) {
+        // pill in lower half -> panel above pill
+        y = br.top - ph - margin;
+        if (y < 8) y = br.bottom + margin;
+      } else {
+        // pill in upper half -> panel below pill
+        y = br.bottom + margin;
+        if (y + ph > window.innerHeight - 8) y = br.top - ph - margin;
+      }
+      // horizontal — try to align panel right edge with pill right edge first
+      x = br.right - pw;
+      if (x < 8) x = br.left; // align left if it would overflow
+      if (x + pw > window.innerWidth - 8) x = window.innerWidth - pw - 8;
+      if (x < 8) x = 8;
+      if (y < 8) y = 8;
+      panel.style.left = x + 'px';
+      panel.style.top  = y + 'px';
+      panel.style.right = 'auto';
+      panel.style.bottom = 'auto';
+    }
+
+    let dragStart = null;
+    let dragOrigin = null;
+    let pointerId  = null;
+
+    btn.addEventListener('pointerdown', e => {
+      // don't initiate drag from the play button — that is a click target
+      if (e.target.closest('#fm-mini-play')) return;
+      // primary mouse / touch / pen only
+      if (e.button !== undefined && e.button !== 0) return;
+      pointerId = e.pointerId;
+      const r = btn.getBoundingClientRect();
+      dragStart  = { x: e.clientX, y: e.clientY };
+      dragOrigin = { x: r.left, y: r.top };
+      btn.setPointerCapture(pointerId);
+    });
+
+    btn.addEventListener('pointermove', e => {
+      if (!dragStart || e.pointerId !== pointerId) return;
+      const dx = e.clientX - dragStart.x;
+      const dy = e.clientY - dragStart.y;
+      if (!btn.classList.contains('dragging')) {
+        if (Math.hypot(dx, dy) < 4) return; // hysteresis — ignore micro-movement
+        btn.classList.add('dragging');
+      }
+      const { x, y } = clampPos(dragOrigin.x + dx, dragOrigin.y + dy);
+      btn.style.left = x + 'px';
+      btn.style.top  = y + 'px';
+      btn.style.right = 'auto';
+      btn.style.bottom = 'auto';
+      positionPanel();
+    });
+
+    function endDrag(e) {
+      if (!dragStart) return;
+      const wasDragging = btn.classList.contains('dragging');
+      btn.classList.remove('dragging');
+      if (pointerId !== null) {
+        try { btn.releasePointerCapture(pointerId); } catch (_) {}
+      }
+      if (wasDragging) {
+        const r = btn.getBoundingClientRect();
+        state.pos = { x: r.left, y: r.top };
+        save();
+        // suppress the click event that follows pointerup
+        btn.dataset.justDragged = '1';
+      }
+      dragStart = null;
+      dragOrigin = null;
+      pointerId = null;
+    }
+    btn.addEventListener('pointerup', endDrag);
+    btn.addEventListener('pointercancel', endDrag);
+    window.addEventListener('resize', () => { applyBtnPosition(); });
+
+    // Apply saved position on mount
+    applyBtnPosition();
     elMiniPlay.addEventListener('click', e => { e.stopPropagation(); togglePlay(); });
     elPlay.addEventListener('click', togglePlay);
     $('fm-next').addEventListener('click', next);
