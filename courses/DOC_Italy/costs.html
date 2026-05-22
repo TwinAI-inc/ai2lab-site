@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Cost Estimator — DOC Italy 2027</title>
+<script>
+  (function () {
+    if (sessionStorage.getItem('docItalyAccess2027') !== 'unlocked') {
+      location.replace('./');
+    }
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --neu-red: #C41230;
+    --it-green: #009246;
+    --it-red: #ce2b37;
+    --navy: #1a1a2e;
+    --gold: #d4a84b;
+    --text: #1a1a2e;
+    --muted: #64748b;
+    --bg: #fafbfc;
+    --card: #ffffff;
+    --border: #e8eaee;
+    --soft: #f3f4f7;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Outfit', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  /* ===== HEADER (mirrors program.html) ===== */
+  header.app {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: saturate(180%) blur(14px);
+    border-bottom: 1px solid var(--border);
+  }
+  .head-wrap {
+    max-width: 1400px; margin: 0 auto;
+    padding: 10px 22px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .doc-logo {
+    display: inline-flex; align-items: center;
+    padding: 4px 8px;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: #fff;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700; font-size: 12px;
+  }
+  .doc-logo .br { color: var(--muted); }
+  .doc-logo .tx { color: var(--navy); padding: 0 4px; }
+  .doc-logo sup { color: var(--it-red); font-size: 9px; }
+  .flag-stripe {
+    display: inline-flex; height: 18px; border-radius: 3px; overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .flag-stripe span { width: 8px; }
+  .flag-stripe span:nth-child(1) { background: var(--it-green); }
+  .flag-stripe span:nth-child(2) { background: #ffffff; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .flag-stripe span:nth-child(3) { background: var(--it-red); }
+  .head-titles { flex: 1; }
+  .head-titles h1 {
+    font-size: 16px; font-weight: 700; color: var(--navy);
+    line-height: 1.1;
+  }
+  .head-titles p {
+    font-size: 11px; color: var(--muted); margin-top: 2px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .head-titles p strong { color: var(--it-green); }
+  nav.app-nav { display: flex; gap: 4px; }
+  nav.app-nav a {
+    padding: 6px 12px; border-radius: 6px;
+    color: var(--muted); font-size: 13px; font-weight: 500;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+  nav.app-nav a:hover { background: rgba(196,18,48,0.06); color: var(--neu-red); }
+  nav.app-nav a.active { background: rgba(196,18,48,0.08); color: var(--neu-red); font-weight: 600; }
+  @media (max-width: 640px) {
+    .head-titles h1 { font-size: 13px; }
+    .head-titles p { font-size: 10px; }
+    nav.app-nav { display: none; }
+  }
+
+  /* ===== PAGE LAYOUT ===== */
+  .page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 18px 22px 60px;
+  }
+  .page-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .page-head h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1;
+  }
+  .page-head h1 em { color: var(--it-red); font-style: italic; }
+  .page-head .lead {
+    font-size: 12px;
+    color: var(--muted);
+    max-width: 560px;
+    line-height: 1.45;
+  }
+
+  /* ===== COMPACT PARAM BAR ===== */
+  .ct-bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px 10px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(15,23,42,0.04);
+    margin-bottom: 10px;
+  }
+  .ct-pair {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 7px;
+    background: #fafbfc;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .ct-pair label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .ct-pair input[type="number"] {
+    width: 38px;
+    padding: 2px 4px;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--navy);
+    text-align: right;
+    outline: none;
+    -moz-appearance: textfield;
+  }
+  .ct-pair input[type="number"]::-webkit-outer-spin-button,
+  .ct-pair input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none; margin: 0;
+  }
+  .ct-pair:focus-within {
+    border-color: var(--it-green);
+    background: #fff;
+  }
+  .ct-currency {
+    display: inline-flex;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    background: #fafbfc;
+  }
+  .ct-currency button {
+    padding: 4px 9px;
+    border: none;
+    background: transparent;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .ct-currency button.active {
+    background: var(--navy);
+    color: #fff;
+  }
+  .ct-btn {
+    padding: 5px 10px;
+    border: 1px solid var(--border);
+    background: #fafbfc;
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+  .ct-btn:hover { border-color: var(--navy); background: #fff; }
+  .ct-btn.primary { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .ct-btn.primary:hover { background: #2a2a48; }
+  .ct-btn.danger { color: var(--it-red); }
+  .ct-btn.danger:hover { border-color: var(--it-red); }
+  .ct-bar .ct-sep {
+    width: 1px; height: 22px; background: var(--border); margin: 0 2px;
+  }
+  .ct-bar .ct-grow { flex: 1; }
+  .ct-bar .ct-inline-summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 3px 10px;
+    background: linear-gradient(135deg, rgba(0,146,70,0.08), rgba(196,18,48,0.08));
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+  }
+  .ct-inline-summary span.lbl {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .ct-inline-summary span.val {
+    font-weight: 700;
+    color: var(--it-green);
+    font-size: 13px;
+  }
+
+  /* ===== FILTER CHIPS ===== */
+  .ct-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+  .cf-chip {
+    padding: 4px 9px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .cf-chip:hover { border-color: var(--navy); color: var(--text); }
+  .cf-chip.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .cf-chip .ct-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    margin-left: 4px;
+    opacity: 0.7;
+  }
+
+  /* ===== TOOLTIP (i) ===== */
+  .tip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 13px; height: 13px;
+    margin-left: 3px;
+    border-radius: 50%;
+    background: var(--soft);
+    border: 1px solid var(--border);
+    font-family: 'Outfit', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    font-style: italic;
+    color: var(--muted);
+    cursor: help;
+    vertical-align: middle;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .tip:hover { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .tip::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: 240px;
+    padding: 8px 10px;
+    background: var(--navy);
+    color: #fff;
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+    font-style: normal;
+    letter-spacing: 0;
+    text-transform: none;
+    line-height: 1.4;
+    border-radius: 6px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+    text-align: left;
+    white-space: normal;
+    z-index: 100;
+  }
+  .tip::before {
+    content: '';
+    position: absolute;
+    bottom: calc(100% + 1px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--navy);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+  }
+  .tip:hover::after, .tip:hover::before { opacity: 1; }
+
+  /* ===== TABLE ===== */
+  .ct-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--card);
+  }
+  table.cost-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+  }
+  table.cost-table thead {
+    background: #f7f8fa;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 56px;
+    z-index: 10;
+  }
+  table.cost-table th {
+    padding: 8px 10px;
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  table.cost-table th.num { text-align: right; }
+  table.cost-table th.center { text-align: center; }
+  table.cost-table tbody tr {
+    border-bottom: 1px solid #f3f4f7;
+    transition: background 0.1s ease;
+  }
+  table.cost-table tbody tr:hover { background: #fafbfc; }
+  table.cost-table tbody tr.excluded { opacity: 0.42; }
+  table.cost-table tbody tr.excluded td.total { text-decoration: line-through; color: var(--muted); }
+  table.cost-table td {
+    padding: 4px 10px;
+    vertical-align: middle;
+  }
+  table.cost-table td.num { text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+  table.cost-table td.center { text-align: center; }
+  table.cost-table td.total { color: var(--navy); }
+  table.cost-table td .ct-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  table.cost-table input.ct-cell {
+    width: 100%;
+    padding: 3px 6px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 12.5px;
+    color: var(--text);
+    background: transparent;
+    outline: none;
+    transition: all 0.1s ease;
+  }
+  table.cost-table input.ct-cell:hover { background: #fff; border-color: var(--border); }
+  table.cost-table input.ct-cell:focus { background: #fff; border-color: var(--it-green); box-shadow: 0 0 0 3px rgba(0,146,70,0.08); }
+  table.cost-table input.ct-cell.num { text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+  table.cost-table input.ct-cell.date { font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+  table.cost-table select.ct-cell {
+    padding: 3px 6px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 12px;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+  }
+  table.cost-table select.ct-cell:hover { background: #fff; border-color: var(--border); }
+  table.cost-table .ct-del {
+    width: 20px; height: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 1;
+    transition: all 0.15s ease;
+  }
+  table.cost-table .ct-del:hover { border-color: var(--it-red); color: var(--it-red); background: #fff5f5; }
+
+  /* checkbox */
+  .ct-include {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px; height: 16px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+    position: relative;
+    vertical-align: middle;
+    transition: all 0.15s ease;
+  }
+  .ct-include:hover { border-color: var(--navy); }
+  .ct-include:checked {
+    background: var(--it-green);
+    border-color: var(--it-green);
+  }
+  .ct-include:checked::after {
+    content: '';
+    position: absolute;
+    top: 1px; left: 4px;
+    width: 4px; height: 8px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+
+  table.cost-table tfoot {
+    background: #f7f8fa;
+    border-top: 2px solid var(--navy);
+  }
+  table.cost-table tfoot td {
+    padding: 9px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--navy);
+  }
+  table.cost-table tfoot td.num { color: var(--it-green); font-size: 14px; }
+
+  .ct-hint {
+    font-size: 11px;
+    color: var(--muted);
+    font-style: italic;
+    margin-top: 10px;
+    line-height: 1.5;
+  }
+  .ct-hint strong { color: var(--text); font-style: normal; }
+
+  footer.app {
+    background: var(--navy);
+    color: rgba(255,255,255,0.7);
+    padding: 24px 22px;
+    margin-top: 32px;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    text-align: center;
+  }
+
+  @media (max-width: 720px) {
+    .page { padding: 14px 12px 40px; }
+    .ct-bar { padding: 6px; }
+    .ct-pair input[type="number"] { width: 34px; }
+    table.cost-table { font-size: 11.5px; }
+    table.cost-table th, table.cost-table td { padding: 4px 6px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== HEADER ========== -->
+<header class="app">
+  <div class="head-wrap">
+    <div class="doc-logo">
+      <span class="br">[</span>
+      <span class="tx">DOC<sup>2027</sup></span>
+      <span class="br">]</span>
+    </div>
+    <span class="flag-stripe"><span></span><span></span><span></span></span>
+    <div class="head-titles">
+      <h1>The Italian Corridor</h1>
+      <p><strong>Summer 1, 2027</strong> · Cost Estimator</p>
+    </div>
+    <nav class="app-nav">
+      <a href="program.html#overview">Overview</a>
+      <a href="program.html#calendar">Calendar</a>
+      <a href="program.html#days">Day-by-Day</a>
+      <a href="program.html#logistics">Logistics</a>
+      <a href="costs.html" class="active">Costs</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <div class="page-head">
+    <div>
+      <h1>Cost <em>estimator</em></h1>
+      <p class="lead">Live budget model. Tweak party size, toggle currency, edit any cell — totals update instantly. Untick the checkbox to exclude a line from the total without losing it.</p>
+    </div>
+  </div>
+
+  <!-- Compact param bar -->
+  <div class="ct-bar">
+    <div class="ct-pair"><label>Students</label><input type="number" id="ct-students" min="0" max="60" value="14"></div>
+    <div class="ct-pair"><label>Admins</label><input type="number" id="ct-admins" min="0" max="20" value="2"></div>
+    <div class="ct-pair"><label>Guests</label><input type="number" id="ct-guests" min="0" max="20" value="0"></div>
+    <span class="ct-sep"></span>
+    <div class="ct-currency">
+      <button id="ct-cur-eur" class="active" data-cur="EUR">EUR €</button>
+      <button id="ct-cur-usd" data-cur="USD">USD $</button>
+    </div>
+    <span class="ct-sep"></span>
+    <button class="ct-btn primary" id="ct-add-row">+ Add line</button>
+    <button class="ct-btn" id="ct-export">CSV</button>
+    <button class="ct-btn danger" id="ct-reset">Reset</button>
+    <span class="ct-grow"></span>
+    <div class="ct-inline-summary">
+      <span class="lbl">Active</span><span id="ct-active-count">37</span>
+      <span class="lbl">Party</span><span id="ct-party-count">16</span>
+      <span class="lbl">Grand</span><span class="val" id="ct-grand">€0</span>
+    </div>
+  </div>
+
+  <!-- Filter chips -->
+  <div class="ct-filters" id="ct-filters"></div>
+
+  <!-- Table -->
+  <div class="ct-table-wrap">
+    <table class="cost-table">
+      <thead>
+        <tr>
+          <th class="center" title="Include this line in the total">✓</th>
+          <th>Date</th>
+          <th>Event</th>
+          <th>Category</th>
+          <th class="num">Fixed <span class="tip" data-tip="One-time cost paid by the program, regardless of group size. Example: classroom rental, faculty travel, NEU overhead. Stored in EUR.">i</span></th>
+          <th class="num">/Person <span class="tip" data-tip="Per-person cost multiplied by (Students + Admins + Guests). Example: train tickets, museum entry, group dinner share. Stored in EUR.">i</span></th>
+          <th class="num">Total</th>
+          <th>Notes</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="ct-rows"></tbody>
+      <tfoot>
+        <tr>
+          <td colspan="6" style="text-align:right">Grand total</td>
+          <td class="num" id="ct-grand-foot">—</td>
+          <td colspan="2"></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <div class="ct-hint">
+    <strong>Total per row</strong> = Fixed + Per-person × (Students + Admins + Guests). Unchecked rows are excluded from the grand total but stay in the table.<br>
+    Edits autosave to your browser. USD/EUR convert at a flat <strong>1 € = $1.08</strong> for quick scenarios. Real quotes go in the Fixed / Per-person cells — replace placeholders as they come in.
+  </div>
+</main>
+
+<footer class="app">
+  <span>The Italian Corridor · DOC 2027 · Private Preview</span>
+</footer>
+
+<script>
+const CT_STORAGE = 'docItalyCosts2027_v2';
+const CT_EUR_TO_USD = 1.08;
+const CT_CATEGORIES = [
+  { key: 'all',            label: 'All' },
+  { key: 'accommodation',  label: 'Accommodation' },
+  { key: 'transportation', label: 'Transportation' },
+  { key: 'tours',          label: 'Tours & Visits' },
+  { key: 'curriculum',     label: 'Curriculum' },
+  { key: 'meals',          label: 'Meals' },
+  { key: 'other',          label: 'Other' },
+];
+
+const CT_DEFAULT_ITEMS = [
+  // ACCOMMODATION
+  { date: '2027-05-27', event: 'Parma accommodation (23 nights)', cat: 'accommodation', fixed: 0, per: 1380, notes: '€60/night × 23 nights · per person' },
+  { date: '2027-06-19', event: 'Milan accommodation (8 nights)', cat: 'accommodation', fixed: 0, per: 720, notes: '€90/night × 8 nights · Milan rates' },
+
+  // TRANSPORTATION
+  { date: '2027-05-27', event: 'BLQ airport → Parma group transfer', cat: 'transportation', fixed: 800, per: 0, notes: 'Charter bus · one-time' },
+  { date: '2027-06-02', event: 'Mantua day-trip train', cat: 'transportation', fixed: 0, per: 25, notes: 'Trenitalia RT' },
+  { date: '2027-06-05', event: 'Verona day-trip Frecciarossa', cat: 'transportation', fixed: 0, per: 40, notes: 'High-speed RT' },
+  { date: '2027-06-12', event: 'Cinque Terre weekend (train + CT card)', cat: 'transportation', fixed: 0, per: 60, notes: 'Sat–Sun · overnight Monterosso' },
+  { date: '2027-06-14', event: 'Modena trip train', cat: 'transportation', fixed: 0, per: 8, notes: 'Regional RT' },
+  { date: '2027-06-16', event: 'Maranello (Ferrari) shuttle', cat: 'transportation', fixed: 350, per: 0, notes: 'Charter from Parma' },
+  { date: '2027-06-18', event: 'Bologna day-trip train', cat: 'transportation', fixed: 0, per: 20, notes: 'Regional or Frecciarossa' },
+  { date: '2027-06-19', event: 'Parma → Milan Frecciarossa (group)', cat: 'transportation', fixed: 0, per: 25, notes: 'Super Economy if booked 2–3 mo ahead' },
+  { date: '2027-06-20', event: 'Como day-trip train', cat: 'transportation', fixed: 0, per: 15, notes: 'Trenord from Milano Cadorna' },
+  { date: '2027-06-23', event: 'Brembo (Stezzano) train + shuttle', cat: 'transportation', fixed: 0, per: 12, notes: 'Train RT from Milan' },
+  { date: '2027-06-26', event: 'Departure transfer → MXP', cat: 'transportation', fixed: 0, per: 13, notes: 'Malpensa Express' },
+
+  // TOURS & VISITS
+  { date: '2027-06-04', event: 'Parmigiano dairy tour', cat: 'tours', fixed: 0, per: 15, notes: 'Group rate · 2h + tasting' },
+  { date: '2027-06-07', event: 'Barilla corporate visit', cat: 'tours', fixed: 0, per: 0, notes: 'Free for groups · book 3 mo ahead' },
+  { date: '2027-06-09', event: 'Davines campus tour', cat: 'tours', fixed: 0, per: 0, notes: 'Complimentary · book direct' },
+  { date: '2027-06-10', event: 'Carpigiani Gelato University', cat: 'tours', fixed: 0, per: 35, notes: 'Workshop + tasting' },
+  { date: '2027-06-11', event: 'Prosciutto Langhirano (Salumificio Conti)', cat: 'tours', fixed: 0, per: 20, notes: 'English-language curing-room tour' },
+  { date: '2027-06-14', event: 'Acetaia balsamic (Leonardi)', cat: 'tours', fixed: 0, per: 18, notes: 'Traditional aging + tasting' },
+  { date: '2027-06-14', event: 'Museo Enzo Ferrari Modena', cat: 'tours', fixed: 0, per: 23, notes: 'Combo ticket option with Maranello' },
+  { date: '2027-06-16', event: 'Ferrari Maranello (museum + factory bus)', cat: 'tours', fixed: 0, per: 45, notes: 'Group bus tour · 6 mo lead time' },
+  { date: '2027-06-23', event: 'Brembo corporate visit', cat: 'tours', fixed: 0, per: 0, notes: 'Free · 3 mo lead time' },
+  { date: '2027-06-24', event: 'Last Supper · Cenacolo Vinciano', cat: 'tours', fixed: 0, per: 18, notes: 'Timed entry · 4+ mo ahead' },
+  { date: '2027-06-24', event: 'Pirelli HangarBicocca', cat: 'tours', fixed: 0, per: 0, notes: 'Free admission · free booking' },
+
+  // CURRICULUM
+  { date: '2027-05-31', event: 'UniPR classroom + AV + materials', cat: 'curriculum', fixed: 3000, per: 0, notes: 'Room booking + printing · 4 weeks' },
+  { date: '2027-05-31', event: 'Italian language instruction (4 weeks)', cat: 'curriculum', fixed: 4500, per: 0, notes: 'Native instructor · ~16 sessions' },
+  { date: '2027-06-03', event: 'Pasta-making class', cat: 'curriculum', fixed: 0, per: 35, notes: 'Hands-on workshop' },
+  { date: '2027-06-17', event: 'Pizza-making workshop', cat: 'curriculum', fixed: 0, per: 35, notes: 'Process-variation case study' },
+  { date: '2027-06-21', event: 'POLIMI welcome + Bovisa tour', cat: 'curriculum', fixed: 500, per: 0, notes: 'Coordination fee TBD with POLIMI' },
+  { date: '2027-06-22', event: 'POLIMI joint lecture + Bocconi visit', cat: 'curriculum', fixed: 800, per: 0, notes: 'Italian faculty honorarium + Bocconi' },
+
+  // MEALS
+  { date: '2027-05-31', event: 'Welcome dinner (Parma)', cat: 'meals', fixed: 0, per: 45, notes: 'Group dinner · trattoria' },
+  { date: '2027-06-15', event: 'Mid-program cohort dinner', cat: 'meals', fixed: 0, per: 50, notes: 'Post-midterm celebration · Parma' },
+  { date: '2027-06-19', event: 'Navigli welcome dinner (Milan)', cat: 'meals', fixed: 0, per: 55, notes: 'Move-day arrival dinner' },
+  { date: '2027-06-25', event: 'Farewell dinner (Milan)', cat: 'meals', fixed: 0, per: 65, notes: 'Trattoria with POLIMI hosts' },
+
+  // OTHER
+  { date: '2027-05-27', event: 'Faculty + PA international travel', cat: 'other', fixed: 4500, per: 0, notes: '2 admins · economy + insurance' },
+  { date: '2027-05-31', event: 'Health insurance + emergency contingency', cat: 'other', fixed: 0, per: 80, notes: 'NEU GEO travel coverage' },
+  { date: '2027-06-26', event: 'NEU GEO program admin / overhead', cat: 'other', fixed: 8000, per: 0, notes: 'Global experience office fee' },
+];
+
+const ctState = {
+  party: { students: 14, admins: 2, guests: 0 },
+  currency: 'EUR',
+  filter: 'all',
+  items: null,
+};
+
+function ctLoad() {
+  try {
+    const raw = localStorage.getItem(CT_STORAGE);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (e) { return null; }
+}
+function ctSave() {
+  try {
+    localStorage.setItem(CT_STORAGE, JSON.stringify({
+      party: ctState.party,
+      currency: ctState.currency,
+      items: ctState.items,
+    }));
+  } catch (e) {}
+}
+function ctDefaultItems() {
+  return CT_DEFAULT_ITEMS.map(i => ({ ...i, on: true }));
+}
+function ctReset() {
+  ctState.party = { students: 14, admins: 2, guests: 0 };
+  ctState.currency = 'EUR';
+  ctState.filter = 'all';
+  ctState.items = ctDefaultItems();
+  ctSave();
+}
+function ctInit() {
+  const saved = ctLoad();
+  if (saved && Array.isArray(saved.items)) {
+    ctState.party = saved.party || ctState.party;
+    ctState.currency = saved.currency || ctState.currency;
+    ctState.items = saved.items.map(i => ({ on: true, ...i }));
+  } else {
+    ctState.items = ctDefaultItems();
+  }
+  document.getElementById('ct-students').value = ctState.party.students;
+  document.getElementById('ct-admins').value = ctState.party.admins;
+  document.getElementById('ct-guests').value = ctState.party.guests;
+  ctRenderFilters();
+  ctRenderRows();
+  ctUpdateCurrencyButtons();
+}
+function ctPartySize() {
+  return (ctState.party.students || 0) + (ctState.party.admins || 0) + (ctState.party.guests || 0);
+}
+function ctFmt(amountEUR) {
+  const rate = ctState.currency === 'USD' ? CT_EUR_TO_USD : 1;
+  const v = amountEUR * rate;
+  const sym = ctState.currency === 'USD' ? '$' : '€';
+  return sym + v.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+function ctRowTotal(item) {
+  return (item.fixed || 0) + (item.per || 0) * ctPartySize();
+}
+function ctRowEffective(item) {
+  return item.on === false ? 0 : ctRowTotal(item);
+}
+function ctVisibleItems() {
+  if (ctState.filter === 'all') return ctState.items.map((it, idx) => ({ ...it, idx }));
+  return ctState.items
+    .map((it, idx) => ({ ...it, idx }))
+    .filter(it => it.cat === ctState.filter);
+}
+function ctRenderFilters() {
+  const host = document.getElementById('ct-filters');
+  const counts = {};
+  ctState.items.forEach(it => { counts[it.cat] = (counts[it.cat] || 0) + 1; });
+  counts.all = ctState.items.length;
+  host.innerHTML = CT_CATEGORIES.map(c =>
+    '<button class="cf-chip' + (ctState.filter === c.key ? ' active' : '') +
+    '" data-cat="' + c.key + '">' + c.label +
+    '<span class="ct-count">' + (counts[c.key] || 0) + '</span></button>'
+  ).join('');
+  host.querySelectorAll('.cf-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      ctState.filter = btn.dataset.cat;
+      ctRenderFilters();
+      ctRenderRows();
+    });
+  });
+}
+function ctRenderRows() {
+  const tbody = document.getElementById('ct-rows');
+  const items = ctVisibleItems();
+  tbody.innerHTML = items.map(it => {
+    const total = ctRowTotal(it);
+    const rowClass = it.on === false ? ' class="excluded"' : '';
+    return '<tr' + rowClass + ' data-idx="' + it.idx + '">' +
+      '<td class="center"><input type="checkbox" class="ct-include" data-field="on"' + (it.on === false ? '' : ' checked') + ' title="Include in grand total"></td>' +
+      '<td><input class="ct-cell date" type="date" data-field="date" value="' + ctEsc(it.date || '') + '"></td>' +
+      '<td><input class="ct-cell" type="text" data-field="event" value="' + ctEsc(it.event) + '"></td>' +
+      '<td>' +
+        '<select class="ct-cell" data-field="cat">' +
+          CT_CATEGORIES.filter(c => c.key !== 'all').map(c =>
+            '<option value="' + c.key + '"' + (it.cat === c.key ? ' selected' : '') + '>' + c.label + '</option>'
+          ).join('') +
+        '</select>' +
+      '</td>' +
+      '<td class="num"><input class="ct-cell num" type="number" min="0" step="any" data-field="fixed" value="' + (it.fixed || 0) + '"></td>' +
+      '<td class="num"><input class="ct-cell num" type="number" min="0" step="any" data-field="per" value="' + (it.per || 0) + '"></td>' +
+      '<td class="num total">' + ctFmt(total) + '</td>' +
+      '<td><input class="ct-cell" type="text" data-field="notes" value="' + ctEsc(it.notes || '') + '"></td>' +
+      '<td><button class="ct-del" title="Delete row" data-action="del">×</button></td>' +
+    '</tr>';
+  }).join('');
+  tbody.querySelectorAll('input.ct-cell, select.ct-cell, input.ct-include').forEach(el => {
+    el.addEventListener('input', ctOnCellEdit);
+    el.addEventListener('change', ctOnCellEdit);
+  });
+  tbody.querySelectorAll('button[data-action="del"]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      const idx = parseInt(e.target.closest('tr').dataset.idx, 10);
+      if (!isNaN(idx)) {
+        ctState.items.splice(idx, 1);
+        ctSave();
+        ctRenderFilters();
+        ctRenderRows();
+      }
+    });
+  });
+  ctRenderTotals();
+}
+function ctOnCellEdit(e) {
+  const row = e.target.closest('tr');
+  const idx = parseInt(row.dataset.idx, 10);
+  const field = e.target.dataset.field;
+  let v;
+  if (field === 'on') v = e.target.checked;
+  else if (field === 'fixed' || field === 'per') v = parseFloat(e.target.value) || 0;
+  else v = e.target.value;
+  ctState.items[idx][field] = v;
+  ctSave();
+  if (field === 'fixed' || field === 'per') {
+    row.querySelector('td.total').textContent = ctFmt(ctRowTotal(ctState.items[idx]));
+    ctRenderTotals();
+  }
+  if (field === 'on') {
+    row.classList.toggle('excluded', v === false);
+    ctRenderTotals();
+  }
+  if (field === 'cat') {
+    ctRenderFilters();
+    if (ctState.filter !== 'all' && v !== ctState.filter) ctRenderRows();
+  }
+}
+function ctRenderTotals() {
+  const grand = ctState.items.reduce((s, it) => s + ctRowEffective(it), 0);
+  const activeCount = ctState.items.filter(it => it.on !== false).length;
+  document.getElementById('ct-grand').textContent = ctFmt(grand);
+  document.getElementById('ct-grand-foot').textContent = ctFmt(grand);
+  document.getElementById('ct-active-count').textContent = activeCount + '/' + ctState.items.length;
+  document.getElementById('ct-party-count').textContent = ctPartySize();
+}
+function ctEsc(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+function ctUpdateCurrencyButtons() {
+  document.querySelectorAll('.ct-currency button').forEach(b => {
+    b.classList.toggle('active', b.dataset.cur === ctState.currency);
+  });
+}
+function ctExportCSV() {
+  const header = ['Include', 'Date', 'Event', 'Category', 'Fixed (EUR)', 'Per-person (EUR)', 'Total (' + ctState.currency + ')', 'Notes'];
+  const rows = ctState.items.map(it => [
+    it.on === false ? 'no' : 'yes',
+    it.date, it.event, it.cat, it.fixed || 0, it.per || 0,
+    (ctRowEffective(it) * (ctState.currency === 'USD' ? CT_EUR_TO_USD : 1)).toFixed(2),
+    it.notes || ''
+  ]);
+  rows.push([]);
+  const grand = ctState.items.reduce((s, it) => s + ctRowEffective(it), 0);
+  rows.push(['', '', 'Party: ' + ctPartySize(), '', '', '', 'Grand total: ' + ctFmt(grand), '']);
+  const csv = [header, ...rows].map(r =>
+    r.map(c => {
+      const s = String(c == null ? '' : c);
+      return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    }).join(',')
+  ).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'doc-italy-2027-costs.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+function ctWireControls() {
+  const partyInputs = [
+    ['ct-students', 'students'],
+    ['ct-admins', 'admins'],
+    ['ct-guests', 'guests'],
+  ];
+  partyInputs.forEach(([id, key]) => {
+    document.getElementById(id).addEventListener('input', e => {
+      const v = parseInt(e.target.value, 10);
+      ctState.party[key] = isNaN(v) ? 0 : Math.max(0, v);
+      ctSave();
+      document.querySelectorAll('#ct-rows tr').forEach(tr => {
+        const idx = parseInt(tr.dataset.idx, 10);
+        if (!isNaN(idx) && ctState.items[idx]) {
+          tr.querySelector('td.total').textContent = ctFmt(ctRowTotal(ctState.items[idx]));
+        }
+      });
+      ctRenderTotals();
+    });
+  });
+  document.querySelectorAll('.ct-currency button').forEach(b => {
+    b.addEventListener('click', () => {
+      ctState.currency = b.dataset.cur;
+      ctSave();
+      ctUpdateCurrencyButtons();
+      ctRenderRows();
+    });
+  });
+  document.getElementById('ct-add-row').addEventListener('click', () => {
+    ctState.items.push({ on: true, date: '2027-06-01', event: 'New line item', cat: 'other', fixed: 0, per: 0, notes: '' });
+    ctSave();
+    ctRenderFilters();
+    ctRenderRows();
+  });
+  document.getElementById('ct-reset').addEventListener('click', () => {
+    if (confirm('Reset all costs to defaults? This clears your edits.')) {
+      ctReset();
+      document.getElementById('ct-students').value = ctState.party.students;
+      document.getElementById('ct-admins').value = ctState.party.admins;
+      document.getElementById('ct-guests').value = ctState.party.guests;
+      ctUpdateCurrencyButtons();
+      ctRenderFilters();
+      ctRenderRows();
+    }
+  });
+  document.getElementById('ct-export').addEventListener('click', ctExportCSV);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  ctInit();
+  ctWireControls();
+});
+</script>
+</body>
+</html>
