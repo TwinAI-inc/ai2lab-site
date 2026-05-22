@@ -312,6 +312,7 @@
   <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></symbol>
   <symbol id="i-video" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="14" height="12" rx="2"/><polyline points="17 10 21 7 21 17 17 14"/></symbol>
   <symbol id="i-arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></symbol>
+  <symbol id="i-sparkle" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8z"/><path d="M19 16l.7 2.3L22 19l-2.3.7L19 22l-.7-2.3L16 19l2.3-.7z" opacity="0.6"/></symbol>
 </svg>
 
 <div class="app">
@@ -386,7 +387,8 @@
         { type: 'Lab', icon: 'flask', title: 'Planning Horizon <em>Lab</em>', desc: 'Six methods to set the analysis horizon (LCM, longest, shortest, standard, organizational, infinite) — each on a flippable card with its assumption + formula. Try them all live on Example 4.1 (three machines, different lives) and watch the verdict shift.', url: 'm4-planning-horizon.html', time: '~25 min', color: 'olive' },
         { type: 'Builder', icon: 'sliders', title: 'WACC <em>Builder</em>', desc: 'Build your firm\'s cost of capital from 5 sources (loan + bond + preferred + common + retained earnings) with a CAPM helper. Live WACC + donut/stacked/contribution chart toggle. Accept/Reject verdict for any project IRR plus a "quick test" against 5 sample projects.', url: 'm4-wacc-builder.html', time: '~15 min', color: 'blue' },
         { type: 'Quest', icon: 'trophy', title: 'Present Worth <em>Quest</em>', desc: 'Five-stage Duolingo-style learning game with XP, badges, and live charts.', url: 'm4-pw-quest.html', time: '~20 min', color: 'blue' },
-        { type: 'Simulator', icon: 'chart', title: 'PW Decision <em>Simulator</em>', desc: 'Three projects, slide the MARR, pick the winner. Three rounds.', url: 'm4-pw-sim.html', time: '~12 min', color: 'gold' }
+        { type: 'Simulator', icon: 'chart', title: 'PW Decision <em>Simulator</em>', desc: 'Three projects, slide the MARR, pick the winner. Three rounds.', url: 'm4-pw-sim.html', time: '~12 min', color: 'gold' },
+        { type: 'Prompt Lab', icon: 'sparkle', title: 'Build Your Own <em>WACC Tool</em>', desc: 'Five prompts, five copy and paste steps, one tool that nobody else has. Students answer 2 to 3 multiple choice questions per step (name, color, font, source count, formula visibility, tax shield, chart type, voice, export) and the page writes a Claude prompt tuned to those choices. By the end, every student walks away with their own working <code>my-wacc.html</code> built through structured prompt engineering.', url: 'm4-build-your-own-wacc.html', time: '~45 min', color: 'crimson' }
       ]
     },
     { n: 5, short: 'FW, DPBP & CC', name: 'Future Worth, Discounted Payback &amp; Capitalized Cost', release: 'Week 3',

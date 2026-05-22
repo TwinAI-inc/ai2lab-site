@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Module 4 · Build Your Own WACC Tool · Prompt Engineering Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;600;700&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf9f5; --paper: #ffffff; --ink: #1a1a1a; --muted: #5a5247; --soft: #8b7355;
+    --border: #e8e3d4; --line: #d4cfc0;
+    --blue: #1947d6; --blue-deep: #0d2e9e; --blue-soft: #eef2ff;
+    --gold: #b8860b; --gold-deep: #8a6608; --gold-soft: #faf3e0;
+    --olive: #5c7a4a; --olive-deep: #455d36; --olive-soft: #f0f4ea;
+    --crimson: #8a2828; --crimson-soft: #fdf2f3;
+    --purple: #7c3aed; --purple-soft: #f3eeff;
+    --teal: #0e7c80; --teal-soft: #e6f4f4;
+    --code-bg: #1a1f2e; --code-ink: #e8e3d4;
+  }
+  html, body { min-height: 100%; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: 'Outfit', -apple-system, system-ui, sans-serif; font-size: 13px; line-height: 1.5;
+  }
+  .app { max-width: 1280px; margin: 0 auto; padding: 14px 22px 60px; }
+
+  /* HEAD */
+  .head {
+    display: flex; justify-content: space-between; align-items: center; gap: 14px;
+    padding: 9px 16px; background: var(--paper); border: 1px solid var(--border);
+    border-radius: 10px; border-top: 3px solid var(--blue); flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .brand .code { font-size: 10px; color: var(--blue); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; }
+  .brand h1 { font-family: 'Lora', Georgia, serif; font-size: 19px; font-weight: 700; line-height: 1; }
+  .brand h1 em { font-style: italic; color: var(--blue); font-weight: 400; }
+  .brand .tag { font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted); }
+  .head .nav { display: flex; gap: 6px; }
+  .head .nav a {
+    font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft); text-decoration: none; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px;
+    transition: all 0.15s; background: var(--paper); font-family: 'Outfit', sans-serif;
+  }
+  .head .nav a:hover { color: var(--blue); border-color: var(--blue); background: var(--blue-soft); }
+
+  /* TITLE strip */
+  .title-strip {
+    padding: 14px 4px 12px;
+    border-bottom: 1px solid var(--border); margin-bottom: 18px;
+    display: flex; justify-content: space-between; align-items: flex-end; gap: 14px; flex-wrap: wrap;
+  }
+  .title-strip h2 { font-family: 'Lora', serif; font-size: 24px; font-weight: 700; line-height: 1.2; }
+  .title-strip h2 em { font-style: italic; color: var(--blue); }
+  .title-strip .sub {
+    font-family: 'Lora', serif; font-style: italic; font-size: 13px; color: var(--muted); margin-top: 3px; max-width: 720px;
+  }
+
+  /* TIMELINE — 5 nodes across the top */
+  .timeline-wrap {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
+    padding: 18px 26px 16px; margin-bottom: 22px;
+    overflow-x: auto;
+  }
+  .timeline {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    position: relative; min-width: 720px;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 10%; right: 10%;
+    top: 18px;
+    transform: translateY(-50%);
+    height: 1.5px;
+    background-image: repeating-linear-gradient(90deg,
+      rgba(26,26,46,0.18) 0 5px, transparent 5px 10px);
+    z-index: 0;
+  }
+  .tl-node {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    cursor: pointer; padding: 0 4px;
+    text-decoration: none; color: var(--text);
+    transition: transform 0.18s ease;
+  }
+  .tl-node:hover { transform: translateY(-2px); }
+  .tl-dot {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--paper);
+    border: 2px solid var(--border);
+    color: var(--soft);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700;
+    box-shadow: 0 0 0 4px var(--bg);
+    transition: all 0.18s ease;
+  }
+  .tl-node.active .tl-dot {
+    background: var(--blue); color: #fff; border-color: var(--blue);
+    transform: scale(1.08);
+    box-shadow: 0 0 0 4px var(--bg), 0 4px 14px rgba(25,71,214,0.32);
+  }
+  .tl-node.done .tl-dot {
+    background: var(--olive); color: #fff; border-color: var(--olive);
+  }
+  .tl-node.done .tl-dot::before {
+    content: '✓'; font-size: 16px; font-family: 'Outfit', sans-serif;
+  }
+  .tl-node.done .tl-dot .n { display: none; }
+  .tl-label {
+    font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: 0.04em;
+    text-align: center; line-height: 1.25; max-width: 120px;
+  }
+  .tl-node.active .tl-label { color: var(--blue); }
+  .tl-node.done .tl-label { color: var(--olive); }
+  .tl-sub {
+    font-size: 9.5px; color: var(--soft); letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700;
+    margin-top: -2px;
+  }
+
+  /* STEP container — only one visible */
+  .stage { display: flex; flex-direction: column; gap: 18px; }
+  .step { display: none; }
+  .step.active { display: flex; flex-direction: column; gap: 16px; }
+
+  .step-card {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 14px;
+    padding: 16px 18px 18px; box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+    border-top: 3px solid var(--blue);
+  }
+  .step.s2 .step-card { border-top-color: var(--gold); }
+  .step.s3 .step-card { border-top-color: var(--olive); }
+  .step.s4 .step-card { border-top-color: var(--purple); }
+  .step.s5 .step-card { border-top-color: var(--crimson); }
+
+  .step-head {
+    display: flex; align-items: baseline; gap: 11px; padding-bottom: 9px;
+    border-bottom: 1px solid var(--border); margin-bottom: 14px; flex-wrap: wrap;
+  }
+  .step-head .num {
+    font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 700; color: var(--blue);
+    letter-spacing: -0.02em; line-height: 1;
+  }
+  .step.s2 .step-head .num { color: var(--gold-deep); }
+  .step.s3 .step-head .num { color: var(--olive-deep); }
+  .step.s4 .step-head .num { color: var(--purple); }
+  .step.s5 .step-head .num { color: var(--crimson); }
+
+  .step-head h3 { font-family: 'Lora', serif; font-size: 17px; font-weight: 700; line-height: 1.2; }
+  .step-head h3 em { font-style: italic; color: var(--blue); }
+  .step.s2 .step-head h3 em { color: var(--gold-deep); }
+  .step.s3 .step-head h3 em { color: var(--olive-deep); }
+  .step.s4 .step-head h3 em { color: var(--purple); }
+  .step.s5 .step-head h3 em { color: var(--crimson); }
+
+  .step-head .lede {
+    flex: 1 1 100%;
+    font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted); line-height: 1.45;
+    margin-top: 1px;
+  }
+
+  /* QUESTION block — each question sits in its own framed box */
+  .q {
+    margin-bottom: 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--blue);
+    border-radius: 8px;
+    padding: 10px 12px 11px;
+  }
+  .q:last-child { margin-bottom: 0; }
+  .step.s2 .q { border-left-color: var(--gold); }
+  .step.s3 .q { border-left-color: var(--olive); }
+  .step.s4 .q { border-left-color: var(--purple); }
+  .step.s5 .q { border-left-color: var(--crimson); }
+  .q-head {
+    display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;
+  }
+  .q-num {
+    font-size: 8.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+    color: #fff; background: var(--blue);
+    padding: 3px 8px; border-radius: 999px;
+    flex-shrink: 0;
+  }
+  .step.s2 .q-num { background: var(--gold); }
+  .step.s3 .q-num { background: var(--olive); }
+  .step.s4 .q-num { background: var(--purple); }
+  .step.s5 .q-num { background: var(--crimson); }
+  .q-text {
+    font-family: 'Lora', serif; font-size: 14px; font-weight: 700; color: var(--ink); line-height: 1.3;
+  }
+  .q-hint {
+    flex: 1 1 100%;
+    font-size: 11px; color: var(--muted); margin-top: 2px; font-style: italic;
+    font-family: 'Lora', serif;
+  }
+
+  .q-opts {
+    display: grid; gap: 7px;
+  }
+  .q-opts.cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .q-opts.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .q-opts.cols-4 { grid-template-columns: repeat(4, 1fr); }
+  @media (max-width: 920px) {
+    .q-opts.cols-3, .q-opts.cols-4 { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 560px) {
+    .q-opts.cols-2, .q-opts.cols-3, .q-opts.cols-4 { grid-template-columns: 1fr; }
+  }
+
+  .opt {
+    position: relative; cursor: pointer;
+    background: var(--paper); border: 1.5px solid var(--border); border-radius: 8px;
+    padding: 6px 8px 7px;
+    display: flex; flex-direction: column; gap: 5px;
+    transition: all 0.15s ease;
+  }
+  .opt:hover { border-color: var(--blue); background: var(--blue-soft); transform: translateY(-1px); }
+  .opt input[type="radio"] { position: absolute; opacity: 0; pointer-events: none; }
+  .opt.checked {
+    border-color: var(--blue); background: var(--blue-soft);
+    box-shadow: 0 0 0 3px rgba(25,71,214,0.12);
+  }
+  .step.s2 .opt:hover { border-color: var(--gold); background: var(--gold-soft); }
+  .step.s2 .opt.checked { border-color: var(--gold); background: var(--gold-soft); box-shadow: 0 0 0 3px rgba(184,134,11,0.18); }
+  .step.s3 .opt:hover { border-color: var(--olive); background: var(--olive-soft); }
+  .step.s3 .opt.checked { border-color: var(--olive); background: var(--olive-soft); box-shadow: 0 0 0 3px rgba(92,122,74,0.16); }
+  .step.s4 .opt:hover { border-color: var(--purple); background: var(--purple-soft); }
+  .step.s4 .opt.checked { border-color: var(--purple); background: var(--purple-soft); box-shadow: 0 0 0 3px rgba(124,58,237,0.16); }
+  .step.s5 .opt:hover { border-color: var(--crimson); background: var(--crimson-soft); }
+  .step.s5 .opt.checked { border-color: var(--crimson); background: var(--crimson-soft); box-shadow: 0 0 0 3px rgba(138,40,40,0.16); }
+
+  .opt .preview {
+    height: 48px;
+    background: #fff; border: 1px solid var(--border); border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; position: relative;
+  }
+  .opt .meta { display: flex; flex-direction: column; gap: 0; }
+  .opt .meta .name { font-size: 11.5px; font-weight: 700; color: var(--ink); line-height: 1.2; }
+  .opt .meta .hint { font-size: 10px; color: var(--muted); line-height: 1.3; }
+  .opt .check-mark {
+    position: absolute; top: 5px; right: 5px;
+    width: 15px; height: 15px; border-radius: 50%;
+    background: var(--blue); color: #fff;
+    display: none; align-items: center; justify-content: center;
+    font-size: 9.5px; font-weight: 700;
+  }
+  .opt.checked .check-mark { display: flex; }
+  .step.s2 .opt.checked .check-mark { background: var(--gold); }
+  .step.s3 .opt.checked .check-mark { background: var(--olive); }
+  .step.s4 .opt.checked .check-mark { background: var(--purple); }
+  .step.s5 .opt.checked .check-mark { background: var(--crimson); }
+
+  /* TEXT INPUT for name */
+  .name-input {
+    width: 100%; max-width: 380px; padding: 8px 12px;
+    border: 1.5px solid var(--border); border-radius: 8px;
+    font-family: 'Lora', serif; font-size: 14px; font-weight: 600; color: var(--ink);
+    background: #fff; outline: none;
+    transition: all 0.15s;
+  }
+  .name-input:focus { border-color: var(--blue); background: var(--blue-soft); box-shadow: 0 0 0 3px rgba(25,71,214,0.1); }
+
+  /* PREVIEW SPECIFICS — color swatches */
+  .sw-strip { display: flex; height: 100%; width: 100%; }
+  .sw-strip > div { flex: 1; }
+
+  /* PREVIEW — typography sample */
+  .typo-prev {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    width: 100%; height: 100%; padding: 6px;
+  }
+  .typo-prev .big { font-size: 20px; font-weight: 700; line-height: 1; }
+  .typo-prev .small { font-size: 9px; color: var(--muted); margin-top: 2px; letter-spacing: 0.04em; }
+  .typo-editorial .big { font-family: 'Lora', serif; font-style: italic; color: var(--blue); }
+  .typo-editorial .small { font-family: 'Outfit', sans-serif; }
+  .typo-modern .big { font-family: 'Inter', sans-serif; font-weight: 700; }
+  .typo-modern .small { font-family: 'Inter', sans-serif; }
+  .typo-playful .big { font-family: 'Nunito', sans-serif; font-weight: 800; color: var(--gold-deep); }
+  .typo-playful .small { font-family: 'Nunito', sans-serif; }
+  .typo-minimal .big { font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 17px; }
+  .typo-minimal .small { font-family: 'JetBrains Mono', monospace; }
+
+  /* PREVIEW — source count rows */
+  .src-prev {
+    display: flex; flex-direction: column; gap: 3px; width: 90%; padding: 6px;
+  }
+  .src-prev .row {
+    height: 9px; background: var(--bg); border-radius: 3px;
+    border-left: 3px solid var(--blue);
+    display: flex; align-items: center; gap: 4px; padding: 0 4px;
+  }
+  .src-prev .row:nth-child(1) { border-left-color: var(--gold); }
+  .src-prev .row:nth-child(2) { border-left-color: var(--gold-deep); }
+  .src-prev .row:nth-child(3) { border-left-color: var(--olive); }
+  .src-prev .row:nth-child(4) { border-left-color: var(--blue); }
+  .src-prev .row:nth-child(5) { border-left-color: var(--blue-deep); }
+
+  /* PREVIEW — input style mocks */
+  .in-prev { display: flex; flex-direction: column; gap: 5px; width: 80%; padding: 8px; }
+  .in-prev .field {
+    height: 16px; border: 1px solid var(--border); border-radius: 4px;
+    background: #fff; font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; color: var(--ink); padding: 0 6px;
+    display: flex; align-items: center; justify-content: flex-end;
+  }
+  .in-prev .slider {
+    height: 4px; background: var(--border); border-radius: 999px;
+    position: relative;
+  }
+  .in-prev .slider::after {
+    content: ''; position: absolute; left: 60%; top: -3px;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--blue);
+  }
+  .in-prev .pair { display: flex; gap: 4px; align-items: center; }
+  .in-prev .pair > * { flex: 1; }
+
+  /* PREVIEW — formula text */
+  .formula-prev {
+    width: 100%; height: 100%; padding: 6px 10px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+  }
+  .formula-prev .big-num { font-family: 'Lora', serif; font-size: 22px; font-weight: 700; color: var(--olive-deep); font-style: italic; }
+  .formula-prev .math {
+    font-family: 'JetBrains Mono', monospace; font-size: 8.5px; color: var(--muted); line-height: 1.3;
+    margin-top: 2px;
+  }
+  .formula-prev .btn-mock {
+    font-size: 9px; padding: 2px 6px; border: 1px solid var(--olive);
+    color: var(--olive); border-radius: 3px; margin-top: 4px;
+    background: var(--olive-soft);
+  }
+
+  /* PREVIEW — tax shield */
+  .tax-prev { width: 90%; padding: 8px; display: flex; flex-direction: column; gap: 5px; align-items: center; }
+  .tax-prev .tax-pill {
+    background: var(--crimson-soft); border: 1px solid var(--crimson);
+    color: var(--crimson); padding: 3px 10px; border-radius: 999px;
+    font-size: 9.5px; font-weight: 700; letter-spacing: 0.08em;
+  }
+  .tax-prev .check-row {
+    display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--ink);
+  }
+  .tax-prev .check-box { width: 11px; height: 11px; border: 1.5px solid var(--olive); border-radius: 2px; background: var(--olive); position: relative; }
+  .tax-prev .check-box::after { content: '✓'; color: #fff; font-size: 8px; position: absolute; top: -1px; left: 1.5px; }
+  .tax-prev .skip { font-family: 'JetBrains Mono', monospace; font-size: 18px; color: var(--soft); opacity: 0.4; letter-spacing: 0.15em; }
+
+  /* PREVIEW — validation */
+  .val-prev { width: 90%; padding: 6px; display: flex; flex-direction: column; gap: 4px; align-items: center; }
+  .val-prev .banner {
+    width: 100%; padding: 4px 8px; background: var(--crimson-soft);
+    border: 1px solid var(--crimson); color: var(--crimson); border-radius: 4px;
+    font-size: 9.5px; font-weight: 700; text-align: center;
+  }
+  .val-prev .normal {
+    font-size: 9.5px; color: var(--olive-deep); font-style: italic; padding: 3px 8px;
+    background: var(--olive-soft); border-radius: 4px; text-align: center;
+  }
+  .val-prev .dash {
+    font-family: 'Lora', serif; font-size: 30px; color: var(--soft); font-weight: 700; opacity: 0.5;
+  }
+
+  /* PREVIEW — chart */
+  .chart-prev { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 6px; }
+  .chart-prev svg { max-height: 100%; }
+
+  /* PREVIEW — highlight */
+  .hi-prev { width: 90%; padding: 4px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .hi-prev .badges { display: flex; gap: 4px; }
+  .hi-prev .badge {
+    font-size: 8.5px; padding: 2px 6px; border-radius: 999px; font-weight: 700; letter-spacing: 0.04em;
+  }
+  .hi-prev .badge.lo { background: var(--olive-soft); color: var(--olive-deep); border: 1px solid var(--olive); }
+  .hi-prev .badge.hi { background: var(--crimson-soft); color: var(--crimson); border: 1px solid var(--crimson); }
+
+  /* PREVIEW — motion */
+  .motion-prev { width: 90%; height: 100%; display: flex; align-items: center; justify-content: center; }
+  .motion-prev .bar-anim {
+    width: 80%; height: 10px; border-radius: 999px;
+    background: linear-gradient(90deg, var(--purple) 60%, var(--border) 60%);
+    background-size: 200% 100%;
+    animation: slide 1.8s ease-in-out infinite;
+  }
+  @keyframes slide {
+    0%, 100% { background-position: 0% 0; }
+    50% { background-position: -50% 0; }
+  }
+  .motion-prev .bar-snap {
+    width: 80%; height: 10px; border-radius: 999px;
+    background: linear-gradient(90deg, var(--purple) 60%, var(--border) 60%);
+  }
+
+  /* PREVIEW — voice */
+  .voice-prev {
+    width: 100%; height: 100%; padding: 7px 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10.5px; line-height: 1.35; text-align: center;
+  }
+  .voice-professor { font-family: 'Lora', serif; color: var(--ink); }
+  .voice-coach { font-family: 'Outfit', sans-serif; font-weight: 600; color: var(--olive-deep); }
+  .voice-witty { font-family: 'Lora', serif; font-style: italic; color: var(--crimson); }
+  .voice-plain { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--ink); }
+
+  /* PREVIEW — closing feature */
+  .close-prev { width: 100%; height: 100%; padding: 6px; display: flex; align-items: center; justify-content: center; }
+  .close-prev .companies { display: flex; gap: 4px; }
+  .close-prev .co {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 5px;
+    padding: 3px 6px; text-align: center;
+  }
+  .close-prev .co .nm { font-size: 8px; font-weight: 700; color: var(--ink); }
+  .close-prev .co .val { font-size: 11px; font-weight: 700; color: var(--crimson); font-family: 'JetBrains Mono', monospace; }
+  .close-prev .quiz { display: flex; flex-direction: column; gap: 3px; width: 85%; }
+  .close-prev .quiz-q { font-size: 8.5px; color: var(--muted); }
+  .close-prev .quiz-opts { display: flex; gap: 3px; }
+  .close-prev .quiz-opt { flex: 1; background: var(--bg); border: 1px solid var(--border); height: 6px; border-radius: 2px; }
+  .close-prev .quiz-opt.right { background: var(--olive); border-color: var(--olive); }
+  .close-prev .foot {
+    font-family: 'Lora', serif; font-style: italic; font-size: 10px; color: var(--muted);
+    border-top: 1px solid var(--border); padding-top: 4px; width: 70%; text-align: center;
+  }
+
+  /* PREVIEW — export */
+  .ex-prev {
+    width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+  }
+  .ex-prev .btn {
+    background: var(--crimson); color: #fff; padding: 5px 12px; border-radius: 5px;
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .ex-prev .btn.text { background: var(--blue); }
+  .ex-prev .nothing { color: var(--soft); font-style: italic; font-size: 11px; }
+
+  /* PROMPT panel */
+  .prompt-area {
+    margin-top: 4px;
+    background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px 16px;
+  }
+  .prompt-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    margin-bottom: 8px; flex-wrap: wrap;
+  }
+  .prompt-head .lbl {
+    font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; color: var(--soft);
+  }
+  .prompt-head .lbl b { color: var(--blue); font-size: 12px; }
+  .step.s2 .prompt-head .lbl b { color: var(--gold-deep); }
+  .step.s3 .prompt-head .lbl b { color: var(--olive-deep); }
+  .step.s4 .prompt-head .lbl b { color: var(--purple); }
+  .step.s5 .prompt-head .lbl b { color: var(--crimson); }
+
+  .copy-btn {
+    font-family: 'Outfit', sans-serif; font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700;
+    padding: 8px 16px; border: 1px solid var(--blue); background: var(--blue); color: #fff; border-radius: 6px;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .copy-btn:hover { background: var(--blue-deep); border-color: var(--blue-deep); }
+  .copy-btn.copied { background: var(--olive); border-color: var(--olive); }
+  .step.s2 .copy-btn { background: var(--gold); border-color: var(--gold); }
+  .step.s3 .copy-btn { background: var(--olive); border-color: var(--olive); }
+  .step.s4 .copy-btn { background: var(--purple); border-color: var(--purple); }
+  .step.s5 .copy-btn { background: var(--crimson); border-color: var(--crimson); }
+
+  .prompt-box {
+    width: 100%;
+    min-height: 220px; max-height: 380px;
+    background: var(--code-bg); color: var(--code-ink); border: 1px solid var(--code-bg); border-radius: 8px;
+    padding: 12px 14px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11.5px; line-height: 1.55;
+    white-space: pre-wrap; word-wrap: break-word;
+    overflow-y: auto; resize: vertical; user-select: text;
+  }
+  .prompt-box::-webkit-scrollbar { width: 8px; }
+  .prompt-box::-webkit-scrollbar-thumb { background: #334155; border-radius: 999px; }
+  .prompt-box::-webkit-scrollbar-track { background: transparent; }
+
+  .step-tip {
+    display: flex; align-items: flex-start; gap: 8px;
+    margin-top: 12px; padding: 9px 12px;
+    background: var(--blue-soft); border: 1px solid #c8d5fe; border-radius: 8px;
+    font-size: 12px; color: var(--blue-deep); line-height: 1.5;
+  }
+  .step.s2 .step-tip { background: var(--gold-soft); border-color: #ead9a3; color: var(--gold-deep); }
+  .step.s3 .step-tip { background: var(--olive-soft); border-color: #cbd9bb; color: var(--olive-deep); }
+  .step.s4 .step-tip { background: var(--purple-soft); border-color: #d8cbf5; color: var(--purple); }
+  .step.s5 .step-tip { background: var(--crimson-soft); border-color: #f0d2d4; color: var(--crimson); }
+  .step-tip .ico {
+    font-family: 'Lora', serif; font-style: italic; font-weight: 700;
+    flex-shrink: 0; width: 16px; height: 16px; line-height: 16px; text-align: center;
+    border-radius: 50%; background: rgba(255,255,255,0.5); font-size: 11px;
+    margin-top: 1px;
+  }
+
+  /* NAV row */
+  .step-nav {
+    display: flex; justify-content: space-between; align-items: center; gap: 14px;
+    margin-top: 6px; flex-wrap: wrap;
+  }
+  .nav-btn {
+    font-family: 'Outfit', sans-serif; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700;
+    padding: 10px 18px; border-radius: 8px; cursor: pointer;
+    background: var(--paper); color: var(--ink); border: 1.5px solid var(--border);
+    transition: all 0.15s;
+  }
+  .nav-btn:hover:not(:disabled) { border-color: var(--blue); color: var(--blue); background: var(--blue-soft); }
+  .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .nav-btn.primary {
+    background: var(--blue); color: #fff; border-color: var(--blue);
+  }
+  .nav-btn.primary:hover:not(:disabled) { background: var(--blue-deep); border-color: var(--blue-deep); color: #fff; }
+  .step.s2 .nav-btn.primary { background: var(--gold); border-color: var(--gold); }
+  .step.s3 .nav-btn.primary { background: var(--olive); border-color: var(--olive); }
+  .step.s4 .nav-btn.primary { background: var(--purple); border-color: var(--purple); }
+  .step.s5 .nav-btn.primary { background: var(--crimson); border-color: var(--crimson); }
+  .nav-progress {
+    font-family: 'Outfit', sans-serif; font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    color: var(--muted);
+  }
+  .nav-progress b { color: var(--blue); font-size: 13px; }
+
+  /* FINISH card */
+  .finish {
+    display: none;
+    margin-top: 24px; padding: 24px 26px 22px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #2a2a4a 100%);
+    border-radius: 14px; color: #faf9f5;
+    grid-template-columns: 1fr auto; gap: 24px; align-items: center;
+  }
+  .finish.show { display: grid; }
+  @media (max-width: 720px) { .finish.show { grid-template-columns: 1fr; } }
+  .finish .kicker {
+    font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700; color: #b8860b; margin-bottom: 4px;
+  }
+  .finish h3 { font-family: 'Lora', serif; font-size: 22px; font-weight: 700; line-height: 1.2; margin-bottom: 8px; }
+  .finish h3 em { font-style: italic; color: #6ea8fe; }
+  .finish p { font-size: 13px; color: #d4cfc0; line-height: 1.55; max-width: 620px; }
+  .finish p b { color: #fff; font-weight: 600; }
+  .finish .check {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px;
+    padding: 14px 18px; min-width: 240px;
+  }
+  .finish .check ul { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+  .finish .check li { font-size: 12px; color: #d4cfc0; display: flex; gap: 7px; align-items: flex-start; }
+  .finish .check li::before { content: '✓'; color: #5c7a4a; font-weight: 700; flex-shrink: 0; }
+
+  /* footer */
+  .foot {
+    text-align: center; margin-top: 28px; padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted);
+  }
+
+  /* toast */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--olive); color: #fff;
+    padding: 9px 18px; border-radius: 999px;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.06em;
+    box-shadow: 0 6px 22px rgba(0,0,0,0.18);
+    opacity: 0; pointer-events: none;
+    transition: all 0.28s ease;
+    z-index: 1000;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- HEAD -->
+  <header class="head">
+    <div class="brand">
+      <span class="code">IE 4512 · Module 4</span>
+      <h1>Build Your Own <em>WACC Tool</em></h1>
+      <span class="tag">a prompt engineering lab</span>
+    </div>
+    <nav class="nav">
+      <a href="index.html">All Modules</a>
+      <a href="m4-wacc-builder.html">Reference Tool</a>
+    </nav>
+  </header>
+
+  <!-- TITLE -->
+  <div class="title-strip">
+    <div>
+      <h2>Five prompts, <em>one tool</em>, your name on it.</h2>
+      <div class="sub">
+        Walk through each step. Pick the choices that match the tool you want. The prompt at the bottom updates live.
+        Copy it, paste into <b>claude.ai</b>, save Claude's reply as <code>my-wacc.html</code>, then come back for the next step.
+      </div>
+    </div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="timeline-wrap">
+    <div class="timeline" id="timeline">
+      <a class="tl-node" data-go="1"><div class="tl-dot"><span class="n">1</span></div><div class="tl-sub">Step 1</div><div class="tl-label">Scaffold &amp; personalize</div></a>
+      <a class="tl-node" data-go="2"><div class="tl-dot"><span class="n">2</span></div><div class="tl-sub">Step 2</div><div class="tl-label">Capital sources</div></a>
+      <a class="tl-node" data-go="3"><div class="tl-dot"><span class="n">3</span></div><div class="tl-sub">Step 3</div><div class="tl-label">WACC math &amp; tax shield</div></a>
+      <a class="tl-node" data-go="4"><div class="tl-dot"><span class="n">4</span></div><div class="tl-sub">Step 4</div><div class="tl-label">Visualize the mix</div></a>
+      <a class="tl-node" data-go="5"><div class="tl-dot"><span class="n">5</span></div><div class="tl-sub">Step 5</div><div class="tl-label">Story wrap</div></a>
+    </div>
+  </div>
+
+  <!-- STAGE -->
+  <div class="stage" id="stage">
+
+    <!-- STEP 1 -->
+    <section class="step s1" data-step="1">
+      <div class="step-card">
+        <div class="step-head">
+          <div class="num">01</div>
+          <h3>Scaffold &amp; <em>personalize</em></h3>
+          <div class="lede">Give Claude a single page shell with your name on it, your color palette, and your typography mood. Everything else gets built on top of this.</div>
+        </div>
+
+        <!-- Q1: Name -->
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q1 of 3</span>
+            <div class="q-text">What is your first name?</div>
+            <div class="q-hint">Goes in the page header and the footer.</div>
+          </div>
+          <input type="text" class="name-input" id="s1q1" placeholder="e.g., Mohammad" maxlength="40" />
+        </div>
+
+        <!-- Q2: Color theme -->
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q2 of 3</span>
+            <div class="q-text">Pick your color theme.</div>
+            <div class="q-hint">Each swatch row is the palette your tool will actually use.</div>
+          </div>
+          <div class="q-opts cols-4">
+            <label class="opt"><input type="radio" name="s1q2" value="ocean">
+              <div class="preview"><div class="sw-strip"><div style="background:#1947d6"></div><div style="background:#4a6fe6"></div><div style="background:#eef2ff"></div><div style="background:#b8860b"></div><div style="background:#ffffff;border-left:1px solid #e8e3d4"></div></div></div>
+              <div class="meta"><div class="name">Ocean blue</div><div class="hint">Calm editorial</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s1q2" value="forest">
+              <div class="preview"><div class="sw-strip"><div style="background:#5c7a4a"></div><div style="background:#7a9866"></div><div style="background:#f0f4ea"></div><div style="background:#8b7355"></div><div style="background:#faf9f5"></div></div></div>
+              <div class="meta"><div class="name">Forest green</div><div class="hint">Quiet natural</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s1q2" value="sunset">
+              <div class="preview"><div class="sw-strip"><div style="background:#d97706"></div><div style="background:#f59e0b"></div><div style="background:#fef3e6"></div><div style="background:#8a2828"></div><div style="background:#fffaf2"></div></div></div>
+              <div class="meta"><div class="name">Sunset orange</div><div class="hint">Warm energetic</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s1q2" value="royal">
+              <div class="preview"><div class="sw-strip"><div style="background:#7c3aed"></div><div style="background:#a78bfa"></div><div style="background:#f3eeff"></div><div style="background:#b8860b"></div><div style="background:#fafafe"></div></div></div>
+              <div class="meta"><div class="name">Royal purple</div><div class="hint">Bold rich</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Q3: Typography -->
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q3 of 3</span>
+            <div class="q-text">Pick the typography mood.</div>
+            <div class="q-hint">Each preview is set in the actual font you will get.</div>
+          </div>
+          <div class="q-opts cols-4">
+            <label class="opt"><input type="radio" name="s1q3" value="editorial">
+              <div class="preview"><div class="typo-prev typo-editorial"><div class="big">WACC</div><div class="small">9.2% · editorial</div></div></div>
+              <div class="meta"><div class="name">Editorial</div><div class="hint">Lora + Outfit</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s1q3" value="modern">
+              <div class="preview"><div class="typo-prev typo-modern"><div class="big">WACC</div><div class="small">9.2% · modern</div></div></div>
+              <div class="meta"><div class="name">Modern</div><div class="hint">Inter clean sans</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s1q3" value="playful">
+              <div class="preview"><div class="typo-prev typo-playful"><div class="big">WACC</div><div class="small">9.2% · playful</div></div></div>
+              <div class="meta"><div class="name">Playful</div><div class="hint">Nunito rounded</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s1q3" value="minimal">
+              <div class="preview"><div class="typo-prev typo-minimal"><div class="big">WACC</div><div class="small">9.2% · minimal</div></div></div>
+              <div class="meta"><div class="name">Minimal</div><div class="hint">JetBrains Mono</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROMPT -->
+      <div class="prompt-area">
+        <div class="prompt-head">
+          <div class="lbl">Prompt <b>1 of 5</b> · paste this into a new claude.ai chat</div>
+          <button class="copy-btn" data-copy="p1">Copy prompt</button>
+        </div>
+        <textarea class="prompt-box" id="p1" readonly></textarea>
+        <div class="step-tip">
+          <span class="ico">i</span>
+          <span>Start a <b>new chat</b> in claude.ai. After Claude replies, save the full code block as <code>my-wacc.html</code> and open it in your browser. You should see a header with your name. Then come back and click <b>Next</b>.</span>
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <button class="nav-btn" data-nav="prev" disabled>← Previous</button>
+        <div class="nav-progress"><b id="progress">0</b> / 5 steps configured</div>
+        <button class="nav-btn primary" data-nav="next">Next step →</button>
+      </div>
+    </section>
+
+    <!-- STEP 2 -->
+    <section class="step s2" data-step="2">
+      <div class="step-card">
+        <div class="step-head">
+          <div class="num">02</div>
+          <h3>Capital sources <em>input panel</em></h3>
+          <div class="lede">Add the heart of the tool: where the user enters each source of capital with its weight and cost.</div>
+        </div>
+
+        <!-- Q1: count -->
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q1 of 3</span>
+            <div class="q-text">How many capital sources should your tool support?</div>
+            <div class="q-hint">Each preview shows the row layout you will get.</div>
+          </div>
+          <div class="q-opts cols-3">
+            <label class="opt"><input type="radio" name="s2q1" value="3">
+              <div class="preview"><div class="src-prev"><div class="row"></div><div class="row"></div><div class="row"></div></div></div>
+              <div class="meta"><div class="name">3 sources</div><div class="hint">Loan · Common · Retained</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s2q1" value="4">
+              <div class="preview"><div class="src-prev"><div class="row"></div><div class="row"></div><div class="row"></div><div class="row"></div></div></div>
+              <div class="meta"><div class="name">4 sources</div><div class="hint">+ Bond</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s2q1" value="5">
+              <div class="preview"><div class="src-prev"><div class="row"></div><div class="row"></div><div class="row"></div><div class="row"></div><div class="row"></div></div></div>
+              <div class="meta"><div class="name">5 sources (full)</div><div class="hint">+ Preferred. Matches textbook.</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Q2: input style -->
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q2 of 3</span>
+            <div class="q-text">How should users enter the numbers?</div>
+          </div>
+          <div class="q-opts cols-3">
+            <label class="opt"><input type="radio" name="s2q2" value="number">
+              <div class="preview"><div class="in-prev"><div class="field">25</div><div class="field">6.0</div></div></div>
+              <div class="meta"><div class="name">Number fields</div><div class="hint">Precise typing</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s2q2" value="slider">
+              <div class="preview"><div class="in-prev"><div class="slider"></div><div class="slider"></div></div></div>
+              <div class="meta"><div class="name">Sliders</div><div class="hint">Fast scanning</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s2q2" value="both">
+              <div class="preview"><div class="in-prev"><div class="pair"><div class="slider"></div><div class="field">25</div></div><div class="pair"><div class="slider"></div><div class="field">6.0</div></div></div></div>
+              <div class="meta"><div class="name">Both side by side</div><div class="hint">Slider + number linked</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Q3: start state -->
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q3 of 3</span>
+            <div class="q-text">Should the tool open empty or pre filled?</div>
+          </div>
+          <div class="q-opts cols-2">
+            <label class="opt"><input type="radio" name="s2q3" value="prefilled">
+              <div class="preview"><div class="in-prev"><div class="field">25</div><div class="field">6.0</div><div class="field">15</div><div class="field">7.0</div></div></div>
+              <div class="meta"><div class="name">Pre filled example</div><div class="hint">Sees working WACC immediately</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s2q3" value="empty">
+              <div class="preview"><div class="in-prev"><div class="field"></div><div class="field"></div><div class="field"></div><div class="field"></div></div></div>
+              <div class="meta"><div class="name">Empty blanks</div><div class="hint">User types everything from scratch</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="prompt-area">
+        <div class="prompt-head">
+          <div class="lbl">Prompt <b>2 of 5</b> · paste in the same chat</div>
+          <button class="copy-btn" data-copy="p2">Copy prompt</button>
+        </div>
+        <textarea class="prompt-box" id="p2" readonly></textarea>
+        <div class="step-tip">
+          <span class="ico">i</span>
+          <span>Stay in the <b>same chat</b>. Replace <code>my-wacc.html</code> with Claude's new full code, refresh the browser, and check that the input rows render correctly before moving to step 3.</span>
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <button class="nav-btn" data-nav="prev">← Previous</button>
+        <div class="nav-progress"><b class="progress-live">0</b> / 5 steps configured</div>
+        <button class="nav-btn primary" data-nav="next">Next step →</button>
+      </div>
+    </section>
+
+    <!-- STEP 3 -->
+    <section class="step s3" data-step="3">
+      <div class="step-card">
+        <div class="step-head">
+          <div class="num">03</div>
+          <h3>WACC math &amp; <em>tax shield</em></h3>
+          <div class="lede">Wire up the calculation. Decide how much of the math is visible and how the tax shield on debt gets handled.</div>
+        </div>
+
+        <!-- Q1: formula visibility -->
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q1 of 3</span>
+            <div class="q-text">How should the formula be shown?</div>
+          </div>
+          <div class="q-opts cols-3">
+            <label class="opt"><input type="radio" name="s3q1" value="hidden">
+              <div class="preview"><div class="formula-prev"><div class="big-num">9.2%</div></div></div>
+              <div class="meta"><div class="name">Hide the math</div><div class="hint">Just the final number</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s3q1" value="live">
+              <div class="preview"><div class="formula-prev"><div class="big-num">9.2%</div><div class="math">0.25·6·0.75 + 0.30·13 + …</div></div></div>
+              <div class="meta"><div class="name">Show every term live</div><div class="hint">Best for learning</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s3q1" value="toggle">
+              <div class="preview"><div class="formula-prev"><div class="big-num">9.2%</div><div class="btn-mock">Show formula</div></div></div>
+              <div class="meta"><div class="name">Toggle on click</div><div class="hint">Clean by default, expandable</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Q2: tax shield -->
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q2 of 3</span>
+            <div class="q-text">How should the tool handle the debt tax shield, i(1−T)?</div>
+          </div>
+          <div class="q-opts cols-3">
+            <label class="opt"><input type="radio" name="s3q2" value="auto">
+              <div class="preview"><div class="tax-prev"><div class="tax-pill">T = 25% · auto</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted)">i(1−T) applied to debt</div></div></div>
+              <div class="meta"><div class="name">Auto applied</div><div class="hint">Correct and quiet</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s3q2" value="toggle">
+              <div class="preview"><div class="tax-prev"><div class="check-row"><div class="check-box"></div>Apply tax shield</div><div class="tax-pill">T = 25%</div></div></div>
+              <div class="meta"><div class="name">Toggle to compare</div><div class="hint">Teaching moment</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s3q2" value="skip">
+              <div class="preview"><div class="tax-prev"><div class="skip">∅</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted)">no tax adjustment</div></div></div>
+              <div class="meta"><div class="name">Skip it</div><div class="hint">Treat costs as after tax already</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Q3: validation -->
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q3 of 3</span>
+            <div class="q-text">If weights do not sum to 100%, what happens?</div>
+          </div>
+          <div class="q-opts cols-3">
+            <label class="opt"><input type="radio" name="s3q3" value="banner">
+              <div class="preview"><div class="val-prev"><div class="banner">Weights sum to 92%, not 100%</div></div></div>
+              <div class="meta"><div class="name">Show a banner</div><div class="hint">User decides what to do</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s3q3" value="normalize">
+              <div class="preview"><div class="val-prev"><div class="normal">auto normalized from 92% to 100%</div></div></div>
+              <div class="meta"><div class="name">Auto normalize</div><div class="hint">Silent rescale</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s3q3" value="block">
+              <div class="preview"><div class="val-prev"><div class="dash">—</div></div></div>
+              <div class="meta"><div class="name">Block the result</div><div class="hint">Strict, no WACC until 100%</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="prompt-area">
+        <div class="prompt-head">
+          <div class="lbl">Prompt <b>3 of 5</b> · same chat, continue</div>
+          <button class="copy-btn" data-copy="p3">Copy prompt</button>
+        </div>
+        <textarea class="prompt-box" id="p3" readonly></textarea>
+        <div class="step-tip">
+          <span class="ico">i</span>
+          <span>Verify the math: use weights 40/20/40 with costs 6%/10%/14% and T=25%. With tax shield auto applied, the correct WACC is <b>9.20%</b>. If your tool returns something else, ask Claude to debug in the same chat.</span>
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <button class="nav-btn" data-nav="prev">← Previous</button>
+        <div class="nav-progress"><b class="progress-live">0</b> / 5 steps configured</div>
+        <button class="nav-btn primary" data-nav="next">Next step →</button>
+      </div>
+    </section>
+
+    <!-- STEP 4 -->
+    <section class="step s4" data-step="4">
+      <div class="step-card">
+        <div class="step-head">
+          <div class="num">04</div>
+          <h3>Visualize the <em>capital mix</em></h3>
+          <div class="lede">A WACC tool without a chart is just a calculator. Add a visualization that makes the cost spread obvious at a glance.</div>
+        </div>
+
+        <!-- Q1: chart type -->
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q1 of 3</span>
+            <div class="q-text">Which chart fits best?</div>
+            <div class="q-hint">Each preview is a real mini chart with the same proportions you will get.</div>
+          </div>
+          <div class="q-opts cols-3">
+            <label class="opt"><input type="radio" name="s4q1" value="donut">
+              <div class="preview"><div class="chart-prev">
+                <svg viewBox="0 0 80 80" width="60" height="60">
+                  <circle cx="40" cy="40" r="28" fill="none" stroke="#b8860b" stroke-width="14" stroke-dasharray="44 132" transform="rotate(-90 40 40)"/>
+                  <circle cx="40" cy="40" r="28" fill="none" stroke="#d4a017" stroke-width="14" stroke-dasharray="26 132" stroke-dashoffset="-44" transform="rotate(-90 40 40)"/>
+                  <circle cx="40" cy="40" r="28" fill="none" stroke="#5c7a4a" stroke-width="14" stroke-dasharray="18 132" stroke-dashoffset="-70" transform="rotate(-90 40 40)"/>
+                  <circle cx="40" cy="40" r="28" fill="none" stroke="#1947d6" stroke-width="14" stroke-dasharray="52 132" stroke-dashoffset="-88" transform="rotate(-90 40 40)"/>
+                  <text x="40" y="44" text-anchor="middle" font-family="Lora,serif" font-style="italic" font-size="13" font-weight="700" fill="#1a1a1a">9.2%</text>
+                </svg>
+              </div></div>
+              <div class="meta"><div class="name">Donut</div><div class="hint">Ring with WACC in the center</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s4q1" value="stacked">
+              <div class="preview"><div class="chart-prev">
+                <svg viewBox="0 0 160 22" width="140" height="22">
+                  <rect x="0" y="2" width="40" height="18" fill="#b8860b" rx="2"/>
+                  <rect x="40" y="2" width="22" height="18" fill="#d4a017"/>
+                  <rect x="62" y="2" width="16" height="18" fill="#5c7a4a"/>
+                  <rect x="78" y="2" width="48" height="18" fill="#1947d6"/>
+                  <rect x="126" y="2" width="34" height="18" fill="#4a6fe6" rx="2"/>
+                </svg>
+              </div></div>
+              <div class="meta"><div class="name">Stacked bar</div><div class="hint">Easy to compare widths</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s4q1" value="both">
+              <div class="preview"><div class="chart-prev" style="flex-direction:column;gap:4px">
+                <svg viewBox="0 0 80 50" width="56" height="36">
+                  <circle cx="40" cy="25" r="18" fill="none" stroke="#b8860b" stroke-width="10" stroke-dasharray="28 84" transform="rotate(-90 40 25)"/>
+                  <circle cx="40" cy="25" r="18" fill="none" stroke="#1947d6" stroke-width="10" stroke-dasharray="40 84" stroke-dashoffset="-28" transform="rotate(-90 40 25)"/>
+                </svg>
+                <svg viewBox="0 0 120 12" width="80" height="10">
+                  <rect x="0" y="0" width="50" height="12" fill="#b8860b"/>
+                  <rect x="50" y="0" width="70" height="12" fill="#1947d6"/>
+                </svg>
+              </div></div>
+              <div class="meta"><div class="name">Both with a toggle</div><div class="hint">Two views, one data</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Q2: highlight -->
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q2 of 3</span>
+            <div class="q-text">Highlight cheapest vs dearest source?</div>
+          </div>
+          <div class="q-opts cols-3">
+            <label class="opt"><input type="radio" name="s4q2" value="badges">
+              <div class="preview"><div class="hi-prev"><div class="badges"><span class="badge lo">Cheapest: bond 4.5%</span></div><div class="badges"><span class="badge hi">Dearest: common 13%</span></div></div></div>
+              <div class="meta"><div class="name">Min &amp; max badges</div><div class="hint">Two small pills below the chart</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s4q2" value="gradient">
+              <div class="preview"><div class="chart-prev">
+                <svg viewBox="0 0 160 22" width="140" height="22">
+                  <defs><linearGradient id="g1"><stop offset="0" stop-color="#bbe1bb"/><stop offset="1" stop-color="#7a2424"/></linearGradient></defs>
+                  <rect x="0" y="2" width="160" height="18" fill="url(#g1)" rx="2"/>
+                </svg>
+              </div></div>
+              <div class="meta"><div class="name">Color gradient</div><div class="hint">Light = cheap, dark = expensive</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s4q2" value="none">
+              <div class="preview"><div class="chart-prev">
+                <svg viewBox="0 0 160 22" width="140" height="22">
+                  <rect x="0" y="2" width="40" height="18" fill="#b8860b"/>
+                  <rect x="40" y="2" width="22" height="18" fill="#d4a017"/>
+                  <rect x="62" y="2" width="38" height="18" fill="#5c7a4a"/>
+                  <rect x="100" y="2" width="60" height="18" fill="#1947d6"/>
+                </svg>
+              </div></div>
+              <div class="meta"><div class="name">No highlight</div><div class="hint">Reader compares slices</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Q3: motion -->
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q3 of 3</span>
+            <div class="q-text">How should the chart update when inputs change?</div>
+          </div>
+          <div class="q-opts cols-2">
+            <label class="opt"><input type="radio" name="s4q3" value="animate">
+              <div class="preview"><div class="motion-prev"><div class="bar-anim"></div></div></div>
+              <div class="meta"><div class="name">Smooth animation</div><div class="hint">~300ms ease, feels alive</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s4q3" value="snap">
+              <div class="preview"><div class="motion-prev"><div class="bar-snap"></div></div></div>
+              <div class="meta"><div class="name">Snap instantly</div><div class="hint">No transitions, lowest distraction</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="prompt-area">
+        <div class="prompt-head">
+          <div class="lbl">Prompt <b>4 of 5</b> · same chat, continue</div>
+          <button class="copy-btn" data-copy="p4">Copy prompt</button>
+        </div>
+        <textarea class="prompt-box" id="p4" readonly></textarea>
+        <div class="step-tip">
+          <span class="ico">i</span>
+          <span>If Claude reaches for Chart.js or D3, ask it to use <b>plain inline SVG</b> instead. Your file should still be a single self contained HTML file with no external scripts beyond Google Fonts.</span>
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <button class="nav-btn" data-nav="prev">← Previous</button>
+        <div class="nav-progress"><b class="progress-live">0</b> / 5 steps configured</div>
+        <button class="nav-btn primary" data-nav="next">Next step →</button>
+      </div>
+    </section>
+
+    <!-- STEP 5 -->
+    <section class="step s5" data-step="5">
+      <div class="step-card">
+        <div class="step-head">
+          <div class="num">05</div>
+          <h3>Story wrap &amp; <em>finishing touches</em></h3>
+          <div class="lede">A line of explanation around the result makes the difference between a calculator and a teaching tool. Pick a voice and a closing feature.</div>
+        </div>
+
+        <!-- Q1: voice -->
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q1 of 3</span>
+            <div class="q-text">When the tool explains the result in one sentence, what tone?</div>
+          </div>
+          <div class="q-opts cols-4">
+            <label class="opt"><input type="radio" name="s5q1" value="professor">
+              <div class="preview"><div class="voice-prev voice-professor">"Your weighted average cost of capital is 9.2%. Reject projects below this threshold."</div></div>
+              <div class="meta"><div class="name">Professor</div><div class="hint">Formal precise</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s5q1" value="coach">
+              <div class="preview"><div class="voice-prev voice-coach">"Your hurdle rate is 9.2%. Projects above this beat the cost of money. Keep going."</div></div>
+              <div class="meta"><div class="name">Coach</div><div class="hint">Encouraging action</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s5q1" value="witty">
+              <div class="preview"><div class="voice-prev voice-witty">"9.2%. That is how much each dollar of capital costs you before lunch."</div></div>
+              <div class="meta"><div class="name">Witty</div><div class="hint">Playful dry</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s5q1" value="plain">
+              <div class="preview"><div class="voice-prev voice-plain">WACC = 9.2%</div></div>
+              <div class="meta"><div class="name">Plain</div><div class="hint">Just the number</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Q2: closing -->
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q2 of 3</span>
+            <div class="q-text">Pick one feature for the bottom of the page.</div>
+          </div>
+          <div class="q-opts cols-3">
+            <label class="opt"><input type="radio" name="s5q2" value="famous">
+              <div class="preview"><div class="close-prev"><div class="companies">
+                <div class="co"><div class="nm">Apple</div><div class="val">8.5%</div></div>
+                <div class="co"><div class="nm">Tesla</div><div class="val">10.0%</div></div>
+                <div class="co"><div class="nm">Boeing</div><div class="val">7.8%</div></div>
+              </div></div></div>
+              <div class="meta"><div class="name">Famous companies</div><div class="hint">Compare to real WACC</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s5q2" value="quiz">
+              <div class="preview"><div class="close-prev"><div class="quiz">
+                <div class="quiz-q">If IRR=8%, WACC=10%?</div>
+                <div class="quiz-opts"><div class="quiz-opt"></div><div class="quiz-opt right"></div><div class="quiz-opt"></div></div>
+                <div class="quiz-q">Tax shield applies to…</div>
+                <div class="quiz-opts"><div class="quiz-opt right"></div><div class="quiz-opt"></div><div class="quiz-opt"></div></div>
+              </div></div></div>
+              <div class="meta"><div class="name">Quick quiz</div><div class="hint">3 self check questions</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s5q2" value="footer">
+              <div class="preview"><div class="close-prev"><div class="foot">your name · IE 4512 · today</div></div></div>
+              <div class="meta"><div class="name">Clean footer</div><div class="hint">No extra widgets</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Q3: export -->
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q3 of 3</span>
+            <div class="q-text">Should users be able to take their result with them?</div>
+          </div>
+          <div class="q-opts cols-3">
+            <label class="opt"><input type="radio" name="s5q3" value="png">
+              <div class="preview"><div class="ex-prev"><div class="btn">📷 Save as PNG</div></div></div>
+              <div class="meta"><div class="name">Save as PNG</div><div class="hint">Image of chart + result</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s5q3" value="text">
+              <div class="preview"><div class="ex-prev"><div class="btn text">📋 Copy summary</div></div></div>
+              <div class="meta"><div class="name">Copy as text</div><div class="hint">One paragraph to clipboard</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s5q3" value="none">
+              <div class="preview"><div class="ex-prev"><div class="nothing">no export</div></div></div>
+              <div class="meta"><div class="name">Nothing</div><div class="hint">Keep the page light</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="prompt-area">
+        <div class="prompt-head">
+          <div class="lbl">Prompt <b>5 of 5</b> · final pass</div>
+          <button class="copy-btn" data-copy="p5">Copy prompt</button>
+        </div>
+        <textarea class="prompt-box" id="p5" readonly></textarea>
+        <div class="step-tip">
+          <span class="ico">i</span>
+          <span>This is your last prompt. After Claude replies, save the file one final time, open it, and try a real WACC scenario from your homework. The chat history is your full build log.</span>
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <button class="nav-btn" data-nav="prev">← Previous</button>
+        <div class="nav-progress"><b class="progress-live">0</b> / 5 steps configured</div>
+        <button class="nav-btn primary" data-nav="finish">Finish →</button>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- FINISH -->
+  <section class="finish" id="finish">
+    <div>
+      <div class="kicker">submission</div>
+      <h3>You now have a <em>tool nobody else has</em>.</h3>
+      <p>
+        Submit <b>two files</b> to Canvas: your final <code>my-wacc.html</code> and a short <code>build-log.md</code>
+        listing the choices you made at each step and one paragraph on what surprised you about working with Claude.
+        Bonus credit if you went off script and asked Claude for a feature that is not in any of the 5 prompts above.
+      </p>
+    </div>
+    <div class="check">
+      <ul>
+        <li>my-wacc.html opens in a browser</li>
+        <li>Header shows your name</li>
+        <li>Inputs match your chosen style</li>
+        <li>WACC matches a worked example</li>
+        <li>Chart renders without errors</li>
+        <li>build-log.md attached</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="foot">IE 4512 · Module 4 · Build Your Own WACC Tool · a prompt engineering lab</div>
+
+</div>
+
+<div class="toast" id="toast">Prompt copied</div>
+
+<script>
+const state = {
+  s1: { q1: '', q2: '', q3: '' },
+  s2: { q1: '', q2: '', q3: '' },
+  s3: { q1: '', q2: '', q3: '' },
+  s4: { q1: '', q2: '', q3: '' },
+  s5: { q1: '', q2: '', q3: '' },
+};
+let currentStep = 1;
+
+const themes = {
+  ocean:  { describe: 'deep navy blue (#1947d6) as the primary accent, soft sky blue (#eef2ff) for tinted surfaces, warm gold (#b8860b) as a secondary accent, white paper background (#ffffff), dark ink text (#1a1a1a). Editorial and calm.' },
+  forest: { describe: 'olive green (#5c7a4a) as the primary accent, soft moss tint (#f0f4ea) for surfaces, warm brown (#8b7355) as a secondary accent, parchment background (#faf9f5), dark ink (#1a1a1a). Quiet and natural.' },
+  sunset: { describe: 'warm amber (#d97706) as the primary accent, soft peach tint (#fef3e6) for surfaces, terracotta red (#8a2828) as a secondary accent, cream background (#fffaf2), dark ink (#1a1a1a). Energetic and warm.' },
+  royal:  { describe: 'saturated violet (#7c3aed) as the primary accent, lavender tint (#f3eeff) for surfaces, gold (#b8860b) as a secondary accent, off white background (#fafafe), dark ink (#1a1a1a). Bold and rich.' },
+};
+const typography = {
+  editorial: 'Use Google Fonts: serif headlines in Lora (italic for emphasis terms), sans body in Outfit. Numerical figures and the WACC result in Lora italic to feel editorial. Like a print magazine column.',
+  modern:    'Use Google Fonts: all sans serif. Headlines and body in Inter, weights 400 to 700. Tabular numerals for figures. Clean software product feel.',
+  playful:   'Use Google Fonts: rounded sans throughout. Use Nunito for headlines and body, slightly larger base size (15px) and generous line height (1.6). Approachable and classroom friendly.',
+  minimal:   'Use Google Fonts: JetBrains Mono for every number, Inter for labels and headlines. Lots of whitespace, no decorative italics. A calm spreadsheet feel.',
+};
+const sourceSets = {
+  '3': 'three sources: Loan, Common Stock, Retained Earnings',
+  '4': 'four sources: Loan, Bond, Common Stock, Retained Earnings',
+  '5': 'five sources: Loan (10 year bank loan), Bond, Preferred Stock, Common Stock, Retained Earnings',
+};
+const inputStyles = {
+  number: 'Use plain HTML number inputs only. Two inputs per row: weight (%) and after tax cost (%). Step 0.1, min 0, max 100 for weight, max 30 for cost.',
+  slider: 'Use HTML range sliders only. Two sliders per row: weight (0 to 100%) and cost (0 to 30%). Show the current value as a number to the right of each slider in monospaced font.',
+  both:   'Use a slider AND a number input per cell, side by side. They are linked: editing one updates the other. Two cells per row (weight, cost). This doubles the code complexity but feels great to use.',
+};
+const startStates = {
+  prefilled: 'Pre fill the inputs with this realistic example so the user sees a working WACC immediately: weights 25/15/10/30/20 percent (rounded to 100% across the sources you have), costs 6%/7%/9%/13%/11% respectively. Trim or extend to match the source count.',
+  empty:     'Start every input at zero or blank. Show "Enter weights and costs to begin" until at least one row is filled.',
+};
+const formulaVisibility = {
+  hidden: 'Do not display the algebraic formula anywhere. Show only the final WACC percentage in a large card.',
+  live:   'Below the WACC card, render the full expanded formula live with the actual numbers as the user types: e.g., "WACC = 0.25·6.0%·(1−0.25) + 0.15·7.0%·(1−0.25) + 0.10·9.0% + 0.30·13.0% + 0.20·11.0%". Use monospaced font for the math.',
+  toggle: 'Provide a "Show formula" toggle button. When clicked, expand a panel showing the live algebraic formula with current numbers. When clicked again, collapse it.',
+};
+const taxShield = {
+  auto:   'Add a single tax rate input at the top of the panel (default 25%). For Loan and Bond rows (any debt instrument), automatically multiply the cost by (1−T) before adding to the WACC sum. Do not multiply equity rows (Preferred, Common, Retained Earnings).',
+  toggle: 'Add both a tax rate input AND a checkbox labeled "Apply tax shield on debt". When checked, debt costs are multiplied by (1−T). When unchecked, no adjustment. This lets the user compare and learn.',
+  skip:   'Do not apply any tax shield. Treat every cost the user enters as already after tax. Skip the tax rate input entirely.',
+};
+const validation = {
+  banner:    'If the sum of weights is not 100% (within 0.1% tolerance), display a red banner at the top: "Weights sum to X%, not 100%". Still compute and show the WACC.',
+  normalize: 'Silently normalize all weights to sum to 100% before computing WACC. Display a small subtle note: "Weights auto normalized from sum X% to 100%".',
+  block:     'If weights do not sum to exactly 100% (within 0.1% tolerance), display "—" instead of a WACC number, and show a red message: "Weights must sum to 100% to compute WACC".',
+};
+const charts = {
+  donut:   'Use plain inline SVG (no Chart.js, no D3, no external libraries). Draw a donut chart: a ring of arc segments, one per source, where each segment\'s arc length is proportional to w_i · i_after_tax. Center the WACC number large in the middle of the ring. Use the source color palette.',
+  stacked: 'Use plain inline SVG. Draw one horizontal bar split into segments, one per source. Each segment\'s width is proportional to w_i · i_after_tax. Label each segment with the source name and its contribution in percentage points.',
+  both:    'Use plain inline SVG. Render both a donut chart AND a stacked horizontal bar. Add two small icon buttons above the chart that toggle which one is visible. Default to donut.',
+};
+const highlights = {
+  badges:   'Below the chart, add two small pill shaped badges: one says "Cheapest: <source name> at X.X%" in a green tint, the other says "Dearest: <source name> at Y.Y%" in a red tint. Update live.',
+  gradient: 'Color each chart segment with a gradient from light (cheap source) to dark (expensive source) using a single hue. Do not add badges or labels for cheapest/dearest. The color carries the message.',
+  none:     'Do not add any highlight. Keep all chart segments in their assigned colors and let the reader compare slices visually.',
+};
+const motion = {
+  animate: 'When inputs change, animate the chart smoothly over 300ms using CSS transitions on SVG attributes. Use cubic-bezier(0.4, 0, 0.2, 1) easing.',
+  snap:    'No animation. Redraw the chart instantly on input change.',
+};
+const voices = {
+  professor: 'Formal, second person, precise. Example: "Your weighted average cost of capital is 9.2%. Projects with internal rate of return below this threshold should be rejected because they fail to cover the cost of the firm\'s capital."',
+  coach:     'Encouraging and action oriented. Example: "Your hurdle rate is 9.2%. Any project above this beats the cost of money. Below it loses money on every dollar."',
+  witty:     'Playful with a dry edge. Example: "9.2%. That is how much each dollar of capital costs you before lunch. Pick projects that earn more than that."',
+  plain:     'Minimal and factual, no flair. Example: "WACC = 9.2%."',
+};
+const features = {
+  famous: 'Below the main tool, add a horizontal row of 3 cards showing typical WACC for well known companies: Apple (around 8.5%), Tesla (around 10.0%), Boeing (around 7.8%). Each card has the company name, the WACC number large, and a one line note about the capital mix. Use static numbers, no live API.',
+  quiz:   'Below the main tool, add a small quiz with 3 multiple choice questions: (1) "If WACC = 10% and a project IRR = 8%, accept or reject?", (2) "Tax shield applies to which sources?", (3) "What happens to WACC if a firm replaces equity with cheap debt?". Show feedback after each answer.',
+  footer: 'Add only a clean footer at the bottom: the user\'s name, the course code IE 4512, and the current date. No extra widgets, no companies, no quiz.',
+};
+const exports = {
+  png:  'Add a "Save as PNG" button below the chart. When clicked, render the chart and the WACC card to a single PNG image and trigger a download. Use the html2canvas approach inline (or html-to-image) loaded from a CDN. Filename: my-wacc-<timestamp>.png.',
+  text: 'Add a "Copy summary" button. When clicked, copy a one paragraph summary to the clipboard: "WACC = X.X% based on [n] sources of capital. Cheapest source: <name> at A%. Dearest: <name> at B%. Computed by <user name> on <date>." Show a small "Copied" toast for 2 seconds.',
+  none: 'No export functionality. Skip both PNG and copy buttons.',
+};
+
+function buildPrompt1() {
+  const name = state.s1.q1 || '[YOUR NAME]';
+  const themeKey = state.s1.q2 || 'ocean';
+  const typoKey = state.s1.q3 || 'editorial';
+  return `You are helping me build a Weighted Average Cost of Capital (WACC) calculator as a single self contained HTML file for my engineering economy class. I will send you 5 prompts in a row. After each one, reply with the FULL updated HTML file (not a diff). Use no external libraries except Google Fonts. All CSS goes in one <style> block. All JavaScript goes in one <script> block at the end of <body>.
+
+This is prompt 1 of 5. Build only the SHELL of the tool.
+
+PERSONALIZE:
+- Display "${name}'s WACC Tool" in the header.
+- Add a subtitle: "IE 4512 · Module 4 · Built with Claude".
+- Add a small footer with the same name and today's date.
+
+COLOR THEME (${themeKey}):
+${themes[themeKey].describe}
+
+TYPOGRAPHY:
+${typography[typoKey]}
+
+LAYOUT:
+- Single column, max width 1100px, centered, generous padding.
+- A header card at the top with the title, subtitle, and a tiny "v0.1" tag in the corner.
+- A placeholder card below the header that just says "Capital sources panel will appear here". Leave room for it.
+- A second placeholder card that says "WACC result will appear here".
+- The footer at the bottom.
+
+REQUIREMENTS:
+- Mobile responsive (one column always, larger touch targets).
+- Buttons and inputs styled but not yet functional.
+- No JavaScript needed yet beyond an empty <script> block.
+
+Reply with the full HTML now. I will paste it into a file called my-wacc.html and open it.`;
+}
+function buildPrompt2() {
+  const count = state.s2.q1 || '4';
+  const input = state.s2.q2 || 'number';
+  const start = state.s2.q3 || 'prefilled';
+  return `Prompt 2 of 5. Keep everything from prompt 1. Now replace the first placeholder card with the CAPITAL SOURCES INPUT PANEL.
+
+SOURCES:
+Show ${sourceSets[count]}. Each source has its own row with:
+- a small colored square (use a distinct color per source).
+- the source name.
+- two input controls per row: WEIGHT (% of total capital) and AFTER TAX COST (%).
+
+INPUT STYLE:
+${inputStyles[input]}
+
+STARTING STATE:
+${startStates[start]}
+
+ALSO ADD AT THE TOP OF THE PANEL:
+- A small live readout showing "Sum of weights: XX.X%". Color it green if equal to 100% (within 0.1%), red otherwise.
+
+Keep the WACC result card still as a placeholder (we will wire it up in prompt 3).
+
+Reply with the FULL updated HTML.`;
+}
+function buildPrompt3() {
+  const f = state.s3.q1 || 'live';
+  const t = state.s3.q2 || 'auto';
+  const v = state.s3.q3 || 'banner';
+  return `Prompt 3 of 5. Keep everything so far. Now WIRE UP THE WACC CALCULATION and replace the second placeholder card with a live result.
+
+THE FORMULA:
+WACC = Σ w_i · i_after_tax_i, where i_after_tax_i = i_i · (1 − T) for debt sources only.
+
+TAX SHIELD:
+${taxShield[t]}
+
+FORMULA DISPLAY:
+${formulaVisibility[f]}
+
+VALIDATION:
+${validation[v]}
+
+THE RESULT CARD SHOULD SHOW:
+- The WACC as a large percentage with one decimal place (e.g., "9.2%").
+- A one line caption: "Hurdle rate for new projects".
+- The result updates LIVE as any input changes (use input event listeners).
+
+Reply with the FULL updated HTML.`;
+}
+function buildPrompt4() {
+  const c = state.s4.q1 || 'donut';
+  const h = state.s4.q2 || 'badges';
+  const m = state.s4.q3 || 'animate';
+  return `Prompt 4 of 5. Keep everything so far. Now ADD A VISUALIZATION below the WACC result card.
+
+CHART:
+${charts[c]}
+
+HIGHLIGHT:
+${highlights[h]}
+
+MOTION:
+${motion[m]}
+
+IMPORTANT:
+- Use ONLY inline SVG. No Chart.js, no D3, no external libraries. The file must still open offline.
+- The chart must update live when any input changes.
+- Use the source colors you defined in prompt 2.
+- The chart should be roughly 320px wide and 320px tall (or 100% width and 80px tall for the stacked bar).
+
+Reply with the FULL updated HTML.`;
+}
+function buildPrompt5() {
+  const v = state.s5.q1 || 'professor';
+  const f = state.s5.q2 || 'footer';
+  const e = state.s5.q3 || 'none';
+  return `Prompt 5 of 5, the final pass. Keep everything so far. Now ADD THE STORY WRAP AND FINISHING TOUCHES.
+
+EXPLAINER VOICE (${v}):
+Just below the WACC result number, add a single sentence in this voice that interprets the current WACC number:
+${voices[v]}
+The sentence updates live with the current WACC and the cheapest and dearest source.
+
+CLOSING FEATURE:
+${features[f]}
+
+EXPORT:
+${exports[e]}
+
+FINAL POLISH:
+- Make sure the page is mobile responsive end to end.
+- Make sure no JavaScript errors appear in the console.
+- Add a small "Built with Claude · prompt engineering lab" credit in the footer next to my name.
+
+Reply with the FULL final HTML. This is my submission.`;
+}
+
+const builders = { p1: buildPrompt1, p2: buildPrompt2, p3: buildPrompt3, p4: buildPrompt4, p5: buildPrompt5 };
+
+function isStepDone(s) {
+  const v = state[s];
+  return !!(v.q1 && v.q2 && v.q3);
+}
+
+function refresh() {
+  Object.keys(builders).forEach(k => {
+    const el = document.getElementById(k);
+    if (el) el.value = builders[k]();
+  });
+  let done = 0;
+  ['s1','s2','s3','s4','s5'].forEach(s => { if (isStepDone(s)) done++; });
+  document.querySelectorAll('.progress-live, #progress').forEach(el => el.textContent = done);
+
+  // timeline state
+  document.querySelectorAll('.tl-node').forEach(node => {
+    const n = parseInt(node.dataset.go, 10);
+    node.classList.remove('active', 'done');
+    if (n === currentStep) node.classList.add('active');
+    if (isStepDone('s' + n) && n !== currentStep) node.classList.add('done');
+  });
+}
+
+function showStep(n) {
+  currentStep = Math.max(1, Math.min(5, n));
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  const target = document.querySelector(`.step[data-step="${currentStep}"]`);
+  if (target) target.classList.add('active');
+  const finish = document.getElementById('finish');
+  finish.classList.remove('show');
+  refresh();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showFinish() {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById('finish').classList.add('show');
+  document.getElementById('finish').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Wire radios + text input
+document.querySelectorAll('input[type="radio"]').forEach(r => {
+  r.addEventListener('change', () => {
+    const name = r.name;
+    const stepKey = name.slice(0, 2);
+    const qKey = name.slice(2);
+    if (state[stepKey]) {
+      state[stepKey][qKey] = r.value;
+      const step = r.closest('.step');
+      // visual checked, scoped to this step
+      step.querySelectorAll(`input[name="${name}"]`).forEach(input => {
+        const opt = input.closest('.opt');
+        if (opt) opt.classList.toggle('checked', input.checked);
+      });
+      refresh();
+    }
+  });
+});
+
+const nameInput = document.getElementById('s1q1');
+if (nameInput) {
+  nameInput.addEventListener('input', () => {
+    state.s1.q1 = nameInput.value.trim();
+    refresh();
+  });
+}
+
+// Timeline nodes
+document.querySelectorAll('.tl-node').forEach(node => {
+  node.addEventListener('click', () => {
+    const n = parseInt(node.dataset.go, 10);
+    showStep(n);
+  });
+});
+
+// Nav buttons
+document.querySelectorAll('[data-nav]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const dir = btn.dataset.nav;
+    if (dir === 'next') showStep(currentStep + 1);
+    else if (dir === 'prev') showStep(currentStep - 1);
+    else if (dir === 'finish') showFinish();
+  });
+});
+
+// Copy buttons
+document.querySelectorAll('.copy-btn').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const id = btn.dataset.copy;
+    const el = document.getElementById(id);
+    if (!el) return;
+    try { await navigator.clipboard.writeText(el.value); }
+    catch (e) { el.select(); document.execCommand('copy'); }
+    btn.classList.add('copied');
+    const orig = btn.textContent;
+    btn.textContent = 'Copied ✓';
+    showToast();
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.textContent = orig;
+    }, 1800);
+  });
+});
+
+function showToast() {
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => t.classList.remove('show'), 1600);
+}
+
+// initial paint
+showStep(1);
+</script>
+
+</body>
+</html>
