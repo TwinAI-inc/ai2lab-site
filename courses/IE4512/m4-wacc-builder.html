@@ -61,8 +61,8 @@
   .lab-launch .arrow { font-size: 14px; opacity: 0.7; margin-left: 2px; }
 
   /* MAIN — 2 cols, fills the rest */
-  .main { flex: 1; display: grid; grid-template-columns: 360px 1fr; gap: 10px; min-height: 0; }
-  .main > .panel:first-child { align-self: start; max-height: 100%; }
+  .main { flex: 1; display: grid; grid-template-columns: 360px 1fr; gap: 10px; min-height: 0; align-items: stretch; }
+  .main > .panel:first-child { align-self: stretch; height: 100%; }
   @media (max-width: 920px) { .main { grid-template-columns: 1fr; } .main > .panel:first-child { align-self: stretch; max-height: none; } html, body { overflow: auto; } .app { height: auto; } }
 
   .panel {
