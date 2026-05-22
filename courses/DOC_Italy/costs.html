@@ -585,7 +585,7 @@
 </footer>
 
 <script>
-const CT_STORAGE = 'docItalyCosts2027_v2';
+const CT_STORAGE = 'docItalyCosts2027_v3';
 const CT_EUR_TO_USD = 1.08;
 const CT_CATEGORIES = [
   { key: 'all',            label: 'All' },
@@ -599,53 +599,53 @@ const CT_CATEGORIES = [
 
 const CT_DEFAULT_ITEMS = [
   // ACCOMMODATION
-  { date: '2027-05-27', event: 'Parma accommodation (23 nights)', cat: 'accommodation', fixed: 0, per: 1380, notes: '€60/night × 23 nights · per person' },
-  { date: '2027-06-19', event: 'Milan accommodation (8 nights)', cat: 'accommodation', fixed: 0, per: 720, notes: '€90/night × 8 nights · Milan rates' },
+  { date: '2027-05-27', event: 'Parma accommodation (23 nights)', cat: 'accommodation', fixed: 0, per: 0, notes: '€60/night × 23 nights · per person' },
+  { date: '2027-06-19', event: 'Milan accommodation (8 nights)', cat: 'accommodation', fixed: 0, per: 0, notes: '€90/night × 8 nights · Milan rates' },
 
   // TRANSPORTATION
-  { date: '2027-05-27', event: 'BLQ airport → Parma group transfer', cat: 'transportation', fixed: 800, per: 0, notes: 'Charter bus · one-time' },
-  { date: '2027-06-02', event: 'Mantua day-trip train', cat: 'transportation', fixed: 0, per: 25, notes: 'Trenitalia RT' },
-  { date: '2027-06-05', event: 'Verona day-trip Frecciarossa', cat: 'transportation', fixed: 0, per: 40, notes: 'High-speed RT' },
-  { date: '2027-06-12', event: 'Cinque Terre weekend (train + CT card)', cat: 'transportation', fixed: 0, per: 60, notes: 'Sat–Sun · overnight Monterosso' },
-  { date: '2027-06-14', event: 'Modena trip train', cat: 'transportation', fixed: 0, per: 8, notes: 'Regional RT' },
-  { date: '2027-06-16', event: 'Maranello (Ferrari) shuttle', cat: 'transportation', fixed: 350, per: 0, notes: 'Charter from Parma' },
-  { date: '2027-06-18', event: 'Bologna day-trip train', cat: 'transportation', fixed: 0, per: 20, notes: 'Regional or Frecciarossa' },
-  { date: '2027-06-19', event: 'Parma → Milan Frecciarossa (group)', cat: 'transportation', fixed: 0, per: 25, notes: 'Super Economy if booked 2–3 mo ahead' },
-  { date: '2027-06-20', event: 'Como day-trip train', cat: 'transportation', fixed: 0, per: 15, notes: 'Trenord from Milano Cadorna' },
-  { date: '2027-06-23', event: 'Brembo (Stezzano) train + shuttle', cat: 'transportation', fixed: 0, per: 12, notes: 'Train RT from Milan' },
-  { date: '2027-06-26', event: 'Departure transfer → MXP', cat: 'transportation', fixed: 0, per: 13, notes: 'Malpensa Express' },
+  { date: '2027-05-27', event: 'BLQ airport → Parma group transfer', cat: 'transportation', fixed: 0, per: 0, notes: 'Charter bus · one-time' },
+  { date: '2027-06-02', event: 'Mantua day-trip train', cat: 'transportation', fixed: 0, per: 0, notes: 'Trenitalia RT' },
+  { date: '2027-06-05', event: 'Verona day-trip Frecciarossa', cat: 'transportation', fixed: 0, per: 0, notes: 'High-speed RT' },
+  { date: '2027-06-12', event: 'Cinque Terre weekend (train + CT card)', cat: 'transportation', fixed: 0, per: 0, notes: 'Sat–Sun · overnight Monterosso' },
+  { date: '2027-06-14', event: 'Modena trip train', cat: 'transportation', fixed: 0, per: 0, notes: 'Regional RT' },
+  { date: '2027-06-16', event: 'Maranello (Ferrari) shuttle', cat: 'transportation', fixed: 0, per: 0, notes: 'Charter from Parma' },
+  { date: '2027-06-18', event: 'Bologna day-trip train', cat: 'transportation', fixed: 0, per: 0, notes: 'Regional or Frecciarossa' },
+  { date: '2027-06-19', event: 'Parma → Milan Frecciarossa (group)', cat: 'transportation', fixed: 0, per: 0, notes: 'Super Economy if booked 2–3 mo ahead' },
+  { date: '2027-06-20', event: 'Como day-trip train', cat: 'transportation', fixed: 0, per: 0, notes: 'Trenord from Milano Cadorna' },
+  { date: '2027-06-23', event: 'Brembo (Stezzano) train + shuttle', cat: 'transportation', fixed: 0, per: 0, notes: 'Train RT from Milan' },
+  { date: '2027-06-26', event: 'Departure transfer → MXP', cat: 'transportation', fixed: 0, per: 0, notes: 'Malpensa Express' },
 
   // TOURS & VISITS
-  { date: '2027-06-04', event: 'Parmigiano dairy tour', cat: 'tours', fixed: 0, per: 15, notes: 'Group rate · 2h + tasting' },
+  { date: '2027-06-04', event: 'Parmigiano dairy tour', cat: 'tours', fixed: 0, per: 0, notes: 'Group rate · 2h + tasting' },
   { date: '2027-06-07', event: 'Barilla corporate visit', cat: 'tours', fixed: 0, per: 0, notes: 'Free for groups · book 3 mo ahead' },
   { date: '2027-06-09', event: 'Davines campus tour', cat: 'tours', fixed: 0, per: 0, notes: 'Complimentary · book direct' },
-  { date: '2027-06-10', event: 'Carpigiani Gelato University', cat: 'tours', fixed: 0, per: 35, notes: 'Workshop + tasting' },
-  { date: '2027-06-11', event: 'Prosciutto Langhirano (Salumificio Conti)', cat: 'tours', fixed: 0, per: 20, notes: 'English-language curing-room tour' },
-  { date: '2027-06-14', event: 'Acetaia balsamic (Leonardi)', cat: 'tours', fixed: 0, per: 18, notes: 'Traditional aging + tasting' },
-  { date: '2027-06-14', event: 'Museo Enzo Ferrari Modena', cat: 'tours', fixed: 0, per: 23, notes: 'Combo ticket option with Maranello' },
-  { date: '2027-06-16', event: 'Ferrari Maranello (museum + factory bus)', cat: 'tours', fixed: 0, per: 45, notes: 'Group bus tour · 6 mo lead time' },
+  { date: '2027-06-10', event: 'Carpigiani Gelato University', cat: 'tours', fixed: 0, per: 0, notes: 'Workshop + tasting' },
+  { date: '2027-06-11', event: 'Prosciutto Langhirano (Salumificio Conti)', cat: 'tours', fixed: 0, per: 0, notes: 'English-language curing-room tour' },
+  { date: '2027-06-14', event: 'Acetaia balsamic (Leonardi)', cat: 'tours', fixed: 0, per: 0, notes: 'Traditional aging + tasting' },
+  { date: '2027-06-14', event: 'Museo Enzo Ferrari Modena', cat: 'tours', fixed: 0, per: 0, notes: 'Combo ticket option with Maranello' },
+  { date: '2027-06-16', event: 'Ferrari Maranello (museum + factory bus)', cat: 'tours', fixed: 0, per: 0, notes: 'Group bus tour · 6 mo lead time' },
   { date: '2027-06-23', event: 'Brembo corporate visit', cat: 'tours', fixed: 0, per: 0, notes: 'Free · 3 mo lead time' },
-  { date: '2027-06-24', event: 'Last Supper · Cenacolo Vinciano', cat: 'tours', fixed: 0, per: 18, notes: 'Timed entry · 4+ mo ahead' },
+  { date: '2027-06-24', event: 'Last Supper · Cenacolo Vinciano', cat: 'tours', fixed: 0, per: 0, notes: 'Timed entry · 4+ mo ahead' },
   { date: '2027-06-24', event: 'Pirelli HangarBicocca', cat: 'tours', fixed: 0, per: 0, notes: 'Free admission · free booking' },
 
   // CURRICULUM
-  { date: '2027-05-31', event: 'UniPR classroom + AV + materials', cat: 'curriculum', fixed: 3000, per: 0, notes: 'Room booking + printing · 4 weeks' },
-  { date: '2027-05-31', event: 'Italian language instruction (4 weeks)', cat: 'curriculum', fixed: 4500, per: 0, notes: 'Native instructor · ~16 sessions' },
-  { date: '2027-06-03', event: 'Pasta-making class', cat: 'curriculum', fixed: 0, per: 35, notes: 'Hands-on workshop' },
-  { date: '2027-06-17', event: 'Pizza-making workshop', cat: 'curriculum', fixed: 0, per: 35, notes: 'Process-variation case study' },
-  { date: '2027-06-21', event: 'POLIMI welcome + Bovisa tour', cat: 'curriculum', fixed: 500, per: 0, notes: 'Coordination fee TBD with POLIMI' },
-  { date: '2027-06-22', event: 'POLIMI joint lecture + Bocconi visit', cat: 'curriculum', fixed: 800, per: 0, notes: 'Italian faculty honorarium + Bocconi' },
+  { date: '2027-05-31', event: 'UniPR classroom + AV + materials', cat: 'curriculum', fixed: 0, per: 0, notes: 'Room booking + printing · 4 weeks' },
+  { date: '2027-05-31', event: 'Italian language instruction (4 weeks)', cat: 'curriculum', fixed: 0, per: 0, notes: 'Native instructor · ~16 sessions' },
+  { date: '2027-06-03', event: 'Pasta-making class', cat: 'curriculum', fixed: 0, per: 0, notes: 'Hands-on workshop' },
+  { date: '2027-06-17', event: 'Pizza-making workshop', cat: 'curriculum', fixed: 0, per: 0, notes: 'Process-variation case study' },
+  { date: '2027-06-21', event: 'POLIMI welcome + Bovisa tour', cat: 'curriculum', fixed: 0, per: 0, notes: 'Coordination fee TBD with POLIMI' },
+  { date: '2027-06-22', event: 'POLIMI joint lecture + Bocconi visit', cat: 'curriculum', fixed: 0, per: 0, notes: 'Italian faculty honorarium + Bocconi' },
 
   // MEALS
-  { date: '2027-05-31', event: 'Welcome dinner (Parma)', cat: 'meals', fixed: 0, per: 45, notes: 'Group dinner · trattoria' },
-  { date: '2027-06-15', event: 'Mid-program cohort dinner', cat: 'meals', fixed: 0, per: 50, notes: 'Post-midterm celebration · Parma' },
-  { date: '2027-06-19', event: 'Navigli welcome dinner (Milan)', cat: 'meals', fixed: 0, per: 55, notes: 'Move-day arrival dinner' },
-  { date: '2027-06-25', event: 'Farewell dinner (Milan)', cat: 'meals', fixed: 0, per: 65, notes: 'Trattoria with POLIMI hosts' },
+  { date: '2027-05-31', event: 'Welcome dinner (Parma)', cat: 'meals', fixed: 0, per: 0, notes: 'Group dinner · trattoria' },
+  { date: '2027-06-15', event: 'Mid-program cohort dinner', cat: 'meals', fixed: 0, per: 0, notes: 'Post-midterm celebration · Parma' },
+  { date: '2027-06-19', event: 'Navigli welcome dinner (Milan)', cat: 'meals', fixed: 0, per: 0, notes: 'Move-day arrival dinner' },
+  { date: '2027-06-25', event: 'Farewell dinner (Milan)', cat: 'meals', fixed: 0, per: 0, notes: 'Trattoria with POLIMI hosts' },
 
   // OTHER
-  { date: '2027-05-27', event: 'Faculty + PA international travel', cat: 'other', fixed: 4500, per: 0, notes: '2 admins · economy + insurance' },
-  { date: '2027-05-31', event: 'Health insurance + emergency contingency', cat: 'other', fixed: 0, per: 80, notes: 'NEU GEO travel coverage' },
-  { date: '2027-06-26', event: 'NEU GEO program admin / overhead', cat: 'other', fixed: 8000, per: 0, notes: 'Global experience office fee' },
+  { date: '2027-05-27', event: 'Faculty + PA international travel', cat: 'other', fixed: 0, per: 0, notes: '2 admins · economy + insurance' },
+  { date: '2027-05-31', event: 'Health insurance + emergency contingency', cat: 'other', fixed: 0, per: 0, notes: 'NEU GEO travel coverage' },
+  { date: '2027-06-26', event: 'NEU GEO program admin / overhead', cat: 'other', fixed: 0, per: 0, notes: 'Global experience office fee' },
 ];
 
 const ctState = {
