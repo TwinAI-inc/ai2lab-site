@@ -1,0 +1,3386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>The Italian Corridor — DOC Italy 2027</title>
+<script>
+  (function () {
+    if (sessionStorage.getItem('docItalyAccess2027') !== 'unlocked') {
+      location.replace('./');
+    }
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --neu-red: #C41230;
+    --it-green: #009246;
+    --it-red: #ce2b37;
+    --navy: #1a1a2e;
+    --gold: #d4a84b;
+    --text: #1a1a2e;
+    --muted: #64748b;
+    --bg: #fafbfc;
+    --card: #ffffff;
+    --border: #e8eaee;
+    --soft: #f3f4f7;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Outfit', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  .serif { font-family: 'Playfair Display', Georgia, serif; }
+
+  /* ========== HEADER ========== */
+  header.app {
+    position: sticky; top: 0; z-index: 100;
+    background: linear-gradient(135deg, rgba(255,255,255,0.96), rgba(250,251,252,0.92));
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 2px 16px rgba(0,0,0,0.03);
+  }
+  .head-wrap {
+    max-width: 1280px; margin: 0 auto;
+    padding: 14px 28px;
+    display: flex; align-items: center; gap: 22px;
+  }
+  .doc-logo {
+    display: inline-flex; align-items: center;
+    background: rgba(255,255,255,0.95);
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 50px;
+    padding: 6px 14px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  }
+  .doc-logo .br { font-family: 'JetBrains Mono', monospace; font-size: 16px; color: #c5c8cc; font-weight: 300; }
+  .doc-logo .tx { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 800; color: var(--navy); padding: 0 4px; }
+  .doc-logo .tx sup { font-size: 8px; color: var(--neu-red); }
+  .flag-stripe {
+    display: inline-flex; height: 22px; width: 30px;
+    border-radius: 4px; overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  }
+  .flag-stripe span { flex: 1; }
+  .flag-stripe span:nth-child(1) { background: var(--it-green); }
+  .flag-stripe span:nth-child(2) { background: #fff; }
+  .flag-stripe span:nth-child(3) { background: var(--it-red); }
+
+  .head-titles { flex: 1; }
+  .head-titles h1 {
+    font-size: 16px; font-weight: 700; color: var(--navy);
+    letter-spacing: -0.01em;
+  }
+  .head-titles p {
+    font-size: 12px; color: var(--muted); margin-top: 1px;
+  }
+  .head-titles p strong { color: var(--it-green); font-weight: 600; }
+
+  nav.app-nav { display: flex; gap: 4px; }
+  nav.app-nav a {
+    padding: 7px 12px;
+    font-size: 13px; font-weight: 500;
+    color: var(--text-secondary, var(--muted));
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+  nav.app-nav a:hover { background: rgba(196,18,48,0.06); color: var(--neu-red); }
+
+  /* ========== HERO ========== */
+  .hero-wrap {
+    position: relative;
+    background:
+      radial-gradient(circle at 12% 20%, rgba(0,146,70,0.08) 0%, transparent 40%),
+      radial-gradient(circle at 88% 30%, rgba(196,18,48,0.06) 0%, transparent 40%),
+      linear-gradient(180deg, #fafbfc 0%, #f4f6f9 100%);
+    overflow: hidden;
+  }
+  .hero {
+    max-width: 1280px; margin: 0 auto;
+    padding: 36px 28px 32px;
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 36px;
+    align-items: center;
+  }
+  .hero-left .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 700;
+    color: var(--muted); letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: inline-flex; align-items: center; gap: 7px;
+  }
+  .hero-left .eyebrow::before {
+    content: ''; width: 22px; height: 2px;
+    background: var(--navy); border-radius: 1px; opacity: 0.4;
+  }
+  .hero-left h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 46px; font-weight: 900;
+    color: var(--navy); line-height: 1.04;
+    letter-spacing: -0.02em;
+    margin-bottom: 10px;
+  }
+  .hero-left h1 em {
+    font-style: italic;
+    color: var(--navy);
+    /* subtle accent — slightly lighter italic, no rainbow */
+    opacity: 0.78;
+  }
+  .hero-left .lead {
+    font-size: 15px; color: var(--muted);
+    line-height: 1.55; margin-bottom: 18px;
+    max-width: 540px;
+  }
+  .hero-left .lead strong { color: var(--navy); font-weight: 600; }
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .h-stat { text-align: left; }
+  .h-stat .v {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px; font-weight: 800;
+    color: var(--navy); line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .h-stat .v .u { font-size: 12px; color: var(--muted); font-weight: 500; margin-left: 2px; }
+  .h-stat .l {
+    font-size: 9px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--muted); margin-top: 4px;
+  }
+
+  .hero-right {
+    position: relative;
+    height: 320px;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 12px 30px rgba(26,26,46,0.15);
+    background: #d8e3ee;
+  }
+  #italyMap { width: 100%; height: 100%; }
+  .map-overlay {
+    position: absolute; top: 14px; left: 14px;
+    background: rgba(255,255,255,0.94);
+    padding: 9px 12px; border-radius: 10px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    font-size: 11px; color: var(--navy); font-weight: 600;
+    display: flex; align-items: center; gap: 6px;
+    z-index: 5;
+  }
+  .map-overlay .dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--neu-red);
+    box-shadow: 0 0 0 4px rgba(196,18,48,0.18);
+  }
+  .map-legend {
+    position: absolute; bottom: 14px; left: 14px;
+    background: rgba(255,255,255,0.94);
+    padding: 10px 12px; border-radius: 10px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    font-size: 10.5px;
+    z-index: 5;
+    display: flex; flex-direction: column; gap: 5px;
+  }
+  .map-legend .leg-row { display: flex; align-items: center; gap: 6px; color: var(--text); }
+  .map-legend .sw { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
+
+  /* ========== PARTNER BAR ========== */
+  .partners {
+    background: var(--navy);
+    color: #fff;
+    padding: 18px 28px;
+  }
+  .partners-wrap {
+    max-width: 1280px; margin: 0 auto;
+    display: flex; align-items: center; gap: 30px;
+    flex-wrap: wrap;
+  }
+  .partners-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: rgba(255,255,255,0.55);
+  }
+  .partner-pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 7px 14px; border-radius: 20px;
+    font-size: 12px; font-weight: 600; color: #fff;
+  }
+  .partner-pill .ico { width: 14px; height: 14px; opacity: 0.8; }
+  .partner-pill em { font-style: normal; color: rgba(255,255,255,0.55); margin-left: 4px; font-weight: 400; font-size: 11px; }
+
+  /* ========== SECTION ========== */
+  section.block {
+    max-width: 1280px; margin: 0 auto;
+    padding: 36px 28px;
+  }
+  section.block.tight { padding: 22px 28px; }
+  .sec-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 700;
+    color: var(--muted); letter-spacing: 0.16em;
+    text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: 7px;
+    margin-bottom: 8px;
+  }
+  .sec-label::before {
+    content: ''; width: 20px; height: 2px;
+    background: var(--navy); border-radius: 1px; opacity: 0.4;
+  }
+  .sec-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px; font-weight: 700;
+    color: var(--navy); letter-spacing: -0.02em;
+    line-height: 1.15; margin-bottom: 8px;
+  }
+  .sec-title em {
+    font-style: italic;
+    color: var(--navy);
+    opacity: 0.7;
+  }
+  .sec-lead {
+    font-size: 14px; color: var(--muted);
+    max-width: 760px; line-height: 1.6;
+    margin-bottom: 22px;
+  }
+
+  /* ========== CALENDAR ========== */
+  .cal-wrap {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    box-shadow: 0 2px 12px rgba(26,26,46,0.03);
+  }
+  .cal-week-tabs {
+    display: flex; gap: 4px; margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .cal-tab {
+    padding: 5px 10px;
+    background: var(--soft);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 11px; font-weight: 600;
+    color: var(--text); cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .cal-tab:hover { border-color: var(--navy); }
+  .cal-tab.active {
+    background: var(--navy); color: #fff; border-color: var(--navy);
+  }
+  .cal-tab .label { font-weight: 700; }
+  .cal-tab .range { color: var(--muted); margin-left: 4px; font-weight: 400; }
+  .cal-tab.active .range { color: rgba(255,255,255,0.65); }
+
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+  .dow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; font-weight: 700;
+    color: var(--muted); letter-spacing: 0.08em;
+    text-align: center; padding: 3px 0 5px;
+    text-transform: uppercase;
+  }
+  .day-cell {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 6px 7px 6px 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex; flex-direction: column;
+    min-height: 78px;
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+  }
+  .day-cell:hover {
+    transform: translateY(-1px);
+    border-color: var(--navy);
+    box-shadow: 0 4px 12px rgba(26,26,46,0.07);
+  }
+  .day-cell.empty {
+    background: transparent; border-style: dashed; opacity: 0.3;
+    cursor: default; pointer-events: none;
+    min-height: 78px;
+  }
+  .day-cell.empty:hover { transform: none; box-shadow: none; }
+  .day-cell-top {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 4px;
+  }
+  .day-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; font-weight: 800;
+    color: var(--navy); line-height: 1;
+  }
+  .day-month {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 7.5px; font-weight: 600;
+    color: var(--muted); text-transform: uppercase;
+    letter-spacing: 0.06em;
+    line-height: 1.1; margin-top: 1px;
+  }
+  .day-icon {
+    color: var(--navy);
+    opacity: 0.85;
+  }
+  .day-icon svg {
+    width: 14px; height: 14px;
+    stroke-width: 2;
+  }
+  .day-type {
+    font-size: 8px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.04em;
+    margin-top: auto;
+    line-height: 1.2;
+  }
+
+  /* Day type colors — muted left border, no background tint */
+  .day-cell.t-class { border-left: 2px solid var(--navy); }
+  .day-cell.t-class .day-type { color: var(--navy); }
+  .day-cell.t-class .day-icon { color: var(--navy); }
+
+  .day-cell.t-orient { border-left: 2px solid #c4a04a; }
+  .day-cell.t-orient .day-type { color: #92590b; }
+  .day-cell.t-orient .day-icon { color: #92590b; }
+
+  .day-cell.t-tour { border-left: 2px solid var(--neu-red); }
+  .day-cell.t-tour .day-type { color: var(--neu-red); }
+  .day-cell.t-tour .day-icon { color: var(--neu-red); }
+
+  .day-cell.t-trip { border-left: 2px solid #c4a04a; }
+  .day-cell.t-trip .day-type { color: #92590b; }
+  .day-cell.t-trip .day-icon { color: #92590b; }
+
+  .day-cell.t-weekend { border-left: 2px solid #9580c5; }
+  .day-cell.t-weekend .day-type { color: #5b21b6; }
+  .day-cell.t-weekend .day-icon { color: #5b21b6; }
+
+  .day-cell.t-free { border-left: 2px solid #e2e6eb; }
+  .day-cell.t-free .day-type { color: var(--muted); }
+  .day-cell.t-free .day-icon { color: var(--muted); }
+
+  .day-cell.t-holiday { border-left: 2px solid #d49855; }
+  .day-cell.t-holiday .day-type { color: #b45309; }
+  .day-cell.t-holiday .day-icon { color: #b45309; }
+
+  .day-cell.t-travel { border-left: 2px solid #5a8e9a; }
+  .day-cell.t-travel .day-type { color: #155e75; }
+  .day-cell.t-travel .day-icon { color: #155e75; }
+
+  .day-cell.t-milan { border-left: 2px solid #c44763; }
+  .day-cell.t-milan .day-type { color: #9f1239; }
+  .day-cell.t-milan .day-icon { color: #9f1239; }
+
+  .day-flag {
+    position: absolute; top: 4px; right: 4px;
+    color: #f59e0b;
+  }
+  .day-flag svg { width: 11px; height: 11px; stroke-width: 2.5; }
+
+  /* Calendar 2/3 + Side panel 1/3 layout */
+  .cal-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+    gap: 14px;
+    align-items: start;
+  }
+  .cal-main { min-width: 0; }
+  .cal-side {
+    position: sticky;
+    top: 80px;
+    align-self: start;
+  }
+  .day-panel {
+    background: linear-gradient(135deg, #fff 0%, #fafbfc 100%);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px 12px;
+    min-height: 320px;
+    box-shadow: 0 2px 12px rgba(26,26,46,0.04);
+  }
+  .day-panel-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.55;
+  }
+  .day-panel-empty .ico {
+    width: 32px; height: 32px;
+    margin: 0 auto 10px;
+    color: var(--muted);
+    opacity: 0.5;
+  }
+  .day-panel-empty .ico svg { width: 32px; height: 32px; stroke-width: 1.5; }
+  .day-panel-empty strong {
+    display: block;
+    color: var(--navy);
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  @media (max-width: 900px) {
+    .cal-layout { grid-template-columns: 1fr; }
+    .cal-side { position: static; }
+  }
+
+  /* Calendar legend */
+  .cal-legend {
+    display: flex; gap: 11px; flex-wrap: wrap;
+    margin-top: 12px; padding-top: 11px;
+    border-top: 1px solid var(--border);
+    font-size: 10px; color: var(--muted);
+  }
+  .cal-legend .lg {
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .cal-legend .lg .sw {
+    width: 9px; height: 9px; border-radius: 2px;
+  }
+
+  /* ========== DAY DETAIL CARDS ========== */
+  .day-cards { display: flex; flex-direction: column; gap: 10px; }
+  .day-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--navy);
+    border-radius: 10px;
+    padding: 14px 18px;
+    scroll-margin-top: 90px;
+    transition: box-shadow 0.15s;
+  }
+  .day-card:hover { box-shadow: 0 4px 14px rgba(26,26,46,0.05); }
+  .day-card.t-orient { border-left-color: var(--gold); }
+  .day-card.t-tour { border-left-color: var(--neu-red); }
+  .day-card.t-trip { border-left-color: var(--it-green); }
+  .day-card.t-weekend { border-left-color: #7c3aed; }
+  .day-card.t-free { border-left-color: #cbd5e1; }
+  .day-card.t-holiday { border-left-color: #f59e0b; }
+  .day-card.t-travel { border-left-color: #0891b2; }
+  .day-card.t-milan { border-left-color: #e11d48; }
+
+  .dc-header {
+    display: flex; align-items: flex-start; gap: 14px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .dc-date {
+    background: var(--soft);
+    padding: 7px 10px; border-radius: 8px;
+    text-align: center; min-width: 60px;
+    border: 1px solid var(--border);
+  }
+  .dc-date .dn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px; font-weight: 800;
+    color: var(--navy); line-height: 1;
+  }
+  .dc-date .dm {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px; font-weight: 700;
+    color: var(--muted); text-transform: uppercase;
+    letter-spacing: 0.06em; margin-top: 1px;
+  }
+  .dc-date .dw {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; font-weight: 600;
+    color: var(--neu-red); margin-top: 3px;
+    letter-spacing: 0.05em;
+  }
+
+  .dc-info { flex: 1; min-width: 240px; }
+  .dc-tag {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 9.5px; font-weight: 700;
+    padding: 2px 8px; border-radius: 10px;
+    text-transform: uppercase; letter-spacing: 0.05em;
+    margin-bottom: 5px;
+  }
+  .dc-tag svg { width: 11px; height: 11px; stroke-width: 2.5; }
+  .dc-tag.t-orient { background: #fbf8f0; color: #92590b; }
+  .dc-tag.t-class { background: #f5f6f9; color: var(--navy); }
+  .dc-tag.t-tour { background: #fbf6f7; color: var(--neu-red); }
+  .dc-tag.t-trip { background: #fbf8f0; color: #92590b; }
+  .dc-tag.t-weekend { background: #f7f5fb; color: #5b21b6; }
+  .dc-tag.t-free { background: var(--soft); color: var(--muted); }
+  .dc-tag.t-holiday { background: #fcf6ec; color: #b45309; }
+  .dc-tag.t-travel { background: #f3f9fa; color: #155e75; }
+  .dc-tag.t-milan { background: #fbf5f7; color: #9f1239; }
+
+  .dc-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px; font-weight: 700;
+    color: var(--navy); line-height: 1.2;
+    margin-bottom: 3px;
+  }
+  .dc-subtitle {
+    font-size: 12px; color: var(--muted);
+    display: flex; align-items: center; gap: 6px;
+    flex-wrap: wrap;
+    line-height: 1.45;
+  }
+  .dc-subtitle .sep { color: #cbd5e1; }
+  .dc-subtitle .ico { width: 11px; height: 11px; flex-shrink: 0; }
+
+  .dc-body {
+    display: grid;
+    grid-template-columns: 1fr 180px;
+    gap: 16px;
+    align-items: start;
+  }
+  .dc-body.no-map { grid-template-columns: 1fr; }
+  .dc-content { font-size: 13px; color: var(--text); line-height: 1.55; }
+  .dc-content p + p { margin-top: 6px; }
+  .dc-content strong { color: var(--navy); }
+  .dc-content ul {
+    list-style: none; margin-top: 6px;
+  }
+  .dc-content ul li {
+    padding-left: 14px; position: relative;
+    margin-bottom: 3px; font-size: 12.5px;
+  }
+  .dc-content ul li::before {
+    content: '·'; position: absolute; left: 4px;
+    color: var(--neu-red); font-weight: 700;
+  }
+
+  .dc-mini-map {
+    background: linear-gradient(135deg, #eef2f7, #d8e3ee);
+    border-radius: 8px;
+    height: 110px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .dc-mini-map svg { width: 100%; height: 100%; }
+
+  .dc-image {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 14px rgba(26,26,46,0.08);
+    aspect-ratio: 1 / 1;
+    background: var(--soft);
+    transition: transform 0.3s;
+  }
+  .dc-image img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .day-card:hover .dc-image { transform: scale(1.015); }
+
+  /* Hero image (cover) */
+  .hero-image {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Destinations map section */
+  .dest-map-wrap {
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 20px rgba(26,26,46,0.06);
+    height: 380px;
+    background: #d8e3ee;
+  }
+  #italyMap { width: 100%; height: 100%; }
+
+  /* Trip timeline — single horizontal row, 3 colors, dots aligned */
+  .trip-timeline-wrap {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 26px 28px 20px;
+    box-shadow: 0 2px 12px rgba(26,26,46,0.04);
+    overflow-x: auto;
+  }
+  .trip-timeline {
+    display: grid;
+    grid-template-columns: repeat(11, minmax(88px, 1fr));
+    align-items: start;
+    position: relative;
+    min-width: 1000px;
+  }
+  .trip-timeline::before {
+    content: '';
+    position: absolute;
+    left: 4.5%; right: 4.5%;
+    top: 30px;
+    height: 1.5px;
+    background-image: repeating-linear-gradient(90deg,
+      rgba(26,26,46,0.18) 0 5px, transparent 5px 10px);
+    z-index: 0;
+  }
+  .tt-item {
+    position: relative;
+    z-index: 1;
+    padding: 0 4px;
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--text);
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center;
+    transition: transform 0.18s ease;
+  }
+  .tt-item:hover { transform: translateY(-3px); }
+
+  .tt-date {
+    height: 14px;
+    line-height: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    margin-bottom: 9px;
+    transition: color 0.15s;
+  }
+  .tt-item:hover .tt-date { color: var(--neu-red); }
+
+  .tt-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--navy);
+    box-shadow: 0 0 0 2.5px #fff;
+    transition: all 0.18s ease;
+    flex-shrink: 0;
+    margin-bottom: 12px;
+    opacity: 0.55;
+  }
+  .tt-item:hover .tt-dot {
+    transform: scale(1.4);
+    opacity: 1;
+  }
+  /* 3 type variants — only industry-tour gets the red accent */
+  .tt-dot.t-cultural { background: var(--navy); opacity: 0.45; }
+  .tt-dot.t-industry { background: var(--neu-red); opacity: 0.85; }
+  .tt-dot.t-capstone { background: var(--navy); opacity: 0.85; }
+
+  .tt-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1.25;
+    margin-bottom: 3px;
+    transition: color 0.15s;
+  }
+  .tt-item:hover .tt-name { color: var(--neu-red); }
+  .tt-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    color: var(--muted);
+    line-height: 1.25;
+  }
+
+  .tt-legend {
+    display: flex; gap: 18px; flex-wrap: wrap;
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    font-size: 11px; color: var(--muted);
+    justify-content: center;
+  }
+  .tt-legend .lg { display: inline-flex; align-items: center; gap: 6px; }
+  .tt-legend .sw {
+    width: 10px; height: 10px; border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 1.2px rgba(0,0,0,0.15);
+  }
+
+  /* ========== WEEKLY SCHEDULE TABLES ========== */
+  .wk-stack { display: flex; flex-direction: column; gap: 18px; }
+  .wk-schedule {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: #fff;
+    box-shadow: 0 2px 12px rgba(26,26,46,0.04);
+  }
+  .wk-schedule-head {
+    background: var(--navy);
+    color: #fff;
+    padding: 10px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    flex-wrap: wrap; gap: 8px;
+  }
+  .wk-schedule-head .wk-name { font-size: 13px; font-weight: 800; letter-spacing: 0.04em; }
+  .wk-schedule-head .wk-dates { font-size: 11px; color: rgba(255,255,255,0.65); font-weight: 500; }
+  .wk-schedule-head .wk-tag {
+    font-size: 9px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    padding: 3px 8px; border-radius: 10px;
+    background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.9);
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  .wk-schedule-head .wk-tag.milan { background: rgba(225,29,72,0.30); border-color: rgba(225,29,72,0.5); color: #fff; }
+
+  .wk-table-wrap { overflow-x: auto; }
+  .wk-table {
+    width: 100%; min-width: 760px;
+    border-collapse: separate;
+    border-spacing: 1px;
+    background: var(--border);
+  }
+  .wk-table th, .wk-table td {
+    padding: 6px 8px;
+    background: #fff;
+    text-align: left;
+    vertical-align: middle;
+  }
+  .wk-table thead th {
+    background: var(--soft);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    padding: 8px;
+    text-align: center;
+  }
+  .wk-table thead th.time-col { width: 84px; text-align: right; }
+  .wk-table thead th .dn { color: var(--navy); font-size: 13px; font-weight: 800; }
+  .wk-table thead th.flagged .dn { color: #b45309; }
+  .wk-table thead th .dn-suffix {
+    display: inline-block; margin-left: 4px;
+    color: #b45309; font-size: 9px; font-weight: 700;
+  }
+  .wk-table tbody td.time-col {
+    background: var(--soft);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--muted);
+    text-align: right;
+    white-space: nowrap;
+  }
+  .wk-cell {
+    font-size: 10.5px;
+    font-weight: 600;
+    line-height: 1.25;
+    min-height: 30px;
+  }
+  .wk-cell-empty {
+    background: repeating-linear-gradient(45deg, transparent 0 6px, #f3f4f7 6px 12px) !important;
+  }
+  /* Cell type colors — muted, single-accent palette */
+  .wk-cell.t-class { background: #f7f8fa; color: var(--navy); border-left: 2px solid var(--navy); }
+  .wk-cell.t-italian { background: #f5faf6; color: var(--text); border-left: 2px solid var(--it-green); }
+  .wk-cell.t-tour { background: #fbf6f7; color: var(--text); border-left: 2px solid var(--neu-red); }
+  .wk-cell.t-trip { background: #fbf8f0; color: var(--text); border-left: 2px solid #c4a04a; }
+  .wk-cell.t-weekend { background: #f8f6fb; color: var(--text); border-left: 2px solid #9580c5; }
+  .wk-cell.t-orient { background: #fbf8f0; color: var(--text); border-left: 2px solid #c4a04a; }
+  .wk-cell.t-free { background: #fafbfc; color: var(--muted); font-style: italic; border-left: 2px solid #e2e6eb; }
+  .wk-cell.t-lunch { background: #fcf9ed; color: var(--muted); border-left: 2px solid #d4b06a; }
+  .wk-cell.t-holiday { background: #fcf6ec; color: var(--text); border-left: 2px solid #d49855; }
+  .wk-cell.t-travel { background: #f4fafb; color: var(--text); border-left: 2px solid #5a8e9a; }
+  .wk-cell.t-milan { background: #fbf5f7; color: var(--text); border-left: 2px solid #c44763; }
+  .wk-cell.t-culture { background: #f5faf6; color: var(--text); border-left: 2px solid var(--it-green); }
+  .wk-cell.t-evening { background: #fafbfc; color: var(--muted); font-style: italic; border-left: 2px solid #b1a3c9; }
+  .wk-cell.t-exam {
+    background: #fbf3f5;
+    color: var(--neu-red);
+    font-weight: 800;
+    border-left: 3px solid var(--neu-red);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 10px;
+  }
+
+  .wk-legend {
+    display: flex; gap: 10px; flex-wrap: wrap;
+    padding: 10px 16px;
+    background: #fafbfc;
+    border-top: 1px solid var(--border);
+    font-size: 10px; color: var(--muted);
+  }
+  .wk-legend .lg { display: inline-flex; align-items: center; gap: 4px; }
+  .wk-legend .sw { width: 9px; height: 9px; border-radius: 2px; }
+
+  /* ========== DAY POPOVER (click cell → see timeline) ========== */
+  .day-popover {
+    position: absolute;
+    z-index: 90;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 16px 50px rgba(26,26,46,0.22), 0 4px 12px rgba(26,26,46,0.08);
+    padding: 14px 16px 12px;
+    width: 280px;
+    display: none;
+  }
+  .day-popover.open {
+    display: block;
+    animation: popoverIn 0.18s ease-out;
+  }
+  @keyframes popoverIn {
+    from { opacity: 0; transform: translateY(-4px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .dp-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .dp-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--neu-red);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+  .dp-date .dn {
+    color: var(--navy); font-size: 18px; font-weight: 800;
+    letter-spacing: -0.02em; margin-right: 4px;
+  }
+  .dp-date .dw { color: var(--muted); margin-left: 4px; }
+  .dp-tag {
+    font-size: 9px; font-weight: 700;
+    padding: 2px 7px; border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 4px;
+    display: inline-block;
+  }
+  .dp-tag.t-orient { background: rgba(212,168,75,0.15); color: #92590b; }
+  .dp-tag.t-class { background: rgba(26,26,46,0.08); color: var(--navy); }
+  .dp-tag.t-tour { background: rgba(196,18,48,0.10); color: var(--neu-red); }
+  .dp-tag.t-trip { background: rgba(212,168,75,0.16); color: #92590b; }
+  .dp-tag.t-weekend { background: rgba(124,58,237,0.10); color: #5b21b6; }
+  .dp-tag.t-free { background: var(--soft); color: var(--muted); }
+  .dp-tag.t-holiday { background: rgba(245,158,11,0.14); color: #b45309; }
+  .dp-tag.t-travel { background: rgba(8,145,178,0.10); color: #155e75; }
+  .dp-tag.t-milan { background: rgba(225,29,72,0.10); color: #9f1239; }
+  .dp-close {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--soft);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    font-size: 14px; line-height: 1;
+    color: var(--muted);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .dp-close:hover { background: var(--neu-red); color: #fff; border-color: var(--neu-red); }
+
+  .dp-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px; font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 12px;
+    line-height: 1.25;
+  }
+
+  .dp-timeline {
+    position: relative;
+    padding-left: 24px;
+    margin-bottom: 10px;
+  }
+  .dp-timeline::before {
+    content: '';
+    position: absolute; left: 6px; top: 8px; bottom: 8px;
+    width: 2px;
+    background: var(--border);
+  }
+  .dp-tl-row {
+    position: relative;
+    margin-bottom: 9px;
+  }
+  .dp-tl-row:last-child { margin-bottom: 0; }
+  .dp-tl-row::before {
+    content: '';
+    position: absolute; left: -22px; top: 4px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--soft);
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 1.5px var(--border);
+  }
+  .dp-tl-row.t-class::before { background: var(--navy); box-shadow: 0 0 0 1.5px var(--navy); }
+  .dp-tl-row.t-italian::before { background: var(--it-green); box-shadow: 0 0 0 1.5px var(--it-green); }
+  .dp-tl-row.t-culture::before { background: var(--it-green); box-shadow: 0 0 0 1.5px var(--it-green); }
+  .dp-tl-row.t-tour::before { background: var(--neu-red); box-shadow: 0 0 0 1.5px var(--neu-red); }
+  .dp-tl-row.t-trip::before { background: var(--gold); box-shadow: 0 0 0 1.5px var(--gold); }
+  .dp-tl-row.t-weekend::before { background: #7c3aed; box-shadow: 0 0 0 1.5px #7c3aed; }
+  .dp-tl-row.t-orient::before { background: var(--gold); box-shadow: 0 0 0 1.5px var(--gold); }
+  .dp-tl-row.t-lunch::before { background: #fcd34d; box-shadow: 0 0 0 1.5px #fcd34d; }
+  .dp-tl-row.t-evening::before { background: #a78bfa; box-shadow: 0 0 0 1.5px #a78bfa; }
+  .dp-tl-row.t-holiday::before { background: #f59e0b; box-shadow: 0 0 0 1.5px #f59e0b; }
+  .dp-tl-row.t-travel::before { background: #0891b2; box-shadow: 0 0 0 1.5px #0891b2; }
+  .dp-tl-row.t-milan::before { background: #e11d48; box-shadow: 0 0 0 1.5px #e11d48; }
+  .dp-tl-row.t-free::before { background: #fff; box-shadow: 0 0 0 1.5px #cbd5e1; }
+  .dp-tl-row.t-exam::before {
+    background: var(--neu-red);
+    box-shadow: 0 0 0 1.5px var(--neu-red), 0 0 0 4px rgba(196,18,48,0.18);
+    width: 12px; height: 12px; left: -23px; top: 3px;
+  }
+
+  .dp-tl-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+  .dp-tl-text {
+    font-size: 12px; font-weight: 600;
+    color: var(--text);
+    line-height: 1.35;
+    margin-top: 1px;
+  }
+  .dp-tl-row.t-exam .dp-tl-text { color: var(--neu-red); font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; font-size: 11px; }
+  .dp-tl-row.t-free .dp-tl-text { color: var(--muted); font-style: italic; font-weight: 500; }
+
+  .dp-footer {
+    display: flex; gap: 6px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+  .dp-link {
+    flex: 1; padding: 6px 10px;
+    border-radius: 7px;
+    font-size: 11px; font-weight: 600;
+    background: var(--soft);
+    color: var(--navy);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+    text-align: center;
+    transition: all 0.15s;
+  }
+  .dp-link:hover { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .dp-link svg { width: 11px; height: 11px; stroke-width: 2; }
+
+  .dp-arrow {
+    position: absolute;
+    width: 12px; height: 12px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-bottom: none; border-right: none;
+    transform: rotate(45deg);
+    top: -7px;
+  }
+
+  .day-cell.popped {
+    border-color: var(--neu-red) !important;
+    box-shadow: 0 0 0 2px rgba(196,18,48,0.18) !important;
+  }
+
+  /* ========== TRIP MODAL (real MapLibre map) ========== */
+  .trip-modal {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(15,15,25,0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    display: none;
+    align-items: center; justify-content: center;
+    padding: 28px;
+  }
+  .trip-modal.open { display: flex; animation: lbFadeIn 0.18s ease-out; }
+  .tm-content {
+    background: #fff;
+    border-radius: 16px;
+    max-width: 1180px;
+    width: 100%;
+    max-height: 88vh;
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+  }
+  .tm-map {
+    background: #d8e3ee;
+    position: relative;
+    min-height: 540px;
+  }
+  .tm-map-canvas { width: 100%; height: 100%; }
+  .tm-info {
+    padding: 22px 22px 18px;
+    overflow-y: auto;
+    border-left: 1px solid var(--border);
+    background: #fafbfc;
+    display: flex; flex-direction: column;
+  }
+  .tm-close {
+    position: absolute; top: 22px; right: 22px;
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.94);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 22px; line-height: 1;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    z-index: 5;
+    transition: all 0.15s;
+  }
+  .tm-close:hover {
+    background: var(--neu-red); color: #fff; border-color: var(--neu-red);
+    transform: scale(1.05);
+  }
+  .tm-pill {
+    font-size: 9px; font-weight: 700;
+    padding: 2px 9px; border-radius: 10px;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    align-self: flex-start;
+    margin-bottom: 8px;
+  }
+  .tm-pill.t-trip { background: rgba(212,168,75,0.16); color: #92590b; border: 1px solid rgba(212,168,75,0.25); }
+  .tm-pill.t-tour { background: rgba(196,18,48,0.10); color: var(--neu-red); border: 1px solid rgba(196,18,48,0.2); }
+  .tm-pill.t-weekend { background: rgba(124,58,237,0.10); color: #5b21b6; border: 1px solid rgba(124,58,237,0.22); }
+  .tm-pill.t-milan { background: rgba(225,29,72,0.10); color: #9f1239; border: 1px solid rgba(225,29,72,0.22); }
+  .tm-pill.t-holiday { background: rgba(245,158,11,0.14); color: #b45309; border: 1px solid rgba(245,158,11,0.25); }
+
+  .tm-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; font-weight: 700;
+    color: var(--navy); line-height: 1.2;
+    margin-bottom: 6px;
+  }
+  .tm-meta {
+    font-size: 11.5px; color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    display: flex; gap: 6px; flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .tm-meta strong { color: var(--it-green); font-weight: 700; }
+  .tm-meta .sep { color: #cbd5e1; }
+  .tm-notes {
+    font-size: 13px; color: var(--text);
+    line-height: 1.55; margin-bottom: 16px;
+    padding: 10px 12px;
+    background: #fff;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .tm-h4 {
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--neu-red);
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .tm-h4 svg { width: 11px; height: 11px; }
+  .tm-waypoints {
+    list-style: none;
+    margin-bottom: 18px;
+    flex: 1;
+  }
+  .tm-waypoints li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    line-height: 1.45;
+    display: flex; gap: 8px;
+  }
+  .tm-waypoints li:last-child { border-bottom: none; }
+  .tm-waypoints .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 800;
+    color: #fff;
+    background: var(--gold);
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .tm-waypoints .num.start { background: var(--it-green); }
+  .tm-waypoints .num.end { background: var(--neu-red); }
+  .tm-waypoints strong {
+    display: block;
+    color: var(--navy);
+    font-weight: 700;
+    margin-bottom: 2px;
+    font-size: 13px;
+  }
+  .tm-waypoints .desc { color: var(--muted); font-size: 11.5px; }
+  .tm-footer {
+    display: flex; gap: 8px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+  .tm-link {
+    flex: 1; padding: 9px 12px;
+    border-radius: 8px;
+    font-size: 12px; font-weight: 600;
+    background: var(--navy);
+    color: #fff;
+    border: 1px solid var(--navy);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    transition: all 0.15s;
+  }
+  .tm-link:hover { background: var(--neu-red); border-color: var(--neu-red); }
+  .tm-link svg { width: 12px; height: 12px; }
+  .tm-link.secondary { background: #fff; color: var(--navy); }
+  .tm-link.secondary:hover { background: var(--soft); border-color: var(--navy); color: var(--navy); }
+
+  .tm-marker {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--gold);
+    border: 3px solid #fff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3), 0 0 0 5px rgba(212,168,75,0.18);
+    color: #fff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+  .tm-marker.start { background: var(--it-green); box-shadow: 0 2px 10px rgba(0,0,0,0.3), 0 0 0 5px rgba(0,146,70,0.22); }
+  .tm-marker.end { background: var(--neu-red); width: 28px; height: 28px; box-shadow: 0 2px 10px rgba(0,0,0,0.3), 0 0 0 6px rgba(196,18,48,0.22); }
+
+  @media (max-width: 900px) {
+    .tm-content { grid-template-columns: 1fr; max-height: 95vh; }
+    .tm-map { min-height: 320px; }
+    .trip-modal { padding: 12px; }
+  }
+
+  /* ========== LIGHTBOX ========== */
+  .dc-image img, .hero-image { cursor: zoom-in; }
+  .lightbox-overlay {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(15, 15, 25, 0.94);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    display: none;
+    align-items: center; justify-content: center;
+    padding: 40px;
+    cursor: zoom-out;
+  }
+  .lightbox-overlay.open {
+    display: flex;
+    animation: lbFadeIn 0.2s ease-out;
+  }
+  .lightbox-overlay img {
+    max-width: 94vw; max-height: 88vh;
+    border-radius: 14px;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+    cursor: default;
+    object-fit: contain;
+  }
+  .lightbox-close {
+    position: absolute; top: 22px; right: 22px;
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    font-size: 22px; line-height: 1;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(10px);
+    transition: all 0.15s;
+  }
+  .lightbox-close:hover {
+    background: rgba(255,255,255,0.22);
+    border-color: rgba(255,255,255,0.35);
+    transform: scale(1.05);
+  }
+  .lightbox-caption {
+    position: absolute; bottom: 26px; left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(10px);
+    color: #fff;
+    padding: 8px 18px;
+    border-radius: 22px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid rgba(255,255,255,0.12);
+    max-width: 80vw;
+    text-align: center;
+  }
+  @keyframes lbFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  body.lb-open { overflow: hidden; }
+
+  /* Day-card vertical timeline (replaces body paragraphs) */
+  .dc-tl {
+    position: relative;
+    padding-left: 18px;
+    margin-bottom: 4px;
+  }
+  .dc-tl::before {
+    content: '';
+    position: absolute;
+    left: 4px; top: 7px; bottom: 7px;
+    width: 1px;
+    background: var(--border);
+  }
+  .dc-tl-row {
+    position: relative;
+    margin-bottom: 6px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .dc-tl-row:last-child { margin-bottom: 0; }
+  .dc-tl-row::before {
+    content: '';
+    position: absolute;
+    left: -17px; top: 5px;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--muted);
+    box-shadow: 0 0 0 2.5px #fff;
+    z-index: 1;
+  }
+  .dc-tl-row.t-class::before { background: var(--navy); }
+  .dc-tl-row.t-italian::before { background: var(--it-green); }
+  .dc-tl-row.t-culture::before { background: var(--it-green); }
+  .dc-tl-row.t-tour::before { background: var(--neu-red); }
+  .dc-tl-row.t-trip::before { background: var(--gold); }
+  .dc-tl-row.t-weekend::before { background: #7c3aed; }
+  .dc-tl-row.t-orient::before { background: var(--gold); }
+  .dc-tl-row.t-lunch::before { background: #f5b942; }
+  .dc-tl-row.t-evening::before { background: #a78bfa; }
+  .dc-tl-row.t-holiday::before { background: #f59e0b; }
+  .dc-tl-row.t-travel::before { background: #0891b2; }
+  .dc-tl-row.t-milan::before { background: #e11d48; }
+  .dc-tl-row.t-free::before { background: #cbd5e1; }
+  .dc-tl-row.t-exam::before {
+    background: var(--neu-red);
+    box-shadow: 0 0 0 2.5px #fff, 0 0 0 4.5px rgba(196,18,48,0.22);
+    width: 8px; height: 8px;
+    left: -18px; top: 4px;
+  }
+
+  .dc-tl-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+    width: 86px;
+    padding-top: 1px;
+    line-height: 1.3;
+  }
+  .dc-tl-text {
+    flex: 1;
+    min-width: 0;
+  }
+  .dc-tl-label {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.35;
+  }
+  .dc-tl-row.t-exam .dc-tl-label {
+    color: var(--neu-red);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+  .dc-tl-row.t-free .dc-tl-label {
+    color: var(--muted);
+    font-style: italic;
+    font-weight: 500;
+  }
+
+  /* Wikipedia links */
+  .dc-tl-label a, .dc-content a.wiki {
+    color: var(--neu-red);
+    text-decoration: none;
+    border-bottom: 1px dashed rgba(196,18,48,0.35);
+    font-weight: 600;
+    transition: all 0.15s;
+  }
+  .dc-tl-label a:hover, .dc-content a.wiki:hover {
+    background: rgba(196,18,48,0.06);
+    border-bottom-color: var(--neu-red);
+  }
+  .dc-tl-label a::after, .dc-content a.wiki::after {
+    content: '↗';
+    font-size: 8.5px;
+    margin-left: 2px;
+    opacity: 0.55;
+    vertical-align: super;
+    text-decoration: none;
+    border: none;
+  }
+
+  /* Booking links */
+  .dc-links {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    margin-top: 10px;
+    padding-top: 9px;
+    border-top: 1px dashed var(--border);
+  }
+  .dc-link {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 9px; border-radius: 6px;
+    font-size: 11px; font-weight: 600;
+    color: var(--muted);
+    background: var(--soft);
+    border: 1px solid var(--border);
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+  .dc-link:hover { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .dc-link svg { width: 11px; height: 11px; stroke-width: 2; }
+  .dc-link.primary { background: var(--it-green); color: #fff; border-color: var(--it-green); }
+  .dc-link.primary:hover { background: #007a3a; border-color: #007a3a; }
+  .dc-link.alt { background: rgba(196,18,48,0.06); color: var(--neu-red); border-color: rgba(196,18,48,0.18); }
+  .dc-link.alt:hover { background: var(--neu-red); color: #fff; border-color: var(--neu-red); }
+
+  /* Schedule strip per day card */
+  .dc-sched {
+    margin-top: 14px;
+    padding: 10px 12px;
+    background: var(--soft);
+    border-radius: 10px;
+  }
+  .dc-sched-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--muted); margin-bottom: 7px;
+  }
+  .sch-bar2 {
+    display: flex; gap: 1px; height: 14px; width: 100%;
+    border-radius: 4px; overflow: hidden;
+    margin-bottom: 6px;
+  }
+  .sch-bar2 > span { display: block; height: 100%; }
+  .sch-bar2 .commute { background: #cbd5e1; }
+  .sch-bar2 .block { background: var(--navy); }
+  .sch-bar2 .br { background: #fbbf24; }
+  .sch-bar2 .lunch { background: #fcd34d; }
+  .sch-bar2 .culture { background: var(--it-green); }
+  .sch-bar2 .free { background: var(--soft); border: 1px dashed #cbd5e1; }
+  .sch-bar2 .visit { background: var(--neu-red); }
+  .sch-bar2 .travel { background: #0891b2; }
+  .dc-sched .blocks {
+    display: flex; gap: 14px; font-size: 11px; color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    flex-wrap: wrap;
+  }
+  .dc-sched .blocks span strong { color: var(--navy); margin-right: 4px; }
+
+  .dc-tags {
+    margin-top: 12px;
+    display: flex; gap: 6px; flex-wrap: wrap;
+  }
+  .dc-pill {
+    font-size: 10.5px; font-weight: 600;
+    padding: 3px 9px; border-radius: 12px;
+    background: var(--soft); color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .dc-pill.warn { background: rgba(245,158,11,0.10); color: #b45309; border-color: rgba(245,158,11,0.25); }
+  .dc-pill.must { background: rgba(196,18,48,0.08); color: var(--neu-red); border-color: rgba(196,18,48,0.18); }
+  .dc-pill.gold { background: rgba(212,168,75,0.12); color: #92590b; border-color: rgba(212,168,75,0.25); }
+
+  /* ========== LOGISTICS ========== */
+  .log-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+  }
+  .log-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 18px;
+  }
+  .log-card h3 {
+    font-size: 13px; font-weight: 700;
+    color: var(--navy); margin-bottom: 8px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .log-card h3 svg { width: 14px; height: 14px; color: var(--neu-red); }
+  .log-card p { font-size: 12.5px; color: var(--text); line-height: 1.55; }
+  .log-card ul { list-style: none; font-size: 12.5px; color: var(--text); }
+  .log-card ul li { padding-left: 14px; position: relative; margin-bottom: 4px; line-height: 1.5; }
+  .log-card ul li::before { content: '·'; position: absolute; left: 5px; color: var(--it-green); font-weight: 700; }
+  .log-card.warn { border-left: 3px solid #f59e0b; }
+  .log-card.warn h3 svg { color: #f59e0b; }
+
+  /* ========== FOOTER ========== */
+  footer.app {
+    background: var(--navy);
+    color: rgba(255,255,255,0.75);
+    padding: 40px 28px 30px;
+    margin-top: 40px;
+  }
+  .foot-wrap {
+    max-width: 1280px; margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    gap: 36px;
+    margin-bottom: 28px;
+  }
+  .foot-wrap h4 {
+    font-size: 11px; font-weight: 700; color: #fff;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 12px;
+  }
+  .foot-wrap p { font-size: 13px; line-height: 1.6; }
+  .foot-wrap a {
+    color: rgba(255,255,255,0.65); text-decoration: none;
+    font-size: 13px; line-height: 1.9;
+    display: block;
+  }
+  .foot-wrap a:hover { color: #fff; }
+  .foot-bottom {
+    max-width: 1280px; margin: 0 auto;
+    padding-top: 22px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 11px; color: rgba(255,255,255,0.5);
+    flex-wrap: wrap; gap: 14px;
+  }
+  .foot-bottom .brand { font-family: 'JetBrains Mono', monospace; }
+  .foot-bottom .brand strong { color: #fff; }
+
+  /* MapLibre attribution + custom marker tweaks */
+  .maplibregl-popup-content {
+    font-family: 'Outfit', sans-serif;
+    padding: 10px 14px; border-radius: 8px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+  }
+  .maplibregl-popup-content strong { color: var(--navy); display: block; margin-bottom: 3px; }
+  .maplibregl-popup-content em { color: var(--muted); font-style: normal; font-size: 12px; }
+  .map-marker {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--neu-red); border: 3px solid #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25), 0 0 0 5px rgba(196,18,48,0.18);
+    cursor: pointer;
+  }
+  .map-marker.parma { background: var(--it-green); width: 28px; height: 28px; box-shadow: 0 2px 10px rgba(0,0,0,0.3), 0 0 0 6px rgba(0,146,70,0.22); }
+  .map-marker.milan { background: #e11d48; width: 26px; height: 26px; }
+  .map-marker.weekend { background: #7c3aed; }
+  .map-marker.tour { background: var(--neu-red); }
+  .map-marker.trip { background: var(--gold); }
+
+  /* Scrollbars */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.3); }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; gap: 30px; }
+    .hero-left h1 { font-size: 44px; }
+    .hero-stats { grid-template-columns: 1fr 1fr; }
+    .hero-right { height: 280px; }
+    .dc-body { grid-template-columns: 1fr; }
+    .foot-wrap { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .head-titles h1 { font-size: 13px; }
+    .head-titles p { font-size: 10px; }
+    nav.app-nav { display: none; }
+    .cal-grid { gap: 4px; }
+    .day-cell { padding: 4px 5px; }
+    .day-num { font-size: 14px; }
+    .day-type { font-size: 7.5px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== HEADER ========== -->
+<header class="app">
+  <div class="head-wrap">
+    <div class="doc-logo">
+      <span class="br">[</span>
+      <span class="tx">DOC<sup>2027</sup></span>
+      <span class="br">]</span>
+    </div>
+    <span class="flag-stripe"><span></span><span></span><span></span></span>
+    <div class="head-titles">
+      <h1>The Italian Corridor</h1>
+      <p><strong>Summer 1, 2027</strong> · University of Parma · 4 weeks · 27 May → 26 Jun</p>
+    </div>
+    <nav class="app-nav">
+      <a href="#overview">Overview</a>
+      <a href="#calendar">Calendar</a>
+      <a href="#days">Day-by-Day</a>
+      <a href="#logistics">Logistics</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ========== HERO ========== -->
+<div class="hero-wrap">
+  <div class="hero" id="overview">
+    <div class="hero-left">
+      <div class="eyebrow">Northeastern Dialogue of Civilizations · Summer 1, 2027</div>
+      <h1>The <em>Italian</em><br>Corridor</h1>
+      <p class="lead">
+        Four weeks of <strong>technology, innovation, and culture</strong> across Italy's Emilia-Romagna manufacturing heartland — anchored at the <strong>University of Parma</strong>, with a final-week capstone at <strong>Politecnico di Milano</strong>. Open to all majors. Engineering meets espresso.
+      </p>
+      <div class="hero-stats">
+        <div class="h-stat"><div class="v">31<span class="u">d</span></div><div class="l">Days in country</div></div>
+        <div class="h-stat"><div class="v">8</div><div class="l">Industry tours</div></div>
+        <div class="h-stat"><div class="v">6</div><div class="l">Day trips</div></div>
+        <div class="h-stat"><div class="v">3</div><div class="l">Group dinners</div></div>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <img src="images/styleE_fellini_cinema.png" alt="The Italian Corridor — sun-drenched piazza scene" class="hero-image">
+    </div>
+  </div>
+</div>
+
+<!-- ========== PARTNER BAR ========== -->
+<div class="partners">
+  <div class="partners-wrap">
+    <span class="partners-label">Academic partners</span>
+    <span class="partner-pill"><i data-lucide="graduation-cap" class="ico"></i> Northeastern University <em>· faculty lead</em></span>
+    <span class="partner-pill"><i data-lucide="building" class="ico"></i> Università degli Studi di Parma <em>· primary host</em></span>
+    <span class="partner-pill"><i data-lucide="landmark" class="ico"></i> Politecnico di Milano · GSoM <em>· capstone week</em></span>
+    <span class="partner-pill"><i data-lucide="bar-chart-3" class="ico"></i> Bocconi University <em>· business angle</em></span>
+  </div>
+</div>
+
+<!-- ========== DESTINATIONS TIMELINE ========== -->
+<section class="block tight" id="destinations">
+  <div class="sec-label">Across Italy</div>
+  <h2 class="sec-title">Where you'll <em>actually</em> be</h2>
+  <p class="sec-lead">All 11 trips on one chronological timeline. Click any node to see the full route map.</p>
+  <div class="trip-timeline-wrap">
+    <div class="trip-timeline" id="tripTimeline"></div>
+    <div class="tt-legend">
+      <span class="lg"><span class="sw" style="background:var(--navy);opacity:0.45"></span> Cultural / leisure</span>
+      <span class="lg"><span class="sw" style="background:var(--neu-red);opacity:0.85"></span> Industry tour</span>
+      <span class="lg"><span class="sw" style="background:var(--navy);opacity:0.85"></span> Capstone / move</span>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CALENDAR ========== -->
+<section class="block" id="calendar">
+  <div class="sec-label">The 4-week grid</div>
+  <h2 class="sec-title">A month, <em>day by day</em></h2>
+  <p class="sec-lead">
+    Click any day to jump to its full plan below. Mon &amp; Fri lean toward site visits and day trips; Tue–Thu are class days with morning lectures and afternoon Italian + cultural blocks. Weekends are split between free time and one program-funded trip.
+  </p>
+
+  <div class="cal-wrap">
+    <div class="cal-layout">
+      <div class="cal-main">
+        <div class="cal-week-tabs">
+          <button class="cal-tab active" data-wk="all"><span class="label">All</span></button>
+          <button class="cal-tab" data-wk="0"><span class="label">Arrival</span><span class="range">May 27 – 30</span></button>
+          <button class="cal-tab" data-wk="1"><span class="label">Wk 1</span><span class="range">May 31 – Jun 6</span></button>
+          <button class="cal-tab" data-wk="2"><span class="label">Wk 2</span><span class="range">Jun 7 – 13</span></button>
+          <button class="cal-tab" data-wk="3"><span class="label">Wk 3</span><span class="range">Jun 14 – 20</span></button>
+          <button class="cal-tab" data-wk="4"><span class="label">Wk 4 · Milan</span><span class="range">Jun 21 – 27</span></button>
+        </div>
+
+        <div class="cal-grid">
+          <!-- Day-of-week header row -->
+          <div class="dow">Mon</div>
+          <div class="dow">Tue</div>
+          <div class="dow">Wed</div>
+          <div class="dow">Thu</div>
+          <div class="dow">Fri</div>
+          <div class="dow">Sat</div>
+          <div class="dow">Sun</div>
+          <!-- Day cells injected by JS -->
+        </div>
+
+        <div class="cal-legend">
+          <span class="lg"><span class="sw" style="background:var(--gold)"></span> Orientation</span>
+          <span class="lg"><span class="sw" style="background:var(--navy)"></span> Class day</span>
+          <span class="lg"><span class="sw" style="background:var(--neu-red)"></span> Industry tour</span>
+          <span class="lg"><span class="sw" style="background:var(--it-green)"></span> Day trip</span>
+          <span class="lg"><span class="sw" style="background:#7c3aed"></span> Weekend trip</span>
+          <span class="lg"><span class="sw" style="background:#f59e0b"></span> Holiday</span>
+          <span class="lg"><span class="sw" style="background:#0891b2"></span> Travel</span>
+          <span class="lg"><span class="sw" style="background:#e11d48"></span> Milan capstone</span>
+          <span class="lg"><span class="sw" style="background:#cbd5e1"></span> Free</span>
+        </div>
+      </div>
+
+      <aside class="cal-side">
+        <div class="day-panel" id="dayPanel"></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ========== WEEKLY SCHEDULE TABLES ========== -->
+<section class="block" id="schedule">
+  <div class="sec-label">Hour by hour</div>
+  <h2 class="sec-title">Your <em>weekly</em> schedule</h2>
+  <p class="sec-lead">
+    Each week as a Mon–Sun grid: 4 time blocks (AM lecture · AM lecture · PM Italian · PM cultural/lab/visit) + lunch + evening. Site-visit and trip days take over the whole row. Color tells you what's happening at a glance.
+  </p>
+
+  <div class="wk-stack" id="weeklyStack"></div>
+</section>
+
+<!-- ========== DAY-BY-DAY CARDS ========== -->
+<section class="block" id="days">
+  <div class="sec-label">The plan</div>
+  <h2 class="sec-title">Every day, <em>fully scoped</em></h2>
+  <p class="sec-lead">
+    Schedule blocks follow the daily template: 08:30 commute · 09:00–10:30 lecture · 10:50–12:20 lecture · 13:35–15:05 Italian language · 15:25–16:55 cultural / lab / guest. Site-visit days replace blocks with full-day or half-day field activities.
+  </p>
+
+  <div class="day-cards" id="dayCardsList"></div>
+</section>
+
+<!-- ========== LOGISTICS ========== -->
+<section class="block" id="logistics">
+  <div class="sec-label">Need to know</div>
+  <h2 class="sec-title">Logistics &amp; <em>fine print</em></h2>
+  <p class="sec-lead">
+    Booking lead times, holiday flags, partner-university coordination, and the practical math behind running this program.
+  </p>
+
+  <div class="log-grid">
+    <div class="log-card">
+      <h3><i data-lucide="graduation-cap"></i> Course (TBD)</h3>
+      <p>Two 4-credit courses, 8 credits total. Direction: <strong>1000-level cross-major intro</strong> open to all departments — engineering, business, sciences, humanities. Main course (IE 4510) runs every weekday morning except day-trip and corporate-visit days. Final code TBD with NEU course catalog office.</p>
+    </div>
+    <div class="log-card">
+      <h3><i data-lucide="award"></i> Assessments</h3>
+      <ul>
+        <li><strong>IE 4510 Midterm</strong> · Tue Jun 15 (AM, free PM)</li>
+        <li><strong>IE 4510 Final exam</strong> · Tue Jun 22 (AM, Milan)</li>
+        <li><strong>Course 2 Pres #1</strong> · Thu Jun 10 evening (cultural)</li>
+        <li><strong>Course 2 Pres #2</strong> · Thu Jun 17 evening (technological)</li>
+        <li><strong>Course 2 Pres #3</strong> · Thu Jun 24 PM (final, open-ended)</li>
+        <li>3 medium choices: slides · blog · video</li>
+      </ul>
+    </div>
+    <div class="log-card">
+      <h3><i data-lucide="utensils"></i> Group dinners</h3>
+      <ul>
+        <li><strong>Welcome dinner</strong> · Mon May 31 (Day 1)</li>
+        <li><strong>Group dinner</strong> · Tue Jun 15 night (post-midterm)</li>
+        <li><strong>Farewell dinner</strong> · Fri Jun 25 (Milan)</li>
+      </ul>
+    </div>
+    <div class="log-card">
+      <h3><i data-lucide="users"></i> Cohort</h3>
+      <p>Min 10 / max 16 students. GPA ≥ 3.0. 1 Program Assistant. Open to all majors and undergraduate years (3+ recommended).</p>
+    </div>
+    <div class="log-card">
+      <h3><i data-lucide="building"></i> Host institution</h3>
+      <p>Università degli Studi di Parma — Department of Engineering &amp; Architecture (DIA). Classroom on the Campus of Science &amp; Technology (4 km south of city centre).</p>
+    </div>
+    <div class="log-card">
+      <h3><i data-lucide="train-front"></i> Transit</h3>
+      <ul>
+        <li>Trenitalia + Italo high-speed for day trips and Milan move</li>
+        <li>FrecciaYOUNG (under-30) for cohort discounts</li>
+        <li>Local bus + walking in Parma centro</li>
+      </ul>
+    </div>
+    <div class="log-card warn">
+      <h3><i data-lucide="alert-triangle"></i> Holiday alert</h3>
+      <p><strong>Wed Jun 2, 2027 = Festa della Repubblica.</strong> Factories closed (Ferrari, Lamborghini, Maserati, Barilla all dark). Mantua day trip slotted on this date — UNESCO city, museums and historic sites stay open.</p>
+    </div>
+    <div class="log-card warn">
+      <h3><i data-lucide="calendar-clock"></i> Booking lead times</h3>
+      <ul>
+        <li><strong>Last Supper</strong> · 4+ months ahead</li>
+        <li><strong>Ferrari group</strong> · 6 months</li>
+        <li><strong>Barilla Pedrignano</strong> · 6 months</li>
+        <li><strong>Brembo corporate visit</strong> · 3 months</li>
+      </ul>
+    </div>
+    <div class="log-card">
+      <h3><i data-lucide="plane"></i> Arrival weekend (Wk 0)</h3>
+      <ul>
+        <li><strong>Thu May 27</strong> · departure from US (overnight flight)</li>
+        <li><strong>Fri May 28</strong> · arrive Parma · hotel check-in · light evening</li>
+        <li><strong>Sat May 29 PM</strong> · Parma walking tour (Pilotta · Cathedral · Toscanini · aperitivo Garibaldi)</li>
+        <li><strong>Sun May 30 · 10am-4pm</strong> · cooking class + agriturismo lunch (cohort-bonding)</li>
+        <li>Mon May 31 PM now opens for course content (was walking tour)</li>
+      </ul>
+    </div>
+    <div class="log-card">
+      <h3><i data-lucide="bed-double"></i> Housing</h3>
+      <p>Hotel in Parma for arrival weekend (May 27-30). UniPR-coordinated student housing in Parma weeks 1–3. Hotel/student residence in Milan for week 4 (POLIMI Bovisa or city centre, TBD with GSoM office).</p>
+    </div>
+    <div class="log-card">
+      <h3><i data-lucide="shield-check"></i> Health &amp; safety</h3>
+      <p>NEU GEO insurance enrollment + Italy entry requirements briefing during NEU pre-departure orientation. Local emergency contacts in PA-curated handbook.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== TRIP MODAL ========== -->
+<div class="trip-modal" id="tripModal" onclick="if(event.target===this)closeTripModal()">
+  <div class="tm-content">
+    <div class="tm-map">
+      <button class="tm-close" onclick="closeTripModal()" aria-label="Close">×</button>
+      <div class="tm-map-canvas" id="tmMapCanvas"></div>
+    </div>
+    <div class="tm-info" id="tmInfo"></div>
+  </div>
+</div>
+
+<!-- ========== LIGHTBOX ========== -->
+<div class="lightbox-overlay" id="lightbox" onclick="closeLightbox(event)">
+  <button class="lightbox-close" onclick="closeLightbox()" aria-label="Close">×</button>
+  <img id="lightbox-img" src="" alt="">
+  <div class="lightbox-caption" id="lightbox-caption"></div>
+</div>
+
+<!-- ========== FOOTER ========== -->
+<footer class="app">
+  <div class="foot-wrap">
+    <div>
+      <h4>The Italian Corridor</h4>
+      <p>A four-week Dialogue of Civilizations bringing Northeastern undergraduates to the Emilia-Romagna manufacturing heartland and Milan's design and engineering capital. Faculty-led by Prof. Mohammad Dehghani, MIE Department.</p>
+    </div>
+    <div>
+      <h4>Apply / Inquire</h4>
+      <a href="https://geo.northeastern.edu/programs/dialogue-of-civilizations/">NEU GEO · DOC programs</a>
+      <a href="mailto:m.dehghani@northeastern.edu">m.dehghani@northeastern.edu</a>
+      <a href="#">Application opens · Fall 2026</a>
+    </div>
+    <div>
+      <h4>Partner sites</h4>
+      <a href="https://en.unipr.it/">University of Parma</a>
+      <a href="https://www.polimi.it/en/">Politecnico di Milano</a>
+      <a href="https://www.unibocconi.eu/">Bocconi University</a>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span class="brand">[ <strong>DOC</strong> · 2027 ] · The Italian Corridor</span>
+    <span>© 2026 Northeastern University · Galante Engineering Business Program</span>
+  </div>
+</footer>
+
+<script>
+// ============================================================================
+// WIKIPEDIA LINKS — auto-linkify known places in day timelines
+// ============================================================================
+const WIKI = {
+  // Parma + UniPR
+  'Pilotta': 'https://en.wikipedia.org/wiki/Palazzo_della_Pilotta',
+  'Parma Cathedral': 'https://en.wikipedia.org/wiki/Parma_Cathedral',
+  'Baptistery': 'https://en.wikipedia.org/wiki/Parma_Baptistery',
+  'Casa Toscanini': 'https://en.wikipedia.org/wiki/Arturo_Toscanini',
+  'University of Parma': 'https://en.wikipedia.org/wiki/University_of_Parma',
+  'UniPR': 'https://en.wikipedia.org/wiki/University_of_Parma',
+  // Mantua
+  'Mantua': 'https://en.wikipedia.org/wiki/Mantua',
+  'Palazzo Ducale': 'https://en.wikipedia.org/wiki/Ducal_Palace,_Mantua',
+  'Camera degli Sposi': 'https://en.wikipedia.org/wiki/Camera_degli_Sposi',
+  'Palazzo Te': 'https://en.wikipedia.org/wiki/Palazzo_Te',
+  // Modena
+  'Modena': 'https://en.wikipedia.org/wiki/Modena',
+  'Enzo Ferrari Museum': 'https://en.wikipedia.org/wiki/Museo_Casa_Enzo_Ferrari',
+  'Modena Ferrari Mus': 'https://en.wikipedia.org/wiki/Museo_Casa_Enzo_Ferrari',
+  'Acetaia': 'https://en.wikipedia.org/wiki/Balsamic_vinegar',
+  'Modena Duomo': 'https://en.wikipedia.org/wiki/Modena_Cathedral',
+  // Bologna
+  'Bologna': 'https://en.wikipedia.org/wiki/Bologna',
+  'Asinelli Tower': 'https://en.wikipedia.org/wiki/Two_Towers,_Bologna',
+  'University of Bologna': 'https://en.wikipedia.org/wiki/University_of_Bologna',
+  'Quadrilatero': 'https://en.wikipedia.org/wiki/Bologna',
+  'Tagliatelle': 'https://en.wikipedia.org/wiki/Tagliatelle',
+  // Cinque Terre
+  'Cinque Terre': 'https://en.wikipedia.org/wiki/Cinque_Terre',
+  'Monterosso': 'https://en.wikipedia.org/wiki/Monterosso_al_Mare',
+  'Vernazza': 'https://en.wikipedia.org/wiki/Vernazza',
+  'Manarola': 'https://en.wikipedia.org/wiki/Manarola',
+  // Lake Garda
+  'Sirmione': 'https://en.wikipedia.org/wiki/Sirmione',
+  'Lake Garda': 'https://en.wikipedia.org/wiki/Lake_Garda',
+  'Sirmione castle': 'https://en.wikipedia.org/wiki/Scaliger_Castle_(Sirmione)',
+  'Castello Scaligero': 'https://en.wikipedia.org/wiki/Scaliger_Castle_(Sirmione)',
+  'Grotte di Catullo': 'https://en.wikipedia.org/wiki/Grottoes_of_Catullus',
+  // Verona
+  'Verona': 'https://en.wikipedia.org/wiki/Verona',
+  'Arena': 'https://en.wikipedia.org/wiki/Verona_Arena',
+  'Arena di Verona': 'https://en.wikipedia.org/wiki/Verona_Arena',
+  // Ferrari
+  'Ferrari Maranello': 'https://en.wikipedia.org/wiki/Museo_Ferrari',
+  'Maranello': 'https://en.wikipedia.org/wiki/Maranello',
+  'Factory tour bus': 'https://en.wikipedia.org/wiki/Ferrari',
+  'Ferrari + sim': 'https://en.wikipedia.org/wiki/Museo_Ferrari',
+  // Brembo / industry
+  'Brembo': 'https://en.wikipedia.org/wiki/Brembo',
+  'Brembo factory': 'https://en.wikipedia.org/wiki/Brembo',
+  'Brembo R&D': 'https://en.wikipedia.org/wiki/Brembo',
+  'Brembo Kilometro Rosso': 'https://en.wikipedia.org/wiki/Brembo',
+  'Stezzano': 'https://en.wikipedia.org/wiki/Stezzano',
+  // Milan
+  'POLIMI': 'https://en.wikipedia.org/wiki/Polytechnic_University_of_Milan',
+  'POLIMI welcome': 'https://en.wikipedia.org/wiki/Polytechnic_University_of_Milan',
+  'POLIMI lecture': 'https://en.wikipedia.org/wiki/Polytechnic_University_of_Milan',
+  'POLIMI joint lecture': 'https://en.wikipedia.org/wiki/Polytechnic_University_of_Milan',
+  'POLIMI Bovisa tour': 'https://en.wikipedia.org/wiki/Polytechnic_University_of_Milan',
+  'Bocconi': 'https://en.wikipedia.org/wiki/Bocconi_University',
+  'Bocconi visit + tour': 'https://en.wikipedia.org/wiki/Bocconi_University',
+  'Bocconi visit': 'https://en.wikipedia.org/wiki/Bocconi_University',
+  'Last Supper': 'https://en.wikipedia.org/wiki/The_Last_Supper_(Leonardo)',
+  'Duomo + Galleria': 'https://en.wikipedia.org/wiki/Milan_Cathedral',
+  'Milan Duomo': 'https://en.wikipedia.org/wiki/Milan_Cathedral',
+  'Galleria Vittorio Emanuele': 'https://en.wikipedia.org/wiki/Galleria_Vittorio_Emanuele_II',
+  'Pirelli HangarBicocca': 'https://en.wikipedia.org/wiki/Pirelli_HangarBicocca',
+  'Castello / Brera stroll': 'https://en.wikipedia.org/wiki/Sforzesco_Castle',
+  'Brera': 'https://en.wikipedia.org/wiki/Brera_(district_of_Milan)',
+  'Aperitivo Navigli': 'https://en.wikipedia.org/wiki/Navigli',
+  'Welcome aperitivo Navigli': 'https://en.wikipedia.org/wiki/Navigli',
+  // Food / brands
+  'Parmigiano dairy': 'https://en.wikipedia.org/wiki/Parmigiano-Reggiano',
+  'Parmigiano': 'https://en.wikipedia.org/wiki/Parmigiano-Reggiano',
+  'Prosciutto Langhirano': 'https://en.wikipedia.org/wiki/Prosciutto_di_Parma',
+  'Langhirano': 'https://en.wikipedia.org/wiki/Langhirano',
+  'Barilla factory': 'https://en.wikipedia.org/wiki/Barilla_Group',
+  'Barilla warehouse': 'https://en.wikipedia.org/wiki/Barilla_Group',
+  'Barilla R&D': 'https://en.wikipedia.org/wiki/Barilla_Group',
+  'Davines visit': 'https://en.wikipedia.org/wiki/Davines',
+  'Chiesi pharma visit': 'https://en.wikipedia.org/wiki/Chiesi_Farmaceutici',
+  'Gelato workshop': 'https://en.wikipedia.org/wiki/Carpigiani',
+  'Pasta class': 'https://en.wikipedia.org/wiki/Italian_cuisine',
+  'Pizza workshop': 'https://en.wikipedia.org/wiki/Pizza',
+  'Pizza dinner': 'https://en.wikipedia.org/wiki/Pizza',
+  'Frecciarossa': 'https://en.wikipedia.org/wiki/Frecciarossa',
+  'Train → Milan': 'https://en.wikipedia.org/wiki/Frecciarossa',
+  'Departure MXP': 'https://en.wikipedia.org/wiki/Milan_Malpensa_Airport',
+  'Land MXP/BLQ': 'https://en.wikipedia.org/wiki/Milan_Malpensa_Airport',
+  // Misc
+  'Mantua trip': 'https://en.wikipedia.org/wiki/Mantua',
+  'Mantua palaces': 'https://en.wikipedia.org/wiki/Ducal_Palace,_Mantua',
+  'Mantua walk': 'https://en.wikipedia.org/wiki/Mantua',
+  'Verona Arena': 'https://en.wikipedia.org/wiki/Verona_Arena',
+  'Verona stroll': 'https://en.wikipedia.org/wiki/Verona',
+  'Cooking class begins': 'https://en.wikipedia.org/wiki/Italian_cuisine',
+  'Cooking class cont.': 'https://en.wikipedia.org/wiki/Italian_cuisine',
+  'Pasta-making': 'https://en.wikipedia.org/wiki/Pasta',
+  'Festa della Repubblica': 'https://en.wikipedia.org/wiki/Festa_della_Repubblica',
+};
+
+// Wrap any matched WIKI key in a hyperlink. Uses LONGEST-match-first to avoid double-linking.
+function linkifyWiki(text) {
+  if (!text) return text;
+  const keys = Object.keys(WIKI).sort((a, b) => b.length - a.length);
+  for (const key of keys) {
+    if (text.includes(key)) {
+      const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const re = new RegExp(`(?<!<a[^>]*?>[^<]*?)\\b(${escapedKey})\\b(?![^<]*?<\\/a>)`);
+      if (re.test(text)) {
+        text = text.replace(re, `<a href="${WIKI[key]}" target="_blank" rel="noopener">$1</a>`);
+      }
+    }
+  }
+  return text;
+}
+
+// ============================================================================
+// DAY IMAGES — Style E (1960s Italian cinema poster), generated via Nano Banana
+// ============================================================================
+const IMAGES = {
+  '2027-05-31': 'images/day_welcome.png',
+  '2027-06-02': 'images/day_mantua.png',
+  '2027-06-03': 'images/day_pasta_class.png',
+  '2027-06-04': 'images/day_parmigiano.png',
+  '2027-06-07': 'images/day_barilla.png',
+  '2027-06-09': 'images/day_davines.png',
+  '2027-06-10': 'images/day_gelato.png',
+  '2027-06-12': 'images/day_cinque_terre.png',
+  '2027-06-14': 'images/day_modena_acetaia.png',
+  '2027-06-16': 'images/day_ferrari.png',
+  '2027-06-17': 'images/day_pizza.png',
+  '2027-06-18': 'images/day_bologna.png',
+  '2027-06-19': 'images/day_lake_garda.png',
+  '2027-06-23': 'images/day_brembo.png',
+  '2027-06-24': 'images/day_milan_duomo.png',
+};
+
+// ============================================================================
+// TRIPS — every journey from Parma (or Milan), each gets its own mini-map card
+// ============================================================================
+// Coords are [lng, lat]. type: trip · tour · weekend · holiday · milan
+const PARMA = [10.3279, 44.8015];
+const MILAN = [9.1900, 45.4642];
+
+const TRIPS = [
+  { name: 'Mantua', dayId: '2027-06-02', from: PARMA, to: [10.7914, 45.1564],
+    type: 'holiday', date: 'Wed Jun 2', dur: '1h', cost: '~€18 RT',
+    notes: 'UNESCO Renaissance city · scheduled on Repubblica holiday (factories closed)',
+    waypoints: [
+      { name: 'Palazzo Ducale + Camera degli Sposi', coords: [10.7935, 45.1602], desc: 'Mantegna fresco cycle · UNESCO' },
+      { name: 'Palazzo Te', coords: [10.7872, 45.1486], desc: 'Giulio Romano mannerist masterpiece' },
+      { name: 'Piazza Sordello + Duomo', coords: [10.7935, 45.1604], desc: 'Historic medieval centre' },
+    ]},
+  { name: 'Modena · Ferrari Mus + Acetaia', dayId: '2027-06-14', from: PARMA, to: [10.9252, 44.6471],
+    type: 'trip', date: 'Mon Jun 14', dur: '30 min', cost: '~€8 RT',
+    notes: 'Enzo Ferrari Museum + balsamic acetaia + Modena Duomo',
+    waypoints: [
+      { name: 'Museo Enzo Ferrari', coords: [10.9311, 44.6476], desc: 'Architectural cocoon next to Enzo\'s birth house · F1 history' },
+      { name: 'Acetaia tour (Leonardi)', coords: [10.997, 44.567], desc: 'Traditional balsamic aged 12-25 yr in 5 woods' },
+      { name: 'Modena Duomo + Piazza Grande', coords: [10.9295, 44.6464], desc: 'UNESCO Romanesque cathedral' },
+    ]},
+  { name: 'Ferrari Maranello', dayId: '2027-06-16', from: PARMA, to: [10.8693, 44.5285],
+    type: 'tour', date: 'Wed Jun 16', dur: '1h', cost: '~€15 RT',
+    notes: 'Museo Ferrari + Factory Panoramic Bus · book 6 mo ahead',
+    waypoints: [
+      { name: 'Museo Ferrari Maranello', coords: [10.8693, 44.5285], desc: 'F1 history + road-car evolution + simulator' },
+      { name: 'Ferrari Factory Bus tour', coords: [10.8710, 44.5340], desc: '45 min · 12:30 or 13:30 slot · on-bus only' },
+      { name: 'Pista di Fiorano test track', coords: [10.852, 44.533], desc: 'Glimpse from factory tour route' },
+    ]},
+  { name: 'Bologna', dayId: '2027-06-18', from: PARMA, to: [11.3426, 44.4949],
+    type: 'trip', date: 'Fri Jun 18', dur: '50 min', cost: '~€20 RT',
+    notes: 'Università di Bologna 1088 · Asinelli Tower · Quadrilatero food walk',
+    waypoints: [
+      { name: 'Università di Bologna (Archiginnasio)', coords: [11.3434, 44.4920], desc: 'Oldest continuously-operating university · 1088' },
+      { name: 'Asinelli Tower', coords: [11.3470, 44.4945], desc: 'Climb the leaning medieval brick tower' },
+      { name: 'Piazza Maggiore + Quadrilatero', coords: [11.3437, 44.4938], desc: 'Historic food market district + tagliatelle al ragù' },
+    ]},
+  { name: 'Verona (optional)', dayId: '2027-06-05', from: PARMA, to: [10.9916, 45.4384],
+    type: 'trip', date: 'Sat Jun 5', dur: '50 min FR', cost: '~€40 RT',
+    notes: 'Roman Arena + Piazza Erbe · Arena summer opera season',
+    waypoints: [
+      { name: 'Arena di Verona', coords: [10.9941, 45.4388], desc: 'Roman amphitheater · Aida summer season Jun-Sep' },
+      { name: 'Piazza delle Erbe', coords: [10.9981, 45.4435], desc: 'Lively medieval market square' },
+      { name: 'Casa di Giulietta', coords: [10.9988, 45.4423], desc: 'The Romeo & Juliet balcony' },
+    ]},
+  { name: 'Cinque Terre · Monterosso', dayId: '2027-06-12', from: PARMA, to: [9.6539, 44.1466],
+    type: 'weekend', date: 'Sat–Sun Jun 12–13', dur: '2h', cost: '~€35 RT + CT card',
+    notes: 'Five-village hike + beach + sunset overnight in Monterosso',
+    waypoints: [
+      { name: 'La Spezia (transit)', coords: [9.8362, 44.1056], desc: 'Hub for Cinque Terre Express train' },
+      { name: 'Riomaggiore', coords: [9.7382, 44.0987], desc: 'Southernmost village · vertical pastel houses' },
+      { name: 'Manarola', coords: [9.7268, 44.1062], desc: 'Famous photographic vista point' },
+      { name: 'Vernazza', coords: [9.6829, 44.1346], desc: 'Natural harbor + tower castle' },
+      { name: 'Monterosso al Mare', coords: [9.6539, 44.1466], desc: 'Largest village · sandy beach · overnight here' },
+    ]},
+  { name: 'Lake Garda · Sirmione', dayId: '2027-06-19', from: PARMA, to: [10.6055, 45.4980],
+    type: 'trip', date: 'Sat Jun 19', dur: '1h30 + ferry', cost: '~€35 RT',
+    notes: 'Scaligeri castle + Grotte di Catullo + ferry hop · Sun Jun 20 free',
+    waypoints: [
+      { name: 'Desenzano del Garda (transit)', coords: [10.5388, 45.4716], desc: 'Train arrival · ferry to Sirmione' },
+      { name: 'Castello Scaligero', coords: [10.6058, 45.4988], desc: 'Medieval moated castle · entry to peninsula' },
+      { name: 'Grotte di Catullo', coords: [10.6053, 45.5039], desc: 'Roman villa ruins on the peninsula tip' },
+    ]},
+  { name: 'Prosciutto · Langhirano', dayId: '2027-06-11', from: PARMA, to: [10.2658, 44.6147],
+    type: 'tour', date: 'Fri Jun 11', dur: '30 min S', cost: '~€20',
+    notes: 'Salumificio Conti · English-language curing room tour',
+    waypoints: [
+      { name: 'Salumificio Conti', coords: [10.2658, 44.6147], desc: 'Working curing facility · English-speaking guide' },
+      { name: 'Museo del Prosciutto', coords: [10.2680, 44.6168], desc: 'Optional add-on · ham consortium history' },
+    ]},
+  { name: 'Carpigiani Gelato U', dayId: '2027-06-10', from: PARMA, to: [11.1957, 44.5475],
+    type: 'tour', date: 'Thu Jun 10 PM', dur: '1h', cost: 'group rate',
+    notes: 'Anzola dell\'Emilia near Bologna · gelato workshop + tasting',
+    waypoints: [
+      { name: 'Carpigiani Gelato University', coords: [11.1957, 44.5475], desc: 'Manufacturer-run training school · history + workshop + tasting' },
+    ]},
+  { name: 'Parma → Milan (move)', dayId: '2027-06-21', from: PARMA, to: MILAN,
+    type: 'milan', date: 'Mon Jun 21', dur: '1h15 FR', cost: '€20–90',
+    notes: 'Frecciarossa · Super Economy 2-3 mo ahead saves €40+',
+    waypoints: [
+      { name: 'Milano Centrale', coords: [9.2055, 45.4860], desc: 'Frecciarossa arrival · iconic 1931 station' },
+      { name: 'POLIMI Bovisa campus', coords: [9.1568, 45.5021], desc: 'Capstone-week host · Department of Management Eng' },
+      { name: 'Milan accommodation', coords: [9.190, 45.477], desc: 'TBD with POLIMI international office' },
+    ]},
+  { name: 'Brembo · Stezzano', dayId: '2027-06-23', from: MILAN, to: [9.6837, 45.6722],
+    type: 'tour', date: 'Wed Jun 23', dur: '50 min from Milan', cost: 'corp visit',
+    notes: 'F1 + automotive brake systems · Kilometro Rosso innovation district',
+    waypoints: [
+      { name: 'Brembo HQ Stezzano', coords: [9.6837, 45.6722], desc: 'Brake systems for F1 + luxury automotive' },
+      { name: 'Kilometro Rosso innovation district', coords: [9.703, 45.679], desc: 'Cluster of R&D labs + tech firms' },
+    ]},
+];
+
+// ============================================================================
+// WEEKLY SCHEDULES — Mon–Sun grid per week
+// ============================================================================
+// Cell = { t: type, x: brief text, hint?: tooltip }
+// Row order: Block 1 · Block 2 · Lunch · Block 3 · Block 4 · Evening
+const WEEK_TIMES = [
+  '09:00 – 10:30',
+  '10:50 – 12:20',
+  '12:20 – 13:35',
+  '13:35 – 15:05',
+  '15:25 – 16:55',
+  'Evening',
+];
+
+const WEEKLY_SCHEDULES = [
+  {
+    label: 'Arrival', dates: 'May 27 – 30, 2027', tag: 'Pre-program',
+    headers: [
+      { dn: 24, dm: 'May', dw: 'Mon' },
+      { dn: 25, dm: 'May', dw: 'Tue' },
+      { dn: 26, dm: 'May', dw: 'Wed' },
+      { dn: 27, dm: 'May', dw: 'Thu', flag: 'TRVL' },
+      { dn: 28, dm: 'May', dw: 'Fri', flag: 'ARR' },
+      { dn: 29, dm: 'May', dw: 'Sat' },
+      { dn: 30, dm: 'May', dw: 'Sun' },
+    ],
+    grid: [
+      // Block 1
+      [
+        { t: 'free',    x: '—' },
+        { t: 'free',    x: '—' },
+        { t: 'free',    x: '—' },
+        { t: 'travel',  x: 'Pre-flight US' },
+        { t: 'travel',  x: 'Land MXP/BLQ' },
+        { t: 'free',    x: 'Sleep in / brunch' },
+        { t: 'orient',  x: 'Cooking class begins' },
+      ],
+      // Block 2
+      [
+        { t: 'free',    x: '—' },
+        { t: 'free',    x: '—' },
+        { t: 'free',    x: '—' },
+        { t: 'travel',  x: 'Boarding US' },
+        { t: 'travel',  x: 'Train → Parma' },
+        { t: 'free',    x: 'Free morning' },
+        { t: 'orient',  x: 'Pasta-making' },
+      ],
+      // Lunch
+      [
+        { t: 'free',    x: '—' },
+        { t: 'free',    x: '—' },
+        { t: 'free',    x: '—' },
+        { t: 'travel',  x: 'Lunch (US)' },
+        { t: 'lunch',   x: 'Settle in hotel' },
+        { t: 'lunch',   x: 'Lunch in centro' },
+        { t: 'lunch',   x: '★ Agriturismo lunch' },
+      ],
+      // Block 3
+      [
+        { t: 'free',    x: '—' },
+        { t: 'free',    x: '—' },
+        { t: 'free',    x: '—' },
+        { t: 'travel',  x: '(in flight)' },
+        { t: 'orient',  x: 'Hotel check-in' },
+        { t: 'orient',  x: '★ Parma walking tour' },
+        { t: 'orient',  x: 'Cooking class cont.' },
+      ],
+      // Block 4
+      [
+        { t: 'free',    x: '—' },
+        { t: 'free',    x: '—' },
+        { t: 'free',    x: '—' },
+        { t: 'travel',  x: '(in flight)' },
+        { t: 'orient',  x: 'Light walk centro' },
+        { t: 'orient',  x: 'Walking tour (cont.)' },
+        { t: 'travel',  x: 'Return → Parma' },
+      ],
+      // Evening
+      [
+        { t: 'free',    x: '—' },
+        { t: 'free',    x: '—' },
+        { t: 'free',    x: '—' },
+        { t: 'travel',  x: '★ Overnight flight' },
+        { t: 'evening', x: 'Light dinner' },
+        { t: 'evening', x: 'Aperitivo Garibaldi' },
+        { t: 'evening', x: 'Free / early night' },
+      ],
+    ],
+  },
+  {
+    label: 'Week 1', dates: 'May 31 – Jun 6, 2027',
+    headers: [
+      { dn: 31, dm: 'May', dw: 'Mon' },
+      { dn: 1,  dm: 'Jun', dw: 'Tue' },
+      { dn: 2,  dm: 'Jun', dw: 'Wed', flag: 'HOL' },
+      { dn: 3,  dm: 'Jun', dw: 'Thu' },
+      { dn: 4,  dm: 'Jun', dw: 'Fri' },
+      { dn: 5,  dm: 'Jun', dw: 'Sat' },
+      { dn: 6,  dm: 'Jun', dw: 'Sun' },
+    ],
+    grid: [
+      // Block 1
+      [
+        { t: 'orient',  x: 'Campus tour' },
+        { t: 'class',   x: 'IE 4510' },
+        { t: 'holiday', x: 'Mantua trip' },
+        { t: 'class',   x: 'IE 4510' },
+        { t: 'tour',    x: 'Parmigiano dairy' },
+        { t: 'free',    x: 'Free / opt. Verona' },
+        { t: 'free',    x: 'Free' },
+      ],
+      // Block 2
+      [
+        { t: 'orient',  x: 'Welcome talk' },
+        { t: 'class',   x: 'IE 4510' },
+        { t: 'holiday', x: 'Mantua palaces' },
+        { t: 'class',   x: 'IE 4510' },
+        { t: 'tour',    x: 'Parmigiano dairy' },
+        { t: 'free',    x: 'Verona Arena' },
+        { t: 'free',    x: 'Free' },
+      ],
+      // Lunch
+      [
+        { t: 'lunch',   x: 'Welcome lunch' },
+        { t: 'lunch',   x: 'UniPR mensa' },
+        { t: 'lunch',   x: 'Mantua café' },
+        { t: 'lunch',   x: 'UniPR mensa' },
+        { t: 'lunch',   x: 'Parmigiano lunch' },
+        { t: 'lunch',   x: 'Verona pranzo' },
+        { t: 'free',    x: 'Free' },
+      ],
+      // Block 3
+      [
+        { t: 'class',   x: 'UniPR Eng lab tour' },
+        { t: 'italian', x: 'Italian #1' },
+        { t: 'holiday', x: 'Mantua walk' },
+        { t: 'italian', x: 'Italian #2' },
+        { t: 'tour',    x: 'Parmigiano (cont.)' },
+        { t: 'free',    x: 'Verona stroll' },
+        { t: 'free',    x: 'Free' },
+      ],
+      // Block 4
+      [
+        { t: 'class',   x: 'Italian dean welcome' },
+        { t: 'class',   x: 'UniPR lab visit' },
+        { t: 'holiday', x: 'Return → Parma' },
+        { t: 'culture', x: 'Pasta class' },
+        { t: 'tour',    x: 'Return → Parma' },
+        { t: 'culture', x: 'Arena (opera)' },
+        { t: 'free',    x: 'Free' },
+      ],
+      // Evening
+      [
+        { t: 'evening', x: 'Welcome dinner' },
+        { t: 'evening', x: 'Aperitivo (opt.)' },
+        { t: 'evening', x: 'Free' },
+        { t: 'evening', x: 'Free' },
+        { t: 'evening', x: 'Free' },
+        { t: 'evening', x: 'Opera + dinner' },
+        { t: 'evening', x: 'Free' },
+      ],
+    ],
+  },
+  {
+    label: 'Week 2', dates: 'Jun 7 – 13, 2027',
+    headers: [
+      { dn: 7,  dm: 'Jun', dw: 'Mon' },
+      { dn: 8,  dm: 'Jun', dw: 'Tue' },
+      { dn: 9,  dm: 'Jun', dw: 'Wed' },
+      { dn: 10, dm: 'Jun', dw: 'Thu' },
+      { dn: 11, dm: 'Jun', dw: 'Fri' },
+      { dn: 12, dm: 'Jun', dw: 'Sat' },
+      { dn: 13, dm: 'Jun', dw: 'Sun' },
+    ],
+    grid: [
+      [
+        { t: 'tour',    x: 'Barilla factory' },
+        { t: 'class',   x: 'IE 4510' },
+        { t: 'class',   x: 'IE 4510' },
+        { t: 'class',   x: 'IE 4510' },
+        { t: 'tour',    x: 'Prosciutto Langhirano' },
+        { t: 'weekend', x: 'Cinque Terre →' },
+        { t: 'weekend', x: 'CT Day 2' },
+      ],
+      [
+        { t: 'tour',    x: 'Barilla R&D' },
+        { t: 'class',   x: 'IE 4510' },
+        { t: 'class',   x: 'IE 4510' },
+        { t: 'class',   x: 'IE 4510' },
+        { t: 'tour',    x: 'Prosciutto Langhirano' },
+        { t: 'weekend', x: 'Hike Vernazza' },
+        { t: 'weekend', x: 'Beach' },
+      ],
+      [
+        { t: 'lunch',   x: 'Barilla canteen' },
+        { t: 'lunch',   x: 'UniPR mensa' },
+        { t: 'lunch',   x: 'UniPR mensa' },
+        { t: 'lunch',   x: 'UniPR mensa' },
+        { t: 'lunch',   x: 'Local lunch' },
+        { t: 'lunch',   x: 'Monterosso lunch' },
+        { t: 'lunch',   x: 'Vernazza lunch' },
+      ],
+      [
+        { t: 'tour',    x: 'Barilla warehouse' },
+        { t: 'italian', x: 'Italian #3' },
+        { t: 'italian', x: 'Italian #4' },
+        { t: 'italian', x: 'Italian #5' },
+        { t: 'italian', x: 'Italian #6' },
+        { t: 'weekend', x: 'Beach + swim' },
+        { t: 'weekend', x: 'Beach + swim' },
+      ],
+      [
+        { t: 'tour',    x: 'Return → Parma' },
+        { t: 'tour',    x: 'Chiesi pharma visit' },
+        { t: 'tour',    x: 'Davines Village' },
+        { t: 'culture', x: 'Gelato workshop' },
+        { t: 'free',    x: 'Free' },
+        { t: 'weekend', x: 'Hike + photos' },
+        { t: 'weekend', x: 'Train back PM' },
+      ],
+      [
+        { t: 'evening', x: 'Free' },
+        { t: 'evening', x: 'Free' },
+        { t: 'evening', x: 'Aperitivo (opt.)' },
+        { t: 'class',   x: 'Course 2 Pres #1 (cultural)' },
+        { t: 'evening', x: 'Free' },
+        { t: 'evening', x: 'Sunset dinner CT' },
+        { t: 'evening', x: 'Home Parma' },
+      ],
+    ],
+  },
+  {
+    label: 'Week 3', dates: 'Jun 14 – 20, 2027',
+    headers: [
+      { dn: 14, dm: 'Jun', dw: 'Mon' },
+      { dn: 15, dm: 'Jun', dw: 'Tue' },
+      { dn: 16, dm: 'Jun', dw: 'Wed' },
+      { dn: 17, dm: 'Jun', dw: 'Thu' },
+      { dn: 18, dm: 'Jun', dw: 'Fri' },
+      { dn: 19, dm: 'Jun', dw: 'Sat' },
+      { dn: 20, dm: 'Jun', dw: 'Sun', flag: 'FREE' },
+    ],
+    grid: [
+      [
+        { t: 'trip',    x: 'Modena Ferrari Mus' },
+        { t: 'exam',    x: '★ MIDTERM' },
+        { t: 'tour',    x: 'Ferrari Maranello' },
+        { t: 'class',   x: 'IE 4510' },
+        { t: 'trip',    x: 'Bologna' },
+        { t: 'trip',    x: 'Lake Garda' },
+        { t: 'free',    x: 'FREE Sunday' },
+      ],
+      [
+        { t: 'trip',    x: 'Modena Ferrari Mus' },
+        { t: 'exam',    x: 'MIDTERM (cont.)' },
+        { t: 'tour',    x: 'Factory tour bus' },
+        { t: 'class',   x: 'IE 4510' },
+        { t: 'trip',    x: 'Asinelli Tower' },
+        { t: 'trip',    x: 'Sirmione castle' },
+        { t: 'free',    x: 'FREE' },
+      ],
+      [
+        { t: 'lunch',   x: 'Modena trattoria' },
+        { t: 'lunch',   x: 'UniPR mensa' },
+        { t: 'lunch',   x: 'Maranello café' },
+        { t: 'lunch',   x: 'UniPR mensa' },
+        { t: 'lunch',   x: 'Tagliatelle al ragù' },
+        { t: 'lunch',   x: 'Lakeside lunch' },
+        { t: 'free',    x: 'Brunch out' },
+      ],
+      [
+        { t: 'trip',    x: 'Acetaia balsamic' },
+        { t: 'free',    x: 'FREE post-exam' },
+        { t: 'tour',    x: 'Factory + F1 sim' },
+        { t: 'italian', x: 'Italian #7 (last)' },
+        { t: 'trip',    x: 'Quadrilatero food walk' },
+        { t: 'trip',    x: 'Ferry hop Garda' },
+        { t: 'free',    x: 'FREE' },
+      ],
+      [
+        { t: 'trip',    x: 'Modena Duomo' },
+        { t: 'free',    x: 'FREE post-exam' },
+        { t: 'tour',    x: 'Return → Parma' },
+        { t: 'culture', x: 'Pizza workshop' },
+        { t: 'trip',    x: 'Return → Parma' },
+        { t: 'trip',    x: 'Return → Parma' },
+        { t: 'free',    x: 'Pack for Milan' },
+      ],
+      [
+        { t: 'evening', x: 'Free' },
+        { t: 'evening', x: '★ Group dinner (post-midterm)' },
+        { t: 'evening', x: 'Free' },
+        { t: 'class',   x: 'Course 2 Pres #2 (tech) + dinner' },
+        { t: 'evening', x: 'Free' },
+        { t: 'evening', x: 'Free' },
+        { t: 'evening', x: 'Early night' },
+      ],
+    ],
+  },
+  {
+    label: 'Week 4 · Milan', dates: 'Jun 21 – 27, 2027', tag: 'Milan capstone',
+    headers: [
+      { dn: 21, dm: 'Jun', dw: 'Mon' },
+      { dn: 22, dm: 'Jun', dw: 'Tue' },
+      { dn: 23, dm: 'Jun', dw: 'Wed' },
+      { dn: 24, dm: 'Jun', dw: 'Thu' },
+      { dn: 25, dm: 'Jun', dw: 'Fri' },
+      { dn: 26, dm: 'Jun', dw: 'Sat' },
+      { dn: 27, dm: 'Jun', dw: 'Sun' },
+    ],
+    grid: [
+      [
+        { t: 'travel',  x: 'Train → Milan' },
+        { t: 'exam',    x: '★ IE 4510 FINAL' },
+        { t: 'tour',    x: 'Brembo factory' },
+        { t: 'milan',   x: 'Last Supper' },
+        { t: 'free',    x: 'Short tour AM' },
+        { t: 'travel',  x: 'Departure MXP' },
+        { t: 'free',    x: '—' },
+      ],
+      [
+        { t: 'travel',  x: 'Settle in Milan' },
+        { t: 'exam',    x: 'FINAL (cont.)' },
+        { t: 'tour',    x: 'Brembo R&D' },
+        { t: 'milan',   x: 'Duomo + Galleria' },
+        { t: 'free',    x: 'Castello / Brera stroll' },
+        { t: 'travel',  x: 'Departure MXP' },
+        { t: 'free',    x: '—' },
+      ],
+      [
+        { t: 'lunch',   x: 'Milan lunch' },
+        { t: 'lunch',   x: 'POLIMI mensa' },
+        { t: 'lunch',   x: 'Brembo café' },
+        { t: 'lunch',   x: 'Brera lunch' },
+        { t: 'lunch',   x: 'POLIMI farewell lunch' },
+        { t: 'free',    x: '—' },
+        { t: 'free',    x: '—' },
+      ],
+      [
+        { t: 'milan',   x: 'POLIMI welcome' },
+        { t: 'milan',   x: 'POLIMI joint lecture' },
+        { t: 'tour',    x: 'Brembo Kilometro Rosso' },
+        { t: 'class',   x: 'Pres #3 prep / Q&A' },
+        { t: 'free',    x: 'Free / packing' },
+        { t: 'free',    x: '—' },
+        { t: 'free',    x: '—' },
+      ],
+      [
+        { t: 'milan',   x: 'POLIMI Bovisa tour' },
+        { t: 'milan',   x: 'Bocconi visit + tour' },
+        { t: 'travel',  x: 'Return Milan' },
+        { t: 'class',   x: '★ Course 2 FINAL PRES' },
+        { t: 'free',    x: 'Free / packing' },
+        { t: 'free',    x: '—' },
+        { t: 'free',    x: '—' },
+      ],
+      [
+        { t: 'evening', x: 'Welcome aperitivo Navigli' },
+        { t: 'evening', x: 'Free' },
+        { t: 'evening', x: 'Free' },
+        { t: 'evening', x: 'Pirelli HangarBicocca (opt.)' },
+        { t: 'evening', x: '★ Farewell dinner' },
+        { t: 'free',    x: '—' },
+        { t: 'free',    x: '—' },
+      ],
+    ],
+  },
+];
+
+// ============================================================================
+// DAY DATA — single source of truth
+// ============================================================================
+const DAYS = [
+  // Pre-program arrival weekend (Wk 0)
+  // 3 empty placeholders so May 27 lands in Thu column
+  { date: 'placeholder-1', dn: 24, dm: 'May', dw: 'Mon', wk: 0, type: 'free', empty: true },
+  { date: 'placeholder-2', dn: 25, dm: 'May', dw: 'Tue', wk: 0, type: 'free', empty: true },
+  { date: 'placeholder-3', dn: 26, dm: 'May', dw: 'Wed', wk: 0, type: 'free', empty: true },
+  { date: '2027-05-27', dn: 27, dm: 'May', dw: 'Thu', wk: 0, type: 'travel', tag: 'Departure US', icon: '✈️',
+    title: 'Departure from US',
+    subtitle: 'Overnight transatlantic flight to Italy',
+    location: 'US → Italy (in flight)',
+    body: `<p>Cohort departs from US (Boston Logan, JFK, or other gateway) on overnight transatlantic flights to Milan Malpensa or Bologna. Pre-departure briefing handed out by NEU GEO with arrival logistics, hotel address, transit voucher, emergency contacts.</p>
+      <p>Suggested gear: comfortable layers, eye mask, refillable water bottle for after-security, melatonin if you use it. Sleep on the plane!</p>`,
+    sched: ['travel'],
+    pills: ['Travel day', 'Overnight flight']
+  },
+  { date: '2027-05-28', dn: 28, dm: 'May', dw: 'Fri', wk: 0, type: 'travel', tag: 'Arrive Parma', icon: '🚄',
+    title: 'Arrive Parma · check into hotel',
+    subtitle: 'Land at MXP/BLQ · train to Parma · settle in · light evening',
+    location: 'Parma',
+    body: `<p>Cohort lands at <strong>Milan Malpensa (MXP)</strong> or <strong>Bologna BLQ</strong> in the morning. Group transfer by Frecciarossa to <strong>Parma Centrale</strong>. Hotel check-in by early afternoon.</p>
+      <p>Light afternoon: short orientation walk in Parma centro to find your bearings (no formal tour yet — that's tomorrow). Light dinner together near the hotel. Early to bed to beat jet lag.</p>`,
+    sched: ['travel', 'travel', 'lunch', 'orient', 'orient', 'evening'],
+    pills: ['Travel day', 'Hotel check-in', 'Light evening']
+  },
+  { date: '2027-05-29', dn: 29, dm: 'May', dw: 'Sat', wk: 0, type: 'orient', tag: 'Parma walking tour', icon: '🏛️',
+    title: 'Parma walking tour (PM)',
+    subtitle: 'Pilotta Palace · Cathedral · Baptistery · Casa Toscanini · aperitivo Garibaldi',
+    location: 'Parma centro',
+    body: `<p>Free morning to recover from jet lag (sleep in, brunch on Strada della Repubblica). Group meets at <strong>3 PM</strong> at the hotel for the official Parma walking tour with a local guide.</p>
+      <p>Itinerary: <strong>Pilotta Palace complex</strong> (Teatro Farnese + Galleria Nazionale exterior) → <strong>Parma Cathedral</strong> with Correggio's cupola fresco → pink-marble <strong>Baptistery</strong> by Antelami → <strong>Casa Toscanini</strong> (birthplace of conductor Arturo Toscanini) → ends at <strong>Piazza Garibaldi</strong> for aperitivo together at sunset.</p>
+      <p>Frees up Monday's afternoon for course content (was the walking tour slot).</p>`,
+    sched: ['free', 'free', 'lunch', 'orient', 'orient', 'evening'],
+    pills: ['gold:★ Cohort orientation', 'Free morning', '3 PM start']
+  },
+  { date: '2027-05-30', dn: 30, dm: 'May', dw: 'Sun', wk: 0, type: 'orient', tag: 'Cooking class + agriturismo', icon: '🍝',
+    title: 'Cooking class + agriturismo lunch',
+    subtitle: '10 AM – 4 PM · Colli di Parma hills · pasta-making + multi-course Sunday lunch',
+    location: 'Colli di Parma agriturismo (~30 min south of Parma)',
+    body: `<p><strong>Cohort-bonding day.</strong> Bus transfer at <strong>10 AM</strong> from hotel to a working agriturismo in the Colli di Parma hills (Sala Baganza or Felino direction). Hands-on Italian cooking class: roll fresh egg pasta (tagliatelle, tortellini), make a quick ragù alla parmigiana, learn the difference between Parmigiano-Reggiano stagionature.</p>
+      <p>Long Italian Sunday lunch at the agriturismo: antipasto board with prosciutto + Parmigiano + culatello, the pasta you just made, secondo, dolce + Lambrusco/Malvasia. Return to Parma by 4 PM. Free evening — early night before Day 1 tomorrow.</p>`,
+    sched: ['orient', 'orient', 'lunch', 'orient', 'travel', 'evening'],
+    pills: ['gold:★★ Cohort glue', 'Half-day · 10am-4pm', 'Long Sunday lunch']
+  },
+
+  // Week 1 — Orientation
+  { date: '2027-05-31', dn: 31, dm: 'May', dw: 'Mon', wk: 1, type: 'orient', tag: 'Orientation', icon: '🎓',
+    title: 'Day 1 · Welcome + UniPR campus',
+    subtitle: 'Campus tour · IE 4510 course intro · UniPR Engineering lab visit · welcome dinner',
+    location: 'University of Parma',
+    body: `<p>Cohort meets at <strong>UniPR Campus of Science &amp; Technology</strong>. Tour of the Department of Engineering &amp; Architecture, classroom assignments, mentorship pairing with local Italian peers via the host university's incoming-student office.</p>
+      <p>Afternoon: <strong>UniPR Engineering Department lab tour</strong> (first taste of the host institution's research) → <strong>Italian academic dean welcome talk</strong>. Welcome dinner at a local trattoria.</p>
+      <p><em>Note: Parma walking tour was done Sat May 29 PM (arrival weekend), so Monday afternoon is now free for course content.</em></p>`,
+    sched: ['orient', 'orient', 'visit', 'culture'],
+    pills: ['First day', 'UniPR lab tour', 'Welcome dinner']
+  },
+  { date: '2027-06-01', dn: 1, dm: 'Jun', dw: 'Tue', wk: 1, type: 'class', tag: 'Class day', icon: '📚',
+    title: 'First lecture day',
+    subtitle: 'AM 2 lecture blocks · PM Italian + UniPR engineering lab intro',
+    location: 'University of Parma · DIA',
+    body: `<p>Opening lectures for both courses (TBD 1000-level intro · cross-major). Course themes set: Italian innovation systems, manufacturing heritage, the link between cultural identity and industrial design.</p>
+      <p>Afternoon: first <strong>Italian language session</strong> at UniPR's Centro Linguistico di Ateneo (CLA). Late afternoon: engineering department lab visit — meet the host faculty.</p>`,
+    sched: 'standard',
+    pills: ['Course intros', 'Italian Block 1']
+  },
+  { date: '2027-06-02', dn: 2, dm: 'Jun', dw: 'Wed', wk: 1, type: 'holiday', tag: 'Holiday · day trip', icon: '🇮🇹', flag: '⚠️',
+    title: 'Festa della Repubblica · Mantua day trip',
+    subtitle: 'UNESCO Renaissance city · ~1h by Regionale · ~€18 RT',
+    location: 'Mantua',
+    body: `<p>National holiday — factories and many businesses closed. <strong>Mantua</strong> stays open: museums, palaces, the historic Renaissance core.</p>
+      <p>Itinerary: <strong>Palazzo Ducale + Camera degli Sposi</strong> (Mantegna frescos), <strong>Palazzo Te</strong> (Giulio Romano's mannerist masterpiece), lunch on Piazza Sordello, walk along the lake. UNESCO World Heritage Site, low tourist density compared to Florence/Venice.</p>`,
+    sched: ['travel', 'visit', 'visit', 'travel'],
+    pills: ['UNESCO', 'Holiday-safe pick', 'gold:★ Underrated'],
+    map: { from: [10.3279, 44.8015], to: [10.7914, 45.1564], label: 'Parma → Mantua' }
+  },
+  { date: '2027-06-03', dn: 3, dm: 'Jun', dw: 'Thu', wk: 1, type: 'class', tag: 'Class + workshop', icon: '🍝',
+    title: 'Lectures + Pasta-making class',
+    subtitle: 'AM lectures · PM Academia Barilla pasta workshop',
+    location: 'Parma · Academia Barilla',
+    body: `<p>Morning lectures continue. Afternoon: <strong>hands-on pasta-making class at Academia Barilla</strong> downtown Parma — the cooking school on the original 1910 Barilla factory site. Tagliatelle and tortellini from scratch with Emilia-Romagna technique.</p>`,
+    sched: ['commute', 'block', 'br', 'block', 'lunch', 'culture', 'br', 'culture'],
+    pills: ['Crowd-pleaser', 'gold:★ Half-day workshop', 'Books fast']
+  },
+  { date: '2027-06-04', dn: 4, dm: 'Jun', dw: 'Fri', wk: 1, type: 'tour', tag: 'Site visit', icon: '🧀',
+    title: 'Parmigiano-Reggiano dairy tour',
+    subtitle: 'Caseificio San Pier Damiani · 9 AM start · ~€55 pp',
+    location: 'Parma province · early start',
+    body: `<p>Full traditional dairy tour: copper cauldrons, the morning's curd, salt-bath room, aging warehouse with ~10,000 wheels. The 12-month / 24-month / 36-month tasting at the end is the punchline.</p>
+      <p>Operations-research framing: how a 1,000-year-old PDO (Protected Designation of Origin) consortium enforces process standardization across hundreds of independent producers.</p>`,
+    sched: ['travel', 'visit', 'visit', 'travel'],
+    pills: ['Site visit', 'Operations case']
+  },
+  { date: '2027-06-05', dn: 5, dm: 'Jun', dw: 'Sat', wk: 1, type: 'free', tag: 'Free / optional Verona', icon: '🏟️',
+    title: 'Optional · Verona day trip + Arena opera evening',
+    subtitle: 'Frecciarossa ~50 min · Arena season Jun–Sep · verify 2027 program',
+    location: 'Verona (optional)',
+    body: `<p>Free day. Optional self-organized <strong>Verona</strong> trip: Roman Arena, Piazza Erbe, Juliet's house, Castelvecchio. Evening highlight if scheduling lines up: <strong>Arena di Verona summer opera season</strong> (Aida is a perennial fixture).</p>
+      <p>Verify 2027 program early — ticket release happens months in advance.</p>`,
+    sched: ['free', 'free', 'free'],
+    pills: ['Optional', 'Self-organized', 'warn:Opera tickets · book early'],
+    map: { from: [10.3279, 44.8015], to: [10.9916, 45.4384], label: 'Parma → Verona' }
+  },
+  { date: '2027-06-06', dn: 6, dm: 'Jun', dw: 'Sun', wk: 1, type: 'free', tag: 'Free', icon: '☕',
+    title: 'Free Sunday · jet-lag recovery',
+    subtitle: 'Free day · no programming · sleep in, brunch on Strada della Repubblica, self-directed exploration',
+    location: 'Parma',
+    body: `<p>NEU DOC convention: first weekend left unstructured for jet-lag recovery and student-organized exploration.</p>`,
+    sched: ['free'],
+    pills: ['Recovery']
+  },
+
+  // Week 2
+  { date: '2027-06-07', dn: 7, dm: 'Jun', dw: 'Mon', wk: 2, type: 'tour', tag: 'Site visit', icon: '🍝', flag: '★★',
+    title: 'Barilla Pedrignano factory visit',
+    subtitle: "World's largest pasta plant · academic group via Academia Barilla",
+    location: "Pedrignano · Parma's industrial east",
+    body: `<p><strong>Operations-research gold.</strong> The Pedrignano plant is the largest pasta production facility on Earth — 1,600 employees, integrated R&amp;D, central distribution warehouse for Europe. Tour covers ingredient intake, mixing, extrusion lines (multiple shapes per line), drying tunnels, packaging, and the central warehouse.</p>
+      <p>Pitch framing: a textbook case in continuous-process manufacturing, supply chain integration, and academic-industry partnership (Barilla's BITE Innovation Center has 84 university collaborations).</p>`,
+    sched: ['travel', 'visit', 'visit', 'visit', 'travel'],
+    pills: ['gold:★★ IE highlight', 'must:Booked 6 months ahead', 'Full-day visit']
+  },
+  { date: '2027-06-08', dn: 8, dm: 'Jun', dw: 'Tue', wk: 2, type: 'class', tag: 'Class + Chiesi', icon: '💊',
+    title: 'Lectures + Chiesi Pharmaceuticals visit',
+    subtitle: 'AM lectures · PM Italian · late PM Chiesi HQ tour',
+    location: 'University of Parma · Chiesi HQ',
+    body: `<p>Morning lectures + Italian language. Late afternoon: visit to <strong>Chiesi Pharmaceuticals</strong> headquarters in Parma — global respiratory and rare-disease pharma, B Corp certified. Conversation on pharmaceutical operations, regulated manufacturing, and the Italian biotech ecosystem.</p>`,
+    sched: 'standard',
+    pills: ['In-region', 'B Corp angle']
+  },
+  { date: '2027-06-09', dn: 9, dm: 'Jun', dw: 'Wed', wk: 2, type: 'tour', tag: 'Class + Davines', icon: '🌿',
+    title: 'Lectures + Davines Village',
+    subtitle: 'AM lectures · PM Italian · late PM Davines sustainability tour',
+    location: 'Davines Village · just outside Parma',
+    body: `<p>Late afternoon visit to <strong>Davines Village</strong> — sustainable cosmetics HQ, certified B Corp, designed by Matteo Thun. 9,800 sq ft Scientific Garden, biomethane and geothermal energy. Strong ESG and sustainable-operations case study.</p>`,
+    sched: 'standard',
+    pills: ['gold:★ ESG case', 'In-region']
+  },
+  { date: '2027-06-10', dn: 10, dm: 'Jun', dw: 'Thu', wk: 2, type: 'class', tag: 'Class + Gelato', icon: '🍦',
+    title: 'Lectures + Gelato workshop',
+    subtitle: 'AM lectures · PM Carpigiani Gelato University',
+    location: 'Anzola dell\'Emilia (near Bologna)',
+    body: `<p>Half-day field trip in the late afternoon: <strong>Carpigiani Gelato University</strong> — the manufacturer-run training school for gelato professionals. "Gelato Experience" group session: history, ingredients, tasting, and a hands-on round of making your own.</p>`,
+    sched: ['commute', 'block', 'br', 'block', 'lunch', 'culture', 'br', 'culture'],
+    pills: ['Half-day', 'Hands-on']
+  },
+  { date: '2027-06-11', dn: 11, dm: 'Jun', dw: 'Fri', wk: 2, type: 'tour', tag: 'Site visit', icon: '🥩',
+    title: 'Prosciutto di Parma · Langhirano',
+    subtitle: 'Salumificio Conti · English-language tour · ~30 min south',
+    location: 'Langhirano · Parma province',
+    body: `<p>Half-day visit to a <strong>Prosciutto di Parma</strong> producer in Langhirano (the curing-village south of Parma where the unique humidity gives the ham its character). Salumificio Conti runs English-language group tours: the salting room, the natural-air drying corridors, the seven-pointed-star quality stamp.</p>
+      <p>Pair with the Parmigiano visit (Wk 1) to complete the PDO double — both are textbook examples of consortium-enforced quality systems.</p>`,
+    sched: ['travel', 'visit', 'visit', 'travel'],
+    pills: ['Half-day', 'PDO consortium case']
+  },
+  { date: '2027-06-12', dn: 12, dm: 'Jun', dw: 'Sat', wk: 2, type: 'weekend', tag: 'Weekend trip', icon: '🌊', flag: '★★',
+    title: 'Cinque Terre · Day 1',
+    subtitle: 'Parma → La Spezia ~2h direct · Cinque Terre Express to villages',
+    location: 'Cinque Terre · Liguria coast',
+    body: `<p>Saturday: train to <strong>La Spezia</strong>, then the Cinque Terre Express card hops between the five villages — <strong>Riomaggiore → Manarola → Corniglia → Vernazza → Monterosso</strong>. The "Sentiero Azzurro" (Blue Path) hike between villages is the marketing magnet.</p>
+      <p>Overnight in Monterosso (most beach-friendly of the five). Sunset swim, anchovies for dinner.</p>`,
+    sched: ['weekend'],
+    pills: ['gold:★★ Marketing magnet', 'Overnight Monterosso'],
+    map: { from: [10.3279, 44.8015], to: [9.6539, 44.1466], label: 'Parma → Monterosso al Mare' }
+  },
+  { date: '2027-06-13', dn: 13, dm: 'Jun', dw: 'Sun', wk: 2, type: 'weekend', tag: 'Weekend trip', icon: '🌊',
+    title: 'Cinque Terre · Day 2',
+    subtitle: 'Hike, swim, return to Parma evening',
+    location: 'Cinque Terre · return',
+    body: `<p>Morning hike Vernazza → Monterosso (most accessible segment, ~2h). Beach time in Monterosso. Afternoon train back to Parma for Monday programming.</p>`,
+    sched: ['weekend'],
+    pills: ['Return PM']
+  },
+
+  // Week 3
+  { date: '2027-06-14', dn: 14, dm: 'Jun', dw: 'Mon', wk: 3, type: 'trip', tag: 'Day trip', icon: '🍷',
+    title: 'Modena · Enzo Ferrari Museum + Acetaia balsamic',
+    subtitle: '30 min direct · ~€8 RT',
+    location: 'Modena',
+    body: `<p>Full day in <strong>Modena</strong>. AM: <strong>Museo Enzo Ferrari</strong> (the architectural cocoon next to Enzo's birth house — F1 history and chassis design). PM: <strong>Acetaia tour</strong> (Leonardi or di Giorgio) — traditional balsamic vinegar aged 12 to 25 years in five different woods. Late afternoon: Duomo + Piazza Grande (UNESCO).</p>
+      <p>Operations framing: the 12-year aging cycle is a classic batch-process / inventory case study — capital tied up, demand forecasted decades out.</p>`,
+    sched: ['travel', 'visit', 'visit', 'lunch', 'visit', 'visit', 'travel'],
+    pills: ['Twin visit', 'gold:★★ Iconic', 'IE case study'],
+    map: { from: [10.3279, 44.8015], to: [10.9252, 44.6471], label: 'Parma → Modena' }
+  },
+  { date: '2027-06-15', dn: 15, dm: 'Jun', dw: 'Tue', wk: 3, type: 'class', tag: 'Class day', icon: '📚',
+    title: 'Lectures + lab visit',
+    subtitle: 'AM lectures · PM Italian · PM lab visit at UniPR DIA',
+    location: 'University of Parma · DIA',
+    body: `<p>Standard class day. Late afternoon: visit to a UniPR research lab in the Department of Engineering &amp; Architecture (specific lab TBD with host faculty — likely Industrial Engineering / Operations or Mechanical).</p>`,
+    sched: 'standard',
+    pills: ['Italian Block 4']
+  },
+  { date: '2027-06-16', dn: 16, dm: 'Jun', dw: 'Wed', wk: 3, type: 'tour', tag: 'Site visit', icon: '🏎️', flag: '★★',
+    title: 'Ferrari Maranello',
+    subtitle: 'Museo Ferrari + Factory Panoramic Bus · 12:30 or 13:30 slot',
+    location: 'Maranello · Modena province',
+    body: `<p><strong>The big one.</strong> AM: <strong>Museo Ferrari Maranello</strong> — F1 history, road-car evolution, the F1 simulator. PM: <strong>Factory Panoramic Bus</strong> (45 min, on-bus only, no foot access) — V8/V12 production lines, the wind tunnel, the Pista di Fiorano test track from a distance.</p>
+      <p>Optional: combine ticket with the Modena Enzo Ferrari Museum. Group bookings via museo@ferrari.com.</p>`,
+    sched: ['travel', 'visit', 'visit', 'lunch', 'visit', 'visit', 'travel'],
+    pills: ['gold:★★ Iconic', 'must:Booked 6 months ahead', 'Full-day'],
+    map: { from: [10.3279, 44.8015], to: [10.8693, 44.5285], label: 'Parma → Maranello' }
+  },
+  { date: '2027-06-17', dn: 17, dm: 'Jun', dw: 'Thu', wk: 3, type: 'class', tag: 'Class + Pizza', icon: '🍕',
+    title: 'Lectures + Pizza-making evening',
+    subtitle: 'AM lectures · PM Italian · evening pizza workshop',
+    location: 'Parma',
+    body: `<p>Morning lectures + Italian language. Evening: <strong>pizza-making workshop</strong> — Naples-style vs Roman-style vs Emilia flatbread comparison. Process-variation discussion: same three ingredients, three different products, three different supply chains.</p>`,
+    sched: ['commute', 'block', 'br', 'block', 'lunch', 'culture', 'br', 'culture'],
+    pills: ['Evening', 'Process-variation case']
+  },
+  { date: '2027-06-18', dn: 18, dm: 'Jun', dw: 'Fri', wk: 3, type: 'trip', tag: 'Day trip', icon: '🏛️',
+    title: 'Bologna · oldest university',
+    subtitle: 'Regionale ~1h or Frecciarossa ~35 min · ~€20 RT',
+    location: 'Bologna',
+    body: `<p>Full day in <strong>Bologna</strong>. <strong>Università di Bologna</strong> tour (founded 1088 — oldest continuously-operating university in the Western world) + <strong>Archiginnasio anatomical theater</strong>. Climb the Asinelli Tower for the city view. Quadrilatero <strong>food walk</strong> through the historic market district. Lunch: tagliatelle al ragù at the source.</p>`,
+    sched: ['travel', 'visit', 'visit', 'lunch', 'visit', 'visit', 'travel'],
+    pills: ['gold:★ University capital', 'Already in proposal'],
+    map: { from: [10.3279, 44.8015], to: [11.3426, 44.4949], label: 'Parma → Bologna' }
+  },
+  { date: '2027-06-19', dn: 19, dm: 'Jun', dw: 'Sat', wk: 3, type: 'trip', tag: 'Day trip', icon: '⛵',
+    title: 'Lake Garda · Sirmione day trip',
+    subtitle: 'Train to Desenzano ~1h30 · ferry to Sirmione · return Parma evening',
+    location: 'Lake Garda · Sirmione',
+    body: `<p>Saturday morning: train to <strong>Desenzano del Garda</strong>. Ferry to <strong>Sirmione</strong> on its peninsula — Scaligeri castle, Grotte di Catullo (Roman villa ruins at the tip), thermal swim, lakeside lunch.</p>
+      <p>Late afternoon: optional ferry to Salò or Riva del Garda for sunset, then train back to Parma. Single-day version of the lake; leaves Sunday free for rest before the Milan move.</p>`,
+    sched: ['travel', 'visit', 'lunch', 'visit', 'travel'],
+    pills: ['Family-friendly', 'Castle + ferry', 'Single day · Sat only'],
+    map: { from: [10.3279, 44.8015], to: [10.6055, 45.4980], label: 'Parma → Sirmione' }
+  },
+  { date: '2027-06-20', dn: 20, dm: 'Jun', dw: 'Sun', wk: 3, type: 'free', tag: 'Free Sunday', icon: '☕',
+    title: 'Free Sunday · rest before Milan',
+    subtitle: 'No programming · pack for the Milan move tomorrow',
+    location: 'Parma',
+    body: `<p>Second free Sunday of the program. No programming. Sleep in, brunch on Strada della Repubblica, finish any remaining course reading, pack for tomorrow's <strong>Milan move</strong>.</p>
+      <p>Optional self-organized: a third visit to Parma centro for last photos, or a slow morning at Parco Ducale with a book.</p>`,
+    sched: ['free'],
+    pills: ['gold:Free Sunday', 'Pack tonight']
+  },
+
+  // Week 4 — MILAN CAPSTONE
+  { date: '2027-06-21', dn: 21, dm: 'Jun', dw: 'Mon', wk: 4, type: 'travel', tag: 'Travel + welcome', icon: '🚄',
+    title: 'Parma → Milan · POLIMI welcome',
+    subtitle: 'Frecciarossa ~1h15 · PM POLIMI GSoM campus tour',
+    location: 'Milan · POLIMI Bovisa',
+    body: `<p>Morning <strong>Frecciarossa from Parma to Milano Centrale</strong> (~1h15, book Super Economy 2-3 months ahead for ~€20-30 vs walk-up €60-90). Settle into Milan accommodation.</p>
+      <p>Afternoon: welcome and campus tour at <strong>POLIMI Graduate School of Management</strong> (Bovisa campus) — Italy's strongest engineering university and an established host for visiting summer-school cohorts.</p>`,
+    sched: ['travel', 'travel', 'lunch', 'visit', 'visit'],
+    pills: ['Move day', 'gold:★ NEU partner exists'],
+    map: { from: [10.3279, 44.8015], to: [9.1900, 45.4642], label: 'Parma → Milan' }
+  },
+  { date: '2027-06-22', dn: 22, dm: 'Jun', dw: 'Tue', wk: 4, type: 'milan', tag: 'POLIMI + Bocconi', icon: '🎓',
+    title: 'POLIMI joint lecture + Bocconi visit',
+    subtitle: 'AM POLIMI GSoM joint session · PM Bocconi tour',
+    location: 'Milan · POLIMI + Bocconi',
+    body: `<p>Morning: <strong>joint lecture at POLIMI GSoM</strong> with an Italian faculty member — operations / supply chain or strategy track, on a topic that bridges both course themes.</p>
+      <p>Afternoon: visit to <strong>Bocconi University</strong> — Italy's top business school. Campus tour, conversation with international-programs office, exposure to the finance / management research culture (the contrast with POLIMI's engineering culture is itself the lesson).</p>`,
+    sched: ['commute', 'visit', 'br', 'visit', 'lunch', 'visit', 'br', 'visit'],
+    pills: ['Two-campus day', 'Cross-discipline']
+  },
+  { date: '2027-06-23', dn: 23, dm: 'Jun', dw: 'Wed', wk: 4, type: 'tour', tag: 'Site visit', icon: '⚙️',
+    title: 'Brembo · Stezzano',
+    subtitle: 'F1 + automotive brakes · ~50 min from Milan',
+    location: 'Stezzano · Bergamo province',
+    body: `<p>Day trip from Milan to <strong>Brembo</strong> in Stezzano (near Bergamo). Brembo supplies brake systems to most F1 teams and luxury automotive manufacturers. Corporate visit covers R&amp;D, manufacturing, and the company's Kilometro Rosso innovation district.</p>
+      <p>Booking via brembo.com corporate communications — request 3 months ahead.</p>`,
+    sched: ['travel', 'visit', 'visit', 'lunch', 'visit', 'travel'],
+    pills: ['Milan add-on', 'F1 supplier'],
+    map: { from: [9.1900, 45.4642], to: [9.6837, 45.6722], label: 'Milan → Stezzano' }
+  },
+  { date: '2027-06-24', dn: 24, dm: 'Jun', dw: 'Thu', wk: 4, type: 'milan', tag: 'Cultural · Milan core', icon: '🖼️',
+    title: 'Last Supper + Duomo + Pirelli HangarBicocca',
+    subtitle: 'Cenacolo Vinciano slot · Duomo + Galleria · PM HangarBicocca',
+    location: 'Milan',
+    body: `<p>Morning: <strong>Cenacolo Vinciano</strong> — Leonardo's Last Supper (15-minute timed entry, group of 30 max; <em>booked 4+ months ahead via cenacolovinciano.org</em>).</p>
+      <p>Midday: <strong>Duomo</strong> + rooftop terrace + Galleria Vittorio Emanuele II. Afternoon: <strong>Pirelli HangarBicocca</strong> — former locomotive plant turned 15,000 m² contemporary art space, free admission, free reservation. Industrial-heritage tie-in.</p>`,
+    sched: ['visit', 'visit', 'lunch', 'visit', 'visit', 'culture'],
+    pills: ['must:Last Supper · 4mo booking', 'gold:★ Iconic Milan']
+  },
+  { date: '2027-06-25', dn: 25, dm: 'Jun', dw: 'Fri', wk: 4, type: 'milan', tag: 'Final day', icon: '🎉',
+    title: 'Final presentations + farewell dinner',
+    subtitle: 'AM cohort presentations at POLIMI · evening farewell',
+    location: 'Milan · POLIMI GSoM',
+    body: `<p>Morning: <strong>cohort presentations</strong> at POLIMI — final projects bridging both courses (TBD format with co-faculty). Audience: NEU faculty + POLIMI hosts + Italian students.</p>
+      <p>Afternoon: free time for last shopping / Milan exploration (Brera, Navigli, Quadrilatero della Moda). Evening: <strong>farewell dinner</strong> at a Milan trattoria with the program assistant + POLIMI hosts.</p>`,
+    sched: ['visit', 'visit', 'lunch', 'free', 'free', 'culture'],
+    pills: ['gold:Final presentations', 'Farewell dinner']
+  },
+  { date: '2027-06-26', dn: 26, dm: 'Jun', dw: 'Sat', wk: 4, type: 'travel', tag: 'Departure', icon: '✈️',
+    title: 'Departure · Milan Malpensa',
+    subtitle: 'Hotel checkout · cohort departs from Milan Malpensa (MXP) on individual flights',
+    location: 'Milan · MXP',
+    body: `<p>Cohort disperses. Most students fly home from <strong>Milan Malpensa (MXP)</strong>, ~50 min from city centre by Malpensa Express train. Optional: students can extend personal travel after this date at their own arrangement.</p>`,
+    sched: ['travel', 'travel'],
+    pills: ['Program ends']
+  },
+  { date: '2027-06-27', dn: 27, dm: 'Jun', dw: 'Sun', wk: 4, type: 'free', tag: '', icon: '',
+    title: '', subtitle: '', body: '', empty: true
+  },
+];
+
+// ============================================================================
+// CALENDAR RENDERING
+// ============================================================================
+function renderCalendar() {
+  const grid = document.querySelector('.cal-grid');
+  // Remove old day cells
+  grid.querySelectorAll('.day-cell').forEach(c => c.remove());
+
+  DAYS.forEach((d, idx) => {
+    const cell = document.createElement('a');
+    cell.href = `#day-${d.date}`;
+    cell.className = 'day-cell t-' + d.type + (d.empty ? ' empty' : '');
+    cell.dataset.wk = d.wk;
+    cell.dataset.day = d.date;
+    if (d.empty) {
+      cell.innerHTML = '';
+    } else {
+      cell.innerHTML = `
+        ${d.flag ? `<span class="day-flag">${d.flag}</span>` : ''}
+        <div>
+          <div class="day-num">${d.dn}</div>
+          <div class="day-month">${d.dm}</div>
+          <div class="day-type">${d.tag}</div>
+        </div>
+        <div class="day-meta">${d.icon || ''}</div>
+      `;
+      // Click → update side panel (don't navigate)
+      cell.addEventListener('click', (e) => {
+        e.preventDefault();
+        updateDayPanel(cell, d.date);
+      });
+    }
+    grid.appendChild(cell);
+  });
+}
+
+// ============================================================================
+// DAY PANEL — click any calendar cell to see its vertical timeline (in side panel)
+// ============================================================================
+const PANEL_TIMES = [
+  '09:00 — 10:30',
+  '10:50 — 12:20',
+  '12:20 — 13:35',
+  '13:35 — 15:05',
+  '15:25 — 16:55',
+  'Evening',
+];
+
+function dateKey(dn, dm) {
+  const m = dm === 'May' ? '05' : '06';
+  return `2027-${m}-${String(dn).padStart(2, '0')}`;
+}
+
+function renderPanelEmpty() {
+  const panel = document.getElementById('dayPanel');
+  if (!panel) return;
+  panel.innerHTML = `
+    <div class="day-panel-empty">
+      <div class="ico"><i data-lucide="calendar-days"></i></div>
+      <strong>Pick a day on the calendar</strong>
+      Click any cell on the left to see that day's hour-by-hour timeline here.
+    </div>
+  `;
+  if (window.lucide) lucide.createIcons();
+}
+
+function updateDayPanel(cellEl, date) {
+  const panel = document.getElementById('dayPanel');
+  const day = DAYS.find(d => d.date === date);
+  if (!panel || !day) return;
+
+  // Find the day's column in WEEKLY_SCHEDULES
+  let blocks = null;
+  for (const wk of WEEKLY_SCHEDULES) {
+    const idx = wk.headers.findIndex(h => dateKey(h.dn, h.dm) === date);
+    if (idx !== -1) {
+      blocks = wk.grid.map((row, i) => ({ time: PANEL_TIMES[i], cell: row[idx] }));
+      break;
+    }
+  }
+  if (!blocks) {
+    blocks = [{ time: 'All day', cell: { t: day.type, x: day.tag } }];
+  }
+
+  // Highlight active cell
+  document.querySelectorAll('.day-cell.popped').forEach(c => c.classList.remove('popped'));
+  cellEl.classList.add('popped');
+
+  panel.innerHTML = `
+    <div class="dp-header">
+      <div>
+        <div class="dp-date"><span class="dn">${day.dn}</span>${day.dm} <span class="dw">· ${day.dw}</span></div>
+        <span class="dp-tag t-${day.type}">${day.tag}</span>
+      </div>
+    </div>
+    <div class="dp-title">${day.title}</div>
+    <div class="dp-timeline">
+      ${blocks.map(b => `
+        <div class="dp-tl-row t-${b.cell.t}">
+          <div class="dp-tl-time">${b.time}</div>
+          <div class="dp-tl-text">${b.cell.x}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="dp-footer">
+      <a class="dp-link" href="#day-${date}">
+        <i data-lucide="arrow-down"></i> Full day details
+      </a>
+    </div>
+  `;
+
+  if (window.lucide) lucide.createIcons();
+}
+
+// ============================================================================
+// DAY CARDS
+// ============================================================================
+function renderDayCards() {
+  const list = document.getElementById('dayCardsList');
+  list.innerHTML = DAYS.filter(d => !d.empty).map(d => {
+    const pills = (d.pills || []).map(p => {
+      const m = p.match(/^(warn|must|gold):(.+)$/);
+      const cls = m ? m[1] : '';
+      const text = m ? m[2] : p;
+      return `<span class="dc-pill ${cls}">${text}</span>`;
+    }).join('');
+
+    const imageSrc = IMAGES[d.date];
+    const visualHtml = imageSrc
+      ? `<div class="dc-image"><img src="${imageSrc}" alt="${d.title}" loading="lazy"></div>`
+      : (d.map ? renderMiniMap(d.map) : '');
+    const hasVisual = imageSrc || d.map;
+
+    // Build timeline blocks for this day from WEEKLY_SCHEDULES
+    let timelineBlocks = null;
+    for (const wk of WEEKLY_SCHEDULES) {
+      const idx = wk.headers.findIndex(h => dateKey(h.dn, h.dm) === d.date);
+      if (idx !== -1) {
+        timelineBlocks = wk.grid.map((row, i) => ({ time: PANEL_TIMES[i], cell: row[idx] }));
+        break;
+      }
+    }
+    const timelineHtml = timelineBlocks ? buildDayTimeline(timelineBlocks, d) : '';
+
+    return `
+      <div class="day-card t-${d.type}" id="day-${d.date}">
+        <div class="dc-header">
+          <div class="dc-date">
+            <div class="dn">${d.dn}</div>
+            <div class="dm">${d.dm}</div>
+            <div class="dw">${d.dw}</div>
+          </div>
+          <div class="dc-info">
+            <span class="dc-tag t-${d.type}">${d.tag}</span>
+            <h3 class="dc-title">${linkifyWiki(d.title)}</h3>
+            <div class="dc-subtitle">
+              <i data-lucide="map-pin" class="ico"></i> ${linkifyWiki(d.location)}
+              <span class="sep">·</span>
+              <span>${linkifyWiki(d.subtitle)}</span>
+            </div>
+          </div>
+        </div>
+        <div class="dc-body ${hasVisual ? '' : 'no-map'}">
+          <div class="dc-content">
+            ${timelineHtml}
+            ${pills ? `<div class="dc-tags">${pills}</div>` : ''}
+          </div>
+          ${visualHtml}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Re-init lucide for newly inserted icons
+  if (window.lucide) lucide.createIcons();
+}
+
+// Italy outline path (simplified mainland, viewBox 0 0 240 180, lng 6.5–18.7 / lat 36.5–47)
+const ITALY_PATH = "M 12 22 L 28 18 L 50 14 L 100 0 L 144 8 L 156 24 L 124 30 L 122 47 L 130 56 L 148 60 L 162 80 L 192 90 L 210 105 L 232 116 L 212 114 L 210 138 L 184 158 L 178 152 L 188 130 L 162 110 L 154 108 L 142 100 L 116 92 L 106 86 L 92 80 L 76 60 L 66 50 L 48 46 L 26 56 L 18 56 Z";
+const ITALY_BOUNDS = { lngMin: 6.5, lngMax: 18.7, latMin: 36.5, latMax: 47.0 };
+
+function projItaly([lng, lat]) {
+  return [
+    ((lng - ITALY_BOUNDS.lngMin) / (ITALY_BOUNDS.lngMax - ITALY_BOUNDS.lngMin)) * 240,
+    ((ITALY_BOUNDS.latMax - lat) / (ITALY_BOUNDS.latMax - ITALY_BOUNDS.latMin)) * 180
+  ];
+}
+
+function renderTripTimeline() {
+  const wrap = document.getElementById('tripTimeline');
+  if (!wrap) return;
+
+  // Sort trips chronologically
+  const sorted = TRIPS.map((t, origIdx) => ({ t, origIdx }))
+    .sort((a, b) => a.t.dayId.localeCompare(b.t.dayId));
+
+  const formatDate = (dayId) => {
+    const [, m, d] = dayId.split('-');
+    const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+    return `${months[parseInt(m)]} ${parseInt(d)}`;
+  };
+
+  const shortName = (name) => {
+    // Strip parentheticals + take first segment before · or ·
+    return name.split('·')[0].split('(')[0].trim();
+  };
+
+  // Reduce 5 trip types to 3 color buckets
+  const colorBucket = (type) => {
+    if (type === 'tour') return 'industry';
+    if (type === 'milan') return 'capstone';
+    return 'cultural'; // trip, weekend, holiday all = cultural/leisure
+  };
+
+  wrap.innerHTML = sorted.map(({ t, origIdx }) => `
+    <a class="tt-item" href="javascript:void(0)" onclick="openTripModal(${origIdx})" title="${t.name} — ${t.notes}">
+      <div class="tt-date">${formatDate(t.dayId)}</div>
+      <div class="tt-dot t-${colorBucket(t.type)}"></div>
+      <div class="tt-name">${shortName(t.name)}</div>
+      <div class="tt-meta">${t.dur}</div>
+    </a>
+  `).join('');
+}
+
+function renderWeeklySchedules() {
+  const stack = document.getElementById('weeklyStack');
+  if (!stack) return;
+  stack.innerHTML = WEEKLY_SCHEDULES.map(wk => {
+    const headers = wk.headers.map(h => `
+      <th${h.flag ? ' class="flagged"' : ''}>
+        <div class="dn">${h.dn} ${h.dm}</div>
+        <div>${h.dw}${h.flag ? ` <span class="dn-suffix">${h.flag}</span>` : ''}</div>
+      </th>
+    `).join('');
+
+    const rows = wk.grid.map((row, i) => {
+      const time = WEEK_TIMES[i];
+      const cells = row.map(c => {
+        const cls = (c.x === '—') ? 'wk-cell wk-cell-empty' : `wk-cell t-${c.t}`;
+        return `<td class="${cls}">${c.x}</td>`;
+      }).join('');
+      return `<tr><td class="time-col">${time}</td>${cells}</tr>`;
+    }).join('');
+
+    const tagHtml = wk.tag ? `<span class="wk-tag${wk.label.includes('Milan') ? ' milan' : ''}">${wk.tag}</span>` : '';
+
+    return `
+      <div class="wk-schedule">
+        <div class="wk-schedule-head">
+          <span class="wk-name">${wk.label}</span>
+          <span class="wk-dates">${wk.dates}</span>
+          ${tagHtml}
+        </div>
+        <div class="wk-table-wrap">
+          <table class="wk-table">
+            <thead><tr><th class="time-col">Time</th>${headers}</tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+        <div class="wk-legend">
+          <span class="lg"><span class="sw" style="background:rgba(212,168,75,0.40)"></span>Orientation</span>
+          <span class="lg"><span class="sw" style="background:rgba(26,26,46,0.30)"></span>Lecture</span>
+          <span class="lg"><span class="sw" style="background:rgba(0,146,70,0.30)"></span>Italian / cultural</span>
+          <span class="lg"><span class="sw" style="background:rgba(196,18,48,0.30)"></span>Industry tour</span>
+          <span class="lg"><span class="sw" style="background:rgba(212,168,75,0.50)"></span>Day trip</span>
+          <span class="lg"><span class="sw" style="background:rgba(124,58,237,0.30)"></span>Weekend trip</span>
+          <span class="lg"><span class="sw" style="background:rgba(245,158,11,0.30)"></span>Holiday</span>
+          <span class="lg"><span class="sw" style="background:rgba(252,211,77,0.40)"></span>Lunch</span>
+          <span class="lg"><span class="sw" style="background:rgba(8,145,178,0.30)"></span>Travel</span>
+          <span class="lg"><span class="sw" style="background:rgba(225,29,72,0.30)"></span>Milan</span>
+          <span class="lg"><span class="sw" style="background:rgba(196,18,48,0.50);border:1px solid rgba(196,18,48,0.6)"></span>Exam ★</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Smart-collapse a day's timeline blocks. If all non-empty cells share the same type,
+// render as ONE summary row (instead of repeating "Free" 6 times). Otherwise, render full timeline.
+function buildDayTimeline(blocks, day) {
+  const nonEmpty = blocks.filter(b => b.cell.x !== '—');
+  if (nonEmpty.length === 0) return '';
+
+  const types = new Set(nonEmpty.map(b => b.cell.t));
+  const sameType = types.size === 1;
+  const sameText = new Set(nonEmpty.map(b => b.cell.x.replace(/\(cont\.\)|\(in flight\)/gi, '').trim())).size === 1;
+
+  // Collapse criteria: all same type (covers Free Sun, Departure US, Departure MXP, etc.)
+  if (sameType) {
+    const t = nonEmpty[0].cell.t;
+    // Pick best label: starred > day.subtitle > tag
+    const starred = nonEmpty.find(b => b.cell.x.includes('★'));
+    const label = starred ? starred.cell.x : (day.subtitle || day.tag);
+    return `<div class="dc-tl">
+      <div class="dc-tl-row t-${t}">
+        <div class="dc-tl-time">All day</div>
+        <div class="dc-tl-text">
+          <div class="dc-tl-label">${linkifyWiki(label)}</div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // Otherwise: full per-block timeline
+  return `<div class="dc-tl">${blocks.map(b => `
+    <div class="dc-tl-row t-${b.cell.t}">
+      <div class="dc-tl-time">${b.time}</div>
+      <div class="dc-tl-text">
+        <div class="dc-tl-label">${linkifyWiki(b.cell.x)}</div>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+function renderSchedule(sched) {
+  if (!sched) return '';
+  // Standard 4-block template
+  const STANDARD = [
+    ['commute', 0.6, '8:30 commute'],
+    ['block', 1.5, '9:00 lecture'],
+    ['br', 0.3, ''],
+    ['block', 1.5, '11:00 lecture'],
+    ['lunch', 1.25, '12:20 lunch'],
+    ['culture', 1.5, '13:35 Italian'],
+    ['br', 0.3, ''],
+    ['culture', 1.5, '15:25 cultural'],
+  ];
+  const TYPE_LABEL = {
+    commute: 'Commute', block: 'Lecture', br: 'Break', lunch: 'Lunch',
+    culture: 'Italian / cultural', visit: 'Site visit', travel: 'Travel',
+    free: 'Free', orient: 'Orientation', weekend: 'Trip',
+  };
+
+  let segments;
+  if (sched === 'standard') {
+    segments = STANDARD;
+  } else if (Array.isArray(sched)) {
+    // Equal-flex segments
+    segments = sched.map(t => [t, 1, '']);
+  } else {
+    return '';
+  }
+
+  const bar = segments.map(([t, flex]) => `<span class="${t}" style="flex:${flex}"></span>`).join('');
+  const labels = segments.filter(s => s[2]).map(s => `<span><strong>${s[2].split(' ')[0]}</strong>${s[2].split(' ').slice(1).join(' ')}</span>`).join('');
+
+  return `
+    <div class="dc-sched">
+      <div class="dc-sched-title">Daily schedule</div>
+      <div class="sch-bar2">${bar}</div>
+      <div class="blocks">${labels}</div>
+    </div>
+  `;
+}
+
+function renderMiniMap(map) {
+  // Simple SVG mini-map — Italy outline + from/to dots + dashed connector
+  const [fromLng, fromLat] = map.from;
+  const [toLng, toLat] = map.to;
+  // Simple lat/lng → SVG (Italy bounds: lng 6.6 to 18.5, lat 36.6 to 47.1)
+  const W = 200, H = 130;
+  const proj = ([lng, lat]) => {
+    const x = ((lng - 6.6) / (18.5 - 6.6)) * W;
+    const y = ((47.1 - lat) / (47.1 - 36.6)) * H;
+    return [x, y];
+  };
+  const [fx, fy] = proj([fromLng, fromLat]);
+  const [tx, ty] = proj([toLng, toLat]);
+  const mx = (fx + tx) / 2;
+  const my = (fy + ty) / 2 - 8;
+
+  return `
+    <div class="dc-mini-map">
+      <svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+        <!-- Stylized Italy outline -->
+        <path d="M 70 18 L 82 22 L 92 30 L 100 42 L 108 56 L 116 68 L 124 82 L 132 92 L 140 100 L 148 106 L 144 116 L 134 110 L 124 102 L 116 90 L 108 78 L 100 66 L 92 54 L 84 44 L 76 38 L 70 30 Z M 50 28 L 62 30 L 70 36 L 64 42 L 56 40 L 48 34 Z" fill="#e6ede4" stroke="#9caea3" stroke-width="0.8"/>
+        <!-- Dashed connector -->
+        <path d="M ${fx} ${fy} Q ${mx} ${my} ${tx} ${ty}" stroke="#C41230" stroke-width="2" stroke-dasharray="4 3" fill="none"/>
+        <!-- From (Parma usually) -->
+        <circle cx="${fx}" cy="${fy}" r="5" fill="#009246" stroke="#fff" stroke-width="2"/>
+        <!-- To -->
+        <circle cx="${tx}" cy="${ty}" r="5" fill="#C41230" stroke="#fff" stroke-width="2"/>
+        <text x="${W/2}" y="${H - 6}" font-size="9" font-family="JetBrains Mono" fill="#64748b" text-anchor="middle" font-weight="600">${map.label}</text>
+      </svg>
+    </div>
+  `;
+}
+
+// ============================================================================
+// MAPLIBRE GL — Italy overview map
+// ============================================================================
+const ITALY_DESTS = [
+  { name: 'Parma', coords: [10.3279, 44.8015], cls: 'parma', desc: 'Home base · weeks 1–3' },
+  { name: 'Modena', coords: [10.9252, 44.6471], cls: 'tour', desc: 'Day trip · Ferrari museum + acetaia' },
+  { name: 'Maranello', coords: [10.8693, 44.5285], cls: 'tour', desc: 'Ferrari factory tour' },
+  { name: 'Bologna', coords: [11.3426, 44.4949], cls: 'trip', desc: 'Day trip · oldest university' },
+  { name: 'Mantua', coords: [10.7914, 45.1564], cls: 'trip', desc: 'Day trip · UNESCO city · Jun 2 holiday' },
+  { name: 'Verona', coords: [10.9916, 45.4384], cls: 'trip', desc: 'Optional day · Arena opera' },
+  { name: 'Sirmione', coords: [10.6055, 45.4980], cls: 'weekend', desc: 'Weekend · Lake Garda' },
+  { name: 'Monterosso', coords: [9.6539, 44.1466], cls: 'weekend', desc: 'Weekend · Cinque Terre' },
+  { name: 'Langhirano', coords: [10.2658, 44.6147], cls: 'tour', desc: 'Prosciutto di Parma' },
+  { name: 'Anzola dell\'Emilia', coords: [11.1957, 44.5475], cls: 'tour', desc: 'Carpigiani Gelato U' },
+  { name: 'Milan', coords: [9.1900, 45.4642], cls: 'milan', desc: 'Final week · POLIMI + Bocconi' },
+  { name: 'Stezzano', coords: [9.6837, 45.6722], cls: 'tour', desc: 'Brembo (Milan add-on)' },
+];
+
+const ROUTE_ORDER = ['Parma', 'Mantua', 'Modena', 'Maranello', 'Bologna', 'Sirmione', 'Monterosso', 'Milan'];
+
+function initMap() {
+  if (typeof maplibregl === 'undefined') {
+    console.warn('MapLibre not loaded');
+    return;
+  }
+  const map = new maplibregl.Map({
+    container: 'italyMap',
+    style: 'https://tiles.openfreemap.org/styles/positron',
+    center: [10.4, 45.0],
+    zoom: 5.4,
+    attributionControl: false,
+  });
+
+  map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
+  map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+
+  map.on('load', () => {
+    // Add markers
+    ITALY_DESTS.forEach(d => {
+      const el = document.createElement('div');
+      el.className = 'map-marker ' + d.cls;
+      new maplibregl.Marker({ element: el })
+        .setLngLat(d.coords)
+        .setPopup(new maplibregl.Popup({ offset: 16, closeButton: false }).setHTML(
+          `<strong>${d.name}</strong><em>${d.desc}</em>`
+        ))
+        .addTo(map);
+    });
+
+    // Add route line connecting key stops
+    const routeCoords = ROUTE_ORDER
+      .map(n => ITALY_DESTS.find(d => d.name === n))
+      .filter(Boolean)
+      .map(d => d.coords);
+
+    map.addSource('route', {
+      type: 'geojson',
+      data: {
+        type: 'Feature',
+        geometry: { type: 'LineString', coordinates: routeCoords },
+      },
+    });
+    map.addLayer({
+      id: 'route-shadow',
+      type: 'line',
+      source: 'route',
+      paint: {
+        'line-color': '#1a1a2e',
+        'line-width': 4,
+        'line-opacity': 0.15,
+        'line-blur': 2,
+      },
+    });
+    map.addLayer({
+      id: 'route-line',
+      type: 'line',
+      source: 'route',
+      paint: {
+        'line-color': '#C41230',
+        'line-width': 2.5,
+        'line-dasharray': [3, 2],
+      },
+    });
+  });
+}
+
+// ============================================================================
+// CALENDAR FILTERING (week tabs)
+// ============================================================================
+function setupTabs() {
+  document.querySelectorAll('.cal-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.cal-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const wk = tab.dataset.wk;
+      document.querySelectorAll('.day-cell').forEach(cell => {
+        if (wk === 'all' || cell.dataset.wk === wk) {
+          cell.style.display = '';
+        } else {
+          cell.style.display = 'none';
+        }
+      });
+    });
+  });
+}
+
+// ============================================================================
+// LIGHTBOX
+// ============================================================================
+function openLightbox(src, caption) {
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox-caption').textContent = caption || '';
+  document.getElementById('lightbox').classList.add('open');
+  document.body.classList.add('lb-open');
+}
+function closeLightbox(event) {
+  // If clicking the IMG itself, ignore (only close on backdrop / X / ESC)
+  if (event && event.target.tagName === 'IMG') return;
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.classList.remove('lb-open');
+}
+function wireLightbox() {
+  document.querySelectorAll('.dc-image img, .hero-image').forEach(img => {
+    if (img.dataset.lbBound) return;
+    img.dataset.lbBound = '1';
+    img.addEventListener('click', () => openLightbox(img.src, img.alt || ''));
+  });
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeLightbox();
+});
+
+// ============================================================================
+// TRIP MODAL — click trip card → open MapLibre map with route + waypoints
+// ============================================================================
+let tripMap = null;
+
+function openTripModal(idx) {
+  const t = TRIPS[idx];
+  if (!t) return;
+
+  const modal = document.getElementById('tripModal');
+  const info = document.getElementById('tmInfo');
+
+  const typeLabel = ({
+    trip: 'Day trip', tour: 'Industry tour', weekend: 'Weekend',
+    milan: 'Milan capstone', holiday: 'Day trip · holiday'
+  })[t.type] || 'Day trip';
+
+  // Build all waypoints list (including start + end)
+  const allPoints = [
+    { name: t.from === MILAN ? 'Milan (base)' : 'Parma (base)', coords: t.from, kind: 'start', desc: 'Departure point' },
+    ...(t.waypoints || []).map(w => ({ ...w, kind: 'mid' })),
+  ];
+  // Only add 'end' if last waypoint isn't already the destination
+  const lastWP = (t.waypoints || []).slice(-1)[0];
+  if (!lastWP || (lastWP.coords[0] !== t.to[0] || lastWP.coords[1] !== t.to[1])) {
+    allPoints.push({ name: t.name, coords: t.to, kind: 'end', desc: 'Destination' });
+  } else {
+    allPoints[allPoints.length - 1].kind = 'end';
+  }
+
+  info.innerHTML = `
+    <span class="tm-pill t-${t.type}">${typeLabel}</span>
+    <h3 class="tm-title">${t.name}</h3>
+    <div class="tm-meta">
+      <span>${t.date}</span><span class="sep">·</span>
+      <span><strong>${t.dur}</strong></span><span class="sep">·</span>
+      <span>${t.cost}</span>
+    </div>
+    <div class="tm-notes">${t.notes}</div>
+    <div class="tm-h4"><i data-lucide="map-pin"></i> Route &amp; main points</div>
+    <ul class="tm-waypoints">
+      ${allPoints.map((p, i) => `
+        <li>
+          <span class="num ${p.kind === 'start' ? 'start' : p.kind === 'end' ? 'end' : ''}">${p.kind === 'start' ? 'A' : p.kind === 'end' ? 'B' : i}</span>
+          <div>
+            <strong>${p.name}</strong>
+            <span class="desc">${p.desc || ''}</span>
+          </div>
+        </li>
+      `).join('')}
+    </ul>
+    <div class="tm-footer">
+      <a class="tm-link secondary" href="#day-${t.dayId}" onclick="closeTripModal()">
+        <i data-lucide="arrow-down"></i> Day details
+      </a>
+      <a class="tm-link" href="https://www.openstreetmap.org/directions?from=${t.from[1]},${t.from[0]}&to=${t.to[1]},${t.to[0]}" target="_blank" rel="noopener">
+        <i data-lucide="external-link"></i> Open in OSM
+      </a>
+    </div>
+  `;
+
+  modal.classList.add('open');
+  document.body.classList.add('lb-open');
+  if (window.lucide) lucide.createIcons();
+
+  // Initialize map (first time) or reuse
+  if (!tripMap) {
+    tripMap = new maplibregl.Map({
+      container: 'tmMapCanvas',
+      style: 'https://tiles.openfreemap.org/styles/positron',
+      attributionControl: false,
+    });
+    tripMap.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-left');
+    tripMap.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+    tripMap._tripMarkers = [];
+    tripMap.on('load', () => drawTripOnMap(t, allPoints));
+  } else {
+    if (tripMap.loaded()) {
+      drawTripOnMap(t, allPoints);
+    } else {
+      tripMap.once('load', () => drawTripOnMap(t, allPoints));
+    }
+    setTimeout(() => tripMap.resize(), 50);
+  }
+}
+
+function drawTripOnMap(t, allPoints) {
+  // Remove existing markers
+  if (tripMap._tripMarkers) tripMap._tripMarkers.forEach(m => m.remove());
+  tripMap._tripMarkers = [];
+
+  // Route geometry — straight line through all waypoints
+  const routeCoords = allPoints.map(p => p.coords);
+
+  if (tripMap.getLayer('tm-route-shadow')) tripMap.removeLayer('tm-route-shadow');
+  if (tripMap.getLayer('tm-route-line')) tripMap.removeLayer('tm-route-line');
+  if (tripMap.getSource('tm-route')) tripMap.removeSource('tm-route');
+
+  tripMap.addSource('tm-route', {
+    type: 'geojson',
+    data: { type: 'Feature', geometry: { type: 'LineString', coordinates: routeCoords } },
+  });
+  tripMap.addLayer({
+    id: 'tm-route-shadow', type: 'line', source: 'tm-route',
+    paint: { 'line-color': '#1a1a2e', 'line-width': 6, 'line-opacity': 0.18, 'line-blur': 3 },
+  });
+  tripMap.addLayer({
+    id: 'tm-route-line', type: 'line', source: 'tm-route',
+    paint: { 'line-color': '#C41230', 'line-width': 3.5, 'line-dasharray': [2, 2] },
+  });
+
+  // Add markers
+  allPoints.forEach((p, i) => {
+    const el = document.createElement('div');
+    el.className = 'tm-marker' + (p.kind === 'start' ? ' start' : p.kind === 'end' ? ' end' : '');
+    el.textContent = p.kind === 'start' ? 'A' : p.kind === 'end' ? 'B' : String(i);
+    const m = new maplibregl.Marker({ element: el })
+      .setLngLat(p.coords)
+      .setPopup(new maplibregl.Popup({ offset: 16, closeButton: false }).setHTML(
+        `<strong>${p.name}</strong>${p.desc ? `<em>${p.desc}</em>` : ''}`
+      ))
+      .addTo(tripMap);
+    tripMap._tripMarkers.push(m);
+  });
+
+  // Fit bounds to all points
+  const bounds = new maplibregl.LngLatBounds();
+  allPoints.forEach(p => bounds.extend(p.coords));
+  tripMap.fitBounds(bounds, { padding: 70, maxZoom: 12, duration: 600 });
+}
+
+function closeTripModal() {
+  document.getElementById('tripModal').classList.remove('open');
+  document.body.classList.remove('lb-open');
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeTripModal();
+});
+
+// ============================================================================
+// BOOT
+// ============================================================================
+document.addEventListener('DOMContentLoaded', () => {
+  renderCalendar();
+  renderPanelEmpty();
+  renderTripTimeline();
+  renderWeeklySchedules();
+  renderDayCards();
+  setupTabs();
+  wireLightbox();
+  if (window.lucide) lucide.createIcons();
+});
+</script>
+</body>
+</html>
