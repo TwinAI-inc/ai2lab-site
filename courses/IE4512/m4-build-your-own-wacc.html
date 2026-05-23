@@ -522,6 +522,204 @@
   }
   .nav-progress b { color: var(--blue); font-size: 13px; }
 
+  /* ASSIGNMENT block — extend to MARR */
+  .assignment {
+    margin-top: 26px;
+    background: var(--paper);
+    border: 2px solid var(--crimson);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(138,40,40,0.08);
+  }
+  .assignment .a-head {
+    background: linear-gradient(135deg, var(--crimson) 0%, #6b1e1e 100%);
+    color: #fff; padding: 14px 22px 13px;
+    display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  .assignment .a-head .a-kicker {
+    font-size: 9.5px; letter-spacing: 0.26em; text-transform: uppercase; font-weight: 700;
+    color: #f3eeff; opacity: 0.85; margin-bottom: 2px;
+  }
+  .assignment .a-head h3 {
+    font-family: 'Lora', serif; font-size: 20px; font-weight: 700; line-height: 1.2;
+  }
+  .assignment .a-head h3 em { font-style: italic; color: #f9d7b5; }
+  .assignment .a-head .pts {
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.28);
+    color: #fff;
+    padding: 5px 12px; border-radius: 999px;
+    font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700;
+  }
+  .assignment .a-body { padding: 18px 22px 20px; }
+  .assignment .a-intro {
+    font-family: 'Lora', serif; font-size: 13.5px; color: var(--ink); line-height: 1.55;
+    margin-bottom: 16px;
+  }
+  .assignment .a-intro b { color: var(--crimson); font-weight: 700; }
+  .assignment .a-intro .formula {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    background: var(--crimson-soft); color: var(--crimson);
+    padding: 2px 8px; border-radius: 5px; font-weight: 600;
+    margin: 0 2px;
+  }
+
+  .assignment .a-q {
+    margin-bottom: 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--crimson);
+    border-radius: 8px;
+    padding: 10px 12px 11px;
+  }
+  .assignment .a-q-head {
+    display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;
+  }
+  .assignment .a-q-num {
+    font-size: 8.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+    color: #fff; background: var(--crimson);
+    padding: 3px 8px; border-radius: 999px;
+    flex-shrink: 0;
+  }
+  .assignment .a-q-text {
+    font-family: 'Lora', serif; font-size: 14px; font-weight: 700; color: var(--ink); line-height: 1.3;
+  }
+  .assignment .a-q-hint {
+    flex: 1 1 100%;
+    font-size: 11px; color: var(--muted); margin-top: 2px; font-style: italic; font-family: 'Lora', serif;
+  }
+  .assignment .a-opts {
+    display: grid; gap: 7px;
+  }
+  .assignment .a-opts.cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .assignment .a-opts.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 760px) { .assignment .a-opts.cols-3 { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 480px) { .assignment .a-opts.cols-2, .assignment .a-opts.cols-3 { grid-template-columns: 1fr; } }
+
+  .a-opt {
+    position: relative; cursor: pointer;
+    background: var(--paper); border: 1.5px solid var(--border); border-radius: 8px;
+    padding: 8px 10px 9px;
+    display: flex; flex-direction: column; gap: 4px;
+    transition: all 0.15s ease;
+  }
+  .a-opt:hover { border-color: var(--crimson); background: var(--crimson-soft); }
+  .a-opt input { position: absolute; opacity: 0; pointer-events: none; }
+  .a-opt.checked {
+    border-color: var(--crimson); background: var(--crimson-soft);
+    box-shadow: 0 0 0 3px rgba(138,40,40,0.12);
+  }
+  .a-opt .a-opt-head {
+    display: flex; align-items: center; gap: 7px;
+  }
+  .a-opt .a-opt-ico {
+    width: 18px; height: 18px; flex-shrink: 0;
+    border-radius: 5px; background: var(--crimson-soft);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 10px; color: var(--crimson); font-weight: 700;
+  }
+  .a-opt.checked .a-opt-ico { background: var(--crimson); color: #fff; }
+  .a-opt .a-opt-name { font-size: 12px; font-weight: 700; color: var(--ink); }
+  .a-opt .a-opt-rate {
+    margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+    color: var(--muted); font-weight: 600;
+  }
+  .a-opt .a-opt-hint { font-size: 10.5px; color: var(--muted); line-height: 1.35; }
+  .a-opt .a-check {
+    position: absolute; top: 6px; right: 6px;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--crimson); color: #fff;
+    display: none; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 700;
+  }
+  .a-opt.checked .a-check { display: flex; }
+
+  .a-pick-count {
+    font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700;
+    color: var(--crimson); margin-top: 6px;
+  }
+
+  /* Assignment prompt area */
+  .a-prompt {
+    margin-top: 14px;
+    background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .a-prompt .ph {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    margin-bottom: 7px; flex-wrap: wrap;
+  }
+  .a-prompt .ph .lbl {
+    font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; color: var(--muted);
+  }
+  .a-prompt .ph .lbl b { color: var(--crimson); font-size: 12px; }
+  .a-prompt .copy-btn { background: var(--crimson); border-color: var(--crimson); }
+  .a-prompt .copy-btn:hover { background: #6b1e1e; border-color: #6b1e1e; }
+  .a-prompt .copy-btn.copied { background: var(--olive); border-color: var(--olive); }
+  .a-prompt textarea {
+    width: 100%; min-height: 220px; max-height: 380px;
+    background: var(--code-bg); color: var(--code-ink);
+    border: 1px solid var(--code-bg); border-radius: 8px;
+    padding: 12px 14px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11.5px; line-height: 1.55;
+    white-space: pre-wrap; word-wrap: break-word;
+    overflow-y: auto; resize: vertical; user-select: text;
+  }
+
+  /* Verification + debug grid */
+  .a-checks {
+    margin-top: 16px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  }
+  @media (max-width: 760px) { .a-checks { grid-template-columns: 1fr; } }
+  .a-check-card {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .a-check-card.verify { border-left: 3px solid var(--olive); }
+  .a-check-card.debug  { border-left: 3px solid var(--gold); }
+  .a-check-card .a-c-head {
+    display: flex; align-items: baseline; gap: 7px; margin-bottom: 8px;
+    padding-bottom: 6px; border-bottom: 1px dotted var(--border);
+  }
+  .a-check-card .a-c-icon {
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700;
+    color: var(--olive); padding: 2px 7px; background: var(--olive-soft); border-radius: 4px;
+  }
+  .a-check-card.debug .a-c-icon { color: var(--gold-deep); background: var(--gold-soft); }
+  .a-check-card h4 {
+    font-family: 'Lora', serif; font-size: 14px; font-weight: 700; color: var(--ink);
+  }
+  .a-check-card ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .a-check-card li {
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: 12px; line-height: 1.4; color: var(--ink);
+    padding: 5px 7px; background: var(--paper); border: 1px solid var(--border); border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.12s ease;
+  }
+  .a-check-card li:hover { border-color: var(--olive); }
+  .a-check-card.debug li:hover { border-color: var(--gold); }
+  .a-check-card li .box {
+    width: 14px; height: 14px; flex-shrink: 0; margin-top: 1px;
+    border: 1.5px solid var(--border); border-radius: 3px;
+    background: #fff;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; color: transparent;
+  }
+  .a-check-card li.done .box {
+    background: var(--olive); border-color: var(--olive); color: #fff;
+  }
+  .a-check-card.debug li.done .box { background: var(--gold); border-color: var(--gold); }
+  .a-check-card li.done {
+    color: var(--muted); text-decoration: line-through; text-decoration-color: rgba(0,0,0,0.2);
+  }
+  .a-check-card li .why {
+    display: block; font-size: 10.5px; color: var(--muted); font-style: italic;
+    font-family: 'Lora', serif; margin-top: 1px;
+  }
+
   /* FINISH card */
   .finish {
     display: none;
@@ -1173,24 +1371,179 @@
 
   </div>
 
+  <!-- ASSIGNMENT — extend to MARR -->
+  <section class="assignment" id="assignment">
+    <div class="a-head">
+      <div>
+        <div class="a-kicker">Assignment · part b</div>
+        <h3>Extend your tool from <em>WACC to MARR</em></h3>
+      </div>
+      <span class="pts">+15 points</span>
+    </div>
+    <div class="a-body">
+      <div class="a-intro">
+        Your tool currently shows the firm's blended <b>cost</b> of capital. But the textbook tells us the
+        <b>hurdle rate</b> for any single project should also account for project specific factors. The
+        Minimum Attractive Rate of Return is built on top of WACC:
+        <span class="formula">MARR = WACC + Σ project premiums</span>.
+        Pick the factors you want to layer on, decide how to combine them, then send Claude one more prompt
+        to extend the tool you just built.
+      </div>
+
+      <!-- A-Q1: Multi-select factors -->
+      <div class="a-q">
+        <div class="a-q-head">
+          <span class="a-q-num">A1 · multi select</span>
+          <div class="a-q-text">Which premiums should your MARR include?</div>
+          <div class="a-q-hint">Pick at least 2. Each one becomes a new input slider in your tool. Default suggested ranges shown in monospace.</div>
+        </div>
+        <div class="a-opts cols-3">
+          <label class="a-opt"><input type="checkbox" name="af" value="risk">
+            <div class="a-opt-head"><span class="a-opt-ico">R</span><span class="a-opt-name">Risk premium</span><span class="a-opt-rate">1–8%</span></div>
+            <div class="a-opt-hint">By project type: low / medium / high risk. The classical textbook adjustment.</div>
+            <span class="a-check">✓</span>
+          </label>
+          <label class="a-opt"><input type="checkbox" name="af" value="duration">
+            <div class="a-opt-head"><span class="a-opt-ico">D</span><span class="a-opt-name">Duration premium</span><span class="a-opt-rate">0.1%/yr</span></div>
+            <div class="a-opt-hint">Longer projects = more uncertainty. Add 0.1 to 0.3% per year of project life.</div>
+            <span class="a-check">✓</span>
+          </label>
+          <label class="a-opt"><input type="checkbox" name="af" value="inflation">
+            <div class="a-opt-head"><span class="a-opt-ico">I</span><span class="a-opt-name">Inflation adjustment</span><span class="a-opt-rate">CPI</span></div>
+            <div class="a-opt-hint">Pull current expected inflation. Push real returns above nominal.</div>
+            <span class="a-check">✓</span>
+          </label>
+          <label class="a-opt"><input type="checkbox" name="af" value="liquidity">
+            <div class="a-opt-head"><span class="a-opt-ico">L</span><span class="a-opt-name">Liquidity premium</span><span class="a-opt-rate">0.5–3%</span></div>
+            <div class="a-opt-hint">For projects whose assets are hard to sell quickly.</div>
+            <span class="a-check">✓</span>
+          </label>
+          <label class="a-opt"><input type="checkbox" name="af" value="opp">
+            <div class="a-opt-head"><span class="a-opt-ico">O</span><span class="a-opt-name">Opportunity cost</span><span class="a-opt-rate">1–4%</span></div>
+            <div class="a-opt-hint">Best alternative use of capital. Bumps MARR if you have hotter projects competing.</div>
+            <span class="a-check">✓</span>
+          </label>
+          <label class="a-opt"><input type="checkbox" name="af" value="country">
+            <div class="a-opt-head"><span class="a-opt-ico">C</span><span class="a-opt-name">Country / FX risk</span><span class="a-opt-rate">0–6%</span></div>
+            <div class="a-opt-hint">For international projects. Use country risk ratings as a guide.</div>
+            <span class="a-check">✓</span>
+          </label>
+        </div>
+        <div class="a-pick-count" id="a-pick-count">0 factors selected (pick at least 2)</div>
+      </div>
+
+      <!-- A-Q2: How to combine -->
+      <div class="a-q">
+        <div class="a-q-head">
+          <span class="a-q-num">A2 · single select</span>
+          <div class="a-q-text">How should the factors combine into MARR?</div>
+        </div>
+        <div class="a-opts cols-3">
+          <label class="a-opt"><input type="radio" name="amath" value="additive">
+            <div class="a-opt-head"><span class="a-opt-ico">+</span><span class="a-opt-name">Additive</span></div>
+            <div class="a-opt-hint">MARR = WACC + r₁ + r₂ + … Simplest, matches most engineering economy textbooks.</div>
+            <span class="a-check">✓</span>
+          </label>
+          <label class="a-opt"><input type="radio" name="amath" value="multiplicative">
+            <div class="a-opt-head"><span class="a-opt-ico">×</span><span class="a-opt-name">Multiplicative</span></div>
+            <div class="a-opt-hint">MARR = (1+WACC)·(1+r₁)·(1+r₂)… − 1. Compounding view, like Fisher's equation.</div>
+            <span class="a-check">✓</span>
+          </label>
+          <label class="a-opt"><input type="radio" name="amath" value="max">
+            <div class="a-opt-head"><span class="a-opt-ico">↑</span><span class="a-opt-name">Worst case</span></div>
+            <div class="a-opt-hint">MARR = WACC + max(premiums). Conservative — only the dominant risk drives the bump.</div>
+            <span class="a-check">✓</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- A-Q3: Display -->
+      <div class="a-q">
+        <div class="a-q-head">
+          <span class="a-q-num">A3 · single select</span>
+          <div class="a-q-text">How should the tool present WACC and MARR together?</div>
+        </div>
+        <div class="a-opts cols-3">
+          <label class="a-opt"><input type="radio" name="adisp" value="sidebyside">
+            <div class="a-opt-head"><span class="a-opt-ico">▥</span><span class="a-opt-name">Side by side cards</span></div>
+            <div class="a-opt-hint">Two big cards: WACC on the left, MARR on the right, with a delta arrow between them.</div>
+            <span class="a-check">✓</span>
+          </label>
+          <label class="a-opt"><input type="radio" name="adisp" value="buildup">
+            <div class="a-opt-head"><span class="a-opt-ico">≡</span><span class="a-opt-name">Buildup stack</span></div>
+            <div class="a-opt-hint">WACC on top, then each premium adds a row beneath, MARR total at the bottom. Shows the buildup.</div>
+            <span class="a-check">✓</span>
+          </label>
+          <label class="a-opt"><input type="radio" name="adisp" value="toggle">
+            <div class="a-opt-head"><span class="a-opt-ico">⇄</span><span class="a-opt-name">Toggle view</span></div>
+            <div class="a-opt-hint">One card with a toggle: show WACC mode (just blended cost) or MARR mode (with premiums layered on).</div>
+            <span class="a-check">✓</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Generated assignment prompt -->
+      <div class="a-prompt">
+        <div class="ph">
+          <div class="lbl">Prompt <b>6 · bonus</b> · paste in the same chat</div>
+          <button class="copy-btn" data-copy="p6">Copy prompt</button>
+        </div>
+        <textarea id="p6" readonly></textarea>
+      </div>
+
+      <!-- Verification + debug -->
+      <div class="a-checks">
+        <div class="a-check-card verify">
+          <div class="a-c-head">
+            <span class="a-c-icon">Verify</span>
+            <h4>Sanity checks to run on your tool</h4>
+          </div>
+          <ul id="verify-list">
+            <li data-id="v1"><span class="box">✓</span><span>Set every premium to <b>0</b>. <b>MARR must equal WACC exactly</b>.<span class="why">if it does not, your additive constant is wrong</span></span></li>
+            <li data-id="v2"><span class="box">✓</span><span>Bump <b>one premium</b> by 5%. MARR should rise by ~5% (additive) or compound roughly that (multiplicative).<span class="why">tells you the right factor is wired up</span></span></li>
+            <li data-id="v3"><span class="box">✓</span><span>Original WACC must still display somewhere. <b>Do not let MARR replace WACC</b>.<span class="why">students need to see both for the homework</span></span></li>
+            <li data-id="v4"><span class="box">✓</span><span>Try the textbook example: WACC=9.2%, risk=3%, opportunity=1%. Additive MARR should be <b>13.2%</b>.<span class="why">a fixed checkpoint with a known answer</span></span></li>
+            <li data-id="v5"><span class="box">✓</span><span>Resize the window narrow. Both WACC and MARR cards must remain readable.<span class="why">mobile responsiveness still matters</span></span></li>
+          </ul>
+        </div>
+
+        <div class="a-check-card debug">
+          <div class="a-c-head">
+            <span class="a-c-icon">Debug</span>
+            <h4>Common bugs to hunt for and fix</h4>
+          </div>
+          <ul id="debug-list">
+            <li data-id="d1"><span class="box">✓</span><span><b>MARR stays equal to WACC</b> no matter what you type.<span class="why">factor inputs are not being read or summed. Ask Claude to log the values.</span></span></li>
+            <li data-id="d2"><span class="box">✓</span><span><b>MARR off by a factor of 100</b> (e.g., 920% instead of 9.2%).<span class="why">percent vs decimal mismatch. Pick one convention everywhere.</span></span></li>
+            <li data-id="d3"><span class="box">✓</span><span><b>NaN shows up</b> when a premium field is blank.<span class="why">missing default value or no null check. Ask Claude to coerce empty to 0.</span></span></li>
+            <li data-id="d4"><span class="box">✓</span><span><b>Multiplicative MARR shrinks</b> when adding factors.<span class="why">sign error or wrong (1−r) form. Fisher uses (1+r).</span></span></li>
+            <li data-id="d5"><span class="box">✓</span><span><b>Buildup rows do not sum to MARR</b> exactly.<span class="why">rounding propagation. Show 2 decimals throughout, sum only at the end.</span></span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- FINISH -->
   <section class="finish" id="finish">
     <div>
       <div class="kicker">submission</div>
       <h3>You now have a <em>tool nobody else has</em>.</h3>
       <p>
-        Submit <b>two files</b> to Canvas: your final <code>my-wacc.html</code> and a short <code>build-log.md</code>
-        listing the choices you made at each step and one paragraph on what surprised you about working with Claude.
-        Bonus credit if you went off script and asked Claude for a feature that is not in any of the 5 prompts above.
+        Submit <b>two files</b> to Canvas: your final <code>my-wacc.html</code> (with the MARR extension from Part B)
+        and a short <code>build-log.md</code> listing the choices you made at every step, the verification results,
+        and which debug items you actually hit and how you fixed them.
+        Full credit for both parts is <b>85 + 15 = 100</b>. Go off script for bonus credit.
       </p>
     </div>
     <div class="check">
       <ul>
         <li>my-wacc.html opens in a browser</li>
         <li>Header shows your name</li>
-        <li>Inputs match your chosen style</li>
         <li>WACC matches a worked example</li>
         <li>Chart renders without errors</li>
+        <li>MARR extension wired up</li>
+        <li>All 5 verify items checked</li>
         <li>build-log.md attached</li>
       </ul>
     </div>
@@ -1209,8 +1562,28 @@ const state = {
   s3: { q1: '', q2: '', q3: '' },
   s4: { q1: '', q2: '', q3: '' },
   s5: { q1: '', q2: '', q3: '' },
+  a:  { factors: [], math: '', display: '' },
 };
 let currentStep = 1;
+
+const FACTOR_DEFS = {
+  risk:      { name: 'Risk premium',       defaultRange: '1 to 8',   note: 'A dropdown for project type (low / medium / high risk) that maps to 1.5% / 3.5% / 6.5%. Also allow a manual override.' },
+  duration: { name: 'Duration premium',   defaultRange: '0 to 5',   note: 'A number input for project life in years. Multiply by 0.15% per year to compute the premium automatically.' },
+  inflation: { name: 'Inflation adjustment', defaultRange: '0 to 6', note: 'A slider for expected annual inflation (CPI). Default to 3%. Add this directly to MARR.' },
+  liquidity: { name: 'Liquidity premium',  defaultRange: '0 to 3',  note: 'A slider for how hard the project assets are to sell. Default to 1%.' },
+  opp:       { name: 'Opportunity cost',   defaultRange: '0 to 4',  note: 'A slider for the rate of return on the best competing project the firm has shelved. Default to 2%.' },
+  country:   { name: 'Country / FX risk',  defaultRange: '0 to 6',  note: 'A slider for sovereign + currency risk on international projects. Default to 0% (domestic).' },
+};
+const MATH_DESC = {
+  additive:      'Use the ADDITIVE form: MARR = WACC + Σ (premium_i). This is the simplest model and what most engineering economy textbooks (Park, Sullivan) use.',
+  multiplicative: 'Use the MULTIPLICATIVE / Fisher form: MARR = (1 + WACC) · Π (1 + premium_i) − 1. Compounding view. State all values in decimal form internally; display in percent.',
+  max:           'Use the WORST CASE form: MARR = WACC + max(premium_i). Only the single dominant premium drives the bump. Show which premium dominated.',
+};
+const DISP_DESC = {
+  sidebyside: 'Show TWO big cards side by side: the existing WACC card on the left, and a new MARR card on the right. Between them, draw a small arrow with the delta (e.g., "+4.0 pts"). Both cards should share the same large number style.',
+  buildup:    'Show a vertical BUILDUP stack: line 1 is WACC, then one line per premium (label + value + running subtotal), then the final MARR total in bold at the bottom. Make it look like an audit trail.',
+  toggle:     'Keep ONE big card and add a toggle switch on top: "WACC mode" / "MARR mode". In WACC mode the card shows the original number with no premiums. In MARR mode it shows WACC + premiums = MARR with each premium as a small chip below.',
+};
 
 const themes = {
   ocean:  { describe: 'deep navy blue (#1947d6) as the primary accent, soft sky blue (#eef2ff) for tinted surfaces, warm gold (#b8860b) as a secondary accent, white paper background (#ffffff), dark ink text (#1a1a1a). Editorial and calm.' },
@@ -1415,7 +1788,42 @@ FINAL POLISH:
 Reply with the FULL final HTML. This is my submission.`;
 }
 
-const builders = { p1: buildPrompt1, p2: buildPrompt2, p3: buildPrompt3, p4: buildPrompt4, p5: buildPrompt5 };
+function buildPrompt6() {
+  const fs = state.a.factors.length ? state.a.factors : ['risk', 'opp'];
+  const m = state.a.math || 'additive';
+  const d = state.a.display || 'sidebyside';
+  const factorsBlock = fs.map((k, i) => {
+    const f = FACTOR_DEFS[k];
+    return `${i + 1}. ${f.name} (typical range ${f.defaultRange}%): ${f.note}`;
+  }).join('\n');
+  return `Bonus prompt 6 of 6 (Assignment Part B). Keep everything from prompts 1 through 5. We are now extending the tool from WACC to MARR, the minimum attractive rate of return.
+
+ADD THESE NEW INPUTS (one per factor, each clearly labeled, each updates MARR live):
+${factorsBlock}
+
+COMBINATION METHOD:
+${MATH_DESC[m]}
+
+DISPLAY:
+${DISP_DESC[d]}
+
+NON NEGOTIABLE REQUIREMENTS:
+- The original WACC must still be visible and computed exactly as before. MARR is an ADDITION, not a replacement.
+- When every premium is set to zero, MARR must equal WACC exactly. Test this before you stop.
+- Show MARR with one decimal place (e.g., 13.2%). Match the WACC format.
+- Use the same color palette and typography that we built in prompts 1 and 5. The new MARR section should feel like part of the same tool, not a foreign block.
+- Keep everything inside the single my-wacc.html file. No new dependencies.
+- Mobile responsive: at narrow widths, the new section should stack below WACC and stay readable.
+
+VERIFICATION TARGETS Claude should ensure pass:
+- WACC = 9.2%, risk = 3%, opportunity cost = 1% → additive MARR = 13.2%
+- All premiums zero → MARR == WACC
+- One premium changes → MARR updates within 200ms
+
+Reply with the FULL final HTML including this MARR extension. This is the bonus submission.`;
+}
+
+const builders = { p1: buildPrompt1, p2: buildPrompt2, p3: buildPrompt3, p4: buildPrompt4, p5: buildPrompt5, p6: buildPrompt6 };
 
 function isStepDone(s) {
   const v = state[s];
@@ -1483,6 +1891,41 @@ if (nameInput) {
     refresh();
   });
 }
+
+// Assignment — multi-select factors
+document.querySelectorAll('input[type="checkbox"][name="af"]').forEach(cb => {
+  cb.addEventListener('change', () => {
+    const opt = cb.closest('.a-opt');
+    if (opt) opt.classList.toggle('checked', cb.checked);
+    state.a.factors = Array.from(document.querySelectorAll('input[name="af"]:checked')).map(x => x.value);
+    const pc = document.getElementById('a-pick-count');
+    if (pc) {
+      const n = state.a.factors.length;
+      pc.textContent = n + ' factor' + (n === 1 ? '' : 's') + ' selected' + (n < 2 ? ' (pick at least 2)' : ' ✓');
+      pc.style.color = n < 2 ? 'var(--crimson)' : 'var(--olive)';
+    }
+    refresh();
+  });
+});
+
+// Assignment — math + display radios
+document.querySelectorAll('input[type="radio"][name="amath"], input[type="radio"][name="adisp"]').forEach(r => {
+  r.addEventListener('change', () => {
+    const name = r.name;
+    if (name === 'amath') state.a.math = r.value;
+    if (name === 'adisp') state.a.display = r.value;
+    document.querySelectorAll(`input[name="${name}"]`).forEach(input => {
+      const opt = input.closest('.a-opt');
+      if (opt) opt.classList.toggle('checked', input.checked);
+    });
+    refresh();
+  });
+});
+
+// Verify + debug checklists — click to toggle done
+document.querySelectorAll('#verify-list li, #debug-list li').forEach(li => {
+  li.addEventListener('click', () => li.classList.toggle('done'));
+});
 
 // Timeline nodes
 document.querySelectorAll('.tl-node').forEach(node => {
