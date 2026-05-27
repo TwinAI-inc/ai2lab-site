@@ -260,6 +260,220 @@ h2{font-size:1.9rem;font-weight:300;letter-spacing:-.025em;line-height:1.1;color
       </div>
     </div>
 
+    <!-- ─────── STYLE D — Branching tree (lineage families) ─────── -->
+    <div class="style-opt styleD" data-id="D" data-name="Branching Tree (methodological lineage)" data-desc="Methods grouped by family/lineage — hierarchy, distance, outranking, utility, causal — converging into GenDI. Visualizes 'where each method came from'.">
+      <div class="style-head">
+        <div class="lt">
+          <div class="row1"><span class="label">STYLE D</span><span class="feel">Lineage</span></div>
+          <div class="name">Branching Tree — methodological lineage</div>
+          <div class="desc">Methods grouped by family — Hierarchy · Distance · Outranking · Utility · Causal. All branches converge into GenDI on the right.</div>
+        </div>
+        <div class="tick"></div>
+      </div>
+      <div class="slide-preview">
+        <div class="top">
+          <span class="chip-p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="12" r="3"/><path d="M9 6h3a3 3 0 0 1 3 3v3M9 18h3a3 3 0 0 0 3-3v-3"/></svg> Methodological Lineage</span>
+          <h2>Five families, <span class="italic-accent">one platform.</span></h2>
+        </div>
+        <div class="tree-wrap">
+          <div class="families">
+            <div class="fam h"><span class="swatch"></span>Hierarchy</div>
+            <div class="fam d"><span class="swatch"></span>Distance</div>
+            <div class="fam o"><span class="swatch"></span>Outranking</div>
+            <div class="fam u"><span class="swatch"></span>Utility</div>
+            <div class="fam c"><span class="swatch"></span>Causal</div>
+            <div class="fam f"><span class="swatch"></span>Foundational</div>
+          </div>
+          <div class="branch-svg">
+            <svg viewBox="0 0 500 300" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+              <!-- 6 horizontal branches converging right -->
+              <g stroke-width="1.5" fill="none">
+                <!-- Hierarchy: AHP → ANP → BWM → GenDI -->
+                <path d="M 0 50 Q 250 50 460 150" stroke="#007aff" stroke-opacity=".55"/>
+                <!-- Distance: TOPSIS → VIKOR → GenDI -->
+                <path d="M 0 100 Q 250 100 460 150" stroke="#2dd4a8" stroke-opacity=".55"/>
+                <!-- Outranking: ELECTRE → PROMETHEE → MACBETH → GenDI -->
+                <path d="M 0 150 Q 250 150 460 150" stroke="#f59e0b" stroke-opacity=".55"/>
+                <!-- Utility: MAUT → GenDI -->
+                <path d="M 0 200 Q 250 200 460 150" stroke="#a855f7" stroke-opacity=".55"/>
+                <!-- Causal: DEMATEL → GenDI -->
+                <path d="M 0 250 Q 250 250 460 150" stroke="#ef4444" stroke-opacity=".55"/>
+                <!-- Foundational: GP -->
+                <path d="M 0 285 Q 250 285 460 150" stroke="#64748b" stroke-opacity=".55" stroke-dasharray="4 4"/>
+              </g>
+              <!-- Method nodes along each branch -->
+              <g font-family="Outfit,sans-serif" font-size="9" font-weight="600">
+                <!-- Hierarchy line -->
+                <circle cx="60" cy="50" r="4" fill="#007aff"/><text x="68" y="46" fill="#1d1d1f">AHP · 1977</text>
+                <circle cx="220" cy="50" r="4" fill="#007aff"/><text x="228" y="46" fill="#1d1d1f">ANP · 1996</text>
+                <circle cx="360" cy="92" r="4" fill="#007aff"/><text x="368" y="88" fill="#1d1d1f">BWM · 2015</text>
+                <!-- Distance line -->
+                <circle cx="100" cy="100" r="4" fill="#2dd4a8"/><text x="108" y="96" fill="#1d1d1f">TOPSIS · 1981</text>
+                <circle cx="280" cy="100" r="4" fill="#2dd4a8"/><text x="288" y="96" fill="#1d1d1f">VIKOR · 1998</text>
+                <!-- Outranking line -->
+                <circle cx="40" cy="150" r="4" fill="#f59e0b"/><text x="48" y="146" fill="#1d1d1f">ELECTRE · 1968</text>
+                <circle cx="180" cy="150" r="4" fill="#f59e0b"/><text x="188" y="146" fill="#1d1d1f">PROMETHEE · 1985</text>
+                <circle cx="320" cy="150" r="4" fill="#f59e0b"/><text x="328" y="146" fill="#1d1d1f">MACBETH · 1994</text>
+                <!-- Utility line -->
+                <circle cx="80" cy="200" r="4" fill="#a855f7"/><text x="88" y="196" fill="#1d1d1f">MAUT · 1976</text>
+                <!-- Causal line -->
+                <circle cx="60" cy="250" r="4" fill="#ef4444"/><text x="68" y="246" fill="#1d1d1f">DEMATEL · 1971</text>
+                <!-- Foundational -->
+                <circle cx="30" cy="285" r="4" fill="#64748b"/><text x="38" y="281" fill="#1d1d1f">Goal Prog · 1961</text>
+              </g>
+            </svg>
+          </div>
+          <div class="hub">
+            <div class="hub-orb">
+              <div class="y">2026</div>
+              <div class="n">GenDI</div>
+              <div class="t">UNIFIED</div>
+            </div>
+            <div class="lbl">All families</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────── STYLE E — Era-grouped (decades) ─────── -->
+    <div class="style-opt styleE" data-id="E" data-name="Era-Grouped (decade columns)" data-desc="One column per decade (1960s → 2020s) showing methods that emerged in each era. Density rises and falls — useful for showing the post-2000 growth.">
+      <div class="style-head">
+        <div class="lt">
+          <div class="row1"><span class="label">STYLE E</span><span class="feel">Eras</span></div>
+          <div class="name">Era-Grouped — decade columns</div>
+          <div class="desc">One column per decade. Shows how MCDM accelerated post-1995 and how GenDI lands in the 2020s era.</div>
+        </div>
+        <div class="tick"></div>
+      </div>
+      <div class="slide-preview">
+        <div class="top">
+          <span class="chip-p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Sixty Years of Methods</span>
+          <h2>Six decades, <span class="italic-accent">one lineage.</span></h2>
+        </div>
+        <div class="eras">
+          <div class="era">
+            <div class="decade">1960s</div>
+            <div class="mlist">
+              <div class="mrow"><span class="nm">Goal Prog</span><span class="yr">1961</span></div>
+              <div class="mrow"><span class="nm">ELECTRE</span><span class="yr">1968</span></div>
+            </div>
+          </div>
+          <div class="era">
+            <div class="decade">1970s</div>
+            <div class="mlist">
+              <div class="mrow"><span class="nm">DEMATEL</span><span class="yr">1971</span></div>
+              <div class="mrow"><span class="nm">MAUT</span><span class="yr">1976</span></div>
+              <div class="mrow"><span class="nm">AHP</span><span class="yr">1977</span></div>
+            </div>
+          </div>
+          <div class="era">
+            <div class="decade">1980s</div>
+            <div class="mlist">
+              <div class="mrow"><span class="nm">TOPSIS</span><span class="yr">1981</span></div>
+              <div class="mrow"><span class="nm">PROMETHEE</span><span class="yr">1985</span></div>
+            </div>
+          </div>
+          <div class="era">
+            <div class="decade">1990s</div>
+            <div class="mlist">
+              <div class="mrow"><span class="nm">MACBETH</span><span class="yr">1994</span></div>
+              <div class="mrow"><span class="nm">ANP</span><span class="yr">1996</span></div>
+              <div class="mrow"><span class="nm">VIKOR</span><span class="yr">1998</span></div>
+            </div>
+          </div>
+          <div class="era now">
+            <div class="decade">2010s — 2020s</div>
+            <div class="mlist">
+              <div class="mrow"><span class="nm">BWM</span><span class="yr">2015</span></div>
+              <div class="mrow"><span class="nm" style="color:#007aff;font-weight:700">GenDI</span><span class="yr">2026</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────── STYLE F — Categorical horizontal timeline ─────── -->
+    <div class="style-opt styleF" data-id="F" data-name="Categorical Horizontal Timeline (color-coded)" data-desc="Single horizontal axis with color-coded dots by method family. Alternating above/below for readability. GenDI sits at the end as the integration point.">
+      <div class="style-head">
+        <div class="lt">
+          <div class="row1"><span class="label">STYLE F</span><span class="feel">Color-coded</span></div>
+          <div class="name">Categorical Timeline — color-coded by family</div>
+          <div class="desc">Horizontal axis with color-dot nodes (one color per family). Alternating above/below the line. GenDI at the far right as the convergence.</div>
+        </div>
+        <div class="tick"></div>
+      </div>
+      <div class="slide-preview">
+        <div class="top">
+          <span class="chip-p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><circle cx="8" cy="12" r="2"/><circle cx="14" cy="12" r="2"/></svg> Color-coded by Family</span>
+          <h2>Twelve milestones, <span class="italic-accent">one lineage.</span></h2>
+        </div>
+        <div class="legend">
+          <span class="li"><span class="sw" style="background:#007aff"></span>Hierarchy</span>
+          <span class="li"><span class="sw" style="background:#2dd4a8"></span>Distance</span>
+          <span class="li"><span class="sw" style="background:#f59e0b"></span>Outranking</span>
+          <span class="li"><span class="sw" style="background:#a855f7"></span>Utility</span>
+          <span class="li"><span class="sw" style="background:#ef4444"></span>Causal</span>
+          <span class="li"><span class="sw" style="background:#64748b"></span>Foundational</span>
+        </div>
+        <div class="cat-axis">
+          <div class="baseline"></div>
+          <div class="cat-pt f" style="left:0"><div class="dot"></div><div class="yr">1961</div><div class="nm">Goal Prog</div></div>
+          <div class="cat-pt o below" style="left:8%"><div class="dot"></div><div class="yr">1968</div><div class="nm">ELECTRE</div></div>
+          <div class="cat-pt c" style="left:16%"><div class="dot"></div><div class="yr">1971</div><div class="nm">DEMATEL</div></div>
+          <div class="cat-pt u below" style="left:24%"><div class="dot"></div><div class="yr">1976</div><div class="nm">MAUT</div></div>
+          <div class="cat-pt h" style="left:32%"><div class="dot"></div><div class="yr">1977</div><div class="nm">AHP</div></div>
+          <div class="cat-pt d below" style="left:42%"><div class="dot"></div><div class="yr">1981</div><div class="nm">TOPSIS</div></div>
+          <div class="cat-pt o" style="left:50%"><div class="dot"></div><div class="yr">1985</div><div class="nm">PROMETHEE</div></div>
+          <div class="cat-pt o below" style="left:60%"><div class="dot"></div><div class="yr">1994</div><div class="nm">MACBETH</div></div>
+          <div class="cat-pt h" style="left:67%"><div class="dot"></div><div class="yr">1996</div><div class="nm">ANP</div></div>
+          <div class="cat-pt d below" style="left:74%"><div class="dot"></div><div class="yr">1998</div><div class="nm">VIKOR</div></div>
+          <div class="cat-pt h" style="left:86%"><div class="dot"></div><div class="yr">2015</div><div class="nm">BWM</div></div>
+          <div class="cat-pt now below" style="left:99%"><div class="dot"></div><div class="yr">2026</div><div class="nm">GenDI</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────── STYLE G — Dense grid infographic ─────── -->
+    <div class="style-opt styleG" data-id="G" data-name="Dense Grid Infographic (era rows)" data-desc="Three era rows × four cells each. Highest information density, scans like an infographic. Best for a dense one-glance reference.">
+      <div class="style-head">
+        <div class="lt">
+          <div class="row1"><span class="label">STYLE G</span><span class="feel">Infographic</span></div>
+          <div class="name">Dense Grid Infographic — three era rows</div>
+          <div class="desc">3 rows × 4 cells. Highest information density. Each cell shows year · method · family. Reads like a one-glance reference card.</div>
+        </div>
+        <div class="tick"></div>
+      </div>
+      <div class="slide-preview">
+        <div class="top">
+          <span class="chip-p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg> Method Atlas</span>
+          <h2>Twelve methods, <span class="italic-accent">at a glance.</span></h2>
+        </div>
+        <div class="grid-rows">
+          <div class="grow">
+            <div class="glabel">1961—1977</div>
+            <div class="gcell"><div class="yr">1961</div><div class="nm">Goal Prog</div><div class="cat">Foundational</div></div>
+            <div class="gcell"><div class="yr">1968</div><div class="nm">ELECTRE</div><div class="cat">Outranking</div></div>
+            <div class="gcell"><div class="yr">1971</div><div class="nm">DEMATEL</div><div class="cat">Causal</div></div>
+            <div class="gcell"><div class="yr">1976/77</div><div class="nm">MAUT / AHP</div><div class="cat">Utility · Hierarchy</div></div>
+          </div>
+          <div class="grow">
+            <div class="glabel">1981—1998</div>
+            <div class="gcell"><div class="yr">1981</div><div class="nm">TOPSIS</div><div class="cat">Distance</div></div>
+            <div class="gcell"><div class="yr">1985</div><div class="nm">PROMETHEE</div><div class="cat">Outranking</div></div>
+            <div class="gcell"><div class="yr">1994/96</div><div class="nm">MACBETH / ANP</div><div class="cat">Pairwise · Network</div></div>
+            <div class="gcell"><div class="yr">1998</div><div class="nm">VIKOR</div><div class="cat">Distance</div></div>
+          </div>
+          <div class="grow">
+            <div class="glabel">2015—2026</div>
+            <div class="gcell"><div class="yr">2015</div><div class="nm">BWM</div><div class="cat">Hierarchy</div></div>
+            <div class="gcell empty"></div>
+            <div class="gcell empty"></div>
+            <div class="gcell now"><div class="yr">2026</div><div class="nm">GenDI</div><div class="cat">LLM-driven · all families</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -302,7 +516,7 @@ applyBtn.addEventListener('click', () => {
 });
 closeBtn.addEventListener('click', () => { summary.classList.remove('show'); opts.forEach(x => x.classList.remove('selected')); pick = null; });
 document.addEventListener('keydown', e => {
-  const map = {a:'A',b:'B',c:'C'}; const k = map[e.key.toLowerCase()];
+  const map = {a:'A',b:'B',c:'C',d:'D',e:'E',f:'F',g:'G'}; const k = map[e.key.toLowerCase()];
   if (k) { const t = document.querySelector('.style-opt[data-id="'+k+'"]'); if (t) t.click(); }
   if (e.key === 'Escape') closeBtn.click();
 });
