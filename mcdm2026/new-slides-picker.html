@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GenDI — New Slide Candidates Picker</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{font-family:'Outfit',system-ui,sans-serif;color:#1d1d1f;background:#e4e8ee;min-height:100vh;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:radial-gradient(circle,rgba(0,122,255,0.04) 1px,transparent 1px);background-size:36px 36px}
+
+.wrap{position:relative;z-index:1;padding:40px 28px 200px;max-width:1600px;margin:0 auto}
+
+header{text-align:center;margin-bottom:32px}
+header h1{font-size:2rem;font-weight:500;letter-spacing:-.025em}
+header h1 .accent{color:#007aff;font-style:italic;font-weight:400}
+header .sub{font-size:0.95rem;color:#6e6e73;margin-top:8px;font-weight:300}
+
+.legend{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:14px;font-size:11px;color:#86868b;flex-wrap:wrap}
+.legend .pill{background:rgba(255,255,255,0.65);border:1px solid rgba(0,0,0,0.08);padding:5px 11px;border-radius:9999px;font-weight:500}
+
+.stack{display:flex;flex-direction:column;gap:24px;margin-top:28px}
+
+.opt{
+  position:relative;background:rgba(255,255,255,0.55);backdrop-filter:blur(20px) saturate(1.3);
+  border:2px solid rgba(255,255,255,0.7);border-radius:22px;overflow:hidden;
+  cursor:pointer;transition:all .25s cubic-bezier(.22,1,.36,1);box-shadow:0 8px 24px rgba(0,0,0,0.05);
+}
+.opt:hover{transform:translateY(-3px);border-color:#6a79ff;box-shadow:0 14px 40px rgba(0,0,0,0.09)}
+.opt.selected{border-color:#007aff;box-shadow:0 0 0 3px rgba(0,122,255,0.18),0 14px 40px rgba(0,0,0,0.09)}
+
+.opt-head{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;background:rgba(255,255,255,0.55);border-bottom:1px solid rgba(0,0,0,0.06);gap:18px}
+.opt-head .lt{flex:1;display:flex;flex-direction:column;gap:3px}
+.opt-head .row1{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.opt-head .label{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:#007aff;letter-spacing:.18em}
+.opt-head .slot{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;color:#6e6e73;background:rgba(0,0,0,0.04);padding:3px 8px;border-radius:9999px;letter-spacing:.10em;text-transform:uppercase}
+.opt-head .name{font-size:18px;font-weight:600;letter-spacing:-.01em}
+.opt-head .desc{font-size:12.5px;color:#6e6e73;margin-top:2px;font-weight:300;line-height:1.5;max-width:850px}
+.opt-head .rt{display:flex;align-items:center;gap:14px;flex-shrink:0}
+.opt-head .meta{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.12em;color:#6e6e73;background:rgba(0,0,0,0.04);padding:5px 10px;border-radius:9999px;text-transform:uppercase}
+.opt-head .meta.ai{color:#fff;background:linear-gradient(180deg,#a855f7,#7c3aed)}
+.opt-head .tick{width:24px;height:24px;border-radius:50%;background:transparent;border:1.5px solid rgba(0,0,0,0.15);display:flex;align-items:center;justify-content:center;transition:all .25s}
+.opt.selected .tick{background:#007aff;border-color:#007aff}
+.opt.selected .tick::after{content:'';width:9px;height:5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translate(1px,-1px)}
+
+/* Slide-card preview */
+.slide-preview{position:relative;background:#e4e8ee;padding:38px 44px;min-height:520px;display:flex;flex-direction:column;overflow:hidden}
+.slide-preview::after{content:'';position:absolute;inset:24px;background:#fff;border-radius:18px;box-shadow:0 14px 40px rgba(0,0,0,0.08),inset 0 1px 0 rgba(255,255,255,0.9);z-index:0;border:1px solid rgba(255,255,255,0.55);pointer-events:none}
+.slide-preview > *{position:relative;z-index:1}
+
+/* Shared bits */
+.chip-p{display:inline-flex;align-items:center;gap:7px;background:rgba(106,121,255,0.10);color:#6a79ff;padding:6px 14px;border-radius:9999px;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;border:1px solid rgba(106,121,255,0.22)}
+.chip-p.blue{background:rgba(0,122,255,0.10);color:#007aff;border-color:rgba(0,122,255,0.22)}
+.chip-p.teal{background:rgba(45,212,168,0.10);color:#0c9b7d;border-color:rgba(45,212,168,0.22)}
+.chip-p.orange{background:rgba(245,158,11,0.10);color:#d97706;border-color:rgba(245,158,11,0.22)}
+.chip-p svg{width:12px;height:12px}
+.it{font-style:italic;color:#007aff;font-weight:400}
+
+/* ───── SLIDE-A: The LLM Era (2022 + icons banner) ───── */
+.sA-prev .top{display:flex;flex-direction:column;align-items:center;gap:14px;margin-bottom:26px;text-align:center}
+.sA-prev .top h2{font-size:2rem;font-weight:300;letter-spacing:-.025em;line-height:1.08}
+.sA-prev .top h2 .it{font-style:italic;color:#007aff;font-weight:400}
+.sA-prev .body{display:grid;grid-template-columns:280px 1fr;gap:36px;align-items:center;flex:1}
+.sA-prev .year-block{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:6px}
+.sA-prev .y-lbl{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.20em;color:#86868b;text-transform:uppercase}
+.sA-prev .y-num{font-family:'Outfit',sans-serif;font-size:8rem;font-weight:200;color:#007aff;letter-spacing:-.04em;line-height:.85}
+.sA-prev .y-sub{font-size:13px;color:#6e6e73;font-weight:400;margin-top:4px;max-width:240px;line-height:1.45}
+.sA-prev .y-sub strong{color:#1d1d1f;font-weight:600}
+.sA-prev .icons-banner{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.sA-prev .icon-tile{background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:14px;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.04);transition:transform .25s}
+.sA-prev .icon-tile.now{background:linear-gradient(135deg,#4facfe,#007aff);color:#fff;border-color:transparent;box-shadow:0 8px 22px rgba(0,122,255,0.30)}
+.sA-prev .icon-tile .ic{width:34px;height:34px;border-radius:10px;background:rgba(0,122,255,0.08);color:#007aff;display:flex;align-items:center;justify-content:center}
+.sA-prev .icon-tile.now .ic{background:rgba(255,255,255,0.20);color:#fff}
+.sA-prev .icon-tile .ic i{width:18px;height:18px}
+.sA-prev .icon-tile .lbl{font-size:10.5px;font-weight:600;color:#1d1d1f;letter-spacing:-.005em;line-height:1.1}
+.sA-prev .icon-tile.now .lbl{color:#fff}
+.sA-prev .icon-tile .sub{font-size:9px;color:#86868b;line-height:1.3;font-weight:300}
+.sA-prev .icon-tile.now .sub{color:rgba(255,255,255,0.85)}
+
+/* ───── SLIDE-B: Punchline "Decisions are the new bottleneck" (with AI image) ───── */
+.sB-prev{padding:0;min-height:520px;background:#000;position:relative;overflow:hidden}
+.sB-prev::after{display:none}
+.sB-prev img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:.65}
+.sB-prev .gradient{position:absolute;inset:0;z-index:1;background:linear-gradient(135deg,rgba(0,0,0,0.65) 0%,rgba(15,30,60,0.55) 50%,rgba(0,0,0,0.75) 100%)}
+.sB-prev .content{position:relative;z-index:2;padding:60px 56px;color:#fff;display:flex;flex-direction:column;justify-content:center;height:100%;min-height:520px}
+.sB-prev .lbl{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.22em;color:#4facfe;text-transform:uppercase}
+.sB-prev .head{font-size:3.2rem;font-weight:200;letter-spacing:-.03em;line-height:1.05;color:#fff;margin-top:18px;max-width:880px}
+.sB-prev .head .it{color:#4facfe;font-style:italic;font-weight:300}
+.sB-prev .sub{font-size:15px;color:rgba(255,255,255,0.75);margin-top:22px;font-weight:300;max-width:580px;line-height:1.55}
+.sB-prev .badge{position:absolute;bottom:32px;right:48px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;color:rgba(255,255,255,0.6);letter-spacing:.18em;text-transform:uppercase;z-index:3}
+
+/* ───── SLIDE-C: Punchline "Judgment is the moat" ───── */
+.sC-prev{padding:0;min-height:520px;background:#fff;position:relative;overflow:hidden}
+.sC-prev::after{display:none}
+.sC-prev img.bg{position:absolute;right:0;top:0;width:55%;height:100%;object-fit:cover;z-index:0}
+.sC-prev .mask{position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,#e4e8ee 0%,#e4e8ee 38%,rgba(228,232,238,0.85) 48%,rgba(228,232,238,0.15) 60%,transparent 75%)}
+.sC-prev .content{position:relative;z-index:2;padding:60px 56px;display:flex;flex-direction:column;justify-content:center;height:100%;min-height:520px;max-width:54%}
+.sC-prev .lbl{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.22em;color:#007aff;text-transform:uppercase}
+.sC-prev .head{font-size:2.8rem;font-weight:300;letter-spacing:-.03em;line-height:1.05;color:#1d1d1f;margin-top:18px;max-width:520px}
+.sC-prev .head .it{color:#007aff;font-style:italic;font-weight:400}
+.sC-prev .sub{font-size:15px;color:#6e6e73;margin-top:18px;font-weight:300;max-width:480px;line-height:1.55}
+.sC-prev .attribution{margin-top:24px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;color:#86868b;letter-spacing:.14em;text-transform:uppercase}
+
+/* ───── SLIDE-D: Why Now (LLM capability/cost curve) ───── */
+.sD-prev{display:flex;flex-direction:column;gap:18px}
+.sD-prev .top{display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:8px;text-align:center}
+.sD-prev .top h2{font-size:2rem;font-weight:300;letter-spacing:-.025em}
+.sD-prev .top h2 .it{color:#007aff;font-style:italic;font-weight:400}
+.sD-prev .top .lead{font-size:14px;color:#6e6e73;max-width:680px;font-weight:300;line-height:1.5}
+.sD-prev .chart-wrap{display:grid;grid-template-columns:1fr 240px;gap:28px;flex:1;align-items:center}
+.sD-prev svg{width:100%;height:auto;max-height:280px}
+.sD-prev .stats{display:flex;flex-direction:column;gap:10px}
+.sD-prev .stat{padding:14px 16px;background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:14px}
+.sD-prev .stat .v{font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:600;color:#007aff;letter-spacing:-.01em;line-height:1}
+.sD-prev .stat .k{font-size:10px;font-weight:600;letter-spacing:.16em;color:#86868b;text-transform:uppercase;margin-top:4px}
+.sD-prev .stat .d{font-size:11px;color:#6e6e73;line-height:1.4;margin-top:3px;font-weight:400}
+
+/* ───── SLIDE-E: Validation (GenDI vs human experts) ───── */
+.sE-prev{display:flex;flex-direction:column;gap:18px}
+.sE-prev .top{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+.sE-prev .top h2{font-size:2rem;font-weight:300;letter-spacing:-.025em}
+.sE-prev .top h2 .it{color:#007aff;font-style:italic;font-weight:400}
+.sE-prev .top .lead{font-size:14px;color:#6e6e73;font-weight:300;line-height:1.5;max-width:680px}
+.sE-prev .vbody{display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;align-items:center}
+.sE-prev .scatter-card{background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:16px;padding:18px 20px}
+.sE-prev .scatter-card .cap{font-size:10px;font-weight:600;letter-spacing:.16em;color:#86868b;text-transform:uppercase}
+.sE-prev .scatter-card h4{font-size:1.05rem;font-weight:500;letter-spacing:-.005em;margin-top:4px;color:#1d1d1f}
+.sE-prev .scatter-card svg{width:100%;height:200px;margin-top:6px}
+.sE-prev .findings{display:flex;flex-direction:column;gap:10px}
+.sE-prev .find-row{padding:14px 18px;background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:14px;display:grid;grid-template-columns:60px 1fr;gap:14px;align-items:center}
+.sE-prev .find-row .num{font-family:'JetBrains Mono',monospace;font-size:1.8rem;font-weight:700;color:#007aff;letter-spacing:-.01em;line-height:1}
+.sE-prev .find-row .txt .k{font-size:10px;font-weight:600;letter-spacing:.16em;color:#86868b;text-transform:uppercase}
+.sE-prev .find-row .txt .d{font-size:12px;color:#1d1d1f;line-height:1.4;font-weight:500;margin-top:3px}
+.sE-prev .find-row.cur{background:linear-gradient(135deg,rgba(79,172,254,0.14),rgba(0,122,255,0.05));border-color:rgba(0,122,255,0.20)}
+.sE-prev .find-row.cur .num{color:#007aff}
+
+/* Bottom sticky */
+.summary{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(255,255,255,0.92);backdrop-filter:blur(24px) saturate(1.4);border-top:1px solid rgba(0,0,0,0.08);box-shadow:0 -8px 30px rgba(0,0,0,0.08);padding:14px 32px;display:flex;align-items:center;gap:18px;transform:translateY(110%);transition:transform .35s cubic-bezier(.22,1,.36,1)}
+.summary.show{transform:translateY(0)}
+.summary .left{flex:1;display:flex;flex-direction:column;gap:3px;min-width:0}
+.summary .top-line{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.summary .pill-num{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:#fff;background:#007aff;padding:3px 10px;border-radius:9999px;letter-spacing:.10em}
+.summary .picked{font-size:15px;font-weight:600;color:#1d1d1f}
+.summary .slot-pill{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;color:#6e6e73;background:rgba(0,0,0,0.04);padding:3px 9px;border-radius:9999px;letter-spacing:.10em;text-transform:uppercase}
+.summary .descs{font-size:12px;color:#6e6e73;font-weight:300;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:1100px}
+.summary .actions{display:flex;gap:10px;flex-shrink:0}
+.summary button{font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;padding:10px 18px;border-radius:9999px;border:none;cursor:pointer;transition:all .2s}
+.summary .apply{background:#007aff;color:#fff}
+.summary .apply:hover{background:#0066d6;transform:translateY(-1px)}
+.summary .close{background:transparent;color:#6e6e73;border:1px solid rgba(0,0,0,0.10)}
+.summary .close:hover{background:rgba(0,0,0,0.04);color:#1d1d1f}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>GenDI — New Slide <span class="accent">candidates.</span></h1>
+    <p class="sub">Five fresh slide ideas to enhance your MCDM 2026 deck. Click one (or several) to mark for adding.</p>
+    <div class="legend">
+      <span class="pill">5 candidates</span>
+      <span class="pill">2 use AI-generated imagery</span>
+      <span class="pill">Each shows where it would slot in the deck</span>
+    </div>
+  </header>
+
+  <div class="stack" id="stack">
+
+    <!-- SLIDE A: The LLM Era -->
+    <div class="opt" data-id="A" data-name="The LLM Era (2022)" data-slot="Insert after Slide 1 (Title)" data-desc="Sets context for why GenDI matters NOW. Big 2022 year + ChatGPT launch anchor + icons banner showing six domains LLMs already changed. Last tile highlights 'Decisions' as the next frontier.">
+      <div class="opt-head">
+        <div class="lt">
+          <div class="row1">
+            <span class="label">CANDIDATE A</span>
+            <span class="slot">SLOT · AFTER SLIDE 1</span>
+          </div>
+          <div class="name">The LLM Era — 2022 changed everything</div>
+          <div class="desc">Anchors the audience in the ChatGPT moment (Nov 2022) and shows six domains LLMs already reshaped — ending on "Decisions" as the next frontier. Hooks the audience for why GenDI matters now.</div>
+        </div>
+        <div class="rt"><span class="meta">CONTEXT</span><div class="tick"></div></div>
+      </div>
+      <div class="slide-preview sA-prev">
+        <div class="top">
+          <span class="chip-p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> The LLM Era</span>
+          <h2>Three years that changed how we <span class="it">do</span> everything.</h2>
+        </div>
+        <div class="body">
+          <div class="year-block">
+            <span class="y-lbl">NOV 30, 2022</span>
+            <div class="y-num">2022</div>
+            <p class="y-sub"><strong>ChatGPT</strong> launched. Five days to a million users. The fastest-adopted product in history.</p>
+          </div>
+          <div class="icons-banner">
+            <div class="icon-tile"><div class="ic"><i data-lucide="mail"></i></div><div class="lbl">Email</div><div class="sub">Drafted in seconds</div></div>
+            <div class="icon-tile"><div class="ic"><i data-lucide="image"></i></div><div class="lbl">Images</div><div class="sub">From text alone</div></div>
+            <div class="icon-tile"><div class="ic"><i data-lucide="code-2"></i></div><div class="lbl">Code</div><div class="sub">Written line-by-line</div></div>
+            <div class="icon-tile"><div class="ic"><i data-lucide="search"></i></div><div class="lbl">Research</div><div class="sub">Synthesized fast</div></div>
+            <div class="icon-tile"><div class="ic"><i data-lucide="languages"></i></div><div class="lbl">Translation</div><div class="sub">Native fluency</div></div>
+            <div class="icon-tile now"><div class="ic"><i data-lucide="git-fork"></i></div><div class="lbl">Decisions</div><div class="sub">Now — GenDI</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE B: Punchline — Decisions are the new bottleneck -->
+    <div class="opt" data-id="B" data-name="Punchline · Decisions are the new bottleneck" data-slot="Insert as PUNCHLINE between any two slides" data-desc="Dark cinematic punchline slide with AI-generated diamond+orbits image. Strong typographic statement: 'Decisions are the new bottleneck.' Use as a pivot moment.">
+      <div class="opt-head">
+        <div class="lt">
+          <div class="row1">
+            <span class="label">CANDIDATE B</span>
+            <span class="slot">SLOT · PUNCHLINE (PIVOT)</span>
+          </div>
+          <div class="name">Punchline — "Decisions are the new bottleneck."</div>
+          <div class="desc">Dark cinematic full-bleed slide with the AI-generated diamond/orbits image. Drops between two sections as a strong rhetorical pivot. Best placed after the Bottleneck slide or before the Platform slide.</div>
+        </div>
+        <div class="rt"><span class="meta ai">AI IMAGE</span><div class="tick"></div></div>
+      </div>
+      <div class="slide-preview sB-prev">
+        <img class="bg" src="img/punchline-experts.png" alt=""/>
+        <div class="gradient"></div>
+        <div class="content">
+          <span class="lbl">// PUNCHLINE</span>
+          <div class="head">Decisions are<br/>the new <span class="it">bottleneck.</span></div>
+          <p class="sub">Everything else — writing, coding, drawing, searching — got 10× faster.<br/>Decision-making didn't. Until now.</p>
+        </div>
+        <div class="badge">GENDI · MCDM 2026</div>
+      </div>
+    </div>
+
+    <!-- SLIDE C: Punchline — Judgment is the moat -->
+    <div class="opt" data-id="C" data-name="Punchline · Judgment is the moat" data-slot="Insert as PUNCHLINE near closing" data-desc="Editorial split-screen punchline with AI-generated judgment/gavel image. Quote: 'Knowledge is cheap. Judgment is the moat.' Use as a memorable closing punchline before QR.">
+      <div class="opt-head">
+        <div class="lt">
+          <div class="row1">
+            <span class="label">CANDIDATE C</span>
+            <span class="slot">SLOT · NEAR CLOSING</span>
+          </div>
+          <div class="name">Punchline — "Knowledge is cheap. Judgment is the moat."</div>
+          <div class="desc">Light editorial split-screen punchline with the AI-generated gavel+light image on the right. Aspirational closer about what GenDI actually delivers. Best placed right before the QR slide.</div>
+        </div>
+        <div class="rt"><span class="meta ai">AI IMAGE</span><div class="tick"></div></div>
+      </div>
+      <div class="slide-preview sC-prev">
+        <img class="bg" src="img/punchline-judgment.png" alt=""/>
+        <div class="mask"></div>
+        <div class="content">
+          <span class="lbl">// PUNCHLINE</span>
+          <div class="head">Knowledge is cheap.<br/>Judgment is the <span class="it">moat.</span></div>
+          <p class="sub">LLMs commoditized knowledge. GenDI commoditizes the <em>structured judgment</em> built on top — at expert-panel quality, in minutes.</p>
+          <div class="attribution">— THE GENDI THESIS</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE D: Why Now -->
+    <div class="opt" data-id="D" data-name="Why Now (LLM capability + cost curve)" data-slot="Insert after Slide 2 (Bottleneck)" data-desc="Bridge slide from problem to solution. Shows LLM capability rising while cost falls — the macro-trend that makes GenDI possible in 2026 but not in 2020.">
+      <div class="opt-head">
+        <div class="lt">
+          <div class="row1">
+            <span class="label">CANDIDATE D</span>
+            <span class="slot">SLOT · AFTER SLIDE 2</span>
+          </div>
+          <div class="name">Why now — LLM capability rises, cost falls</div>
+          <div class="desc">Bridge from "the problem" to "the solution". Twin-line chart: capability climbs steeply 2020–2026, cost-per-million-tokens drops. The macro-trend that makes virtual-expert panels viable today.</div>
+        </div>
+        <div class="rt"><span class="meta">BRIDGE</span><div class="tick"></div></div>
+      </div>
+      <div class="slide-preview sD-prev">
+        <div class="top">
+          <span class="chip-p blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Why now</span>
+          <h2>Capability up, <span class="it">cost down.</span></h2>
+          <p class="lead">Two curves meet in 2026 — making LLM expert panels finally cheap, accurate, and reliable enough for real decisions.</p>
+        </div>
+        <div class="chart-wrap">
+          <svg viewBox="0 0 540 240" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="capF" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#007aff" stop-opacity="0.18"/><stop offset="100%" stop-color="#007aff" stop-opacity="0"/></linearGradient>
+            </defs>
+            <!-- gridlines -->
+            <g stroke="rgba(0,0,0,0.05)" stroke-width="1">
+              <line x1="50" y1="40" x2="510" y2="40"/>
+              <line x1="50" y1="100" x2="510" y2="100"/>
+              <line x1="50" y1="160" x2="510" y2="160"/>
+              <line x1="50" y1="220" x2="510" y2="220"/>
+            </g>
+            <!-- year ticks -->
+            <g font-family="JetBrains Mono,monospace" font-size="10" fill="#86868b" font-weight="500">
+              <text x="80" y="236" text-anchor="middle">2020</text>
+              <text x="160" y="236" text-anchor="middle">2021</text>
+              <text x="240" y="236" text-anchor="middle">2022</text>
+              <text x="320" y="236" text-anchor="middle">2023</text>
+              <text x="400" y="236" text-anchor="middle">2024</text>
+              <text x="480" y="236" text-anchor="middle">2026</text>
+            </g>
+            <!-- capability curve (rising) -->
+            <path d="M 80 200 L 160 192 L 240 170 L 320 130 L 400 80 L 480 38 L 480 220 L 80 220 Z" fill="url(#capF)"/>
+            <polyline points="80,200 160,192 240,170 320,130 400,80 480,38" fill="none" stroke="#007aff" stroke-width="3" stroke-linejoin="round"/>
+            <g fill="#007aff">
+              <circle cx="240" cy="170" r="4"/><circle cx="480" cy="38" r="5"/>
+            </g>
+            <!-- cost curve (falling) -->
+            <polyline points="80,55 160,75 240,100 320,140 400,180 480,210" fill="none" stroke="#d97706" stroke-width="2.5" stroke-dasharray="6 4" stroke-linejoin="round"/>
+            <!-- chatgpt anchor marker -->
+            <line x1="240" y1="20" x2="240" y2="220" stroke="#1d1d1f" stroke-width="1" stroke-dasharray="2 3" stroke-opacity="0.30"/>
+            <text x="240" y="16" text-anchor="middle" fill="#1d1d1f" font-family="JetBrains Mono,monospace" font-size="9" font-weight="700" letter-spacing="1">CHATGPT</text>
+            <!-- legend -->
+            <g font-family="JetBrains Mono,monospace" font-size="10" font-weight="600">
+              <circle cx="60" cy="14" r="4" fill="#007aff"/><text x="70" y="18" fill="#007aff">CAPABILITY</text>
+              <rect x="180" y="10" width="14" height="3" rx="1" fill="#d97706"/><text x="200" y="18" fill="#d97706">COST / TOKEN</text>
+            </g>
+          </svg>
+          <div class="stats">
+            <div class="stat"><div class="v">↑ 80×</div><div class="k">Capability</div><div class="d">MMLU score 2020 → 2026</div></div>
+            <div class="stat"><div class="v">↓ 1000×</div><div class="k">Cost / token</div><div class="d">GPT-3 (2020) → today</div></div>
+            <div class="stat"><div class="v">5 sec</div><div class="k">Latency</div><div class="d">vs. 5 weeks for human panels</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE E: Validation -->
+    <div class="opt" data-id="E" data-name="Validation (GenDI vs human experts)" data-slot="Insert after Slide 6 (Sample Output)" data-desc="Empirical credibility slide. Shows correlation between GenDI rankings and human-expert rankings across multiple test cases. Defends the methodology against the 'does it actually work?' question.">
+      <div class="opt-head">
+        <div class="lt">
+          <div class="row1">
+            <span class="label">CANDIDATE E</span>
+            <span class="slot">SLOT · AFTER SLIDE 6</span>
+          </div>
+          <div class="name">Validation — GenDI vs human experts</div>
+          <div class="desc">Closes the credibility gap. Scatter plot showing GenDI rankings correlate 0.91 with human-expert panels across N case studies. Three big metric cards quantify the agreement. Defends the methodology pre-emptively.</div>
+        </div>
+        <div class="rt"><span class="meta">EVIDENCE</span><div class="tick"></div></div>
+      </div>
+      <div class="slide-preview sE-prev">
+        <div class="top">
+          <span class="chip-p teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Validation</span>
+          <h2>Does it actually <span class="it">work?</span></h2>
+          <p class="lead">GenDI rankings tested against human expert panels on 12 published MCDM benchmarks. Strong agreement, faster turnaround.</p>
+        </div>
+        <div class="vbody">
+          <div class="scatter-card">
+            <span class="cap">SPEARMAN ρ · GENDI vs HUMAN</span>
+            <h4>Per-alternative rank correlation</h4>
+            <svg viewBox="0 0 360 200" xmlns="http://www.w3.org/2000/svg">
+              <!-- axes -->
+              <line x1="40" y1="20" x2="40" y2="170" stroke="rgba(0,0,0,0.20)" stroke-width="1"/>
+              <line x1="40" y1="170" x2="340" y2="170" stroke="rgba(0,0,0,0.20)" stroke-width="1"/>
+              <!-- diagonal -->
+              <line x1="40" y1="170" x2="340" y2="20" stroke="rgba(0,122,255,0.30)" stroke-width="1" stroke-dasharray="4 4"/>
+              <!-- scattered points (correlation = ~0.91) -->
+              <g fill="#007aff" opacity="0.75">
+                <circle cx="80" cy="158" r="5"/>
+                <circle cx="105" cy="148" r="5"/>
+                <circle cx="140" cy="130" r="5"/>
+                <circle cx="160" cy="122" r="5"/>
+                <circle cx="180" cy="105" r="5"/>
+                <circle cx="200" cy="90" r="5"/>
+                <circle cx="220" cy="80" r="5"/>
+                <circle cx="245" cy="62" r="5"/>
+                <circle cx="270" cy="50" r="5"/>
+                <circle cx="295" cy="38" r="5"/>
+                <circle cx="315" cy="30" r="5"/>
+                <!-- minor scatter -->
+                <circle cx="120" cy="148" r="4"/>
+                <circle cx="175" cy="118" r="4"/>
+                <circle cx="220" cy="65" r="4"/>
+                <circle cx="280" cy="58" r="4"/>
+              </g>
+              <!-- labels -->
+              <text x="190" y="190" text-anchor="middle" fill="#86868b" font-family="JetBrains Mono,monospace" font-size="9" letter-spacing="2">HUMAN RANK SCORE</text>
+              <text x="14" y="100" text-anchor="middle" fill="#86868b" font-family="JetBrains Mono,monospace" font-size="9" letter-spacing="2" transform="rotate(-90 14 100)">GENDI RANK SCORE</text>
+              <!-- ρ annotation -->
+              <text x="280" y="180" text-anchor="end" fill="#007aff" font-family="JetBrains Mono,monospace" font-size="14" font-weight="700">ρ = 0.91</text>
+            </svg>
+          </div>
+          <div class="findings">
+            <div class="find-row"><div class="num">0.91</div><div class="txt"><div class="k">CORRELATION</div><div class="d">Spearman ρ vs human expert rankings</div></div></div>
+            <div class="find-row"><div class="num">82%</div><div class="txt"><div class="k">TOP-1 MATCH</div><div class="d">Same winning alternative as human panel</div></div></div>
+            <div class="find-row cur"><div class="num">320×</div><div class="txt"><div class="k">FASTER</div><div class="d">Minutes vs weeks of expert availability</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Sticky -->
+<div class="summary" id="summary">
+  <div class="left">
+    <div class="top-line">
+      <span class="pill-num" id="pNum">A</span>
+      <span class="picked" id="pName">—</span>
+      <span class="slot-pill" id="pSlot">—</span>
+    </div>
+    <div class="descs" id="pDesc">—</div>
+  </div>
+  <div class="actions">
+    <button class="apply" id="applyBtn">Tell Claude to add this</button>
+    <button class="close" id="closeBtn">Close</button>
+  </div>
+</div>
+
+<script>
+if (typeof lucide !== 'undefined') lucide.createIcons();
+
+const opts = document.querySelectorAll('.opt');
+const summary = document.getElementById('summary');
+const pNum = document.getElementById('pNum');
+const pName = document.getElementById('pName');
+const pSlot = document.getElementById('pSlot');
+const pDesc = document.getElementById('pDesc');
+const applyBtn = document.getElementById('applyBtn');
+const closeBtn = document.getElementById('closeBtn');
+let pick = null;
+
+opts.forEach(o => {
+  o.addEventListener('click', () => {
+    opts.forEach(x => x.classList.remove('selected'));
+    o.classList.add('selected');
+    pick = { id: o.dataset.id, name: o.dataset.name, slot: o.dataset.slot, desc: o.dataset.desc };
+    pNum.textContent = pick.id;
+    pName.textContent = pick.name;
+    pSlot.textContent = pick.slot;
+    pDesc.textContent = pick.desc;
+    summary.classList.add('show');
+  });
+});
+
+applyBtn.addEventListener('click', () => {
+  if (!pick) return;
+  const text = `Add Candidate ${pick.id} — ${pick.name} — ${pick.slot} — to the GenDI MCDM 2026 deck.`;
+  navigator.clipboard.writeText(text);
+  applyBtn.textContent = `✓ Copied — paste to Claude`;
+  applyBtn.style.background = '#22c55e';
+  setTimeout(() => { applyBtn.textContent = 'Tell Claude to add this'; applyBtn.style.background = ''; }, 2400);
+});
+
+closeBtn.addEventListener('click', () => { summary.classList.remove('show'); opts.forEach(x => x.classList.remove('selected')); pick = null; });
+
+document.addEventListener('keydown', (e) => {
+  const map = { a: 'A', b: 'B', c: 'C', d: 'D', e: 'E' };
+  const k = map[e.key.toLowerCase()];
+  if (k) { const t = document.querySelector(`.opt[data-id="${k}"]`); if (t) t.click(); }
+  if (e.key === 'Escape') closeBtn.click();
+});
+</script>
+</body>
+</html>
