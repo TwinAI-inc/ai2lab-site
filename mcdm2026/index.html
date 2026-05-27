@@ -572,6 +572,14 @@ h3{font-size:1.5rem;font-weight:500;color:var(--text);letter-spacing:-.01em}
 .menu-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.25);backdrop-filter:blur(4px);z-index:64;opacity:0;pointer-events:none;transition:opacity .3s}
 .menu-overlay.show{opacity:1;pointer-events:auto}
 
+/* ── Story slide: Decision Gone Wrong (Morocco vs Germany, pure image grid) ── */
+.sStory{display:flex;align-items:center;justify-content:center;padding:32px 40px;background:linear-gradient(135deg,#eaeef4 0%,#dfe5ee 100%)}
+.sStory-grid{display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(3,1fr);gap:18px;width:min(96%,920px);aspect-ratio:2/3;max-height:92vh}
+.sStory-cell{position:relative;aspect-ratio:1;border-radius:22px;overflow:hidden;background:#e9edf2;box-shadow:0 14px 40px rgba(0,0,0,0.10),0 2px 6px rgba(0,0,0,0.04)}
+.sStory-cell img{width:100%;height:100%;object-fit:cover;display:block}
+.sStory-cell::after{content:'';position:absolute;inset:0;border-radius:22px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.6);pointer-events:none}
+@media (max-width:780px){.sStory-grid{width:96%;aspect-ratio:auto;gap:12px}.sStory-cell{aspect-ratio:1}}
+
 /* ── Step-reveal animation ── */
 .reveal{opacity:0;transform:translateY(20px);transition:opacity .6s cubic-bezier(.22,1,.36,1),transform .6s cubic-bezier(.22,1,.36,1);pointer-events:none}
 .reveal.shown{opacity:1;transform:translateY(0);pointer-events:auto}
@@ -752,7 +760,20 @@ h3{font-size:1.5rem;font-weight:500;color:var(--text);letter-spacing:-.01em}
     </div>
   </section>
 
-  <!-- ───────────────── SLIDE 2: T1 — PERSONAL STORY (click-reveal terms) ───────────────── -->
+  <!-- ───────────────── SLIDE 2: STORY — DECISION GONE WRONG (Morocco vs Germany) ───────────────── -->
+  <!-- 6 reveals, one image per click: Morocco logo -> Germany logo -> Morocco food -> Germany food -> Morocco coffee -> Germany coffee. No text — the contrast tells the story. -->
+  <section class="slide sStory" data-title="Decision Gone Wrong">
+    <div class="sStory-grid">
+      <div class="sStory-cell reveal"><img src="img/story-logo-morocco.jpg" alt="MCDM 2026 Morocco (originally planned)"/></div>
+      <div class="sStory-cell reveal"><img src="img/story-logo-germany.jpg" alt="MCDM 2026 Wuppertal (actual)"/></div>
+      <div class="sStory-cell reveal"><img src="img/story-reception-morocco.jpg" alt="Moroccan reception"/></div>
+      <div class="sStory-cell reveal"><img src="img/story-reception-germany.jpg" alt="Wuppertal reception"/></div>
+      <div class="sStory-cell reveal"><img src="img/story-coffee-morocco.jpg" alt="Moroccan coffee"/></div>
+      <div class="sStory-cell reveal"><img src="img/story-coffee-germany.jpg" alt="Wuppertal coffee"/></div>
+    </div>
+  </section>
+
+  <!-- ───────────────── SLIDE 3: T1 — PERSONAL STORY (click-reveal terms) ───────────────── -->
   <section class="slide sTrans sT1" data-darkrail="1" data-title="A Personal Story">
     <div class="sTrans-frame">
       <img src="img/story-surveys.jpg" alt=""/>
