@@ -227,43 +227,41 @@ h3{font-size:1.5rem;font-weight:500;color:var(--text);letter-spacing:-.01em}
 .sT1 .t1-unit{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,0.55)}
 
 /* T3-specific: 3 tall image cards, click-reveal one at a time */
-.sT3 .sTrans-content{align-items:center;text-align:center}
+.sT3 .sTrans-content{align-items:center;text-align:center;justify-content:center;padding:60px 60px}
 .sT3 .sTrans-content .lbl{align-self:center}
-.sT3-grid{display:grid;grid-template-columns:repeat(3,minmax(0,260px));gap:18px;margin:24px auto 0;width:100%;max-width:880px;justify-content:center}
-.t3-card{position:relative;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.12);box-shadow:0 14px 30px rgba(0,0,0,0.30);aspect-ratio:3/4.2;display:flex;flex-direction:column;justify-content:flex-end}
+.sT3-grid{display:grid;grid-template-columns:repeat(3,minmax(0,310px));gap:22px;margin:30px auto 0;width:100%;max-width:1020px;justify-content:center}
+.t3-card{position:relative;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,0.14);box-shadow:0 18px 40px rgba(0,0,0,0.36);aspect-ratio:3/4.4;display:flex;flex-direction:column;justify-content:flex-end}
 .t3-card .t3-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85;z-index:0}
 .t3-card .t3-grad{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(10,14,26,0.20) 0%,rgba(10,14,26,0.40) 50%,rgba(10,14,26,0.92) 100%)}
-.t3-card .t3-inner{position:relative;z-index:2;padding:22px 22px 24px;color:#fff}
-.t3-card .t3-yr{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#4facfe;letter-spacing:.20em}
-.t3-card .t3-nm{font-size:1.9rem;font-weight:400;color:#fff;letter-spacing:-.015em;line-height:1;margin-top:8px}
-.t3-card .t3-det{font-size:13px;color:rgba(255,255,255,0.78);font-weight:300;line-height:1.5;margin-top:12px}
+.t3-card .t3-inner{position:relative;z-index:2;padding:26px 26px 26px;color:#fff;display:flex;flex-direction:column;gap:12px}
+.t3-card .t3-nm{font-size:2.1rem;font-weight:400;color:#fff;letter-spacing:-.015em;line-height:1}
+.t3-card .t3-det{font-size:14px;color:rgba(255,255,255,0.82);font-weight:300;line-height:1.55}
 .t3-card .t3-det em{color:#4facfe;font-style:italic;font-weight:400;font-family:'Source Serif 4',serif}
+.t3-card .t3-yr-chip{display:inline-flex;align-self:flex-start;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:#fff;background:rgba(0,122,255,0.30);backdrop-filter:blur(8px);border:1px solid rgba(79,172,254,0.50);padding:6px 14px;border-radius:9999px;letter-spacing:.14em;margin-top:6px}
 .t3-card .t3-badge{position:absolute;top:18px;left:18px;z-index:2;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:#fff;background:rgba(0,0,0,0.40);backdrop-filter:blur(8px);padding:5px 10px;border-radius:9999px;letter-spacing:.16em;border:1px solid rgba(255,255,255,0.18)}
 
-/* ───────────── SLIDE 2: THE LLM ERA (NEW — ChatGPT logo top, banner bottom) ───────────── */
-.sLLM{flex-direction:column;gap:0;align-items:center;justify-content:center;padding:64px 80px 96px}
-.sLLM .top{display:flex;flex-direction:column;align-items:center;gap:14px;margin-bottom:48px;text-align:center}
-.sLLM .top h2{font-size:2.4rem;font-weight:300;letter-spacing:-.025em;line-height:1.08;max-width:980px}
-.sLLM .top h2 .italic-accent{color:var(--accent);font-style:italic;font-weight:400}
-.sLLM-hero{display:flex;align-items:center;justify-content:center;gap:60px;margin-bottom:56px;width:100%;max-width:1100px}
-.sLLM-hero .gpt-card{display:flex;align-items:center;gap:20px;padding:26px 32px;background:#fff;border-radius:22px;border:1px solid rgba(0,0,0,0.06);box-shadow:0 8px 28px rgba(0,0,0,0.06)}
-.sLLM-hero .gpt-card img{height:64px;width:auto;object-fit:contain}
-.sLLM-hero .gpt-card .gpt-text{display:flex;flex-direction:column;gap:3px}
-.sLLM-hero .gpt-card .gpt-name{font-size:22px;font-weight:600;color:var(--text);letter-spacing:-.01em}
-.sLLM-hero .gpt-card .gpt-date{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--text-s);letter-spacing:.10em;text-transform:uppercase}
-.sLLM-hero .arrow{font-size:32px;color:var(--text-s);font-weight:200}
-.sLLM-hero .y-block{display:flex;flex-direction:column;align-items:center}
-.sLLM-hero .y-num{font-family:'Outfit',sans-serif;font-size:9rem;font-weight:200;color:var(--accent);letter-spacing:-.05em;line-height:.82}
-.sLLM-hero .y-lbl{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.20em;color:var(--text-s);text-transform:uppercase;margin-top:4px}
-.sLLM-banner{width:100%;max-width:1320px;background:#fff;border-radius:20px;border:1px solid rgba(0,0,0,0.06);padding:22px 28px;box-shadow:0 6px 22px rgba(0,0,0,0.05);display:flex;align-items:center;justify-content:space-between;gap:14px}
-.sLLM-banner .tile{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;flex:1;padding:6px 4px;border-radius:12px;transition:background .25s}
-.sLLM-banner .tile:not(.now):hover{background:rgba(0,122,255,0.04)}
-.sLLM-banner .tile .ic{width:42px;height:42px;border-radius:12px;background:rgba(0,122,255,0.08);color:var(--accent);display:flex;align-items:center;justify-content:center}
-.sLLM-banner .tile.now .ic{background:linear-gradient(135deg,#4facfe,#007aff 60%,#6a79ff 100%);color:#fff;box-shadow:0 8px 18px rgba(0,122,255,0.30)}
-.sLLM-banner .tile .ic i{width:20px;height:20px;stroke-width:1.6}
-.sLLM-banner .tile .lbl{font-size:13px;font-weight:600;color:var(--text);letter-spacing:-.005em}
-.sLLM-banner .tile.now .lbl{color:var(--accent)}
-.sLLM-banner .divider{width:1px;height:36px;background:rgba(0,0,0,0.08);flex-shrink:0}
+/* ───────────── SLIDE 2: THE LLM ERA — 2-col (image left, info right) ───────────── */
+.sLLM{padding:0;display:grid;grid-template-columns:1fr 1fr;align-items:stretch;position:relative}
+.sLLM-vis{position:relative;margin:24px 0 72px 24px;border-radius:22px 0 0 22px;overflow:hidden;background:#e9edf2;z-index:1}
+.sLLM-vis img{width:100%;height:100%;object-fit:cover;object-position:center}
+.sLLM-vis::after{content:'';position:absolute;inset:0;background:linear-gradient(to right,rgba(228,232,238,0) 65%,rgba(228,232,238,0.7) 92%,rgba(228,232,238,0.95) 100%)}
+.sLLM-body{padding:80px 80px;display:flex;flex-direction:column;justify-content:center;gap:20px;z-index:1;position:relative}
+.sLLM-body .chip{align-self:flex-start}
+.sLLM-body h2{font-size:2.6rem;font-weight:300;letter-spacing:-.025em;line-height:1.06;color:var(--text)}
+.sLLM-body h2 .italic-accent{color:var(--accent);font-style:italic;font-weight:400}
+.sLLM-anchor{display:flex;align-items:center;gap:22px;padding:18px 22px;background:#fff;border-radius:16px;border:1px solid rgba(0,0,0,0.06);box-shadow:0 6px 18px rgba(0,0,0,0.04);max-width:560px}
+.sLLM-anchor img{height:48px;width:auto;object-fit:contain;flex-shrink:0}
+.sLLM-anchor .info{display:flex;flex-direction:column;gap:2px;flex:1}
+.sLLM-anchor .name{font-size:18px;font-weight:600;color:var(--text);letter-spacing:-.01em}
+.sLLM-anchor .date{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--text-s);letter-spacing:.10em;text-transform:uppercase}
+.sLLM-anchor .yr-side{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700;color:var(--accent);letter-spacing:-.005em;padding-left:18px;border-left:1px solid rgba(0,0,0,0.08)}
+.sLLM-domains{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:560px;margin-top:6px}
+.sLLM-domains .tile{display:flex;align-items:center;gap:9px;padding:11px 12px;background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:11px;box-shadow:0 2px 8px rgba(0,0,0,0.03)}
+.sLLM-domains .tile .ic{width:30px;height:30px;border-radius:8px;background:rgba(0,122,255,0.10);color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sLLM-domains .tile.now .ic{background:linear-gradient(135deg,#4facfe,#007aff 60%,#6a79ff 100%);color:#fff;box-shadow:0 4px 12px rgba(0,122,255,0.30)}
+.sLLM-domains .tile .ic i{width:14px;height:14px;stroke-width:1.7}
+.sLLM-domains .tile .lbl{font-size:12px;font-weight:600;color:var(--text);letter-spacing:-.005em}
+.sLLM-domains .tile.now .lbl{color:var(--accent)}
 
 /* ───────────── SLIDE 3: PUNCHLINE (NEW) ───────────── */
 .sPunch{padding:0;position:relative;overflow:hidden}
@@ -419,8 +417,9 @@ h3{font-size:1.5rem;font-weight:500;color:var(--text);letter-spacing:-.01em}
 .sThanks .thanks-de{font-size:5rem;font-weight:200;letter-spacing:-.030em;color:var(--text-m);line-height:1;font-family:'Source Serif 4',serif;font-style:italic}
 .sThanks .divider-thanks{width:60px;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);border-radius:2px}
 .sThanks .thanks-meta{margin-top:18px;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.22em;color:var(--text-s);text-transform:uppercase}
-.sThanks .thanks-bg{position:absolute;inset:0;z-index:0;pointer-events:none;display:flex;align-items:center;justify-content:center;opacity:.06}
-.sThanks .thanks-bg svg{width:60vh;height:60vh}
+.sThanks .thanks-bg{position:absolute;inset:24px 24px 72px 24px;z-index:0;pointer-events:none;display:flex;align-items:center;justify-content:center;border-radius:22px;overflow:hidden}
+.sThanks .thanks-bg img{width:80%;max-width:760px;height:auto;opacity:.45;object-fit:contain;filter:blur(0.5px)}
+.sThanks .thanks-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(228,232,238,0.30) 0%,rgba(228,232,238,0.85) 60%,rgba(228,232,238,0.95) 100%)}
 
 /* ───────────── SLIDE 9: PLATFORM + QR (MERGED) ───────────── */
 .sMerge{display:grid;grid-template-columns:1.15fr 1fr;gap:48px;align-items:center;padding:64px 80px 96px}
@@ -666,7 +665,7 @@ h3{font-size:1.5rem;font-weight:500;color:var(--text);letter-spacing:-.01em}
     </span>
     <span class="sfb-divider"></span>
     <span class="sfb-mid">MCDM 2026 · Wuppertal · May 25–29</span>
-    <span class="sfb-cr">© 2026 Mohammad Dehghani · All rights reserved.</span>
+    <span class="sfb-cr">© 2026 · All rights reserved.</span>
   </div>
   <div class="sfb-num"><span id="sfbCur">01</span> / <span id="sfbTot">15</span></div>
 </div>
@@ -685,12 +684,12 @@ h3{font-size:1.5rem;font-weight:500;color:var(--text);letter-spacing:-.01em}
       </h1>
       <div class="authors">
         <div class="author-row">
-          <span class="nm">Mohammad Dehghani<sup>1</sup></span>
-          <span class="aff"><span class="sup">1</span>Northeastern University</span>
+          <span class="nm">Mohammad Dehghani</span>
+          <span class="aff">Northeastern University</span>
         </div>
         <div class="author-row">
-          <span class="nm">Nihan Kabadayi<sup>2</sup></span>
-          <span class="aff"><span class="sup">2</span>Istanbul Business School</span>
+          <span class="nm">Nihan Kabadayi</span>
+          <span class="aff">Istanbul Business School</span>
         </div>
       </div>
       <div class="logo-row">
@@ -742,9 +741,9 @@ h3{font-size:1.5rem;font-weight:500;color:var(--text);letter-spacing:-.01em}
           <div class="t3-grad"></div>
           <span class="t3-badge">01 · GAMES</span>
           <div class="t3-inner">
-            <div class="t3-yr">2016</div>
             <div class="t3-nm">AlphaGo</div>
             <div class="t3-det">Beat Lee Sedol <strong>4–1</strong> at a game with more positions than <em>atoms in the universe</em>.</div>
+            <span class="t3-yr-chip">2016</span>
           </div>
         </div>
         <div class="t3-card reveal">
@@ -752,9 +751,9 @@ h3{font-size:1.5rem;font-weight:500;color:var(--text);letter-spacing:-.01em}
           <div class="t3-grad"></div>
           <span class="t3-badge">02 · SCIENCE</span>
           <div class="t3-inner">
-            <div class="t3-yr">2021</div>
             <div class="t3-nm">AlphaFold</div>
             <div class="t3-det">Predicted protein structures with <em>near-experimental</em> accuracy — solving a <strong>50-year</strong> biology problem.</div>
+            <span class="t3-yr-chip">2021</span>
           </div>
         </div>
         <div class="t3-card reveal">
@@ -762,49 +761,37 @@ h3{font-size:1.5rem;font-weight:500;color:var(--text);letter-spacing:-.01em}
           <div class="t3-grad"></div>
           <span class="t3-badge">03 · PROFESSIONS</span>
           <div class="t3-inner">
-            <div class="t3-yr">2023</div>
             <div class="t3-nm">GPT-4</div>
             <div class="t3-det">Top <strong>10%</strong> on the bar exam, <em>near-specialist</em> on USMLE — peer-reviewed.</div>
+            <span class="t3-yr-chip">2023</span>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ───────────────── SLIDE 5: THE LLM ERA (NEW) ───────────────── -->
+  <!-- ───────────────── SLIDE 5: THE LLM ERA (2-col, image left / info right) ───────────────── -->
   <section class="slide sLLM" data-title="The LLM Era">
-    <div class="top">
-      <span class="chip"><i data-lucide="sparkles"></i> The LLM Era</span>
+    <div class="sLLM-vis"><img src="img/punchline-experts.png" alt=""/></div>
+    <div class="sLLM-body">
+      <span class="chip"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="14" height="14" aria-hidden="true"><defs><linearGradient id="llmStar" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#4facfe"/><stop offset="50%" stop-color="#007aff"/><stop offset="100%" stop-color="#6a79ff"/></linearGradient></defs><path fill="url(#llmStar)" d="M12 1c.45 4.94 4.06 8.55 9 9-4.94.45-8.55 4.06-9 9-.45-4.94-4.06-8.55-9-9 4.94-.45 8.55-4.06 9-9Z"/></svg> The LLM Era</span>
       <h2>Three years that changed how we <span class="italic-accent">do</span> everything.</h2>
-    </div>
-
-    <div class="sLLM-hero">
-      <div class="gpt-card">
+      <div class="sLLM-anchor">
         <img src="img/chatgpt-logo.svg" alt="ChatGPT"/>
-        <div class="gpt-text">
-          <div class="gpt-name">ChatGPT</div>
-          <div class="gpt-date">launched Nov 30 · OpenAI</div>
+        <div class="info">
+          <div class="name">ChatGPT</div>
+          <div class="date">launched Nov 30 · OpenAI</div>
         </div>
+        <div class="yr-side">2022</div>
       </div>
-      <div class="arrow">→</div>
-      <div class="y-block">
-        <div class="y-num">2022</div>
-        <span class="y-lbl">The Tipping Point</span>
+      <div class="sLLM-domains">
+        <div class="tile"><div class="ic"><i data-lucide="mail"></i></div><div class="lbl">Email</div></div>
+        <div class="tile"><div class="ic"><i data-lucide="image"></i></div><div class="lbl">Images</div></div>
+        <div class="tile"><div class="ic"><i data-lucide="code-2"></i></div><div class="lbl">Code</div></div>
+        <div class="tile"><div class="ic"><i data-lucide="search"></i></div><div class="lbl">Research</div></div>
+        <div class="tile"><div class="ic"><i data-lucide="languages"></i></div><div class="lbl">Translation</div></div>
+        <div class="tile now"><div class="ic"><i data-lucide="git-fork"></i></div><div class="lbl">Decisions</div></div>
       </div>
-    </div>
-
-    <div class="sLLM-banner">
-      <div class="tile"><div class="ic"><i data-lucide="mail"></i></div><div class="lbl">Email</div></div>
-      <div class="divider"></div>
-      <div class="tile"><div class="ic"><i data-lucide="image"></i></div><div class="lbl">Images</div></div>
-      <div class="divider"></div>
-      <div class="tile"><div class="ic"><i data-lucide="code-2"></i></div><div class="lbl">Code</div></div>
-      <div class="divider"></div>
-      <div class="tile"><div class="ic"><i data-lucide="search"></i></div><div class="lbl">Research</div></div>
-      <div class="divider"></div>
-      <div class="tile"><div class="ic"><i data-lucide="languages"></i></div><div class="lbl">Translation</div></div>
-      <div class="divider"></div>
-      <div class="tile now"><div class="ic"><i data-lucide="git-fork"></i></div><div class="lbl">Decisions</div></div>
     </div>
   </section>
 
@@ -1233,8 +1220,8 @@ h3{font-size:1.5rem;font-weight:500;color:var(--text);letter-spacing:-.01em}
     <div class="sContact-img"><img src="img/contact-collab.png" alt=""/></div>
     <div class="sContact-body">
       <span class="chip"><i data-lucide="handshake"></i> Research &amp; Collaborators</span>
-      <h2>Let's <span class="italic-accent">work together.</span></h2>
-      <p class="lead">For research collaboration, replication studies, or full demo access to the GenDI platform — get in touch.</p>
+      <h2>Interested to <span class="italic-accent">use it?</span></h2>
+      <p class="lead">For research access, replication studies, or full demo of the GenDI platform — drop a line.</p>
       <a href="mailto:m.dehghani@northeastern.edu?subject=GenDI%20—%20Research%20%26%20Demo%20Access" class="sContact-card">
         <div class="row">
           <div class="icon"><i data-lucide="mail"></i></div>
@@ -1254,12 +1241,7 @@ h3{font-size:1.5rem;font-weight:500;color:var(--text);letter-spacing:-.01em}
 
   <!-- ───────────────── SLIDE 15: THANK YOU ───────────────── -->
   <section class="slide sThanks" data-title="Thank You">
-    <div class="thanks-bg">
-      <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-        <defs><linearGradient id="thxG" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#4facfe"/><stop offset="50%" stop-color="#007aff"/><stop offset="100%" stop-color="#6a79ff"/></linearGradient></defs>
-        <path d="M16 2L28 12L16 30L4 12Z" fill="url(#thxG)"/>
-      </svg>
-    </div>
+    <div class="thanks-bg"><img src="img/hero-diamond.png" alt=""/></div>
     <div class="thanks-inner">
       <div class="thanks-en">Thank <span class="accent">you.</span></div>
       <div class="divider-thanks"></div>

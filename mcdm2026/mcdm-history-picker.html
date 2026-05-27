@@ -78,6 +78,70 @@ h2{font-size:1.9rem;font-weight:300;letter-spacing:-.025em;line-height:1.1;color
 .styleB .arrow-flow{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:18px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:#86868b;letter-spacing:.10em;text-transform:uppercase}
 .styleB .arrow-flow .span{color:#007aff;font-weight:700}
 
+/* ─────────── STYLE D — Branching tree (methodological lineage) ─────────── */
+.styleD .tree-wrap{display:grid;grid-template-columns:170px 1fr 110px;gap:18px;align-items:center;margin-top:12px;width:100%;max-width:1000px;margin-left:auto;margin-right:auto}
+.styleD .families{display:flex;flex-direction:column;gap:8px}
+.styleD .fam{padding:8px 14px;background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:11px;display:flex;align-items:center;gap:8px;font-size:11px;font-weight:600;color:#1d1d1f;box-shadow:0 2px 8px rgba(0,0,0,0.03)}
+.styleD .fam .swatch{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.styleD .fam.h .swatch{background:#007aff}
+.styleD .fam.d .swatch{background:#2dd4a8}
+.styleD .fam.o .swatch{background:#f59e0b}
+.styleD .fam.u .swatch{background:#a855f7}
+.styleD .fam.c .swatch{background:#ef4444}
+.styleD .fam.f .swatch{background:#64748b}
+.styleD .branch-svg{height:300px;display:flex;align-items:center}
+.styleD .branch-svg svg{width:100%;height:100%}
+.styleD .hub{display:flex;flex-direction:column;align-items:center;gap:6px}
+.styleD .hub-orb{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#4facfe,#007aff,#6a79ff);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;box-shadow:0 10px 24px rgba(0,122,255,0.30);font-family:'Outfit',sans-serif}
+.styleD .hub-orb .y{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.12em;opacity:.85}
+.styleD .hub-orb .n{font-size:18px;font-weight:600;letter-spacing:-.01em;margin-top:3px}
+.styleD .hub-orb .t{font-size:8px;letter-spacing:.14em;opacity:.85;margin-top:1px;text-transform:uppercase}
+.styleD .hub .lbl{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;color:#007aff;letter-spacing:.16em;text-transform:uppercase}
+
+/* ─────────── STYLE E — Era-grouped decades ─────────── */
+.styleE .eras{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:18px 0 14px;max-width:1100px;margin-left:auto;margin-right:auto}
+.styleE .era{background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:6px;box-shadow:0 3px 12px rgba(0,0,0,0.04)}
+.styleE .era.now{background:linear-gradient(135deg,rgba(79,172,254,0.16),rgba(0,122,255,0.06));border-color:rgba(0,122,255,0.30)}
+.styleE .era .decade{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#007aff;letter-spacing:.10em;padding-bottom:4px;border-bottom:1px solid rgba(0,0,0,0.06)}
+.styleE .era.now .decade{color:#fff;background:linear-gradient(135deg,#4facfe,#007aff);padding:4px 10px;border-radius:6px;text-align:center;border:none;margin-bottom:4px}
+.styleE .era .mlist{display:flex;flex-direction:column;gap:2px}
+.styleE .era .mrow{display:flex;justify-content:space-between;font-size:10px;line-height:1.3;color:#1d1d1f}
+.styleE .era .mrow .yr{font-family:'JetBrains Mono',monospace;color:#86868b;font-weight:600;font-size:9px}
+.styleE .era .mrow .nm{font-weight:600}
+
+/* ─────────── STYLE F — Categorical horizontal timeline ─────────── */
+.styleF .legend{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin:10px 0 18px}
+.styleF .legend .li{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:600;color:#1d1d1f;background:rgba(255,255,255,0.7);border:1px solid rgba(0,0,0,0.05);padding:4px 10px;border-radius:9999px}
+.styleF .legend .sw{width:8px;height:8px;border-radius:50%}
+.styleF .cat-axis{position:relative;height:140px;margin:0 32px}
+.styleF .cat-axis .baseline{position:absolute;top:50%;left:0;right:0;height:1.5px;background:linear-gradient(90deg,rgba(0,0,0,0.10),rgba(0,0,0,0.20),rgba(0,0,0,0.10));transform:translateY(-50%)}
+.styleF .cat-pt{position:absolute;top:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center}
+.styleF .cat-pt .dot{width:12px;height:12px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,0.10)}
+.styleF .cat-pt.h .dot{background:#007aff}
+.styleF .cat-pt.d .dot{background:#2dd4a8}
+.styleF .cat-pt.o .dot{background:#f59e0b}
+.styleF .cat-pt.u .dot{background:#a855f7}
+.styleF .cat-pt.c .dot{background:#ef4444}
+.styleF .cat-pt.f .dot{background:#64748b}
+.styleF .cat-pt.now .dot{background:linear-gradient(135deg,#4facfe,#007aff);width:18px;height:18px;box-shadow:0 0 0 5px rgba(0,122,255,0.25)}
+.styleF .cat-pt .yr{position:absolute;top:24px;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:#1d1d1f}
+.styleF .cat-pt .nm{position:absolute;bottom:18px;font-size:11px;font-weight:600;color:#1d1d1f;white-space:nowrap}
+.styleF .cat-pt.below .yr{top:auto;bottom:24px}
+.styleF .cat-pt.below .nm{top:18px;bottom:auto}
+
+/* ─────────── STYLE G — Dense grid infographic ─────────── */
+.styleG .grid-rows{display:flex;flex-direction:column;gap:8px;margin-top:14px;max-width:1100px;margin-left:auto;margin-right:auto}
+.styleG .grow{display:grid;grid-template-columns:90px repeat(4,1fr);gap:8px;align-items:center}
+.styleG .glabel{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:#86868b;letter-spacing:.14em;text-align:right;padding-right:6px}
+.styleG .gcell{background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:2px;box-shadow:0 2px 6px rgba(0,0,0,0.03);position:relative;min-height:54px}
+.styleG .gcell.now{background:linear-gradient(135deg,rgba(79,172,254,0.18),rgba(0,122,255,0.06));border-color:rgba(0,122,255,0.30)}
+.styleG .gcell .yr{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#007aff;letter-spacing:.05em}
+.styleG .gcell .nm{font-size:13px;font-weight:600;color:#1d1d1f;letter-spacing:-.005em;line-height:1}
+.styleG .gcell .cat{font-size:8.5px;font-weight:600;color:#86868b;letter-spacing:.10em;text-transform:uppercase;margin-top:2px}
+.styleG .gcell.empty{background:transparent;border:1px dashed rgba(0,0,0,0.08);box-shadow:none}
+.styleG .gcell.empty::after{content:'·';color:rgba(0,0,0,0.20);font-size:18px;align-self:center;margin:auto}
+.styleG .gcell.empty > *{display:none}
+
 /* ─────────── STYLE C — Vertical chronological list (paper-style) ─────────── */
 .styleC .vlist{display:flex;flex-direction:column;gap:10px;margin:0 auto;max-width:760px}
 .styleC .vrow{display:grid;grid-template-columns:90px 1fr auto;gap:18px;padding:14px 18px;background:#fff;border:1px solid rgba(0,0,0,0.05);border-radius:13px;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,0.03);transition:background .2s}
