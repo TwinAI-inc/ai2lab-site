@@ -78,28 +78,28 @@ body::after{
 }
 .slide > *{position:relative;z-index:1}
 
-/* Slide-card footer chip — sits attached to the bottom border of the slide-card frame */
+/* Slide-card footer chip — subtle, sits naturally on the bottom border of the slide-card */
 .slide-footer-bar{
-  position:fixed;left:50%;bottom:38px;transform:translateX(-50%);
-  display:inline-flex;align-items:center;gap:14px;
-  padding:8px 20px;
-  background:rgba(255,255,255,0.92);backdrop-filter:blur(20px) saturate(1.3);
-  border:1px solid rgba(0,0,0,0.08);
+  position:fixed;left:50%;bottom:60px;transform:translateX(-50%);
+  display:inline-flex;align-items:center;gap:12px;
+  padding:5px 14px 5px 12px;
+  background:rgba(255,255,255,0.75);backdrop-filter:blur(14px) saturate(1.2);
+  border:1px solid rgba(0,0,0,0.05);
   border-radius:9999px;
-  box-shadow:0 8px 24px rgba(0,0,0,0.12),0 1px 3px rgba(0,0,0,0.06),inset 0 1px 0 rgba(255,255,255,0.9);
+  box-shadow:0 1px 6px rgba(0,0,0,0.04);
   z-index:45;
-  font-size:11px;color:var(--text);letter-spacing:.04em;font-weight:500;
+  font-size:10.5px;color:var(--text-s);letter-spacing:.04em;font-weight:400;
   pointer-events:auto;
   white-space:nowrap;
 }
-.sfb-l{display:flex;align-items:center;gap:10px}
-.sfb-logo{display:inline-flex;align-items:center;gap:6px;font-weight:600;color:var(--text);letter-spacing:-.01em;font-size:12px}
-.sfb-logo svg{width:14px;height:14px;filter:drop-shadow(0 1px 3px rgba(0,122,255,0.20))}
-.sfb-logo .di{color:var(--accent)}
-.sfb-divider{width:1px;height:12px;background:rgba(0,0,0,0.12);flex-shrink:0}
-.sfb-mid{color:var(--text);font-size:11px;letter-spacing:.06em;font-weight:500}
-.sfb-cr{font-size:10px;color:var(--text-s);letter-spacing:.02em;font-weight:400;white-space:nowrap}
-.sfb-num{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:.14em;background:linear-gradient(180deg,rgba(0,122,255,0.10),rgba(0,122,255,0.06));border:1px solid rgba(0,122,255,0.20);padding:4px 10px;border-radius:9999px}
+.sfb-l{display:flex;align-items:center;gap:8px}
+.sfb-logo{display:inline-flex;align-items:center;gap:5px;font-weight:500;color:var(--text-m);letter-spacing:-.005em;font-size:11px}
+.sfb-logo svg{width:11px;height:11px;opacity:.7}
+.sfb-logo .di{color:var(--accent);opacity:.85}
+.sfb-divider{width:1px;height:10px;background:rgba(0,0,0,0.07);flex-shrink:0}
+.sfb-mid{color:var(--text-s);font-size:10.5px;letter-spacing:.04em;font-weight:400}
+.sfb-cr{font-size:10px;color:var(--text-d);letter-spacing:.02em;font-weight:400;white-space:nowrap}
+.sfb-num{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:500;color:var(--accent);opacity:.75;letter-spacing:.10em;padding:0 2px}
 
 /* CHROME */
 .progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--purple));width:0;z-index:60;transition:width .25s ease}
@@ -226,13 +226,19 @@ h3{font-size:1.5rem;font-weight:500;color:var(--text);letter-spacing:-.01em}
 .sT1 .t1-num.accent-i{color:#4facfe;font-style:italic;font-weight:300}
 .sT1 .t1-unit{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,0.55)}
 
-/* T3-specific: cite list with year badges */
-.sTrans .t3-list{display:flex;flex-direction:column;gap:14px;margin-top:36px}
-.sTrans .t3-item{display:grid;grid-template-columns:84px 1fr;gap:24px;align-items:baseline;padding:14px 0;border-top:1px solid rgba(255,255,255,0.10)}
-.sTrans .t3-item .yr{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:#4facfe;letter-spacing:.06em}
-.sTrans .t3-item .body .nm{font-size:22px;font-weight:500;color:#fff;letter-spacing:-.01em}
-.sTrans .t3-item .body .det{font-size:14px;color:rgba(255,255,255,0.65);font-weight:300;margin-top:4px;line-height:1.5}
-.sTrans .t3-item .body .det em{color:#4facfe;font-style:italic;font-weight:500;font-family:'Source Serif 4',serif}
+/* T3-specific: 3 tall image cards, click-reveal one at a time */
+.sT3 .sTrans-content{align-items:center;text-align:center}
+.sT3 .sTrans-content .lbl{align-self:center}
+.sT3-grid{display:grid;grid-template-columns:repeat(3,minmax(0,260px));gap:18px;margin:24px auto 0;width:100%;max-width:880px;justify-content:center}
+.t3-card{position:relative;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.12);box-shadow:0 14px 30px rgba(0,0,0,0.30);aspect-ratio:3/4.2;display:flex;flex-direction:column;justify-content:flex-end}
+.t3-card .t3-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85;z-index:0}
+.t3-card .t3-grad{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(10,14,26,0.20) 0%,rgba(10,14,26,0.40) 50%,rgba(10,14,26,0.92) 100%)}
+.t3-card .t3-inner{position:relative;z-index:2;padding:22px 22px 24px;color:#fff}
+.t3-card .t3-yr{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#4facfe;letter-spacing:.20em}
+.t3-card .t3-nm{font-size:1.9rem;font-weight:400;color:#fff;letter-spacing:-.015em;line-height:1;margin-top:8px}
+.t3-card .t3-det{font-size:13px;color:rgba(255,255,255,0.78);font-weight:300;line-height:1.5;margin-top:12px}
+.t3-card .t3-det em{color:#4facfe;font-style:italic;font-weight:400;font-family:'Source Serif 4',serif}
+.t3-card .t3-badge{position:absolute;top:18px;left:18px;z-index:2;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:#fff;background:rgba(0,0,0,0.40);backdrop-filter:blur(8px);padding:5px 10px;border-radius:9999px;letter-spacing:.16em;border:1px solid rgba(255,255,255,0.18)}
 
 /* ───────────── SLIDE 2: THE LLM ERA (NEW — ChatGPT logo top, banner bottom) ───────────── */
 .sLLM{flex-direction:column;gap:0;align-items:center;justify-content:center;padding:64px 80px 96px}
@@ -384,6 +390,37 @@ h3{font-size:1.5rem;font-weight:500;color:var(--text);letter-spacing:-.01em}
 .s6-foot .ifl{font-size:10px;font-weight:600;letter-spacing:.22em;color:var(--accent);text-transform:uppercase;flex-shrink:0}
 .s6-foot .ifd{font-size:13px;color:var(--text-m);line-height:1.4}
 .s6-foot .ifd strong{color:var(--accent);font-weight:600}
+
+/* ───────────── SLIDE 14: CONTACT / RESEARCH ACCESS ───────────── */
+.sContact{display:grid;grid-template-columns:1fr 1fr;gap:0;padding:0;align-items:stretch}
+.sContact-img{position:relative;margin:24px 0 72px 24px;border-radius:22px 0 0 22px;overflow:hidden;z-index:1}
+.sContact-img img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
+.sContact-img::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(228,232,238,0) 0%,rgba(228,232,238,0) 70%,rgba(228,232,238,0.8) 100%)}
+.sContact-body{padding:96px 80px 80px;display:flex;flex-direction:column;justify-content:center;gap:18px;z-index:1;position:relative}
+.sContact-body h2{font-size:3rem;font-weight:300;letter-spacing:-.025em;line-height:1.04;color:var(--text)}
+.sContact-body h2 .italic-accent{color:var(--accent);font-style:italic;font-weight:400}
+.sContact-body .lead{font-size:1.05rem;color:var(--text-m);font-weight:300;line-height:1.55;max-width:480px}
+.sContact-card{margin-top:14px;padding:24px 28px;background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,0.06);max-width:520px;display:flex;flex-direction:column;gap:8px;text-decoration:none;color:inherit;transition:transform .25s,box-shadow .25s}
+.sContact-card:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(0,0,0,0.09)}
+.sContact-card .row{display:flex;align-items:center;gap:14px}
+.sContact-card .icon{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#4facfe,#007aff);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(0,122,255,0.30);flex-shrink:0}
+.sContact-card .icon svg{width:22px;height:22px}
+.sContact-card .lbl{font-size:10px;font-weight:700;letter-spacing:.20em;color:var(--text-s);text-transform:uppercase}
+.sContact-card .email{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:600;color:var(--accent);letter-spacing:-.01em;line-height:1.1;word-break:break-all}
+.sContact-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.sContact-tags .ctag{display:inline-flex;align-items:center;gap:6px;background:rgba(0,122,255,0.08);color:var(--accent);border:1px solid rgba(0,122,255,0.18);padding:5px 12px;border-radius:9999px;font-size:11px;font-weight:600;letter-spacing:.05em}
+.sContact-tags .ctag svg{width:13px;height:13px}
+
+/* ───────────── SLIDE 15: THANK YOU ───────────── */
+.sThanks{padding:0;display:flex;align-items:center;justify-content:center;position:relative;text-align:center}
+.sThanks .thanks-inner{display:flex;flex-direction:column;align-items:center;gap:32px;z-index:2;position:relative}
+.sThanks .thanks-en{font-size:6rem;font-weight:200;letter-spacing:-.035em;color:var(--text);line-height:1}
+.sThanks .thanks-en .accent{color:var(--accent);font-style:italic;font-weight:300}
+.sThanks .thanks-de{font-size:5rem;font-weight:200;letter-spacing:-.030em;color:var(--text-m);line-height:1;font-family:'Source Serif 4',serif;font-style:italic}
+.sThanks .divider-thanks{width:60px;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);border-radius:2px}
+.sThanks .thanks-meta{margin-top:18px;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.22em;color:var(--text-s);text-transform:uppercase}
+.sThanks .thanks-bg{position:absolute;inset:0;z-index:0;pointer-events:none;display:flex;align-items:center;justify-content:center;opacity:.06}
+.sThanks .thanks-bg svg{width:60vh;height:60vh}
 
 /* ───────────── SLIDE 9: PLATFORM + QR (MERGED) ───────────── */
 .sMerge{display:grid;grid-template-columns:1.15fr 1fr;gap:48px;align-items:center;padding:64px 80px 96px}
@@ -602,7 +639,7 @@ h3{font-size:1.5rem;font-weight:500;color:var(--text);letter-spacing:-.01em}
   <div class="menu-head">
     <div class="menu-sec">MCDM 2026 · Wuppertal</div>
     <div class="menu-ttl">Gen<span class="di">DI</span></div>
-    <div class="menu-sub">Generative Decision Intelligence — 13 slides</div>
+    <div class="menu-sub">Generative Decision Intelligence — 15 slides</div>
   </div>
   <div class="menu-list" id="menuList"></div>
   <div class="menu-foot">
@@ -614,7 +651,7 @@ h3{font-size:1.5rem;font-weight:500;color:var(--text);letter-spacing:-.01em}
 
 <div class="dots" id="dots"></div>
 <button class="fs-btn" id="fsBtn" title="Fullscreen (F)" aria-label="Fullscreen"><i data-lucide="maximize-2"></i></button>
-<div class="counter" id="counter">01 / 13</div>
+<div class="counter" id="counter">01 / 15</div>
 
 <!-- Per-slide footer bar (slide-style chrome — logo, conf name, slide number) -->
 <div class="slide-footer-bar" id="slideFooter">
@@ -631,7 +668,7 @@ h3{font-size:1.5rem;font-weight:500;color:var(--text);letter-spacing:-.01em}
     <span class="sfb-mid">MCDM 2026 · Wuppertal · May 25–29</span>
     <span class="sfb-cr">© 2026 Mohammad Dehghani · All rights reserved.</span>
   </div>
-  <div class="sfb-num"><span id="sfbCur">01</span> / <span id="sfbTot">13</span></div>
+  <div class="sfb-num"><span id="sfbCur">01</span> / <span id="sfbTot">15</span></div>
 </div>
 <div class="khint"><kbd>←</kbd><kbd>→</kbd> navigate · <kbd>M</kbd> menu · <kbd>F</kbd> fullscreen</div>
 
@@ -641,19 +678,19 @@ h3{font-size:1.5rem;font-weight:500;color:var(--text);letter-spacing:-.01em}
   <section class="slide s1" data-title="Title">
     <div class="s1-vis"><img src="img/hero-diamond.png" alt="" /></div>
     <div class="s1-content">
-      <span class="chip"><i data-lucide="sparkles"></i> AI-Powered Decision Science</span>
+      <span class="chip"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="14" height="14" aria-hidden="true"><defs><linearGradient id="geminiStar" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#4facfe"/><stop offset="50%" stop-color="#007aff"/><stop offset="100%" stop-color="#6a79ff"/></linearGradient></defs><path fill="url(#geminiStar)" d="M12 1c.45 4.94 4.06 8.55 9 9-4.94.45-8.55 4.06-9 9-.45-4.94-4.06-8.55-9-9 4.94-.45 8.55-4.06 9-9Z"/></svg> AI-Powered Decision Science</span>
       <h1>
         <span class="product-name">Gen<span class="di">DI</span></span><span class="colon">:</span><br/>
         <span class="subtitle">A Generative AI Framework for<br/>Scalable <span class="italic-accent">Multi-Criteria Decision Intelligence.</span></span>
       </h1>
       <div class="authors">
         <div class="author-row">
-          <span class="aff"><span class="sup">1</span>Northeastern University</span>
           <span class="nm">Mohammad Dehghani<sup>1</sup></span>
+          <span class="aff"><span class="sup">1</span>Northeastern University</span>
         </div>
         <div class="author-row">
-          <span class="aff"><span class="sup">2</span>Istanbul Business School</span>
           <span class="nm">Nihan Kabadayi<sup>2</sup></span>
+          <span class="aff"><span class="sup">2</span>Istanbul Business School</span>
         </div>
       </div>
       <div class="logo-row">
@@ -693,22 +730,45 @@ h3{font-size:1.5rem;font-weight:500;color:var(--text);letter-spacing:-.01em}
     <div class="t-cite">MCDM literature<br/>1980–2024</div>
   </section>
 
-  <!-- ───────────────── SLIDE 4: T3 — AI SURPASSES HUMANS ───────────────── -->
-  <section class="slide sTrans" data-darkrail="1" data-title="AI Surpasses Humans">
-    <div class="sTrans-frame">
-      <img src="img/story-alphago.png" alt=""/>
-      <div class="grad"></div>
-    </div>
-    <div class="sTrans-content">
+  <!-- ───────────────── SLIDE 4: T3 — AI SURPASSES HUMANS (3 tall image cards, click reveal) ───────────────── -->
+  <section class="slide sTrans sT3" data-darkrail="1" data-title="AI Surpasses Humans">
+    <div class="sTrans-frame t2-bg"></div>
+    <div class="sTrans-content" style="justify-content:center;padding:64px 80px">
       <span class="lbl">// But AI now exceeds us</span>
-      <h2>Go. Proteins. Diagnostics.<br/><span class="accent-i">Why not decisions?</span></h2>
-      <div class="t3-list">
-        <div class="t3-item"><span class="yr">2016</span><div class="body"><div class="nm">AlphaGo</div><div class="det">Beat Lee Sedol 4–1 at a game with more positions than <em>atoms in the universe.</em></div></div></div>
-        <div class="t3-item"><span class="yr">2021</span><div class="body"><div class="nm">AlphaFold</div><div class="det">Predicted protein structures with <em>near-experimental</em> accuracy — solving a 50-year-old biology problem.</div></div></div>
-        <div class="t3-item"><span class="yr">2023</span><div class="body"><div class="nm">GPT-4</div><div class="det">Top 10% on the bar exam, <em>near-specialist</em> on USMLE — peer-reviewed.</div></div></div>
+      <h2 style="font-size:3rem">Go. Proteins. Diagnostics.<br/><span class="accent-i">Why not decisions?</span></h2>
+      <div class="sT3-grid">
+        <div class="t3-card reveal">
+          <img class="t3-bg" src="img/story-alphago.png" alt=""/>
+          <div class="t3-grad"></div>
+          <span class="t3-badge">01 · GAMES</span>
+          <div class="t3-inner">
+            <div class="t3-yr">2016</div>
+            <div class="t3-nm">AlphaGo</div>
+            <div class="t3-det">Beat Lee Sedol <strong>4–1</strong> at a game with more positions than <em>atoms in the universe</em>.</div>
+          </div>
+        </div>
+        <div class="t3-card reveal">
+          <img class="t3-bg" src="img/ai-alphafold.png" alt=""/>
+          <div class="t3-grad"></div>
+          <span class="t3-badge">02 · SCIENCE</span>
+          <div class="t3-inner">
+            <div class="t3-yr">2021</div>
+            <div class="t3-nm">AlphaFold</div>
+            <div class="t3-det">Predicted protein structures with <em>near-experimental</em> accuracy — solving a <strong>50-year</strong> biology problem.</div>
+          </div>
+        </div>
+        <div class="t3-card reveal">
+          <img class="t3-bg" src="img/ai-gpt4.png" alt=""/>
+          <div class="t3-grad"></div>
+          <span class="t3-badge">03 · PROFESSIONS</span>
+          <div class="t3-inner">
+            <div class="t3-yr">2023</div>
+            <div class="t3-nm">GPT-4</div>
+            <div class="t3-det">Top <strong>10%</strong> on the bar exam, <em>near-specialist</em> on USMLE — peer-reviewed.</div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="t-cite">Silver 2016 · Jumper 2021<br/>Katz & Singhal 2023</div>
   </section>
 
   <!-- ───────────────── SLIDE 5: THE LLM ERA (NEW) ───────────────── -->
@@ -1165,6 +1225,46 @@ h3{font-size:1.5rem;font-weight:500;color:var(--text);letter-spacing:-.01em}
           <div class="ft-d">University of Wuppertal · May 25–29, 2026</div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- ───────────────── SLIDE 14: CONTACT / RESEARCH ACCESS ───────────────── -->
+  <section class="slide sContact" data-title="Research &amp; Demo Access">
+    <div class="sContact-img"><img src="img/contact-collab.png" alt=""/></div>
+    <div class="sContact-body">
+      <span class="chip"><i data-lucide="handshake"></i> Research &amp; Collaborators</span>
+      <h2>Let's <span class="italic-accent">work together.</span></h2>
+      <p class="lead">For research collaboration, replication studies, or full demo access to the GenDI platform — get in touch.</p>
+      <a href="mailto:m.dehghani@northeastern.edu?subject=GenDI%20—%20Research%20%26%20Demo%20Access" class="sContact-card">
+        <div class="row">
+          <div class="icon"><i data-lucide="mail"></i></div>
+          <div>
+            <div class="lbl">Email</div>
+            <div class="email">m.dehghani@northeastern.edu</div>
+          </div>
+        </div>
+      </a>
+      <div class="sContact-tags">
+        <span class="ctag"><i data-lucide="flask-conical"></i> Research access</span>
+        <span class="ctag"><i data-lucide="play"></i> Demo access</span>
+        <span class="ctag"><i data-lucide="git-pull-request"></i> Collaboration</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────── SLIDE 15: THANK YOU ───────────────── -->
+  <section class="slide sThanks" data-title="Thank You">
+    <div class="thanks-bg">
+      <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="thxG" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#4facfe"/><stop offset="50%" stop-color="#007aff"/><stop offset="100%" stop-color="#6a79ff"/></linearGradient></defs>
+        <path d="M16 2L28 12L16 30L4 12Z" fill="url(#thxG)"/>
+      </svg>
+    </div>
+    <div class="thanks-inner">
+      <div class="thanks-en">Thank <span class="accent">you.</span></div>
+      <div class="divider-thanks"></div>
+      <div class="thanks-de">Danke.</div>
+      <div class="thanks-meta">Questions? · Fragen? · gendi.io</div>
     </div>
   </section>
 
