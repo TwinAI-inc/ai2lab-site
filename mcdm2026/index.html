@@ -211,6 +211,23 @@ h3{font-size:1.5rem;font-weight:500;color:var(--text);letter-spacing:-.01em}
 .sTrans-frame .grad{position:absolute;inset:0;background:linear-gradient(120deg,rgba(10,14,26,0.85) 0%,rgba(15,30,60,0.50) 50%,rgba(10,14,26,0.35) 100%)}
 .sTrans-frame.t2-bg{background:linear-gradient(135deg,#1a1f2e 0%,#0a0e1a 60%,#0a0e1a 100%)}
 .sTrans-frame.t2-bg::after{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px);background-size:56px 56px;opacity:.8}
+.sTrans-frame.t2-bg .t2-faded{position:absolute;right:-8%;top:50%;transform:translateY(-50%);height:120%;width:auto;object-fit:contain;opacity:.12;mix-blend-mode:screen;pointer-events:none;z-index:0}
+
+/* T2 era-grouped timeline (Style E adapted to dark) */
+.sT2-hist .t2-eras{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;width:100%;max-width:1180px;margin:20px auto 16px}
+.sT2-hist .t2-era{background:rgba(255,255,255,0.06);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.10);border-radius:14px;padding:14px 14px 16px;display:flex;flex-direction:column;gap:8px;text-align:left}
+.sT2-hist .t2-era.now{background:linear-gradient(135deg,rgba(79,172,254,0.22),rgba(0,122,255,0.08));border-color:rgba(79,172,254,0.45);box-shadow:0 10px 28px rgba(0,122,255,0.18)}
+.sT2-hist .t2-decade{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#4facfe;letter-spacing:.12em;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.10)}
+.sT2-hist .t2-era.now .t2-decade{color:#fff;background:linear-gradient(135deg,#4facfe,#007aff);padding:5px 10px;border-radius:7px;text-align:center;border:none;letter-spacing:.14em}
+.sT2-hist .t2-mlist{display:flex;flex-direction:column;gap:4px}
+.sT2-hist .t2-mrow{display:flex;justify-content:space-between;align-items:baseline;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.06)}
+.sT2-hist .t2-mrow:last-child{border-bottom:none}
+.sT2-hist .t2-mrow .nm{font-size:12px;font-weight:600;color:rgba(255,255,255,0.85);letter-spacing:-.005em}
+.sT2-hist .t2-mrow .nm.cur{color:#4facfe;font-weight:700;font-size:14px}
+.sT2-hist .t2-mrow .yr{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;color:rgba(255,255,255,0.50)}
+.sT2-hist .t2-mrow .yr.cur{color:#4facfe;font-weight:700}
+.sT2-hist .t2-foot{font-size:14px;color:rgba(255,255,255,0.72);font-weight:300;margin-top:6px;text-align:center}
+.sT2-hist .t2-foot .accent-i{color:#4facfe;font-style:italic;font-weight:400}
 .sTrans-content{position:absolute;inset:24px 24px 72px 24px;z-index:2;padding:96px 80px;display:flex;flex-direction:column;justify-content:center;color:#fff;border-radius:22px;pointer-events:none;max-width:1180px}
 .sTrans .lbl{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;letter-spacing:.24em;color:#4facfe;text-transform:uppercase}
 .sTrans h2{font-size:4rem;font-weight:200;letter-spacing:-.035em;line-height:1.05;color:#fff;margin-top:24px;max-width:1100px}
@@ -742,15 +759,56 @@ h3{font-size:1.5rem;font-weight:500;color:var(--text);letter-spacing:-.01em}
     </div>
   </section>
 
-  <!-- ───────────────── SLIDE 3: T2 — THE FORGOTTEN GAP ───────────────── -->
-  <section class="slide sTrans" data-darkrail="1" data-title="The Forgotten Gap">
-    <div class="sTrans-frame t2-bg"></div>
-    <div class="sTrans-content">
-      <span class="lbl">// The forgotten gap</span>
-      <h2>We built better methods —<br/>and rested them on <span class="accent-i">worse data.</span></h2>
-      <p class="t-meta">AHP, ANP, TOPSIS, DEMATEL — all matured over 40 years.<br/>The <span class="accent">quality of the expert input</span> feeding them? Still the soft underbelly:<br/>missing rows · drift · fatigue · social-desirability bias.</p>
+  <!-- ───────────────── SLIDE 3: T2 — MCDM HISTORY TIMELINE (Style E · era-grouped) ───────────────── -->
+  <section class="slide sTrans sT2-hist" data-darkrail="1" data-title="MCDM History">
+    <div class="sTrans-frame t2-bg">
+      <img src="img/hero-diamond.jpg" alt="" class="t2-faded"/>
     </div>
-    <div class="t-cite">MCDM literature<br/>1980–2024</div>
+    <div class="sTrans-content" style="justify-content:center;padding:54px 60px;align-items:center;text-align:center;max-width:none;left:24px;right:24px">
+      <span class="lbl">// Sixty years of methods</span>
+      <h2 style="font-size:2.6rem;margin-top:18px">We built better methods —<br/>and rested them on <span class="accent-i">worse data.</span></h2>
+      <p class="t-meta" style="text-align:center;margin-top:18px;margin-bottom:8px;max-width:880px">Every decade brought a new MCDM technique. The data feeding them? Still the soft underbelly.</p>
+      <div class="t2-eras">
+        <div class="t2-era">
+          <div class="t2-decade">1960s</div>
+          <div class="t2-mlist">
+            <div class="t2-mrow"><span class="nm">Goal Prog</span><span class="yr">1961</span></div>
+            <div class="t2-mrow"><span class="nm">ELECTRE</span><span class="yr">1968</span></div>
+          </div>
+        </div>
+        <div class="t2-era">
+          <div class="t2-decade">1970s</div>
+          <div class="t2-mlist">
+            <div class="t2-mrow"><span class="nm">DEMATEL</span><span class="yr">1971</span></div>
+            <div class="t2-mrow"><span class="nm">MAUT</span><span class="yr">1976</span></div>
+            <div class="t2-mrow"><span class="nm">AHP</span><span class="yr">1977</span></div>
+          </div>
+        </div>
+        <div class="t2-era">
+          <div class="t2-decade">1980s</div>
+          <div class="t2-mlist">
+            <div class="t2-mrow"><span class="nm">TOPSIS</span><span class="yr">1981</span></div>
+            <div class="t2-mrow"><span class="nm">PROMETHEE</span><span class="yr">1985</span></div>
+          </div>
+        </div>
+        <div class="t2-era">
+          <div class="t2-decade">1990s</div>
+          <div class="t2-mlist">
+            <div class="t2-mrow"><span class="nm">MACBETH</span><span class="yr">1994</span></div>
+            <div class="t2-mrow"><span class="nm">ANP</span><span class="yr">1996</span></div>
+            <div class="t2-mrow"><span class="nm">VIKOR</span><span class="yr">1998</span></div>
+          </div>
+        </div>
+        <div class="t2-era now">
+          <div class="t2-decade">2010s — 2020s</div>
+          <div class="t2-mlist">
+            <div class="t2-mrow"><span class="nm">BWM</span><span class="yr">2015</span></div>
+            <div class="t2-mrow"><span class="nm cur">GenDI</span><span class="yr cur">2026</span></div>
+          </div>
+        </div>
+      </div>
+      <p class="t2-foot">Methods evolved. The <span class="accent-i">quality of input</span> didn't.</p>
+    </div>
   </section>
 
   <!-- ───────────────── SLIDE 4: T3 — AI SURPASSES HUMANS (3 tall image cards, click reveal) ───────────────── -->
