@@ -227,7 +227,7 @@ h3{font-size:1.5rem;font-weight:500;color:var(--text);letter-spacing:-.01em}
 .sT1 .t1-unit{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,0.55)}
 
 /* T3-specific: 3 tall image cards, click-reveal one at a time */
-.sT3 .sTrans-content{align-items:center;text-align:center;justify-content:center;padding:60px 60px}
+.sT3 .sTrans-content{align-items:center;text-align:center;justify-content:center;padding:60px;max-width:none;left:24px;right:24px}
 .sT3 .sTrans-content .lbl{align-self:center}
 .sT3-grid{display:grid;grid-template-columns:repeat(3,minmax(0,310px));gap:22px;margin:30px auto 0;width:100%;max-width:1020px;justify-content:center}
 .t3-card{position:relative;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,0.14);box-shadow:0 18px 40px rgba(0,0,0,0.36);aspect-ratio:3/4.4;display:flex;flex-direction:column;justify-content:flex-end}
@@ -317,6 +317,30 @@ h3{font-size:1.5rem;font-weight:500;color:var(--text);letter-spacing:-.01em}
 .s4 .top .top-right{max-width:420px;text-align:right;color:var(--text-m);font-size:14px;line-height:1.55;font-weight:400}
 .s4-canvas{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;width:100%}
 .s4-canvas svg{width:100%;max-width:1280px;height:auto;max-height:520px}
+
+/* ───────────── SLIDE: MCDM HISTORY (Style E — Era-Grouped) ───────────── */
+.sHist{flex-direction:column;gap:32px;padding:64px 72px 96px;justify-content:center;align-items:center;position:relative;overflow:hidden}
+.sHist .hist-bg{position:absolute;inset:24px 24px 72px 24px;z-index:0;display:flex;align-items:center;justify-content:flex-end;pointer-events:none;border-radius:22px;overflow:hidden}
+.sHist .hist-bg img{height:90%;width:auto;object-fit:contain;opacity:.18;transform:translateX(20%)}
+.sHist .hist-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at right,rgba(228,232,238,0.15) 0%,rgba(228,232,238,0.75) 50%,rgba(228,232,238,0.95) 100%)}
+.sHist .top{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;position:relative;z-index:1}
+.sHist .top h2{font-size:2.8rem;font-weight:300;letter-spacing:-.025em;line-height:1.08;max-width:980px}
+.sHist .top h2 .italic-accent{color:var(--accent);font-style:italic;font-weight:400}
+.sHist .top .lead{font-size:1rem;color:var(--text-m);font-weight:300;line-height:1.5;max-width:780px}
+.sHist .eras{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;width:100%;max-width:1320px;position:relative;z-index:1}
+.sHist .era{background:rgba(255,255,255,0.85);backdrop-filter:blur(12px);border:1px solid rgba(0,0,0,0.05);border-radius:18px;padding:18px 18px 20px;display:flex;flex-direction:column;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,0.05)}
+.sHist .era.now{background:linear-gradient(135deg,rgba(79,172,254,0.18),rgba(0,122,255,0.06));border-color:rgba(0,122,255,0.30);box-shadow:0 12px 32px rgba(0,122,255,0.16)}
+.sHist .era .decade{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--accent);letter-spacing:.10em;padding-bottom:8px;border-bottom:1px solid rgba(0,0,0,0.08)}
+.sHist .era.now .decade{color:#fff;background:linear-gradient(135deg,#4facfe,#007aff);padding:7px 12px;border-radius:9px;text-align:center;border:none;letter-spacing:.14em}
+.sHist .era .mlist{display:flex;flex-direction:column;gap:6px}
+.sHist .era .mrow{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;border-bottom:1px solid rgba(0,0,0,0.04)}
+.sHist .era .mrow:last-child{border-bottom:none}
+.sHist .era .mrow .nm{font-size:14px;font-weight:600;color:var(--text);letter-spacing:-.005em}
+.sHist .era .mrow .yr{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--text-s)}
+.sHist .era.now .mrow .nm.cur{color:var(--accent);font-weight:700}
+.sHist .era.now .mrow .yr.cur{color:var(--accent);font-weight:700}
+.sHist .hist-foot{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-s);letter-spacing:.16em;text-transform:uppercase;font-weight:500;position:relative;z-index:1}
+.sHist .hist-foot .strong{color:var(--accent);font-weight:700}
 
 /* ───────────── SLIDE 5: EVOLUTION (Variant B — Vertical Timeline) ───────────── */
 .s5{flex-direction:column;gap:28px;padding-bottom:80px;align-items:center;justify-content:center}
