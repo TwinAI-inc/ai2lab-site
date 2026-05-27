@@ -210,6 +210,14 @@ h3{font-size:1.5rem;font-weight:500;color:var(--text);letter-spacing:-.01em}
 .sTrans .t-meta{font-family:'JetBrains Mono',monospace;font-size:14px;color:rgba(255,255,255,0.60);margin-top:28px;letter-spacing:.10em;line-height:1.6}
 .sTrans .t-meta .accent{color:#4facfe}
 .sTrans .t-cite{position:absolute;bottom:96px;right:80px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;color:rgba(255,255,255,0.40);letter-spacing:.16em;text-transform:uppercase;z-index:3;text-align:right;line-height:1.7}
+/* T1-specific: click-reveal big terms (no paragraph) */
+.sT1-content{justify-content:center}
+.sT1 .t1-terms{display:flex;flex-direction:column;gap:34px;margin-top:48px}
+.sT1 .t1-term{display:flex;align-items:baseline;gap:24px;line-height:1}
+.sT1 .t1-num{font-size:6.5rem;font-weight:200;letter-spacing:-.045em;color:#fff;line-height:.95}
+.sT1 .t1-num.accent-i{color:#4facfe;font-style:italic;font-weight:300}
+.sT1 .t1-unit{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,0.55)}
+
 /* T3-specific: cite list with year badges */
 .sTrans .t3-list{display:flex;flex-direction:column;gap:14px;margin-top:36px}
 .sTrans .t3-item{display:grid;grid-template-columns:84px 1fr;gap:24px;align-items:baseline;padding:14px 0;border-top:1px solid rgba(255,255,255,0.10)}
@@ -645,18 +653,20 @@ h3{font-size:1.5rem;font-weight:500;color:var(--text);letter-spacing:-.01em}
     </div>
   </section>
 
-  <!-- ───────────────── SLIDE 2: T1 — PERSONAL STORY ───────────────── -->
-  <section class="slide sTrans" data-darkrail="1" data-title="A Personal Story">
+  <!-- ───────────────── SLIDE 2: T1 — PERSONAL STORY (click-reveal terms) ───────────────── -->
+  <section class="slide sTrans sT1" data-darkrail="1" data-title="A Personal Story">
     <div class="sTrans-frame">
       <img src="img/story-surveys.png" alt=""/>
       <div class="grad"></div>
     </div>
-    <div class="sTrans-content">
+    <div class="sTrans-content sT1-content">
       <span class="lbl">// A personal story</span>
-      <h2>Ten months.<br/>Eighty experts.<br/><span class="accent-i">One question.</span></h2>
-      <p class="t-meta">A few years ago, I spent ten months collecting expert survey data.<br/>Some skipped questions. Some answered inconsistently.<br/>The <span class="accent">consistency ratio</span> failed before the methodology even got tested.</p>
+      <div class="t1-terms">
+        <div class="t1-term reveal"><span class="t1-num">10</span><span class="t1-unit">months</span></div>
+        <div class="t1-term reveal"><span class="t1-num">missing</span><span class="t1-unit">responses</span></div>
+        <div class="t1-term reveal"><span class="t1-num accent-i">CR</span><span class="t1-unit">failed</span></div>
+      </div>
     </div>
-    <div class="t-cite">A field study<br/>multi-industry expert panel</div>
   </section>
 
   <!-- ───────────────── SLIDE 3: T2 — THE FORGOTTEN GAP ───────────────── -->
