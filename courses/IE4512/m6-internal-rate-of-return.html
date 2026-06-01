@@ -83,9 +83,9 @@
 
   /* PAGE 1 — Manhattan hero */
   .hero-stage {
-    flex: 1; min-height: 0; display: flex; align-items: stretch; justify-content: center; gap: 18px;
+    flex: 1; min-height: 0; display: flex; align-items: stretch; justify-content: center;
   }
-  .hero-stage .flip-card { perspective: 1600px; cursor: pointer; flex: 1; max-width: 520px; }
+  .hero-stage .flip-card { perspective: 1800px; cursor: pointer; flex: 1; max-width: 1100px; width: 100%; }
   .flip-inner {
     position: relative; width: 100%; height: 100%;
     transform-style: preserve-3d;
@@ -136,15 +136,28 @@
   }
   .face-front .question-strip .q strong { color: var(--ink); font-style: normal; font-weight: 700; }
 
-  /* BACK — facts + letter quote */
-  .face-back { padding: 18px 22px 16px; border-top: 4px solid var(--gold); background: var(--paper); }
-  .face-back .back-head { display: flex; flex-direction: column; gap: 2px; margin-bottom: 12px; padding-right: 78px; }
-  .face-back .back-head h4 { font-family: 'Lora', serif; font-size: 20px; font-weight: 700; line-height: 1.15; }
+  /* BACK — two columns: facts/quote on left, insights on right */
+  .face-back {
+    padding: 20px 26px 18px; border-top: 4px solid var(--gold); background: var(--paper);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto 1fr auto;
+    gap: 14px 24px;
+    align-content: start;
+  }
+  .face-back .back-head { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 2px; padding-right: 78px; }
+  .face-back .back-head h4 { font-family: 'Lora', serif; font-size: 22px; font-weight: 700; line-height: 1.15; }
   .face-back .back-head h4 em { font-style: italic; color: var(--gold); }
   .face-back .back-head .year {
     display: inline-block; font-family: 'Outfit', sans-serif; font-size: 10px; letter-spacing: 0.14em;
     color: var(--muted); background: var(--gold-soft); border: 1px solid #efe1bd; border-radius: 999px;
     padding: 2px 9px; align-self: flex-start; font-weight: 600;
+  }
+  .face-back .back-left { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .face-back .back-right { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  .face-back .src-row { grid-column: 1 / -1; }
+  @media (max-width: 880px) {
+    .face-back { grid-template-columns: 1fr; }
   }
   .face-back .flip-cue {
     position: absolute; top: 12px; right: 14px;
@@ -170,26 +183,23 @@
   .letter-quote blockquote strong { color: var(--gold-deep); font-weight: 700; font-style: normal; }
   .letter-quote .attr { font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted); margin-top: 6px; text-align: right; }
 
-  .face-back .src { font-size: 8.5px; color: #b3a99a; padding-top: 4px; border-top: 1px dotted var(--line); letter-spacing: 0.04em; }
+  .face-back .src { font-size: 8.5px; color: #b3a99a; padding-top: 6px; border-top: 1px dotted var(--line); letter-spacing: 0.04em; }
   .face-back .src a { color: #b3a99a; text-decoration: none; border-bottom: 1px dotted var(--line); }
   .face-back .src a:hover { color: var(--gold); border-bottom-color: var(--gold); }
 
-  .hero-stage .insight-col {
-    flex: 1; max-width: 460px; display: flex; flex-direction: column; gap: 12px; justify-content: center;
-  }
   .ins-pill {
-    background: var(--paper); border: 1px solid var(--border); border-left: 3px solid var(--gold);
-    border-radius: 8px; padding: 12px 16px;
+    background: var(--bg); border: 1px solid var(--border); border-left: 3px solid var(--gold);
+    border-radius: 8px; padding: 10px 14px;
   }
   .ins-pill .h {
     font-size: 9.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); font-weight: 700;
     margin-bottom: 4px;
   }
-  .ins-pill p { font-family: 'Lora', serif; font-size: 13.5px; color: var(--ink); line-height: 1.55; }
+  .ins-pill p { font-family: 'Lora', serif; font-size: 12.5px; color: var(--ink); line-height: 1.5; }
   .ins-pill p em { color: var(--muted); font-style: italic; }
   .ins-pill p strong { color: var(--gold-deep); font-weight: 700; }
   .ins-pill p .big {
-    display: inline-block; font-weight: 700; font-size: 16px; color: var(--gold-deep);
+    display: inline-block; font-weight: 700; font-size: 15px; color: var(--gold-deep);
   }
 
   /* PAGE 2 — IRR Lab */
@@ -443,52 +453,56 @@
                   <span class="year">1626 &rarr; today</span>
                 </div>
 
-                <div class="facts-grid">
-                  <div class="fact hl">
-                    <div class="lbl">Original purchase</div>
-                    <div class="val">60 guilders</div>
-                    <div class="sub">&asymp; $24 in 2024 dollars (textbook figure)</div>
+                <div class="back-left">
+                  <div class="facts-grid">
+                    <div class="fact hl">
+                      <div class="lbl">Original purchase</div>
+                      <div class="val">60 guilders</div>
+                      <div class="sub">&asymp; $24 in 2024 dollars (textbook figure)</div>
+                    </div>
+                    <div class="fact">
+                      <div class="lbl">Date</div>
+                      <div class="val">5 Nov 1626</div>
+                      <div class="sub">Pieter Schaghen's letter to the States General</div>
+                    </div>
+                    <div class="fact">
+                      <div class="lbl">Land value today</div>
+                      <div class="val">&asymp; $3 T</div>
+                      <div class="sub">Manhattan real estate, 2024 assessor estimates</div>
+                    </div>
+                    <div class="fact">
+                      <div class="lbl">Years compounded</div>
+                      <div class="val">~ 400</div>
+                      <div class="sub">398 years from purchase to today</div>
+                    </div>
                   </div>
-                  <div class="fact">
-                    <div class="lbl">Date</div>
-                    <div class="val">5 Nov 1626</div>
-                    <div class="sub">Pieter Schaghen's letter to the States General</div>
-                  </div>
-                  <div class="fact">
-                    <div class="lbl">Land value today</div>
-                    <div class="val">&asymp; $3 T</div>
-                    <div class="sub">Manhattan real estate, 2024 assessor estimates</div>
-                  </div>
-                  <div class="fact">
-                    <div class="lbl">Years compounded</div>
-                    <div class="val">~ 400</div>
-                    <div class="sub">398 years from purchase to today</div>
+
+                  <div class="letter-quote">
+                    <div class="label">From the letter</div>
+                    <blockquote>"Our people are in good spirits and live in peace. They have purchased the <strong>Island Manhattes</strong> from the savages for the value of <strong>60 guilders</strong>. It is 11,000 morgens in size."</blockquote>
+                    <div class="attr">&mdash; Pieter Schaghen, letter to the States General, 5 Nov 1626</div>
                   </div>
                 </div>
 
-                <div class="letter-quote">
-                  <div class="label">From the letter</div>
-                  <blockquote>"Our people are in good spirits and live in peace. The women also have borne some children there. They have purchased the <strong>Island Manhattes</strong> from the savages for the value of <strong>60 guilders</strong>. It is 11,000 morgens in size."</blockquote>
-                  <div class="attr">&mdash; Pieter Schaghen, letter to the States General, 5 Nov 1626</div>
+                <div class="back-right">
+                  <div class="ins-pill">
+                    <div class="h">Pattern recognition</div>
+                    <p>Given a present worth <strong>P</strong>, a future worth <strong>F</strong>, and a horizon <strong>n</strong>, the rate that makes the cash flow balance is the <strong>internal rate of return</strong>: the discount rate <em>r</em> at which NPV(<em>r</em>) = 0.</p>
+                  </div>
+                  <div class="ins-pill">
+                    <div class="h">The trick of the math</div>
+                    <p>For one outflow and one inflow, IRR has a closed form: <span class="big">r = (F / P)<sup>1/n</sup> &minus; 1</span></p>
+                  </div>
+                  <div class="ins-pill">
+                    <div class="h">A sanity check</div>
+                    <p>$24 &rarr; $3 trillion across 398 years gives <strong>r &asymp; 6.6%</strong>. The lesson: at long horizons, <em>modest</em> rates do <em>epic</em> work. The horizon dominates the rate.</p>
+                  </div>
                 </div>
 
-                <div class="src">ref: <a href="https://en.wikipedia.org/wiki/Purchase_of_Manhattan" target="_blank">Wikipedia &mdash; Purchase of Manhattan</a> &middot; <a href="https://en.wikipedia.org/wiki/Peter_Minuit" target="_blank">Peter Minuit</a></div>
+                <div class="src-row">
+                  <div class="src">ref: <a href="https://en.wikipedia.org/wiki/Purchase_of_Manhattan" target="_blank">Wikipedia &mdash; Purchase of Manhattan</a> &middot; <a href="https://en.wikipedia.org/wiki/Peter_Minuit" target="_blank">Peter Minuit</a></div>
+                </div>
               </div>
-            </div>
-          </div>
-
-          <div class="insight-col">
-            <div class="ins-pill">
-              <div class="h">Pattern recognition</div>
-              <p>Given a present worth <strong>P</strong>, a future worth <strong>F</strong>, and a horizon <strong>n</strong>, the rate that makes the cash flow balance is the <strong>internal rate of return</strong>: the discount rate <em>r</em> at which NPV(<em>r</em>) = 0.</p>
-            </div>
-            <div class="ins-pill">
-              <div class="h">The trick of the math</div>
-              <p>For one outflow and one inflow, IRR has a closed form: <span class="big">r = (F / P)<sup>1/n</sup> &minus; 1</span></p>
-            </div>
-            <div class="ins-pill">
-              <div class="h">A sanity check</div>
-              <p>$24 &rarr; $3 trillion across 398 years gives <strong>r &asymp; 6.6%</strong>. The lesson: at long horizons, <em>modest</em> rates do <em>epic</em> work. The horizon dominates the rate.</p>
             </div>
           </div>
 
