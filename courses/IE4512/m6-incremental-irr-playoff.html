@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Module 6 · The ΔIRR Playoff</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf9f5; --paper: #ffffff; --ink: #1a1a1a; --muted: #5a5247; --soft: #8b7355;
+    --border: #e8e3d4; --line: #d4cfc0;
+    --blue: #1947d6; --blue-soft: #eef2ff;
+    --gold: #b8860b; --gold-deep: #8a6608; --gold-soft: #faf3e0;
+    --olive: #5c7a4a; --olive-deep: #455d36; --olive-soft: #f0f4ea;
+    --crimson: #8a2828; --crimson-deep: #6b1e1e; --crimson-soft: #fdf2f3;
+    --purple: #7c3aed; --purple-soft: #f3eeff;
+    --slate: #5a5247;
+    --c-dn:   #8b7355;
+    --c-a:    #1947d6;
+    --c-b:    #5c7a4a;
+    --c-c:    #b8860b;
+    --c-d:    #7c3aed;
+    --c-e:    #8a2828;
+  }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: 'Outfit', -apple-system, system-ui, sans-serif; font-size: 13px; line-height: 1.45;
+    overflow: hidden;
+  }
+  .app {
+    height: 100vh; display: flex; flex-direction: column;
+    max-width: 1500px; margin: 0 auto; padding: 10px 18px 10px;
+    gap: 10px;
+  }
+
+  /* HEAD */
+  .head {
+    flex-shrink: 0;
+    display: flex; justify-content: space-between; align-items: center; gap: 14px;
+    padding: 8px 16px; background: var(--paper); border: 1px solid var(--border);
+    border-radius: 10px; border-top: 3px solid var(--crimson); flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .brand .code { font-size: 10px; color: var(--crimson); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; }
+  .brand h1 { font-family: 'Lora', Georgia, serif; font-size: 18px; font-weight: 700; line-height: 1; }
+  .brand h1 em { font-style: italic; color: var(--crimson); font-weight: 400; }
+  .brand .tag { font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted); }
+  .head .nav { display: flex; gap: 6px; align-items: center; }
+  .head .nav a, .head .nav button {
+    font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft); text-decoration: none; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px;
+    transition: all 0.15s; background: var(--paper); font-family: 'Outfit', sans-serif; cursor: pointer;
+  }
+  .head .nav a:hover, .head .nav button:hover { color: var(--crimson); border-color: var(--crimson); background: var(--crimson-soft); }
+  .head .nav .reset { color: var(--crimson); border-color: #f0d2d4; background: var(--crimson-soft); }
+  .head .nav .reset:hover { color: #fff; background: var(--crimson); border-color: var(--crimson); }
+
+  /* CONTROLS bar */
+  .controls {
+    flex-shrink: 0;
+    background: var(--paper); border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 16px;
+    display: grid; grid-template-columns: 1fr auto auto; gap: 14px; align-items: center;
+  }
+  .controls .rules {
+    font-family: 'Lora', serif; font-style: italic; font-size: 12.5px; color: var(--muted); line-height: 1.5;
+  }
+  .controls .rules b { color: var(--crimson-deep); font-weight: 700; font-style: normal; }
+  .marr-block {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--crimson-soft); border: 1px solid var(--crimson); border-radius: 8px;
+    padding: 6px 12px;
+  }
+  .marr-block .lbl {
+    font-size: 9.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--crimson); font-weight: 700;
+  }
+  .marr-block .val {
+    font-family: 'Lora', serif; font-style: italic; font-size: 18px; font-weight: 700; color: var(--crimson-deep);
+    line-height: 1; min-width: 50px; text-align: right;
+  }
+  .marr-block input[type=range] {
+    width: 140px; height: 4px; accent-color: var(--crimson);
+  }
+  .pill-help {
+    font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--soft);
+    padding: 5px 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 999px;
+    max-width: 280px; line-height: 1.4;
+  }
+
+  /* MAIN — pool + bracket */
+  .main {
+    flex: 1; min-height: 0;
+    display: grid; grid-template-columns: 280px 1fr; gap: 12px;
+  }
+  @media (max-width: 980px) {
+    .main { grid-template-columns: 1fr; }
+    html, body { overflow: auto; } .app { height: auto; }
+  }
+
+  .panel {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 10px;
+    display: flex; flex-direction: column; min-height: 0; overflow: hidden;
+  }
+  .panel-head {
+    flex-shrink: 0;
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: baseline; gap: 8px;
+  }
+  .panel-head h3 { font-family: 'Lora', serif; font-size: 14.5px; font-weight: 700; }
+  .panel-head h3 em { font-style: italic; color: var(--crimson); }
+  .panel-head .ct {
+    font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; color: var(--soft);
+    background: var(--bg); padding: 3px 8px; border-radius: 999px;
+  }
+  .panel-body { flex: 1; min-height: 0; overflow-y: auto; padding: 12px; }
+  .panel-body::-webkit-scrollbar { width: 5px; }
+  .panel-body::-webkit-scrollbar-thumb { background: var(--line); border-radius: 999px; }
+
+  /* PROJECT CARDS */
+  .proj-card {
+    background: var(--paper); border: 1.5px solid var(--border); border-radius: 9px;
+    padding: 8px 10px 9px;
+    cursor: grab; user-select: none;
+    margin-bottom: 8px;
+    border-left-width: 4px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.2s ease;
+    position: relative;
+  }
+  .proj-card:last-child { margin-bottom: 0; }
+  .proj-card:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .proj-card.dragging { opacity: 0.4; transform: scale(0.96); }
+  .proj-card.used { opacity: 0.35; pointer-events: none; }
+  .proj-card.used::after {
+    content: '✓ in play'; position: absolute; right: 7px; top: 7px;
+    font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700;
+    color: var(--olive); background: var(--olive-soft); padding: 1px 6px; border-radius: 999px;
+  }
+  .proj-card.eliminated { opacity: 0.5; }
+  .proj-card.eliminated::after {
+    content: '✗ knocked out'; position: absolute; right: 7px; top: 7px;
+    font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700;
+    color: var(--crimson); background: var(--crimson-soft); padding: 1px 6px; border-radius: 999px;
+  }
+  .proj-card.eliminated .name, .proj-card.eliminated .stats { text-decoration: line-through; }
+
+  .proj-card.dn      { border-left-color: var(--c-dn); }
+  .proj-card.proj-a  { border-left-color: var(--c-a); }
+  .proj-card.proj-b  { border-left-color: var(--c-b); }
+  .proj-card.proj-c  { border-left-color: var(--c-c); }
+  .proj-card.proj-d  { border-left-color: var(--c-d); }
+  .proj-card.proj-e  { border-left-color: var(--c-e); }
+
+  .proj-card .name-row {
+    display: flex; align-items: center; gap: 7px; margin-bottom: 6px;
+  }
+  .proj-card .dot {
+    width: 11px; height: 11px; border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .proj-card.dn     .dot { background: var(--c-dn); }
+  .proj-card.proj-a .dot { background: var(--c-a); }
+  .proj-card.proj-b .dot { background: var(--c-b); }
+  .proj-card.proj-c .dot { background: var(--c-c); }
+  .proj-card.proj-d .dot { background: var(--c-d); }
+  .proj-card.proj-e .dot { background: var(--c-e); }
+  .proj-card .name {
+    font-family: 'Lora', serif; font-size: 13.5px; font-weight: 700; line-height: 1.15;
+  }
+  .proj-card .stats {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 3px 6px;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted);
+  }
+  .proj-card .stats .k { color: var(--soft); font-weight: 600; }
+  .proj-card .stats .v { color: var(--ink); font-weight: 700; text-align: right; }
+
+  /* BRACKET */
+  .bracket-body { padding: 8px 14px; }
+  .round {
+    background: var(--bg);
+    border: 1px solid var(--border); border-radius: 10px;
+    padding: 8px 12px 10px;
+    margin-bottom: 9px;
+    border-left: 3px solid var(--border);
+    transition: all 0.25s ease;
+    position: relative;
+  }
+  .round.active {
+    border-left-color: var(--crimson);
+    background: linear-gradient(90deg, rgba(138,40,40,0.04) 0%, var(--bg) 60%);
+    box-shadow: 0 2px 8px rgba(138,40,40,0.08);
+  }
+  .round.locked {
+    opacity: 0.55;
+  }
+  .round.done {
+    border-left-color: var(--olive);
+  }
+  .round.final.done {
+    border-left-color: var(--gold);
+    background: linear-gradient(90deg, var(--gold-soft) 0%, var(--bg) 70%);
+    border-color: var(--gold);
+  }
+
+  .round-head {
+    display: flex; align-items: baseline; gap: 9px; margin-bottom: 7px; flex-wrap: wrap;
+  }
+  .round-head .badge {
+    font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700;
+    background: var(--crimson); color: #fff;
+    padding: 3px 8px; border-radius: 999px;
+  }
+  .round.locked .round-head .badge { background: var(--soft); }
+  .round.done .round-head .badge { background: var(--olive); }
+  .round.final.done .round-head .badge { background: var(--gold); color: #fff; }
+  .round-head .title {
+    font-family: 'Lora', serif; font-size: 13px; font-weight: 700; color: var(--ink);
+  }
+  .round-head .title em { font-style: italic; color: var(--crimson); }
+  .round-head .ask {
+    flex: 1 1 100%;
+    font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted); margin-top: 2px;
+  }
+
+  .match {
+    display: grid;
+    grid-template-columns: 1fr 50px 1fr 130px;
+    gap: 8px; align-items: center;
+  }
+  @media (max-width: 760px) {
+    .match { grid-template-columns: 1fr; }
+  }
+
+  .slot {
+    background: var(--paper); border: 2px dashed var(--line); border-radius: 8px;
+    padding: 8px 10px;
+    min-height: 70px;
+    display: flex; flex-direction: column; gap: 4px; justify-content: center;
+    transition: all 0.15s ease;
+    position: relative;
+  }
+  .slot.drag-over { border-color: var(--crimson); background: var(--crimson-soft); border-style: solid; }
+  .slot.filled { border-style: solid; border-color: var(--border); background: var(--paper); }
+  .slot .placeholder {
+    font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--soft);
+    text-align: center;
+  }
+  .slot .placeholder b { color: var(--crimson); font-style: normal; font-weight: 700; }
+  .slot .slot-card .name-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+  .slot .slot-card .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .slot .slot-card.dn     .dot { background: var(--c-dn); }
+  .slot .slot-card.proj-a .dot { background: var(--c-a); }
+  .slot .slot-card.proj-b .dot { background: var(--c-b); }
+  .slot .slot-card.proj-c .dot { background: var(--c-c); }
+  .slot .slot-card.proj-d .dot { background: var(--c-d); }
+  .slot .slot-card.proj-e .dot { background: var(--c-e); }
+  .slot .slot-card .name { font-family: 'Lora', serif; font-size: 12px; font-weight: 700; line-height: 1.1; }
+  .slot .slot-card .stats {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1px 8px;
+    font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: var(--muted);
+  }
+  .slot .slot-card .stats .k { color: var(--soft); font-weight: 600; }
+  .slot .slot-card .stats .v { color: var(--ink); font-weight: 700; text-align: right; }
+  .slot .role-tag {
+    position: absolute; top: -8px; left: 8px;
+    font-size: 8px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    background: var(--paper); padding: 0 5px; color: var(--soft);
+  }
+  .slot.defender .role-tag { color: var(--olive-deep); }
+  .slot.challenger .role-tag { color: var(--crimson); }
+
+  .vs {
+    text-align: center;
+    font-family: 'Lora', serif; font-style: italic; font-size: 14px; font-weight: 700;
+    color: var(--soft);
+  }
+  .vs .arr {
+    display: block; font-size: 16px; color: var(--crimson); margin-top: 2px;
+  }
+
+  .result {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 8px;
+    padding: 7px 9px;
+    display: flex; flex-direction: column; gap: 3px; min-height: 70px; justify-content: center;
+    text-align: center;
+  }
+  .result .top-lbl {
+    font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; color: var(--soft);
+  }
+  .result .dirr {
+    font-family: 'Lora', serif; font-style: italic; font-size: 18px; font-weight: 700; color: var(--ink);
+    line-height: 1;
+  }
+  .result .dirr.win { color: var(--olive-deep); }
+  .result .dirr.lose { color: var(--crimson); }
+  .result .verdict {
+    font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700;
+    padding: 2px 7px; border-radius: 999px;
+    align-self: center;
+  }
+  .result .verdict.win { color: #fff; background: var(--olive); }
+  .result .verdict.lose { color: #fff; background: var(--crimson); }
+  .result .vs-marr {
+    font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--muted); font-weight: 600;
+  }
+
+  /* delta CF strip — appears once both slots filled */
+  .delta-strip {
+    margin-top: 7px;
+    background: var(--paper); border: 1px dashed var(--line); border-radius: 6px;
+    padding: 5px 8px;
+    display: flex; gap: 14px; justify-content: center; align-items: center; flex-wrap: wrap;
+    font-family: 'JetBrains Mono', monospace; font-size: 9.5px;
+  }
+  .delta-strip .it { display: flex; gap: 3px; }
+  .delta-strip .it .k { color: var(--soft); font-weight: 600; }
+  .delta-strip .it .v { color: var(--ink); font-weight: 700; }
+  .delta-strip .label {
+    font-family: 'Outfit', sans-serif; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--crimson); font-weight: 700;
+  }
+
+  /* CHAMPION zone */
+  .champion-card {
+    margin-top: 12px;
+    background: linear-gradient(135deg, var(--gold-soft) 0%, #f7e7a8 100%);
+    border: 2px solid var(--gold); border-radius: 12px;
+    padding: 14px 20px;
+    display: flex; align-items: center; gap: 16px;
+    box-shadow: 0 6px 18px rgba(184,134,11,0.18);
+    opacity: 0; transform: translateY(8px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  .champion-card.show { opacity: 1; transform: translateY(0); }
+  .champion-card .trophy { font-size: 36px; line-height: 1; flex-shrink: 0; }
+  .champion-card .meta { display: flex; flex-direction: column; gap: 2px; }
+  .champion-card .meta .lbl {
+    font-size: 9.5px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700; color: var(--gold-deep);
+  }
+  .champion-card .meta .name {
+    font-family: 'Lora', serif; font-size: 21px; font-weight: 700; color: var(--gold-deep);
+    line-height: 1.1;
+  }
+  .champion-card .meta .name em { font-style: italic; color: var(--ink); }
+  .champion-card .meta .sub {
+    font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted); margin-top: 2px;
+  }
+  .champion-card .meta .sub b { color: var(--gold-deep); font-weight: 700; font-style: normal; }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--crimson); color: #fff;
+    padding: 9px 18px; border-radius: 999px;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.04em;
+    box-shadow: 0 6px 22px rgba(0,0,0,0.18);
+    opacity: 0; pointer-events: none;
+    transition: all 0.28s ease;
+    z-index: 1000;
+    max-width: 480px; text-align: center;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.good { background: var(--olive); }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- HEAD -->
+  <header class="head">
+    <div class="brand">
+      <span class="code">IE 4512 · Module 6</span>
+      <h1>The Δ<em>IRR Playoff</em></h1>
+      <span class="tag">incremental rate of return as a knockout tournament</span>
+    </div>
+    <nav class="nav">
+      <a href="index.html">← Course</a>
+      <a href="m6-internal-rate-of-return.html">Manhattan IRR</a>
+      <button class="reset" id="reset-btn">Reset game</button>
+    </nav>
+  </header>
+
+  <!-- CONTROLS -->
+  <section class="controls">
+    <div class="rules">
+      Six alternatives compete to clear your MARR hurdle. <b>Round 1</b>: the cheapest project takes on Do Nothing.
+      Every later round, the current champion defends against the next cheapest challenger. Drag the right card into
+      the empty slot each round &mdash; if you pick out of order, the slot will refuse it.
+    </div>
+    <div class="marr-block">
+      <span class="lbl">MARR</span>
+      <input type="range" id="marr-slider" min="4" max="25" step="0.5" value="12" aria-label="MARR">
+      <span class="val" id="marr-val">12.0%</span>
+    </div>
+    <div class="pill-help">If Δ<b>IRR</b> &gt; MARR &rarr; upgrade. Otherwise the defender stays in.</div>
+  </section>
+
+  <!-- MAIN — pool + bracket -->
+  <div class="main">
+
+    <!-- POOL -->
+    <div class="panel pool">
+      <div class="panel-head">
+        <h3>Project <em>pool</em></h3>
+        <span class="ct" id="pool-ct">6 in</span>
+      </div>
+      <div class="panel-body" id="pool-body"></div>
+    </div>
+
+    <!-- BRACKET -->
+    <div class="panel bracket">
+      <div class="panel-head">
+        <h3>Playoff <em>bracket</em></h3>
+        <span class="ct" id="bracket-ct">round 1 of 5</span>
+      </div>
+      <div class="panel-body bracket-body" id="bracket-body"></div>
+    </div>
+
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ===== Project data =====
+  const PROJECTS = [
+    { id: 'DN', cls: 'dn',     name: 'Do Nothing', P: 0,    A: 0,   S: 0,   n: 10 },
+    { id: 'A',  cls: 'proj-a', name: 'Project A',  P: 1000, A: 200, S: 100, n: 10 },
+    { id: 'B',  cls: 'proj-b', name: 'Project B',  P: 2000, A: 350, S: 200, n: 10 },
+    { id: 'C',  cls: 'proj-c', name: 'Project C',  P: 3000, A: 550, S: 300, n: 10 },
+    { id: 'D',  cls: 'proj-d', name: 'Project D',  P: 4000, A: 700, S: 400, n: 10 },
+    { id: 'E',  cls: 'proj-e', name: 'Project E',  P: 5000, A: 850, S: 500, n: 10 },
+  ];
+
+  // ===== IRR solver — uniform annual savings A with end salvage S =====
+  function irrUniform(P, A, S, n) {
+    if (P === 0 && A === 0 && S === 0) return 0;
+    function npv(r) {
+      if (Math.abs(r) < 1e-9) return -P + A * n + S;
+      const fn = Math.pow(1 + r, -n);
+      return -P + A * (1 - fn) / r + S * fn;
+    }
+    let lo = -0.99, hi = 5;
+    let fLo = npv(lo), fHi = npv(hi);
+    if (fLo * fHi > 0) return null;
+    for (let i = 0; i < 250; i++) {
+      const mid = (lo + hi) / 2;
+      const fMid = npv(mid);
+      if (Math.abs(fMid) < 1e-7) return mid;
+      if (fLo * fMid < 0) { hi = mid; fHi = fMid; }
+      else { lo = mid; fLo = fMid; }
+    }
+    return (lo + hi) / 2;
+  }
+  function deltaIRR(defender, challenger) {
+    const dP = challenger.P - defender.P;
+    const dA = challenger.A - defender.A;
+    const dS = challenger.S - defender.S;
+    return irrUniform(dP, dA, dS, challenger.n);
+  }
+
+  // ===== Helpers =====
+  function fmtMoney(v) {
+    if (v === 0) return '$0';
+    return '$' + v.toLocaleString();
+  }
+  function fmtPct(r) {
+    if (r === null || isNaN(r)) return '—';
+    return (r * 100).toFixed(2) + '%';
+  }
+
+  // ===== State =====
+  const state = {
+    marr: 0.12,
+    rounds: [],          // { defender, challenger, dIRR, winner, loser, locked }
+    currentRound: 0,
+    used: new Set(),     // project ids currently in play (defender or in a settled match)
+    eliminated: new Set(),
+    champion: null,
+  };
+
+  function init() {
+    state.rounds = PROJECTS.slice(1).map((_, i) => ({
+      defender: i === 0 ? PROJECTS[0] : null,
+      challenger: null,
+      dIRR: null,
+      winner: null,
+      loser: null,
+    }));
+    state.currentRound = 0;
+    state.used = new Set([PROJECTS[0].id]);
+    state.eliminated = new Set();
+    state.champion = null;
+  }
+
+  // ===== Rendering =====
+  const poolBody = document.getElementById('pool-body');
+  const bracketBody = document.getElementById('bracket-body');
+  const poolCt = document.getElementById('pool-ct');
+  const bracketCt = document.getElementById('bracket-ct');
+  const marrSlider = document.getElementById('marr-slider');
+  const marrVal = document.getElementById('marr-val');
+  const toast = document.getElementById('toast');
+
+  function projCardHTML(p) {
+    return `
+      <div class="proj-card ${p.cls}" draggable="true" data-id="${p.id}">
+        <div class="name-row"><span class="dot"></span><span class="name">${p.name}</span></div>
+        <div class="stats">
+          <span class="k">P</span><span class="v">${fmtMoney(p.P)}</span>
+          <span class="k">A</span><span class="v">${fmtMoney(p.A)}</span>
+          <span class="k">S</span><span class="v">${fmtMoney(p.S)}</span>
+          <span class="k">n</span><span class="v">${p.n} yr</span>
+        </div>
+      </div>
+    `;
+  }
+
+  function slotCardHTML(p) {
+    return `
+      <div class="slot-card ${p.cls}">
+        <div class="name-row"><span class="dot"></span><span class="name">${p.name}</span></div>
+        <div class="stats">
+          <span class="k">P</span><span class="v">${fmtMoney(p.P)}</span>
+          <span class="k">A</span><span class="v">${fmtMoney(p.A)}</span>
+          <span class="k">S</span><span class="v">${fmtMoney(p.S)}</span>
+          <span class="k">n</span><span class="v">${p.n} yr</span>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderPool() {
+    let html = '';
+    let remaining = 0;
+    PROJECTS.forEach(p => {
+      const isUsed = state.used.has(p.id);
+      const isElim = state.eliminated.has(p.id);
+      let cls = p.cls;
+      if (isUsed && !isElim) cls += ' used';
+      if (isElim) cls += ' eliminated';
+      if (!isUsed && !isElim) remaining++;
+      html += projCardHTML(p).replace(`proj-card ${p.cls}`, `proj-card ${cls}`);
+    });
+    poolBody.innerHTML = html;
+    poolCt.textContent = remaining + ' to deploy';
+    bindDrag();
+  }
+
+  function renderBracket() {
+    let html = '';
+    state.rounds.forEach((rd, idx) => {
+      const isCurrent = idx === state.currentRound && !state.champion;
+      const isLocked = idx > state.currentRound && !state.champion;
+      const isDone = rd.winner !== null;
+      const isFinal = idx === state.rounds.length - 1;
+      let roundCls = 'round';
+      if (isCurrent) roundCls += ' active';
+      if (isLocked) roundCls += ' locked';
+      if (isDone) roundCls += ' done';
+      if (isFinal) roundCls += ' final';
+
+      const defenderHTML = rd.defender
+        ? `<div class="slot defender filled"><div class="role-tag">Defender</div>${slotCardHTML(rd.defender)}</div>`
+        : `<div class="slot defender"><div class="role-tag">Defender</div><div class="placeholder">awaiting…</div></div>`;
+
+      let challengerHTML;
+      if (rd.challenger) {
+        challengerHTML = `<div class="slot challenger filled"><div class="role-tag">Challenger</div>${slotCardHTML(rd.challenger)}</div>`;
+      } else if (isCurrent) {
+        // Find expected next project (next-lowest-P not used and not eliminated)
+        const next = nextChallenger();
+        const hint = next ? `Drag <b>${next.name}</b> &mdash; the next cheapest unused project.` : 'Drag a project…';
+        challengerHTML = `<div class="slot challenger" data-round="${idx}"><div class="role-tag">Challenger</div><div class="placeholder">${hint}</div></div>`;
+      } else {
+        challengerHTML = `<div class="slot challenger"><div class="role-tag">Challenger</div><div class="placeholder">locked until previous round resolves</div></div>`;
+      }
+
+      let resultHTML;
+      if (rd.winner !== null) {
+        const upgrade = rd.winner === rd.challenger;
+        const dirrPct = (rd.dIRR * 100).toFixed(2) + '%';
+        const verdictTxt = upgrade ? '✓ upgrade' : '✗ defend';
+        const verdictCls = upgrade ? 'win' : 'lose';
+        resultHTML = `
+          <div class="result">
+            <span class="top-lbl">Δ IRR</span>
+            <span class="dirr ${verdictCls}">${dirrPct}</span>
+            <span class="verdict ${verdictCls}">${verdictTxt}</span>
+            <span class="vs-marr">vs MARR ${(state.marr * 100).toFixed(1)}%</span>
+          </div>
+        `;
+      } else {
+        resultHTML = `
+          <div class="result">
+            <span class="top-lbl">Δ IRR</span>
+            <span class="dirr">—</span>
+            <span class="vs-marr">drop a challenger</span>
+          </div>
+        `;
+      }
+
+      // Delta strip (only when both slots filled)
+      let deltaHTML = '';
+      if (rd.challenger && rd.defender) {
+        const dP = rd.challenger.P - rd.defender.P;
+        const dA = rd.challenger.A - rd.defender.A;
+        const dS = rd.challenger.S - rd.defender.S;
+        deltaHTML = `
+          <div class="delta-strip">
+            <span class="label">cash flow Δ</span>
+            <span class="it"><span class="k">ΔP</span><span class="v">${fmtMoney(dP)}</span></span>
+            <span class="it"><span class="k">ΔA</span><span class="v">${fmtMoney(dA)}</span></span>
+            <span class="it"><span class="k">ΔS</span><span class="v">${fmtMoney(dS)}</span></span>
+            <span class="it"><span class="k">n</span><span class="v">${rd.challenger.n} yr</span></span>
+          </div>
+        `;
+      }
+
+      html += `
+        <div class="${roundCls}">
+          <div class="round-head">
+            <span class="badge">${isFinal ? 'Final' : 'Round ' + (idx + 1)}</span>
+            <span class="title">${isFinal ? 'For the <em>crown</em>' : 'Defender vs <em>challenger</em>'}</span>
+            ${isCurrent ? '<span class="ask">Drag the next cheapest unused project into the challenger slot.</span>' : ''}
+          </div>
+          <div class="match">
+            ${defenderHTML}
+            <div class="vs">vs<span class="arr">↓</span></div>
+            ${challengerHTML}
+            ${resultHTML}
+          </div>
+          ${deltaHTML}
+        </div>
+      `;
+    });
+
+    if (state.champion) {
+      const c = state.champion;
+      html += `
+        <div class="champion-card show">
+          <div class="trophy">🏆</div>
+          <div class="meta">
+            <span class="lbl">Tournament champion</span>
+            <span class="name">${c.name.replace('Project ', 'Project <em>') + (c.name.startsWith('Project') ? '</em>' : '')}</span>
+            <span class="sub">at MARR <b>${(state.marr*100).toFixed(1)}%</b>, this is the highest-investment alternative whose every incremental step cleared the hurdle.</span>
+          </div>
+        </div>
+      `;
+    }
+
+    bracketBody.innerHTML = html;
+    bracketCt.textContent = state.champion ? 'tournament complete' : `round ${state.currentRound + 1} of ${state.rounds.length}`;
+    bindDrop();
+  }
+
+  function nextChallenger() {
+    // Return the next-lowest-P project not used and not eliminated.
+    for (const p of PROJECTS) {
+      if (!state.used.has(p.id) && !state.eliminated.has(p.id)) return p;
+    }
+    return null;
+  }
+
+  // ===== Drag and drop =====
+  function bindDrag() {
+    poolBody.querySelectorAll('.proj-card').forEach(card => {
+      card.addEventListener('dragstart', e => {
+        if (card.classList.contains('used') || card.classList.contains('eliminated')) {
+          e.preventDefault();
+          return;
+        }
+        e.dataTransfer.setData('text/plain', card.dataset.id);
+        e.dataTransfer.effectAllowed = 'move';
+        card.classList.add('dragging');
+      });
+      card.addEventListener('dragend', () => card.classList.remove('dragging'));
+    });
+  }
+  function bindDrop() {
+    bracketBody.querySelectorAll('.slot.challenger[data-round]').forEach(slot => {
+      slot.addEventListener('dragover', e => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        slot.classList.add('drag-over');
+      });
+      slot.addEventListener('dragleave', () => slot.classList.remove('drag-over'));
+      slot.addEventListener('drop', e => {
+        e.preventDefault();
+        slot.classList.remove('drag-over');
+        const id = e.dataTransfer.getData('text/plain');
+        const roundIdx = +slot.dataset.round;
+        handleDrop(id, roundIdx);
+      });
+    });
+  }
+
+  function showToast(msg, good = false) {
+    toast.textContent = msg;
+    toast.classList.remove('show', 'good');
+    if (good) toast.classList.add('good');
+    void toast.offsetWidth;
+    toast.classList.add('show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => toast.classList.remove('show'), 2200);
+  }
+
+  function handleDrop(id, roundIdx) {
+    if (roundIdx !== state.currentRound) return;
+    const dropped = PROJECTS.find(p => p.id === id);
+    if (!dropped) return;
+    if (state.used.has(id) || state.eliminated.has(id)) {
+      showToast(`${dropped.name} is no longer in the pool.`);
+      return;
+    }
+    const expected = nextChallenger();
+    if (!expected) return;
+    if (dropped.id !== expected.id) {
+      showToast(`Wrong order — ${expected.name} has the lowest unused investment, drop it first.`);
+      return;
+    }
+
+    // Accept drop
+    const rd = state.rounds[roundIdx];
+    rd.challenger = dropped;
+    rd.dIRR = deltaIRR(rd.defender, rd.challenger);
+    const upgrade = rd.dIRR !== null && rd.dIRR > state.marr;
+    rd.winner = upgrade ? rd.challenger : rd.defender;
+    rd.loser  = upgrade ? rd.defender   : rd.challenger;
+
+    // Mark used / eliminated
+    state.used.add(rd.challenger.id);
+    state.eliminated.add(rd.loser.id);
+    state.used.delete(rd.loser.id);
+
+    // Advance
+    const nextIdx = roundIdx + 1;
+    if (nextIdx < state.rounds.length) {
+      state.rounds[nextIdx].defender = rd.winner;
+      state.currentRound = nextIdx;
+    } else {
+      state.champion = rd.winner;
+    }
+
+    showToast(upgrade
+      ? `ΔIRR = ${fmtPct(rd.dIRR)} > MARR — ${rd.challenger.name} takes the round.`
+      : `ΔIRR = ${fmtPct(rd.dIRR)} < MARR — ${rd.defender.name} defends.`, true);
+
+    render();
+  }
+
+  function render() {
+    renderPool();
+    renderBracket();
+  }
+
+  // ===== Wire up controls =====
+  marrSlider.addEventListener('input', () => {
+    state.marr = +marrSlider.value / 100;
+    marrVal.textContent = (state.marr * 100).toFixed(1) + '%';
+    // Re-evaluate all settled rounds with new MARR
+    let valid = true;
+    for (let i = 0; i < state.rounds.length; i++) {
+      const rd = state.rounds[i];
+      if (rd.winner === null) break;
+      const upgrade = rd.dIRR !== null && rd.dIRR > state.marr;
+      const newWinner = upgrade ? rd.challenger : rd.defender;
+      if (newWinner.id !== rd.winner.id) {
+        // The chain may have changed; safer to reset rounds from here on
+        for (let j = i; j < state.rounds.length; j++) {
+          if (j > 0) state.rounds[j].defender = null;
+          state.rounds[j].challenger = null;
+          state.rounds[j].dIRR = null;
+          state.rounds[j].winner = null;
+          state.rounds[j].loser = null;
+        }
+        // Rebuild used / eliminated from settled prefix
+        state.used = new Set([PROJECTS[0].id]);
+        state.eliminated = new Set();
+        for (let j = 0; j < i; j++) {
+          const r = state.rounds[j];
+          state.used.add(r.challenger.id);
+          state.eliminated.add(r.loser.id);
+          state.used.delete(r.loser.id);
+        }
+        state.rounds[i].defender = i === 0 ? PROJECTS[0] : state.rounds[i - 1].winner;
+        state.currentRound = i;
+        state.champion = null;
+        valid = false;
+        break;
+      }
+    }
+    render();
+  });
+
+  document.getElementById('reset-btn').addEventListener('click', () => {
+    init();
+    render();
+    showToast('Tournament reset.', true);
+  });
+
+  // ===== Boot =====
+  init();
+  render();
+</script>
+
+</body>
+</html>
