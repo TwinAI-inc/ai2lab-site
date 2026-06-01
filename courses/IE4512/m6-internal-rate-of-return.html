@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Module 6 · Internal Rate of Return</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+    chtml: { scale: 1.05 }
+  };
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf9f5; --paper: #ffffff; --ink: #1a1a1a; --muted: #5a5247; --soft: #8b7355;
+    --border: #e8e3d4; --line: #d4cfc0;
+    --blue: #1947d6; --blue-soft: #eef2ff;
+    --gold: #b8860b; --gold-deep: #8a6608; --gold-soft: #faf3e0;
+    --olive: #5c7a4a; --olive-soft: #f0f4ea;
+    --crimson: #8a2828; --crimson-soft: #fdf2f3;
+    --purple: #7c3aed; --purple-soft: #f3eeff;
+  }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: 'Outfit', -apple-system, system-ui, sans-serif; font-size: 13px; line-height: 1.5;
+    overflow: hidden;
+  }
+  .app {
+    height: 100vh; display: flex; flex-direction: column;
+    max-width: 1500px; margin: 0 auto; padding: 12px 22px 10px;
+  }
+
+  /* HEAD bar — gold accent matches the Nobel page */
+  .head {
+    display: flex; justify-content: space-between; align-items: center; gap: 14px;
+    padding: 8px 16px; background: var(--paper); border: 1px solid var(--border);
+    border-radius: 10px; border-top: 3px solid var(--gold); flex-wrap: wrap; flex-shrink: 0;
+  }
+  .brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .brand .code { font-size: 10px; color: var(--gold); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; }
+  .brand h1 { font-family: 'Lora', Georgia, serif; font-size: 19px; font-weight: 700; line-height: 1; }
+  .brand h1 em { font-style: italic; color: var(--gold); font-weight: 400; }
+  .brand .tag { font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted); }
+  .head .nav { display: flex; gap: 6px; }
+  .head .nav a, .head .nav button {
+    font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft); text-decoration: none; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px;
+    transition: all 0.15s; background: var(--paper); font-family: 'Outfit', sans-serif; cursor: pointer;
+  }
+  .head .nav a:hover, .head .nav button:hover { color: var(--gold); border-color: var(--gold); background: var(--gold-soft); }
+
+  /* DECK */
+  .deck { flex: 1; min-height: 0; position: relative; margin-top: 12px; }
+  .page {
+    position: absolute; inset: 0; opacity: 0; pointer-events: none;
+    transform: translateX(40px);
+    transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    display: flex; flex-direction: column;
+  }
+  .page.active { opacity: 1; pointer-events: auto; transform: translateX(0); }
+  .page.left { transform: translateX(-40px); }
+
+  .page-head {
+    flex-shrink: 0; padding-bottom: 10px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap;
+  }
+  .page-head h2 { font-family: 'Lora', serif; font-size: 26px; font-weight: 700; line-height: 1.15; }
+  .page-head h2 em { font-style: italic; color: var(--gold); }
+  .page-head .sub {
+    font-family: 'Lora', serif; font-style: italic; font-size: 13px; color: var(--muted);
+    max-width: 720px; margin-top: 3px; line-height: 1.5;
+  }
+  .page-head .marker {
+    font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700; color: var(--soft);
+  }
+  .page-head .marker .n { color: var(--gold); }
+
+  .page-body { flex: 1; min-height: 0; padding-top: 14px; display: flex; flex-direction: column; gap: 14px; }
+
+  /* PAGE 1 — Manhattan hero */
+  .hero-stage {
+    flex: 1; min-height: 0; display: flex; align-items: stretch; justify-content: center; gap: 18px;
+  }
+  .hero-stage .flip-card { perspective: 1600px; cursor: pointer; flex: 1; max-width: 520px; }
+  .flip-inner {
+    position: relative; width: 100%; height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .flip-card.flipped .flip-inner { transform: rotateY(180deg); }
+  .face {
+    position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    border-radius: 14px; overflow: hidden; background: var(--paper);
+    border: 1px solid var(--border); box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    display: flex; flex-direction: column;
+  }
+  .flip-card:hover .face { box-shadow: 0 14px 32px rgba(0,0,0,0.12); }
+  .face-back { transform: rotateY(180deg); }
+
+  /* FRONT — Manhattan painting, sepia treatment */
+  .face-front { padding: 0; }
+  .face-front .photo {
+    flex: 1; background-size: cover; background-position: center center;
+    position: relative; filter: sepia(0.22) contrast(1.05);
+  }
+  .face-front .photo::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(60,40,12,0) 38%, rgba(40,28,8,0.82) 100%);
+  }
+  .face-front .photo .overlay {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 22px 26px 22px;
+    color: #fff; z-index: 1;
+  }
+  .face-front .photo .kicker {
+    font-size: 10.5px; letter-spacing: 0.24em; text-transform: uppercase; font-weight: 700;
+    opacity: 0.92; margin-bottom: 6px; color: #f0d488;
+  }
+  .face-front .photo h3 { font-family: 'Lora', serif; font-size: 30px; font-weight: 700; line-height: 1.05; letter-spacing: -0.01em; }
+  .face-front .photo h3 em { font-style: italic; color: #f0d488; }
+  .face-front .photo .where { font-family: 'Lora', serif; font-style: italic; font-size: 14px; opacity: 0.92; margin-top: 4px; }
+  .face-front .photo .flip-cue {
+    position: absolute; top: 14px; right: 16px;
+    font-family: 'Outfit', sans-serif; font-size: 9.5px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700;
+    color: #fff; background: rgba(60,40,12,0.55); padding: 5px 10px; border-radius: 999px;
+    backdrop-filter: blur(6px);
+  }
+  .face-front .question-strip {
+    padding: 14px 22px; background: var(--gold-soft); border-top: 1px solid #efe1bd;
+  }
+  .face-front .question-strip .q {
+    font-family: 'Lora', serif; font-style: italic; font-size: 14.5px; color: var(--gold-deep); text-align: center; line-height: 1.45;
+  }
+  .face-front .question-strip .q strong { color: var(--ink); font-style: normal; font-weight: 700; }
+
+  /* BACK — facts + letter quote */
+  .face-back { padding: 18px 22px 16px; border-top: 4px solid var(--gold); background: var(--paper); }
+  .face-back .back-head { display: flex; flex-direction: column; gap: 2px; margin-bottom: 12px; padding-right: 78px; }
+  .face-back .back-head h4 { font-family: 'Lora', serif; font-size: 20px; font-weight: 700; line-height: 1.15; }
+  .face-back .back-head h4 em { font-style: italic; color: var(--gold); }
+  .face-back .back-head .year {
+    display: inline-block; font-family: 'Outfit', sans-serif; font-size: 10px; letter-spacing: 0.14em;
+    color: var(--muted); background: var(--gold-soft); border: 1px solid #efe1bd; border-radius: 999px;
+    padding: 2px 9px; align-self: flex-start; font-weight: 600;
+  }
+  .face-back .flip-cue {
+    position: absolute; top: 12px; right: 14px;
+    font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft); padding: 3px 8px; border: 1px solid var(--border); border-radius: 999px;
+  }
+  .facts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 14px; }
+  .fact { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 9px 11px; }
+  .fact .lbl { font-size: 9.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--soft); font-weight: 700; margin-bottom: 2px; }
+  .fact .val { font-family: 'Lora', serif; font-size: 17px; font-weight: 700; color: var(--ink); line-height: 1.15; }
+  .fact .sub { font-size: 10px; color: var(--muted); font-style: italic; margin-top: 2px; }
+  .fact.hl .val { color: var(--gold); }
+
+  .letter-quote {
+    background: var(--gold-soft); border: 1px solid #efe1bd; border-left: 4px solid var(--gold);
+    border-radius: 8px; padding: 14px 18px; margin-bottom: 10px;
+  }
+  .letter-quote .label { font-size: 9.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-deep); font-weight: 700; margin-bottom: 4px; }
+  .letter-quote blockquote {
+    font-family: 'Lora', serif; font-style: italic; font-size: 13.5px; color: var(--ink);
+    line-height: 1.55; padding-left: 0;
+  }
+  .letter-quote blockquote strong { color: var(--gold-deep); font-weight: 700; font-style: normal; }
+  .letter-quote .attr { font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted); margin-top: 6px; text-align: right; }
+
+  .face-back .src { font-size: 8.5px; color: #b3a99a; padding-top: 4px; border-top: 1px dotted var(--line); letter-spacing: 0.04em; }
+  .face-back .src a { color: #b3a99a; text-decoration: none; border-bottom: 1px dotted var(--line); }
+  .face-back .src a:hover { color: var(--gold); border-bottom-color: var(--gold); }
+
+  .hero-stage .insight-col {
+    flex: 1; max-width: 460px; display: flex; flex-direction: column; gap: 12px; justify-content: center;
+  }
+  .ins-pill {
+    background: var(--paper); border: 1px solid var(--border); border-left: 3px solid var(--gold);
+    border-radius: 8px; padding: 12px 16px;
+  }
+  .ins-pill .h {
+    font-size: 9.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .ins-pill p { font-family: 'Lora', serif; font-size: 13.5px; color: var(--ink); line-height: 1.55; }
+  .ins-pill p em { color: var(--muted); font-style: italic; }
+  .ins-pill p strong { color: var(--gold-deep); font-weight: 700; }
+  .ins-pill p .big {
+    display: inline-block; font-weight: 700; font-size: 16px; color: var(--gold-deep);
+  }
+
+  /* PAGE 2 — IRR Lab */
+  .lab-grid { flex: 1; min-height: 0; display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 18px; }
+  @media (max-width: 980px) { .lab-grid { grid-template-columns: 1fr; } }
+
+  .lab-info { background: var(--paper); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; display: flex; flex-direction: column; gap: 14px; }
+  .lab-info .label { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700; color: var(--gold); }
+
+  .formula-card {
+    background: var(--bg); border: 1px solid var(--border); border-left: 3px solid var(--gold);
+    padding: 14px 18px 14px; border-radius: 6px;
+  }
+  .formula-card .lead { font-family: 'Lora', serif; font-style: italic; font-size: 14px; color: var(--muted); margin-bottom: 4px; }
+  .formula-card .tex { text-align: center; padding: 8px 0 4px; font-size: 18px; }
+  .formula-card .caption { font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted); text-align: center; margin-top: 4px; }
+  .formula-card .legend {
+    margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line);
+    display: grid; grid-template-columns: auto 1fr; gap: 6px 10px;
+    font-size: 12px; color: var(--ink);
+  }
+  .formula-card .legend dt { font-family: 'Lora', serif; font-style: italic; color: var(--gold-deep); font-weight: 700; text-align: right; }
+  .formula-card .legend dd { color: var(--muted); }
+  .formula-card .legend dd em { font-style: italic; color: var(--ink); }
+
+  .bullet-list { display: flex; flex-direction: column; gap: 9px; }
+  .bullet-item {
+    display: flex; gap: 12px; align-items: flex-start;
+    padding: 10px 12px; background: var(--bg); border-radius: 8px; border: 1px solid var(--border);
+  }
+  .bullet-item .num {
+    flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
+    background: var(--gold-soft); color: var(--gold-deep);
+    font-family: 'Lora', serif; font-style: italic; font-weight: 700; font-size: 16px;
+    display: flex; align-items: center; justify-content: center; margin-top: -1px;
+  }
+  .bullet-item .txt { font-size: 12.5px; color: var(--ink); line-height: 1.5; }
+  .bullet-item .txt strong { color: var(--gold-deep); font-weight: 700; }
+  .bullet-item .txt em { color: var(--muted); font-style: italic; }
+
+  /* RIGHT — lab */
+  .lab-demo { background: var(--paper); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px 16px; display: flex; flex-direction: column; gap: 14px; }
+
+  .lab-sliders { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  @media (max-width: 640px) { .lab-sliders { grid-template-columns: 1fr; } }
+  .slider-block { display: flex; flex-direction: column; gap: 5px; }
+  .slider-block .row1 { display: flex; justify-content: space-between; align-items: baseline; }
+  .slider-block .label-main {
+    font-family: 'Outfit', sans-serif; font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700;
+    color: var(--gold);
+  }
+  .slider-block .readout {
+    font-family: 'Lora', serif; font-style: italic; font-size: 17px; font-weight: 700; color: var(--gold-deep);
+  }
+  .slider-block input[type=range] { width: 100%; accent-color: var(--gold); height: 22px; }
+  .slider-block .sub {
+    font-family: 'Lora', serif; font-style: italic; font-size: 11px; color: var(--muted); margin-top: 2px;
+  }
+
+  .irr-display {
+    background: linear-gradient(135deg, var(--gold-soft) 0%, #f6efd9 100%);
+    border: 1px solid #efe1bd; border-radius: 12px;
+    padding: 16px 22px; display: flex; align-items: center; gap: 22px;
+    box-shadow: 0 4px 12px rgba(184,134,11,0.10);
+  }
+  .irr-display .formula-mini {
+    font-family: 'Lora', serif; font-style: italic; font-size: 16px; color: var(--gold-deep);
+    display: flex; align-items: center; gap: 6px; line-height: 1.2;
+  }
+  .irr-display .formula-mini .root {
+    display: inline-flex; align-items: center;
+    border-top: 1.5px solid var(--gold-deep); padding: 2px 4px 0;
+    font-size: 13px;
+  }
+  .irr-display .formula-mini .frac { display: inline-flex; flex-direction: column; align-items: center; line-height: 1; }
+  .irr-display .formula-mini .frac .top { border-bottom: 1.5px solid var(--gold-deep); padding: 0 4px 2px; font-size: 13px; }
+  .irr-display .formula-mini .frac .bot { padding: 2px 4px 0; font-size: 13px; }
+  .irr-display .arrow { font-size: 22px; color: var(--gold); }
+  .irr-display .big-val {
+    font-family: 'Lora', serif; font-weight: 700; font-size: 38px; line-height: 1; color: var(--gold-deep);
+    letter-spacing: -0.01em;
+  }
+  .irr-display .big-val .unit { font-size: 17px; font-style: italic; color: var(--soft); margin-left: 4px; }
+  .irr-display .label-block { display: flex; flex-direction: column; }
+  .irr-display .label-block .l {
+    font-family: 'Outfit', sans-serif; font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+    font-weight: 700; color: var(--gold-deep); opacity: 0.85;
+  }
+  .irr-display .label-block .desc {
+    font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted); margin-top: 2px; line-height: 1.4;
+  }
+
+  .lab-presets {
+    display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+  }
+  .lab-presets .lbl {
+    font-family: 'Outfit', sans-serif; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--soft); font-weight: 700;
+  }
+  .lab-presets button {
+    font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600;
+    padding: 5px 12px; border: 1px solid var(--border); background: var(--paper);
+    color: var(--ink); cursor: pointer; border-radius: 999px;
+    transition: all 0.15s;
+  }
+  .lab-presets button:hover { border-color: var(--gold); color: var(--gold-deep); background: var(--gold-soft); }
+  .lab-presets button.active { border-color: var(--gold); color: #fff; background: var(--gold); }
+
+  .lab-viz {
+    flex: 1; min-height: 0; background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 12px; display: flex; flex-direction: column;
+  }
+  .lab-viz .ttl { font-size: 9.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--soft); font-weight: 700; margin-bottom: 4px; }
+  .lab-viz svg { flex: 1; min-height: 0; width: 100%; }
+
+  /* PAGE 3 — Convergence + gallery */
+  .convergence-card {
+    flex-shrink: 0; background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px 20px 12px;
+  }
+  .convergence-card .conv-head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 14px; margin-bottom: 4px; }
+  .convergence-card h4 { font-family: 'Lora', serif; font-size: 17px; font-weight: 700; }
+  .convergence-card h4 em { font-style: italic; color: var(--gold); }
+  .convergence-card .meta { font-size: 10.5px; color: var(--soft); letter-spacing: 0.06em; }
+  .convergence-card svg { width: 100%; height: auto; }
+  .convergence-card .verdict {
+    font-family: 'Lora', serif; font-style: italic; font-size: 13px; color: var(--muted);
+    margin-top: 4px; line-height: 1.55;
+  }
+  .convergence-card .verdict .pill {
+    display: inline-block; padding: 2px 10px; border-radius: 999px;
+    background: var(--gold-soft); color: var(--gold-deep);
+    font-family: 'Outfit', sans-serif; font-style: normal; font-weight: 700; font-size: 11px;
+    letter-spacing: 0.06em; margin: 0 3px;
+  }
+  .convergence-card .verdict strong { color: var(--ink); font-style: normal; font-weight: 700; }
+
+  .gallery {
+    flex: 1; min-height: 0;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  }
+  @media (max-width: 900px) { .gallery { grid-template-columns: 1fr 1fr; } }
+  .g-card {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 10px; padding: 14px 14px 12px;
+    border-top: 3px solid var(--gold); display: flex; flex-direction: column; gap: 4px;
+    transition: all 0.15s; cursor: default;
+  }
+  .g-card:hover { box-shadow: 0 8px 22px rgba(0,0,0,0.08); transform: translateY(-1px); }
+  .g-card .y {
+    font-family: 'Outfit', sans-serif; font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--gold); font-weight: 700;
+  }
+  .g-card h5 { font-family: 'Lora', serif; font-size: 15.5px; font-weight: 700; line-height: 1.2; margin-top: 2px; }
+  .g-card h5 em { font-style: italic; color: var(--gold-deep); }
+  .g-card .desc { font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted); line-height: 1.45; margin: 4px 0 6px; }
+  .g-card .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+  .g-card .stat { background: var(--bg); border-radius: 5px; padding: 5px 8px; }
+  .g-card .stat .l { font-size: 8.5px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--soft); font-weight: 700; }
+  .g-card .stat .v { font-family: 'Lora', serif; font-size: 12.5px; font-weight: 700; color: var(--ink); }
+  .g-card .stat .v.gold { color: var(--gold-deep); }
+  .g-card .age { margin-top: auto; padding-top: 6px; font-size: 9.5px; letter-spacing: 0.08em; color: var(--soft); border-top: 1px dotted var(--line); font-family: 'Outfit', sans-serif; }
+
+  /* FOOTER nav */
+  .footer-nav {
+    flex-shrink: 0; margin-top: 10px;
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    padding: 8px 14px; background: var(--paper); border: 1px solid var(--border); border-radius: 10px;
+  }
+  .footer-nav .ind { display: flex; gap: 8px; align-items: center; }
+  .footer-nav .dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--border); cursor: pointer;
+    transition: all 0.2s;
+  }
+  .footer-nav .dot.active { background: var(--gold); transform: scale(1.3); }
+  .footer-nav .dot:hover { background: var(--gold); }
+  .footer-nav .label { font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted); margin-left: 8px; }
+  .nav-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'Outfit', sans-serif; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+    padding: 7px 14px; border: 1px solid var(--border); border-radius: 7px;
+    background: var(--paper); color: var(--ink); cursor: pointer; transition: all 0.15s;
+  }
+  .nav-btn:hover:not(:disabled) { color: var(--gold-deep); border-color: var(--gold); background: var(--gold-soft); }
+  .nav-btn:disabled { opacity: 0.32; cursor: not-allowed; }
+
+  @media print {
+    body { background: #fff; overflow: visible; }
+    .app { height: auto; max-width: none; padding: 0; }
+    .head, .footer-nav { display: none; }
+    .deck { position: static; }
+    .page { position: static; opacity: 1; pointer-events: auto; transform: none; page-break-after: always; padding: 18px 22px; }
+    .page:last-of-type { page-break-after: auto; }
+    .flip-card .flip-inner { transform: none !important; }
+    .face-back { display: none; }
+    @page { size: landscape; margin: 0.4in; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="head">
+    <div class="brand">
+      <span class="code">IE 4512 · Module 6</span>
+      <h1>Internal <em>Rate of Return</em></h1>
+      <span class="tag">three pages &mdash; a deal, a lab, a long view</span>
+    </div>
+    <nav class="nav">
+      <a href="index.html">&larr; Course</a>
+      <button onclick="window.print()">Print</button>
+    </nav>
+  </header>
+
+  <div class="deck">
+
+    <!-- PAGE 1 — Manhattan hero -->
+    <section class="page active" data-page="1">
+      <div class="page-head">
+        <div>
+          <h2>One island, one ship, one <em>rate of return</em></h2>
+          <div class="sub">In 1626 the director of a tiny Dutch colony bought Manhattan from the Lenape for 60 guilders &mdash; about $24. Today the island's real estate is worth roughly $3 trillion. <em>Click the card to see what rate makes that math work.</em></div>
+        </div>
+        <div class="marker"><span class="n">1</span> / 3 &middot; the deal</div>
+      </div>
+
+      <div class="page-body">
+        <div class="hero-stage">
+
+          <div class="flip-card" onclick="this.classList.toggle('flipped')">
+            <div class="flip-inner">
+              <!-- FRONT -->
+              <div class="face face-front">
+                <div class="photo" style="background-image: url('images/m6/manhattan-1626.png');">
+                  <div class="flip-cue">click to reveal</div>
+                  <div class="overlay">
+                    <div class="kicker">Manhattes &middot; New Netherland &middot; 1626</div>
+                    <h3>Peter <em>Minuit</em></h3>
+                    <div class="where">Bought an island &middot; 5 November 1626</div>
+                  </div>
+                </div>
+                <div class="question-strip">
+                  <div class="q">He paid <strong>60 guilders &asymp; $24</strong> for an entire island. <br>What rate of return turns that into today's Manhattan?</div>
+                </div>
+              </div>
+
+              <!-- BACK -->
+              <div class="face face-back">
+                <div class="flip-cue">flip back</div>
+                <div class="back-head">
+                  <h4>The arithmetic of <em>compounding</em></h4>
+                  <span class="year">1626 &rarr; today</span>
+                </div>
+
+                <div class="facts-grid">
+                  <div class="fact hl">
+                    <div class="lbl">Original purchase</div>
+                    <div class="val">60 guilders</div>
+                    <div class="sub">&asymp; $24 in 2024 dollars (textbook figure)</div>
+                  </div>
+                  <div class="fact">
+                    <div class="lbl">Date</div>
+                    <div class="val">5 Nov 1626</div>
+                    <div class="sub">Pieter Schaghen's letter to the States General</div>
+                  </div>
+                  <div class="fact">
+                    <div class="lbl">Land value today</div>
+                    <div class="val">&asymp; $3 T</div>
+                    <div class="sub">Manhattan real estate, 2024 assessor estimates</div>
+                  </div>
+                  <div class="fact">
+                    <div class="lbl">Years compounded</div>
+                    <div class="val">~ 400</div>
+                    <div class="sub">398 years from purchase to today</div>
+                  </div>
+                </div>
+
+                <div class="letter-quote">
+                  <div class="label">From the letter</div>
+                  <blockquote>"Our people are in good spirits and live in peace. The women also have borne some children there. They have purchased the <strong>Island Manhattes</strong> from the savages for the value of <strong>60 guilders</strong>. It is 11,000 morgens in size."</blockquote>
+                  <div class="attr">&mdash; Pieter Schaghen, letter to the States General, 5 Nov 1626</div>
+                </div>
+
+                <div class="src">ref: <a href="https://en.wikipedia.org/wiki/Purchase_of_Manhattan" target="_blank">Wikipedia &mdash; Purchase of Manhattan</a> &middot; <a href="https://en.wikipedia.org/wiki/Peter_Minuit" target="_blank">Peter Minuit</a></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="insight-col">
+            <div class="ins-pill">
+              <div class="h">Pattern recognition</div>
+              <p>Given a present worth <strong>P</strong>, a future worth <strong>F</strong>, and a horizon <strong>n</strong>, the rate that makes the cash flow balance is the <strong>internal rate of return</strong>: the discount rate <em>r</em> at which NPV(<em>r</em>) = 0.</p>
+            </div>
+            <div class="ins-pill">
+              <div class="h">The trick of the math</div>
+              <p>For one outflow and one inflow, IRR has a closed form: <span class="big">r = (F / P)<sup>1/n</sup> &minus; 1</span></p>
+            </div>
+            <div class="ins-pill">
+              <div class="h">A sanity check</div>
+              <p>$24 &rarr; $3 trillion across 398 years gives <strong>r &asymp; 6.6%</strong>. The lesson: at long horizons, <em>modest</em> rates do <em>epic</em> work. The horizon dominates the rate.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE 2 — Manhattan Math Lab -->
+    <section class="page" data-page="2">
+      <div class="page-head">
+        <div>
+          <h2>The <em>Manhattan Math</em> Lab</h2>
+          <div class="sub">Set the original investment, the value today, and the years between. Watch the IRR fall out. Try the presets to see how famous deals stack up.</div>
+        </div>
+        <div class="marker"><span class="n">2</span> / 3 &middot; play with it</div>
+      </div>
+
+      <div class="page-body">
+        <div class="lab-grid">
+
+          <div class="lab-info">
+            <div class="label">Definition</div>
+            <div class="formula-card">
+              <div class="lead">For a single outflow <em>P</em> today and a single inflow <em>F</em> after <em>n</em> periods:</div>
+              <div class="tex">$$r \;=\; \left(\frac{F}{P}\right)^{1/n} - 1$$</div>
+              <div class="caption">the IRR is the discount rate that makes NPV equal to zero.</div>
+              <dl class="legend">
+                <dt>r</dt><dd>internal rate of return &mdash; <em>per period</em></dd>
+                <dt>F</dt><dd>future worth at horizon <em>n</em></dd>
+                <dt>P</dt><dd>present worth (the investment today)</dd>
+                <dt>n</dt><dd>number of periods between <em>P</em> and <em>F</em></dd>
+              </dl>
+            </div>
+
+            <div class="bullet-list">
+              <div class="bullet-item">
+                <div class="num">1</div>
+                <div class="txt">For one outflow and one inflow, IRR has a <strong>closed form</strong>. For arbitrary cash flows it does not, and we solve numerically.</div>
+              </div>
+              <div class="bullet-item">
+                <div class="num">2</div>
+                <div class="txt">IRR is <strong>brutal at short horizons</strong>, <strong>gentle at long ones</strong>. Double the horizon, halve the required rate roughly.</div>
+              </div>
+              <div class="bullet-item">
+                <div class="num">3</div>
+                <div class="txt">Compare IRR to MARR. If <strong>IRR &gt; MARR</strong>, the project clears the hurdle. <em>Otherwise, walk away.</em></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="lab-demo">
+            <div class="lab-sliders">
+              <div class="slider-block">
+                <div class="row1">
+                  <span class="label-main">Present · P</span>
+                  <span class="readout" id="p-val">$24</span>
+                </div>
+                <input type="range" id="p-slider" min="0" max="200" step="1" value="50" aria-label="Present worth (log scale)">
+                <div class="sub">log scale &middot; $1 to $1 B</div>
+              </div>
+              <div class="slider-block">
+                <div class="row1">
+                  <span class="label-main">Future · F</span>
+                  <span class="readout" id="f-val">$3 T</span>
+                </div>
+                <input type="range" id="f-slider" min="0" max="200" step="1" value="190" aria-label="Future worth (log scale)">
+                <div class="sub">log scale &middot; $1 to $10 T</div>
+              </div>
+              <div class="slider-block">
+                <div class="row1">
+                  <span class="label-main">Horizon · n</span>
+                  <span class="readout" id="n-val">398 yr</span>
+                </div>
+                <input type="range" id="n-slider" min="1" max="500" step="1" value="398" aria-label="Years">
+                <div class="sub">years between P and F</div>
+              </div>
+            </div>
+
+            <div class="irr-display">
+              <div class="formula-mini">
+                <span>r =</span>
+                <span class="root">
+                  <span style="font-size:12px; padding-right:2px;" id="nroot-show"><sup>398</sup>&radic;</span>
+                  <span class="frac"><span class="top" id="ratio-top">$3.0 T</span><span class="bot" id="ratio-bot">$24</span></span>
+                </span>
+                <span>&minus; 1</span>
+                <span class="arrow">&rarr;</span>
+              </div>
+              <div>
+                <div class="big-val" id="irr-big">6.6%</div>
+                <div class="label-block">
+                  <span class="l">Internal Rate of Return</span>
+                  <span class="desc" id="irr-context">Matches the Manhattan 1626 deal at 398 years.</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="lab-presets">
+              <span class="lbl">Try a preset:</span>
+              <button data-p="24"      data-f="3e12"  data-n="398" data-ctx="Matches the Manhattan 1626 deal: 60 guilders for the island vs ~$3 T in 2024 land value.">Manhattan &middot; 1626</button>
+              <button data-p="15e6"    data-f="1.2e12" data-n="222" data-ctx="Louisiana Purchase: Jefferson paid France $15 M for 828,000 sq miles in 1803. Conservatively $1.2 T today.">Louisiana &middot; 1803</button>
+              <button data-p="40"      data-f="15e6"  data-n="105" data-ctx="One $40 share at the 1919 Coca-Cola IPO, dividends reinvested, grew to ~$15 M by 2024.">Coca-Cola &middot; 1919</button>
+              <button data-p="19"      data-f="700000" data-n="60"  data-ctx="Berkshire Hathaway when Buffett took over in 1965: ~$19/share. Today: ~$700 k/share.">Berkshire &middot; 1965</button>
+              <button data-p="1"       data-f="10000" data-n="100" data-ctx="S&amp;P 500 long-run real total return: $1 in 1924 dollars grew to roughly $10 k by 2024 with dividends.">S&amp;P 500 &middot; 100 yrs</button>
+            </div>
+
+            <div class="lab-viz">
+              <div class="ttl">Present worth &middot; horizon &middot; future worth, in balance</div>
+              <svg id="balance-viz" viewBox="0 0 600 130" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"></svg>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE 3 — Convergence + Gallery -->
+    <section class="page" data-page="3">
+      <div class="page-head">
+        <div>
+          <h2>How <em>compounding</em> beats the speed limit</h2>
+          <div class="sub">At long horizons, a modest rate builds a fortune. At short horizons, even a stellar rate builds a salary. The horizon dominates the rate.</div>
+        </div>
+        <div class="marker"><span class="n">3</span> / 3 &middot; the long view</div>
+      </div>
+
+      <div class="page-body">
+
+        <div class="convergence-card">
+          <div class="conv-head">
+            <h4>Future worth multiple after <em>n</em> years</h4>
+            <span class="meta">F / P = (1 + r)<sup>n</sup> &middot; log scale on y axis</span>
+          </div>
+          <svg viewBox="0 0 1100 240" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="1100" height="240" fill="#faf9f5" rx="6"/>
+
+            <!-- Axes -->
+            <line x1="70" y1="20" x2="70" y2="200" stroke="#5a5247" stroke-width="0.9"/>
+            <line x1="70" y1="200" x2="1060" y2="200" stroke="#5a5247" stroke-width="0.9"/>
+
+            <!-- y gridlines (log scale: 1x, 10x, 100x, 1k, 10k, 1M, 1B, 1T) -->
+            <g font-family="Outfit,sans-serif" font-size="10" fill="#5a5247">
+              <line x1="70" y1="200" x2="1060" y2="200" stroke="#e8e3d4" stroke-width="0.6"/>
+              <text x="64" y="204" text-anchor="end">1&times;</text>
+              <line x1="70" y1="185" x2="1060" y2="185" stroke="#e8e3d4" stroke-width="0.6"/>
+              <text x="64" y="189" text-anchor="end">10&times;</text>
+              <line x1="70" y1="170" x2="1060" y2="170" stroke="#e8e3d4" stroke-width="0.6"/>
+              <text x="64" y="174" text-anchor="end">100&times;</text>
+              <line x1="70" y1="155" x2="1060" y2="155" stroke="#e8e3d4" stroke-width="0.6"/>
+              <text x="64" y="159" text-anchor="end">1 k</text>
+              <line x1="70" y1="140" x2="1060" y2="140" stroke="#e8e3d4" stroke-width="0.6"/>
+              <text x="64" y="144" text-anchor="end">10 k</text>
+              <line x1="70" y1="110" x2="1060" y2="110" stroke="#e8e3d4" stroke-width="0.6"/>
+              <text x="64" y="114" text-anchor="end">1 M</text>
+              <line x1="70" y1="65"  x2="1060" y2="65"  stroke="#e8e3d4" stroke-width="0.6"/>
+              <text x="64" y="69" text-anchor="end">1 B</text>
+              <line x1="70" y1="35"  x2="1060" y2="35"  stroke="#b8860b" stroke-width="0.8" stroke-dasharray="3 3"/>
+              <text x="64" y="39" text-anchor="end" fill="#b8860b" font-weight="700">1 T</text>
+              <line x1="70" y1="20"  x2="1060" y2="20"  stroke="#5c7a4a" stroke-width="0.8" stroke-dasharray="2 2"/>
+              <text x="64" y="24" text-anchor="end" fill="#5c7a4a" font-weight="700">10 T</text>
+            </g>
+
+            <!-- x ticks: 0, 50, 100, 200, 300, 398, 500 yrs -->
+            <g font-family="Outfit,sans-serif" font-size="10" fill="#5a5247">
+              <line x1="70"   y1="20" x2="70"   y2="200" stroke="#e8e3d4" stroke-width="0.6"/>
+              <text x="70"   y="218" text-anchor="middle">0</text>
+              <line x1="194"  y1="20" x2="194"  y2="200" stroke="#e8e3d4" stroke-width="0.6"/>
+              <text x="194"  y="218" text-anchor="middle">50</text>
+              <line x1="318"  y1="20" x2="318"  y2="200" stroke="#e8e3d4" stroke-width="0.6"/>
+              <text x="318"  y="218" text-anchor="middle">100</text>
+              <line x1="566"  y1="20" x2="566"  y2="200" stroke="#e8e3d4" stroke-width="0.6"/>
+              <text x="566"  y="218" text-anchor="middle">200</text>
+              <line x1="814"  y1="20" x2="814"  y2="200" stroke="#e8e3d4" stroke-width="0.6"/>
+              <text x="814"  y="218" text-anchor="middle">300</text>
+              <line x1="1056" y1="20" x2="1056" y2="200" stroke="#b8860b" stroke-width="0.6" stroke-dasharray="2 2"/>
+              <text x="1056" y="218" text-anchor="middle" fill="#b8860b" font-weight="700">398</text>
+              <text x="566" y="232" text-anchor="middle" font-size="11" font-weight="700" letter-spacing="0.18em" fill="#8b7355">YEARS · n</text>
+            </g>
+
+            <!-- Curves: F/P = (1+r)^n, log scale on y. 180 px from y=200 (1x) to y=20 (10T).
+                 y = 200 - (n * log10(1+r) / 13) * 180
+                 5%:  log10(1.05) = 0.02119 → 50yr 8.0, 100yr 16.0, 200yr 32.1, 300yr 48.0, 400yr 64.0 → y50 192, y100 184, y200 168, y300 152, y400 136
+                 7%:  log10(1.07) = 0.02938 → y50 188, y100 175, y200 149, y300 124, y398 99
+                 10%: log10(1.10) = 0.04139 → y50 183, y100 167, y200 133, y300 100, y400 67 — but capped at 1T (y=35)
+                 15%: log10(1.15) = 0.06070 → y50 174, y100 148, y200 96, y300 44, y400 -, cap at 35
+              -->
+            <!-- 5% (slow) — olive -->
+            <path stroke="#5c7a4a" stroke-width="2" fill="none" stroke-linecap="round"
+                  d="M 70 200 L 194 195 L 318 191 L 442 187 L 566 183 L 690 179 L 814 175 L 938 171 L 1062 167"/>
+            <text x="1066" y="170" font-family="Outfit,sans-serif" font-size="10" font-weight="700" fill="#5c7a4a">5%</text>
+
+            <!-- 7% (Manhattan rate, gold, thicker) -->
+            <path stroke="#b8860b" stroke-width="2.8" fill="none" stroke-linecap="round"
+                  d="M 70 200 L 194 192 L 318 184 L 442 175 L 566 167 L 690 159 L 814 150 L 938 142 L 1062 134"/>
+            <text x="1066" y="137" font-family="Outfit,sans-serif" font-size="11" font-weight="700" fill="#b8860b">~7% &middot; Manhattan</text>
+
+            <!-- 10% — crimson -->
+            <path stroke="#8a2828" stroke-width="2" fill="none" stroke-linecap="round"
+                  d="M 70 200 L 194 188 L 318 175 L 442 163 L 566 151 L 690 138 L 814 126 L 938 113 L 1062 101"/>
+            <text x="1066" y="104" font-family="Outfit,sans-serif" font-size="10" font-weight="700" fill="#8a2828">10%</text>
+
+            <!-- 15% — purple -->
+            <path stroke="#7c3aed" stroke-width="2" fill="none" stroke-linecap="round"
+                  d="M 70 200 L 194 182 L 318 164 L 442 146 L 566 128 L 690 109 L 814 91 L 938 73 L 1062 55"/>
+            <text x="1066" y="58" font-family="Outfit,sans-serif" font-size="10" font-weight="700" fill="#7c3aed">15%</text>
+
+            <!-- Manhattan marker: (398, ~1.25e11 ≈ 125 B). log10(1.25e11) = 11.10. y = 200 - (11.10/13)*180 ≈ 200 - 153.7 = 46.3 -->
+            <circle cx="1056" cy="46" r="6" fill="#fff" stroke="#b8860b" stroke-width="2.6"/>
+            <line x1="1056" y1="46" x2="1056" y2="200" stroke="#b8860b" stroke-width="0.8" stroke-dasharray="2 3" opacity="0.55"/>
+            <g transform="translate(820, 28)">
+              <rect x="0" y="0" width="225" height="36" fill="#ffffff" stroke="#b8860b" stroke-width="1" rx="5"/>
+              <text x="11" y="15" font-family="Outfit,sans-serif" font-size="10" font-weight="700" fill="#b8860b" letter-spacing="0.06em">MANHATTAN POINT</text>
+              <text x="11" y="29" font-family="Outfit,sans-serif" font-size="10" fill="#1a1a1a">$24 &rarr; $3 T over 398 yr</text>
+            </g>
+
+            <!-- Legend -->
+            <g transform="translate(90, 30)">
+              <rect x="0" y="0" width="200" height="76" fill="#ffffff" stroke="#e8e3d4" rx="5"/>
+              <text x="10" y="16" font-family="Outfit,sans-serif" font-size="9.5" letter-spacing="0.18em" font-weight="700" fill="#8b7355">RATE OF RETURN</text>
+              <line x1="10" y1="32" x2="34" y2="32" stroke="#5c7a4a" stroke-width="2"/>
+              <text x="42" y="35" font-family="Outfit,sans-serif" font-size="11" fill="#1a1a1a">5% &middot; <tspan font-style="italic" fill="#5a5247">slow</tspan></text>
+              <line x1="10" y1="48" x2="34" y2="48" stroke="#b8860b" stroke-width="2.6"/>
+              <text x="42" y="51" font-family="Outfit,sans-serif" font-size="11" fill="#1a1a1a" font-weight="700">7% &middot; Manhattan</text>
+              <line x1="10" y1="64" x2="34" y2="64" stroke="#8a2828" stroke-width="2"/>
+              <text x="42" y="67" font-family="Outfit,sans-serif" font-size="11" fill="#1a1a1a">10% &middot; <tspan font-style="italic" fill="#5a5247">market</tspan></text>
+            </g>
+          </svg>
+          <div class="verdict">
+            At 7%, $24 becomes more than <span class="pill">$10 trillion</span> in 400 years &mdash; <strong>three times</strong> Manhattan's land value today. The Lenape's best alternative could have beaten the deal &mdash; but only because compounding had <strong>four centuries</strong> to work. <em>The horizon dominates the rate.</em>
+          </div>
+        </div>
+
+        <div class="gallery">
+          <div class="g-card">
+            <span class="y">1626 &middot; New Netherland</span>
+            <h5>Manhattan <em>purchase</em></h5>
+            <div class="desc">Peter Minuit bought the island from the Lenape for 60 guilders. Today's land value is the textbook example for IRR over a long horizon.</div>
+            <div class="stats">
+              <div class="stat"><div class="l">P &rarr; F</div><div class="v">$24 &rarr; $3 T</div></div>
+              <div class="stat"><div class="l">IRR</div><div class="v gold">6.6%</div></div>
+            </div>
+            <div class="age">398 years of compounding.</div>
+          </div>
+          <div class="g-card">
+            <span class="y">1803 &middot; United States</span>
+            <h5>Louisiana <em>Purchase</em></h5>
+            <div class="desc">Jefferson paid France $15 M for 828,000 sq miles &mdash; about 3 cents per acre. Conservatively $1.2 trillion in land value today.</div>
+            <div class="stats">
+              <div class="stat"><div class="l">P &rarr; F</div><div class="v">$15M &rarr; $1.2T</div></div>
+              <div class="stat"><div class="l">IRR</div><div class="v gold">5.2%</div></div>
+            </div>
+            <div class="age">222 years and counting.</div>
+          </div>
+          <div class="g-card">
+            <span class="y">1919 &middot; Atlanta</span>
+            <h5>Coca-Cola <em>IPO</em></h5>
+            <div class="desc">One $40 share at the 1919 IPO, with every dividend reinvested, grew to roughly $15 million by 2024.</div>
+            <div class="stats">
+              <div class="stat"><div class="l">P &rarr; F</div><div class="v">$40 &rarr; $15M</div></div>
+              <div class="stat"><div class="l">IRR</div><div class="v gold">13.0%</div></div>
+            </div>
+            <div class="age">105 years of dividends.</div>
+          </div>
+          <div class="g-card">
+            <span class="y">1965 &middot; Omaha</span>
+            <h5>Berkshire <em>Hathaway</em></h5>
+            <div class="desc">When Buffett took over the failing textile mill in 1965, A shares traded near $19. They cleared $700,000 in 2024.</div>
+            <div class="stats">
+              <div class="stat"><div class="l">P &rarr; F</div><div class="v">$19 &rarr; $700k</div></div>
+              <div class="stat"><div class="l">IRR</div><div class="v gold">18.6%</div></div>
+            </div>
+            <div class="age">60 years, one buyer.</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+
+  <!-- FOOTER nav -->
+  <nav class="footer-nav">
+    <button class="nav-btn" id="prev"><span>&larr;</span> Prev</button>
+    <div class="ind">
+      <span class="dot active" data-go="1"></span>
+      <span class="dot" data-go="2"></span>
+      <span class="dot" data-go="3"></span>
+      <span class="label" id="page-label">A deal from 1626</span>
+    </div>
+    <button class="nav-btn" id="next">Next <span>&rarr;</span></button>
+  </nav>
+
+</div>
+
+<script>
+  // ===== Paged-deck navigation =====
+  const pages = document.querySelectorAll('.page');
+  const dots = document.querySelectorAll('.footer-nav .dot');
+  const prevBtn = document.getElementById('prev');
+  const nextBtn = document.getElementById('next');
+  const label = document.getElementById('page-label');
+  const labels = { 1: 'A deal from 1626', 2: 'Play with the formula', 3: 'How does compounding scale?' };
+  let current = 1;
+  const N = pages.length;
+
+  function go(n) {
+    if (n < 1 || n > N || n === current) return;
+    pages.forEach(p => {
+      const i = +p.dataset.page;
+      p.classList.remove('active', 'left');
+      if (i === n) p.classList.add('active');
+      else if (i < n) p.classList.add('left');
+    });
+    dots.forEach(d => d.classList.toggle('active', +d.dataset.go === n));
+    label.textContent = labels[n];
+    prevBtn.disabled = n === 1;
+    nextBtn.disabled = n === N;
+    current = n;
+  }
+
+  prevBtn.addEventListener('click', () => go(current - 1));
+  nextBtn.addEventListener('click', () => go(current + 1));
+  dots.forEach(d => d.addEventListener('click', () => go(+d.dataset.go)));
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); go(current + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(current - 1); }
+    else if (e.key === 'Home') { go(1); }
+    else if (e.key === 'End') { go(N); }
+  });
+  prevBtn.disabled = true;
+
+  // ===== PAGE 2 — IRR Lab =====
+  (function () {
+    const pSlider = document.getElementById('p-slider');
+    const fSlider = document.getElementById('f-slider');
+    const nSlider = document.getElementById('n-slider');
+    const pVal = document.getElementById('p-val');
+    const fVal = document.getElementById('f-val');
+    const nVal = document.getElementById('n-val');
+    const irrBig = document.getElementById('irr-big');
+    const ratioTop = document.getElementById('ratio-top');
+    const ratioBot = document.getElementById('ratio-bot');
+    const nrootShow = document.getElementById('nroot-show');
+    const irrContext = document.getElementById('irr-context');
+    const viz = document.getElementById('balance-viz');
+    const presets = document.querySelectorAll('.lab-presets button');
+
+    // Log-scale slider: 0-200 maps to $1 - $10^k where k = 9 for P, k = 13 for F.
+    function pFromSlider(v) { return Math.pow(10, v / 200 * 9); }   // $1 to $1 B
+    function fFromSlider(v) { return Math.pow(10, v / 200 * 13); }  // $1 to $10 T
+    function sliderFromP(p) { return Math.max(0, Math.min(200, Math.log10(Math.max(1, p)) / 9 * 200)); }
+    function sliderFromF(f) { return Math.max(0, Math.min(200, Math.log10(Math.max(1, f)) / 13 * 200)); }
+
+    function fmtMoney(v) {
+      if (v >= 1e12) return '$' + (v / 1e12).toFixed(v < 1e13 ? 2 : 1) + ' T';
+      if (v >= 1e9)  return '$' + (v / 1e9).toFixed(v < 1e10 ? 2 : 1) + ' B';
+      if (v >= 1e6)  return '$' + (v / 1e6).toFixed(v < 1e7 ? 2 : 1) + ' M';
+      if (v >= 1e3)  return '$' + (v / 1e3).toFixed(v < 1e4 ? 1 : 0) + ' k';
+      return '$' + Math.round(v).toLocaleString();
+    }
+
+    function computeIRR(P, F, n) {
+      if (P <= 0 || F <= 0 || n <= 0) return 0;
+      return Math.pow(F / P, 1 / n) - 1;
+    }
+
+    function update() {
+      const P = pFromSlider(+pSlider.value);
+      const F = fFromSlider(+fSlider.value);
+      const n = +nSlider.value;
+      const r = computeIRR(P, F, n);
+
+      pVal.textContent = fmtMoney(P);
+      fVal.textContent = fmtMoney(F);
+      nVal.textContent = n + ' yr';
+      ratioTop.textContent = fmtMoney(F);
+      ratioBot.textContent = fmtMoney(P);
+      nrootShow.innerHTML = '<sup>' + n + '</sup>&radic;';
+      irrBig.textContent = (r * 100).toFixed(2) + '%';
+
+      drawViz(P, F, n, r);
+    }
+
+    function drawViz(P, F, n, r) {
+      const W = 600, H = 130;
+      const padL = 60, padR = 60, padT = 18, padB = 28;
+      const yBase = H - padB;
+      // bar heights — log scale so both visible
+      const logP = Math.log10(Math.max(1, P));
+      const logF = Math.log10(Math.max(1, F));
+      const maxLog = Math.max(logP, logF, 1);
+      const usableH = yBase - padT;
+      const hP = usableH * logP / maxLog;
+      const hF = usableH * logF / maxLog;
+
+      let svg = '';
+      // ground line
+      svg += '<line x1="' + padL + '" y1="' + yBase + '" x2="' + (W - padR) + '" y2="' + yBase + '" stroke="#d4cfc0" stroke-width="1"/>';
+
+      // P bar (left, gold)
+      const pX = padL + 18;
+      svg += '<rect x="' + (pX - 18) + '" y="' + (yBase - hP) + '" width="36" height="' + hP + '" fill="#b8860b" rx="3"/>';
+      svg += '<text x="' + pX + '" y="' + (yBase - hP - 6) + '" text-anchor="middle" font-family="Lora,serif" font-style="italic" font-size="13" font-weight="700" fill="#8a6608">' + fmtMoney(P) + '</text>';
+      svg += '<text x="' + pX + '" y="' + (yBase + 16) + '" text-anchor="middle" font-family="Outfit,sans-serif" font-size="9.5" letter-spacing="0.18em" font-weight="700" fill="#8b7355">PRESENT</text>';
+
+      // F bar (right, gold-deep)
+      const fX = W - padR - 18;
+      svg += '<rect x="' + (fX - 18) + '" y="' + (yBase - hF) + '" width="36" height="' + hF + '" fill="#8a6608" rx="3"/>';
+      svg += '<text x="' + fX + '" y="' + (yBase - hF - 6) + '" text-anchor="middle" font-family="Lora,serif" font-style="italic" font-size="13" font-weight="700" fill="#8a6608">' + fmtMoney(F) + '</text>';
+      svg += '<text x="' + fX + '" y="' + (yBase + 16) + '" text-anchor="middle" font-family="Outfit,sans-serif" font-size="9.5" letter-spacing="0.18em" font-weight="700" fill="#8b7355">FUTURE</text>';
+
+      // connecting arrow + rate label
+      const midX = (pX + fX) / 2;
+      const arrowY = padT + 18;
+      svg += '<path d="M ' + (pX + 22) + ' ' + arrowY + ' Q ' + midX + ' ' + (arrowY - 14) + ' ' + (fX - 22) + ' ' + arrowY + '" stroke="#b8860b" stroke-width="1.5" fill="none" stroke-dasharray="4 3"/>';
+      svg += '<polygon points="' + (fX - 22) + ',' + arrowY + ' ' + (fX - 30) + ',' + (arrowY - 4) + ' ' + (fX - 30) + ',' + (arrowY + 4) + '" fill="#b8860b"/>';
+      svg += '<text x="' + midX + '" y="' + (arrowY - 10) + '" text-anchor="middle" font-family="Lora,serif" font-style="italic" font-size="14" font-weight="700" fill="#8a6608">' + n + ' yr at ' + (r * 100).toFixed(2) + '%</text>';
+
+      viz.innerHTML = svg;
+    }
+
+    [pSlider, fSlider, nSlider].forEach(el => el.addEventListener('input', () => {
+      irrContext.textContent = 'Try a preset for a famous deal.';
+      presets.forEach(b => b.classList.remove('active'));
+      update();
+    }));
+
+    presets.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const P = +btn.dataset.p;
+        const F = +btn.dataset.f;
+        const n = +btn.dataset.n;
+        pSlider.value = sliderFromP(P);
+        fSlider.value = sliderFromF(F);
+        nSlider.value = n;
+        irrContext.textContent = btn.dataset.ctx;
+        presets.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        update();
+      });
+    });
+
+    // initial: Manhattan defaults
+    pSlider.value = sliderFromP(24);
+    fSlider.value = sliderFromF(3e12);
+    nSlider.value = 398;
+    presets[0].classList.add('active');
+    update();
+  })();
+</script>
+</body>
+</html>
