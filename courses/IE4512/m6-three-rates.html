@@ -111,6 +111,40 @@
     margin-top: 4px;
   }
 
+  /* Project tuners (above the cashflow chart) */
+  .tuners {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+    margin-bottom: 12px;
+  }
+  @media (max-width: 760px) { .tuners { grid-template-columns: repeat(2, 1fr); } }
+  .tuner {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 8px;
+    border-left: 3px solid var(--gold);
+    padding: 7px 10px 8px;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .tuner .lbl {
+    font-family: 'Outfit', sans-serif; font-size: 9.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+    color: var(--gold-deep);
+  }
+  .tuner .field {
+    display: flex; align-items: baseline; gap: 4px;
+  }
+  .tuner .field .sym {
+    font-family: 'Lora', serif; font-style: italic; font-size: 14px; color: var(--gold-deep); font-weight: 700;
+  }
+  .tuner .field input {
+    width: 100%; padding: 4px 7px;
+    border: 1px solid var(--border); border-radius: 5px;
+    font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; color: var(--ink);
+    background: var(--bg); outline: none;
+    text-align: right;
+  }
+  .tuner .field input:focus { border-color: var(--gold); background: #fff; box-shadow: 0 0 0 3px rgba(184,134,11,0.12); }
+  .tuner .hint {
+    font-family: 'Lora', serif; font-style: italic; font-size: 10px; color: var(--muted); line-height: 1.3;
+  }
+
   /* Cash flow timeline SVG container */
   .cashflow-card {
     background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
@@ -433,13 +467,37 @@
       <span class="meta">visualize first</span>
       <div class="sub">A single big outflow at year 0 (the build) and ten years of steady inflows. Year 10 stacks the last revenue with the salvage value. Hover the bars to read exact numbers.</div>
     </div>
+    <!-- editable project parameters -->
+    <div class="tuners">
+      <div class="tuner">
+        <span class="lbl">Build cost</span>
+        <div class="field"><span class="sym">P =</span><input type="number" id="p-build" value="120" min="10" max="500" step="5"></div>
+        <span class="hint">$ M outflow at year 0</span>
+      </div>
+      <div class="tuner">
+        <span class="lbl">Annual revenue</span>
+        <div class="field"><span class="sym">A =</span><input type="number" id="p-revenue" value="22" min="1" max="100" step="1"></div>
+        <span class="hint">$ M / yr, net ticket + merch</span>
+      </div>
+      <div class="tuner">
+        <span class="lbl">Salvage</span>
+        <div class="field"><span class="sym">S =</span><input type="number" id="p-salvage" value="8" min="0" max="100" step="1"></div>
+        <span class="hint">$ M at the end of year n</span>
+      </div>
+      <div class="tuner">
+        <span class="lbl">Project life</span>
+        <div class="field"><span class="sym">n =</span><input type="number" id="p-n" value="10" min="3" max="25" step="1"></div>
+        <span class="hint">years until decommission</span>
+      </div>
+    </div>
+
     <div class="cashflow-card">
       <button class="info-btn" data-pop="cashflow" aria-label="About this chart">i</button>
       <svg id="cf-svg" viewBox="0 0 900 220" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"></svg>
       <div class="legend">
         <div class="it"><div class="sw" style="background:var(--crimson)"></div>outflow (build cost)</div>
         <div class="it"><div class="sw" style="background:var(--olive)"></div>inflow (net revenue)</div>
-        <div class="it"><div class="sw" style="background:var(--gold)"></div>salvage at year 10</div>
+        <div class="it"><div class="sw" style="background:var(--gold)"></div>salvage at year n</div>
       </div>
     </div>
   </section>
@@ -571,7 +629,7 @@
 
 <script>
   // ===== Project cash flows =====
-  // Year 0: build, Years 1-9: revenue, Year 10: revenue + salvage
+  // Year 0: build, Years 1..n-1: revenue, Year n: revenue + salvage
   const PROJECT = {
     build: 120,         // $ M outflow at t=0
     revenue: 22,        // $ M / year inflow for years 1..n
@@ -583,6 +641,17 @@
     for (let t = 1; t < p.n; t++) cfs.push(p.revenue);
     cfs.push(p.revenue + p.salvage);
     return cfs;
+  }
+
+  // Sync hero stat cards with current project numbers
+  function syncHeroStats() {
+    const map = [
+      { sel: '.hero .stat:nth-child(1) .val em', val: '$' + PROJECT.build + ' M' },
+      { sel: '.hero .stat:nth-child(2) .val em', val: '$' + PROJECT.revenue + ' M / yr' },
+      { sel: '.hero .stat:nth-child(3) .val em', val: '$' + PROJECT.salvage + ' M' },
+      { sel: '.hero .stat:nth-child(4) .val em', val: PROJECT.n + ' years' },
+    ];
+    map.forEach(m => { const el = document.querySelector(m.sel); if (el) el.textContent = m.val; });
   }
 
   // ===== Solvers =====
@@ -640,8 +709,9 @@
     const x0 = padL, x1 = W - padR;
     const yMid = padT + (H - padT - padB) * 0.55; // axis a bit below mid
 
-    const max = 30; // max bar value for scaling (revenue+salvage = 30)
-    const min = 120; // largest outflow magnitude
+    // Dynamic scales based on actual cash flows
+    const max = Math.max(1, PROJECT.revenue + PROJECT.salvage);
+    const min = Math.max(1, PROJECT.build);
     const scaleUp = (yMid - padT) / max;
     const scaleDn = (H - padB - yMid) / min;
 
@@ -657,21 +727,27 @@
       const bw = Math.min(36, colW * 0.62);
       if (cf < 0) {
         const h = -cf * scaleDn;
-        svgHTML += `<rect x="${cx - bw / 2}" y="${yMid}" width="${bw}" height="${h}" fill="#8a2828" rx="2"/>`;
+        svgHTML += `<g><title>Year ${t}: outflow of $${(-cf).toFixed(0)} M (build cost)</title>`;
+        svgHTML += `<rect x="${cx - bw / 2}" y="${yMid}" width="${bw}" height="${h}" fill="#8a2828" rx="2" style="cursor:help"/>`;
         svgHTML += `<text x="${cx}" y="${yMid + h + 14}" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" font-weight="700" fill="#8a2828">${cf}</text>`;
+        svgHTML += `</g>`;
       } else if (cf > 0) {
         if (t === n - 1) {
           // stacked: revenue then salvage on top
           const rev = PROJECT.revenue, sal = PROJECT.salvage;
           const hRev = rev * scaleUp;
           const hSal = sal * scaleUp;
-          svgHTML += `<rect x="${cx - bw / 2}" y="${yMid - hRev}" width="${bw}" height="${hRev}" fill="#5c7a4a" rx="2"/>`;
-          svgHTML += `<rect x="${cx - bw / 2}" y="${yMid - hRev - hSal}" width="${bw}" height="${hSal}" fill="#b8860b" rx="2"/>`;
+          svgHTML += `<g><title>Year ${t}: revenue $${rev} M + salvage $${sal} M = $${cf} M</title>`;
+          svgHTML += `<rect x="${cx - bw / 2}" y="${yMid - hRev}" width="${bw}" height="${hRev}" fill="#5c7a4a" rx="2" style="cursor:help"/>`;
+          svgHTML += `<rect x="${cx - bw / 2}" y="${yMid - hRev - hSal}" width="${bw}" height="${hSal}" fill="#b8860b" rx="2" style="cursor:help"/>`;
           svgHTML += `<text x="${cx}" y="${yMid - hRev - hSal - 5}" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" font-weight="700" fill="#5a5247">+${cf}</text>`;
+          svgHTML += `</g>`;
         } else {
           const h = cf * scaleUp;
-          svgHTML += `<rect x="${cx - bw / 2}" y="${yMid - h}" width="${bw}" height="${h}" fill="#5c7a4a" rx="2"/>`;
+          svgHTML += `<g><title>Year ${t}: inflow of $${cf} M (net revenue)</title>`;
+          svgHTML += `<rect x="${cx - bw / 2}" y="${yMid - h}" width="${bw}" height="${h}" fill="#5c7a4a" rx="2" style="cursor:help"/>`;
           svgHTML += `<text x="${cx}" y="${yMid - h - 5}" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" font-weight="700" fill="#5c7a4a">+${cf}</text>`;
+          svgHTML += `</g>`;
         }
       }
       // year labels
@@ -789,9 +865,10 @@
       cfs.forEach((cf, t) => { if (cf > 0) s += cf * Math.pow(1 + state.marr, cfs.length - 1 - t); });
       return s;
     })();
+    const nLife = cfs.length - 1;
     document.getElementById('irr-compute').innerHTML =
-      `NPV(${(irr * 100).toFixed(2)}%) = 0 by definition.<br>` +
-      `<em>If MARR were 0%, NPV = ${npv(cfs, 0).toFixed(1)} M.</em>`;
+      `NPV(${irr !== null ? (irr * 100).toFixed(2) : '—'}%) = 0 by definition.<br>` +
+      `<em>If r = 0%, NPV = ${npv(cfs, 0).toFixed(1)} M over ${nLife} years.</em>`;
 
     // ERR card
     document.getElementById('err-val').textContent = fmtPct(err);
@@ -804,7 +881,7 @@
     document.getElementById('err-compute').innerHTML =
       `<b>PW<sub>−</sub></b> = ${pvNeg.toFixed(1)} M&nbsp;&middot;&nbsp; ` +
       `<b>FW<sub>+</sub>(${(state.marr * 100).toFixed(1)}%)</b> = ${fvPosAtMarr.toFixed(1)} M<br>` +
-      `<em>(${fvPosAtMarr.toFixed(1)} / ${pvNeg.toFixed(1)})<sup>1/10</sup> − 1 = ${(err !== null ? (err * 100).toFixed(2) : '—')}%</em>`;
+      `<em>(${fvPosAtMarr.toFixed(1)} / ${pvNeg.toFixed(1)})<sup>1/${nLife}</sup> − 1 = ${(err !== null ? (err * 100).toFixed(2) : '—')}% over ${nLife} yr</em>`;
 
     // MIRR card
     const fvPosAtReinv = (function () {
@@ -827,21 +904,50 @@
     document.getElementById('mirr-compute').innerHTML =
       `<b>PW<sub>−</sub>(${(state.finance * 100).toFixed(1)}%)</b> = ${pvNegAtFin.toFixed(1)} M&nbsp;&middot;&nbsp;` +
       `<b>FW<sub>+</sub>(${(state.reinvest * 100).toFixed(1)}%)</b> = ${fvPosAtReinv.toFixed(1)} M<br>` +
-      `<em>(${fvPosAtReinv.toFixed(1)} / ${pvNegAtFin.toFixed(1)})<sup>1/10</sup> − 1 = ${(mirr !== null ? (mirr * 100).toFixed(2) : '—')}%</em>`;
+      `<em>(${fvPosAtReinv.toFixed(1)} / ${pvNegAtFin.toFixed(1)})<sup>1/${nLife}</sup> − 1 = ${(mirr !== null ? (mirr * 100).toFixed(2) : '—')}% over ${nLife} yr</em>`;
   }
 
-  // ===== Wire controls =====
+  // ===== Master refresh =====
+  function refreshAll() {
+    document.getElementById('marr-val').textContent = (state.marr * 100).toFixed(1) + '%';
+    document.getElementById('fin-val').textContent  = (state.finance * 100).toFixed(1) + '%';
+    document.getElementById('rinv-val').textContent = (state.reinvest * 100).toFixed(1) + '%';
+    syncHeroStats();
+    drawCashflow();
+    updateMethods();
+    drawNPV();
+  }
+
+  // ===== Wire rate sliders =====
   ['marr', 'fin', 'rinv'].forEach(id => {
     const el = document.getElementById(id);
     el.addEventListener('input', () => {
       if (id === 'marr') state.marr = +el.value / 100;
       if (id === 'fin')  state.finance = +el.value / 100;
       if (id === 'rinv') state.reinvest = +el.value / 100;
-      document.getElementById('marr-val').textContent = (state.marr * 100).toFixed(1) + '%';
-      document.getElementById('fin-val').textContent  = (state.finance * 100).toFixed(1) + '%';
-      document.getElementById('rinv-val').textContent = (state.reinvest * 100).toFixed(1) + '%';
-      updateMethods();
-      drawNPV();
+      refreshAll();
+    });
+  });
+
+  // ===== Wire project tuners — editable build, revenue, salvage, life =====
+  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+  [['p-build','build',10,500],['p-revenue','revenue',1,100],['p-salvage','salvage',0,100],['p-n','n',3,25]].forEach(([id, key, lo, hi]) => {
+    const el = document.getElementById(id);
+    el.addEventListener('input', () => {
+      let v = parseFloat(el.value);
+      if (isNaN(v)) return;
+      v = clamp(v, lo, hi);
+      PROJECT[key] = key === 'n' ? Math.round(v) : v;
+      refreshAll();
+    });
+    el.addEventListener('change', () => {
+      let v = parseFloat(el.value);
+      if (isNaN(v)) v = PROJECT[key];
+      v = clamp(v, lo, hi);
+      if (key === 'n') v = Math.round(v);
+      el.value = v;
+      PROJECT[key] = v;
+      refreshAll();
     });
   });
 
@@ -913,9 +1019,7 @@
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closePop(); });
 
   // ===== Boot =====
-  drawCashflow();
-  drawNPV();
-  updateMethods();
+  refreshAll();
 </script>
 
 </body>
