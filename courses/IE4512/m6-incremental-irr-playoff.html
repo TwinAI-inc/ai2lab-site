@@ -423,6 +423,213 @@
   }
   .champion-card .meta .sub b { color: var(--gold-deep); font-weight: 700; font-style: normal; }
 
+  /* INTRO MODAL — first-visit welcome */
+  .intro-back {
+    position: fixed; inset: 0; z-index: 800;
+    background: rgba(20, 12, 12, 0.62);
+    backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .intro-back.show { opacity: 1; pointer-events: auto; }
+  .intro-card {
+    background: var(--paper); border-radius: 14px;
+    max-width: 920px; width: 100%; max-height: 92vh;
+    box-shadow: 0 18px 60px rgba(0,0,0,0.32);
+    display: grid; grid-template-columns: 1fr 1.05fr;
+    overflow: hidden;
+    transform: translateY(14px); transition: transform 0.32s ease;
+  }
+  .intro-back.show .intro-card { transform: translateY(0); }
+  @media (max-width: 760px) {
+    .intro-card { grid-template-columns: 1fr; max-height: 96vh; overflow-y: auto; }
+  }
+  .intro-image {
+    background: linear-gradient(135deg, #1a1a2e 0%, #3a1414 55%, #6b1e1e 100%);
+    background-image: url('images/m6/tournament-intro.png');
+    background-size: cover; background-position: center;
+    min-height: 280px;
+    position: relative;
+  }
+  .intro-image::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(20,12,12,0.05) 0%, rgba(20,12,12,0.45) 100%);
+  }
+  .intro-body {
+    padding: 22px 26px 22px;
+    display: flex; flex-direction: column; gap: 14px;
+    overflow-y: auto;
+  }
+  .intro-body .crumb {
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; font-weight: 700;
+    color: var(--crimson);
+  }
+  .intro-body h2 {
+    font-family: 'Lora', serif; font-size: 24px; font-weight: 700; line-height: 1.15; color: var(--ink);
+  }
+  .intro-body h2 em { font-style: italic; color: var(--crimson); }
+  .intro-body .lede {
+    font-family: 'Lora', serif; font-style: italic; font-size: 13.5px; color: var(--muted); line-height: 1.5;
+  }
+  .intro-rules {
+    display: flex; flex-direction: column; gap: 7px; margin-top: 4px;
+  }
+  .intro-rule {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 8px 10px; background: var(--bg); border: 1px solid var(--border); border-left: 3px solid var(--crimson);
+    border-radius: 7px;
+  }
+  .intro-rule .n {
+    flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
+    background: var(--crimson); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700;
+  }
+  .intro-rule .txt { font-size: 12.5px; line-height: 1.45; color: var(--ink); }
+  .intro-rule .txt b { color: var(--crimson-deep); font-weight: 700; }
+  .intro-actions {
+    display: flex; gap: 10px; align-items: center; margin-top: 4px;
+  }
+  .intro-actions .start-btn {
+    flex: 1;
+    font-family: 'Outfit', sans-serif; font-size: 12.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    padding: 11px 18px; border-radius: 8px; cursor: pointer;
+    background: var(--crimson); color: #fff; border: 1px solid var(--crimson);
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    transition: all 0.15s ease;
+  }
+  .intro-actions .start-btn:hover { background: var(--crimson-deep); border-color: var(--crimson-deep); transform: translateY(-1px); }
+  .intro-actions .start-btn svg { width: 14px; height: 14px; }
+  .intro-actions .replay-hint {
+    font-family: 'Lora', serif; font-style: italic; font-size: 10.5px; color: var(--soft);
+    text-align: right; max-width: 200px; line-height: 1.4;
+  }
+
+  /* REFLECTION zone — shows after champion */
+  .reflect {
+    grid-column: 1 / -1;
+    background: var(--paper); border: 1.5px solid var(--crimson); border-radius: 9px;
+    padding: 9px 12px 10px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 10px; align-items: center;
+    opacity: 0; transform: translateY(6px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+  .reflect.show { opacity: 1; transform: translateY(0); }
+  .reflect .icon {
+    width: 30px; height: 30px;
+    background: var(--crimson-soft); border: 1px solid var(--crimson); border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .reflect .icon svg { width: 16px; height: 16px; color: var(--crimson); }
+  .reflect .copy { display: flex; flex-direction: column; gap: 1px; }
+  .reflect .copy .lbl {
+    font-size: 8.5px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; color: var(--crimson);
+  }
+  .reflect .copy .txt {
+    font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--ink); line-height: 1.3;
+  }
+  .reflect .copy .txt b { font-style: normal; color: var(--crimson-deep); }
+  .reflect .open-btn {
+    font-family: 'Outfit', sans-serif; font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700;
+    padding: 7px 14px; border-radius: 6px; cursor: pointer;
+    background: var(--crimson); color: #fff; border: 1px solid var(--crimson);
+    transition: all 0.15s ease;
+  }
+  .reflect .open-btn:hover { background: var(--crimson-deep); border-color: var(--crimson-deep); }
+
+  /* REFLECT MODAL */
+  .reflect-back {
+    position: fixed; inset: 0; z-index: 850;
+    background: rgba(20, 12, 12, 0.62);
+    backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .reflect-back.show { opacity: 1; pointer-events: auto; }
+  .reflect-card {
+    background: var(--paper); border-radius: 12px;
+    max-width: 720px; width: 100%; max-height: 92vh;
+    box-shadow: 0 18px 60px rgba(0,0,0,0.32);
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    transform: translateY(14px); transition: transform 0.32s ease;
+  }
+  .reflect-back.show .reflect-card { transform: translateY(0); }
+  .reflect-card .rh {
+    padding: 14px 22px;
+    background: linear-gradient(135deg, var(--crimson) 0%, var(--crimson-deep) 100%);
+    color: #fff;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .reflect-card .rh h3 {
+    font-family: 'Lora', serif; font-size: 18px; font-weight: 700;
+  }
+  .reflect-card .rh h3 em { font-style: italic; color: #f0c878; }
+  .reflect-card .rh .close {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3);
+    color: #fff; cursor: pointer; font-size: 16px; line-height: 1;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .reflect-card .rh .close:hover { background: rgba(255,255,255,0.32); }
+  .reflect-card .rb {
+    padding: 18px 22px 20px;
+    overflow-y: auto;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .reflect-card .prompt {
+    font-family: 'Lora', serif; font-size: 13.5px; color: var(--ink); line-height: 1.5;
+  }
+  .reflect-card .prompt b { color: var(--crimson-deep); }
+  .reflect-card .trial-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px;
+  }
+  .trial-card {
+    background: var(--bg); border: 1px solid var(--border); border-left: 3px solid var(--crimson);
+    border-radius: 7px; padding: 8px 10px;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .trial-card .marr {
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: var(--crimson-deep);
+  }
+  .trial-card .champ {
+    font-family: 'Lora', serif; font-size: 12px; color: var(--ink); line-height: 1.2;
+  }
+  .trial-card .champ em { font-style: italic; color: var(--crimson); }
+  .trial-card .empty {
+    font-family: 'Lora', serif; font-style: italic; font-size: 11px; color: var(--soft);
+  }
+  .reflect-card textarea {
+    width: 100%; min-height: 100px; padding: 10px 12px;
+    border: 1.5px solid var(--border); border-radius: 8px;
+    font-family: 'Lora', serif; font-size: 13px; line-height: 1.55; color: var(--ink);
+    background: var(--bg); outline: none; resize: vertical;
+    font-style: italic;
+  }
+  .reflect-card textarea:focus { border-color: var(--crimson); background: #fff; box-shadow: 0 0 0 3px rgba(138,40,40,0.1); }
+  .reflect-card .reflect-actions {
+    display: flex; gap: 8px; justify-content: space-between; align-items: center; flex-wrap: wrap;
+  }
+  .reflect-card .reflect-actions .left { font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted); }
+  .reflect-card .reflect-actions .right { display: flex; gap: 8px; }
+  .reflect-card .reflect-actions button {
+    font-family: 'Outfit', sans-serif; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700;
+    padding: 8px 14px; border-radius: 6px; cursor: pointer; border: 1px solid var(--border);
+    background: var(--paper); color: var(--ink);
+    transition: all 0.15s;
+  }
+  .reflect-card .reflect-actions button:hover { border-color: var(--crimson); color: var(--crimson); }
+  .reflect-card .reflect-actions button.primary { background: var(--crimson); color: #fff; border-color: var(--crimson); }
+  .reflect-card .reflect-actions button.primary:hover { background: var(--crimson-deep); border-color: var(--crimson-deep); color: #fff; }
+
   /* TOAST */
   .toast {
     position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%) translateY(20px);
@@ -490,6 +697,70 @@
 
   </div>
 
+</div>
+
+<!-- INTRO MODAL — shown on first visit -->
+<div class="intro-back" id="intro-back">
+  <div class="intro-card">
+    <div class="intro-image" aria-hidden="true"></div>
+    <div class="intro-body">
+      <div class="crumb">IE 4512 · Module 6 · Game</div>
+      <h2>Welcome to the <em>ΔIRR Tournament</em></h2>
+      <div class="lede">Five engineering projects compete head-to-head against a single hurdle: your MARR. Your job is to figure out, one matchup at a time, which one is worth funding.</div>
+
+      <div class="intro-rules">
+        <div class="intro-rule">
+          <div class="n">1</div>
+          <div class="txt">Six alternatives sit in the <b>pool</b>: <b>Do Nothing</b> plus Projects A through E. Each one shows initial investment P, annual savings A, salvage S, and life n.</div>
+        </div>
+        <div class="intro-rule">
+          <div class="n">2</div>
+          <div class="txt">Sort the alternatives in your head by <b>initial investment, smallest first</b>. Round 1 is Do Nothing vs the cheapest project. Each later round: the current champion defends against the next cheapest challenger.</div>
+        </div>
+        <div class="intro-rule">
+          <div class="n">3</div>
+          <div class="txt">Drag the correct challenger into the slot. If you pick the wrong one, the slot refuses it &mdash; no hint. The tool then auto-computes <b>ΔIRR</b> on the difference cash flow.</div>
+        </div>
+        <div class="intro-rule">
+          <div class="n">4</div>
+          <div class="txt">If <b>ΔIRR &gt; MARR</b>, the challenger upgrades and becomes the new champion. Otherwise the defender stays in. Last one standing is the optimal project.</div>
+        </div>
+      </div>
+
+      <div class="intro-actions">
+        <button class="start-btn" id="intro-start">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+          Start the tournament
+        </button>
+        <div class="replay-hint">After you crown a champion, replay at different MARR values and observe what changes.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REFLECT MODAL — opened after champion declared -->
+<div class="reflect-back" id="reflect-back">
+  <div class="reflect-card">
+    <div class="rh">
+      <h3>Replay &amp; <em>reflect</em></h3>
+      <button class="close" id="reflect-close" aria-label="Close">×</button>
+    </div>
+    <div class="rb">
+      <div class="prompt">
+        Reset the tournament and play it through at <b>three different MARR values</b> (try 6%, 12%, and 18%). Does the champion change? Where does the cascade flip?
+      </div>
+      <div class="trial-grid" id="trial-grid"></div>
+      <div class="prompt">In <b>two or three sentences</b>, describe what you noticed about how the MARR changes the outcome.</div>
+      <textarea id="reflect-text" placeholder="e.g., at low MARR the champion was the most expensive project; at high MARR everything lost to Do Nothing because no incremental step cleared the hurdle…"></textarea>
+      <div class="reflect-actions">
+        <div class="left" id="trial-count">0 trials logged</div>
+        <div class="right">
+          <button id="reflect-copy">Copy summary</button>
+          <button class="primary" id="reflect-done">Done</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -721,8 +992,16 @@
           <div class="meta">
             <span class="lbl">Optimal alternative</span>
             <span class="name">${champName}</span>
-            <span class="sub">at MARR <b>${(state.marr*100).toFixed(1)}%</b>, this is the highest-investment alternative whose every incremental step cleared the hurdle.</span>
+            <span class="sub">at MARR <b>${(state.marr*100).toFixed(1)}%</b></span>
           </div>
+        </div>
+        <div class="reflect show">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v6h6"/><path d="M20 20v-6h-6"/><path d="M4 10a8 8 0 0114-3M20 14a8 8 0 01-14 3"/></svg></div>
+          <div class="copy">
+            <span class="lbl">Now your turn</span>
+            <span class="txt">Replay at <b>different MARR values</b> and write what changes.</span>
+          </div>
+          <button class="open-btn" id="open-reflect">Reflect →</button>
         </div>
       `;
     }
@@ -881,6 +1160,105 @@
     render();
     showToast('Tournament reset.', true);
   });
+
+  // ===== Intro modal =====
+  const INTRO_KEY = 'm6_playoff_intro_seen_v1';
+  const introBack = document.getElementById('intro-back');
+  const introStart = document.getElementById('intro-start');
+  function showIntro() { introBack.classList.add('show'); }
+  function hideIntro() { introBack.classList.remove('show'); try { localStorage.setItem(INTRO_KEY, '1'); } catch (e) {} }
+  introStart.addEventListener('click', hideIntro);
+  introBack.addEventListener('click', e => { if (e.target === introBack) hideIntro(); });
+  try {
+    if (!localStorage.getItem(INTRO_KEY)) showIntro();
+  } catch (e) { showIntro(); }
+
+  // ===== Reflection modal — captures MARR trials and observations =====
+  const TRIAL_KEY = 'm6_playoff_trials_v1';
+  const REFLECT_TEXT_KEY = 'm6_playoff_reflect_v1';
+  const reflectBack = document.getElementById('reflect-back');
+  const reflectClose = document.getElementById('reflect-close');
+  const reflectDone = document.getElementById('reflect-done');
+  const reflectCopy = document.getElementById('reflect-copy');
+  const reflectText = document.getElementById('reflect-text');
+  const trialGrid = document.getElementById('trial-grid');
+  const trialCount = document.getElementById('trial-count');
+
+  function loadTrials() {
+    try { return JSON.parse(localStorage.getItem(TRIAL_KEY) || '[]'); } catch (e) { return []; }
+  }
+  function saveTrial(marrPct, champName) {
+    const trials = loadTrials();
+    // De-dup by MARR pct rounded to 1 decimal
+    const r = +(+marrPct).toFixed(1);
+    const idx = trials.findIndex(t => +(t.marr).toFixed(1) === r);
+    const row = { marr: r, champ: champName, when: Date.now() };
+    if (idx >= 0) trials[idx] = row; else trials.push(row);
+    trials.sort((a, b) => a.marr - b.marr);
+    try { localStorage.setItem(TRIAL_KEY, JSON.stringify(trials)); } catch (e) {}
+    return trials;
+  }
+  function renderTrials() {
+    const trials = loadTrials();
+    if (!trials.length) {
+      trialGrid.innerHTML = '<div class="trial-card"><span class="empty">No trials yet — finish a round, then replay at a new MARR.</span></div>';
+    } else {
+      trialGrid.innerHTML = trials.map(t => `
+        <div class="trial-card">
+          <span class="marr">MARR ${t.marr.toFixed(1)}%</span>
+          <span class="champ">Champion: <em>${t.champ}</em></span>
+        </div>
+      `).join('');
+    }
+    trialCount.textContent = trials.length + ' trial' + (trials.length === 1 ? '' : 's') + ' logged';
+  }
+  function openReflect() {
+    reflectBack.classList.add('show');
+    renderTrials();
+    try { reflectText.value = localStorage.getItem(REFLECT_TEXT_KEY) || ''; } catch (e) {}
+  }
+  function closeReflect() { reflectBack.classList.remove('show'); }
+  reflectClose.addEventListener('click', closeReflect);
+  reflectBack.addEventListener('click', e => { if (e.target === reflectBack) closeReflect(); });
+  reflectDone.addEventListener('click', () => {
+    try { localStorage.setItem(REFLECT_TEXT_KEY, reflectText.value); } catch (e) {}
+    closeReflect();
+    showToast('Reflection saved.', true);
+  });
+  reflectCopy.addEventListener('click', async () => {
+    const trials = loadTrials();
+    const lines = [
+      'IE 4512 · Module 6 · ΔIRR Tournament — Reflection',
+      '',
+      'Trials:',
+      ...trials.map(t => `  • MARR ${t.marr.toFixed(1)}% → champion: ${t.champ}`),
+      '',
+      'Observations:',
+      reflectText.value || '(no notes yet)',
+    ];
+    const txt = lines.join('\n');
+    try { await navigator.clipboard.writeText(txt); showToast('Reflection copied to clipboard.', true); }
+    catch (e) { showToast('Could not copy — select and copy by hand.'); }
+  });
+
+  // Open reflect when student clicks the inline button on the champion card
+  document.addEventListener('click', e => {
+    if (e.target && e.target.id === 'open-reflect') openReflect();
+  });
+
+  // Whenever a champion is declared, log the trial
+  const _origHandleDrop = handleDrop;
+  function logTrialIfChampion() {
+    if (state.champion) {
+      saveTrial(state.marr * 100, state.champion.name);
+    }
+  }
+  // Monkey-patch render to log trials at the moment champion appears
+  const _origRender = render;
+  render = function () {
+    _origRender();
+    logTrialIfChampion();
+  };
 
   // ===== Boot =====
   init();
