@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Module 6 · IRR · ERR · MIRR — Three Rates, One Project</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+    chtml: { scale: 1.05 }
+  };
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf9f5; --paper: #ffffff; --ink: #1a1a1a; --muted: #5a5247; --soft: #8b7355;
+    --border: #e8e3d4; --line: #d4cfc0;
+    --blue: #1947d6; --blue-soft: #eef2ff;
+    --gold: #b8860b; --gold-deep: #8a6608; --gold-soft: #faf3e0;
+    --olive: #5c7a4a; --olive-deep: #455d36; --olive-soft: #f0f4ea;
+    --crimson: #8a2828; --crimson-deep: #6b1e1e; --crimson-soft: #fdf2f3;
+    --teal: #0e7c80; --teal-deep: #0a5e62; --teal-soft: #e6f4f4;
+    --purple: #7c3aed; --purple-soft: #f3eeff;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: 'Outfit', -apple-system, system-ui, sans-serif; font-size: 13.5px; line-height: 1.55;
+  }
+  .app { max-width: 1300px; margin: 0 auto; padding: 12px 22px 60px; }
+
+  /* HEAD */
+  .head {
+    display: flex; justify-content: space-between; align-items: center; gap: 14px;
+    padding: 9px 16px; background: var(--paper); border: 1px solid var(--border);
+    border-radius: 10px; border-top: 3px solid var(--gold); flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .brand .code { font-size: 10px; color: var(--gold); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; }
+  .brand h1 { font-family: 'Lora', Georgia, serif; font-size: 19px; font-weight: 700; line-height: 1; }
+  .brand h1 em { font-style: italic; color: var(--gold); font-weight: 400; }
+  .brand .tag { font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted); }
+  .head .nav { display: flex; gap: 6px; }
+  .head .nav a {
+    font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft); text-decoration: none; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px;
+    transition: all 0.15s; background: var(--paper); font-family: 'Outfit', sans-serif;
+  }
+  .head .nav a:hover { color: var(--gold); border-color: var(--gold); background: var(--gold-soft); }
+
+  /* HERO */
+  .hero {
+    margin-top: 18px;
+    background: linear-gradient(135deg, var(--paper) 0%, var(--gold-soft) 100%);
+    border: 1px solid #efe1bd; border-radius: 14px;
+    padding: 26px 30px 24px;
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 28px; align-items: center;
+  }
+  @media (max-width: 920px) { .hero { grid-template-columns: 1fr; } }
+  .hero .crumb {
+    font-family: 'Outfit', sans-serif; font-size: 10px; letter-spacing: 0.26em; text-transform: uppercase; font-weight: 700;
+    color: var(--gold-deep); margin-bottom: 6px;
+  }
+  .hero h2 { font-family: 'Lora', serif; font-size: 30px; font-weight: 700; line-height: 1.1; letter-spacing: -0.01em; }
+  .hero h2 em { font-style: italic; color: var(--gold-deep); }
+  .hero .sub {
+    font-family: 'Lora', serif; font-style: italic; font-size: 14px; color: var(--muted); line-height: 1.6;
+    margin-top: 9px; max-width: 560px;
+  }
+  .hero .sub b { color: var(--ink); font-weight: 700; font-style: normal; }
+  .hero .stat-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  }
+  .hero .stat {
+    background: var(--paper); border: 1px solid #efe1bd; border-radius: 8px;
+    padding: 10px 14px;
+  }
+  .hero .stat .lbl {
+    font-size: 9.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; color: var(--gold-deep);
+  }
+  .hero .stat .val {
+    font-family: 'Lora', serif; font-size: 20px; font-weight: 700; color: var(--ink);
+    margin-top: 2px; line-height: 1.1;
+  }
+  .hero .stat .val em { font-style: italic; color: var(--gold-deep); }
+  .hero .stat .sub2 {
+    font-family: 'Lora', serif; font-style: italic; font-size: 11px; color: var(--muted); margin-top: 2px;
+  }
+
+  /* Section base */
+  .section {
+    margin-top: 22px;
+    background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
+    padding: 20px 24px 22px;
+  }
+  .section-head {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+    margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border);
+  }
+  .section-head h3 { font-family: 'Lora', serif; font-size: 20px; font-weight: 700; line-height: 1.2; }
+  .section-head h3 em { font-style: italic; color: var(--gold); }
+  .section-head .meta {
+    font-family: 'Outfit', sans-serif; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft);
+  }
+  .section-head .sub {
+    flex: 1 1 100%;
+    font-family: 'Lora', serif; font-style: italic; font-size: 13px; color: var(--muted); line-height: 1.5;
+    margin-top: 4px;
+  }
+
+  /* Cash flow timeline SVG container */
+  .cashflow-card {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 16px 16px;
+    position: relative;
+  }
+  .cashflow-card .legend {
+    display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px;
+    font-family: 'Outfit', sans-serif; font-size: 11px;
+  }
+  .cashflow-card .legend .it { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); }
+  .cashflow-card .legend .sw { width: 12px; height: 12px; border-radius: 3px; }
+  .cashflow-card svg { width: 100%; height: 220px; }
+  .cashflow-card .info-btn {
+    position: absolute; top: 12px; right: 14px;
+  }
+
+  /* Info icon button */
+  .info-btn {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--gold-soft); border: 1px solid var(--gold);
+    color: var(--gold-deep);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+  }
+  .info-btn:hover { background: var(--gold); color: #fff; transform: scale(1.08); }
+  .info-btn.olive { background: var(--olive-soft); border-color: var(--olive); color: var(--olive-deep); }
+  .info-btn.olive:hover { background: var(--olive); color: #fff; }
+  .info-btn.teal  { background: var(--teal-soft); border-color: var(--teal); color: var(--teal-deep); }
+  .info-btn.teal:hover { background: var(--teal); color: #fff; }
+  .info-btn.crimson { background: var(--crimson-soft); border-color: var(--crimson); color: var(--crimson); }
+
+  /* Controls — sticky sliders */
+  .controls {
+    position: sticky; top: 8px; z-index: 30;
+    margin-top: 18px;
+    background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
+    padding: 12px 18px;
+    display: grid; grid-template-columns: auto 1fr 1fr 1fr; gap: 14px; align-items: center;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+  }
+  @media (max-width: 920px) { .controls { grid-template-columns: 1fr 1fr; } }
+  .controls .lbl {
+    font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; color: var(--gold-deep);
+  }
+  .slider-cell {
+    display: flex; flex-direction: column; gap: 3px;
+    padding: 4px 12px;
+    border-left: 1px dashed var(--line);
+  }
+  .slider-cell:first-of-type { border-left: none; padding-left: 0; }
+  .slider-cell .row1 { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .slider-cell .label-main {
+    font-family: 'Outfit', sans-serif; font-size: 9.5px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700;
+  }
+  .slider-cell.gold  .label-main { color: var(--gold-deep); }
+  .slider-cell.olive .label-main { color: var(--olive-deep); }
+  .slider-cell.teal  .label-main { color: var(--teal-deep); }
+  .slider-cell .readout {
+    font-family: 'Lora', serif; font-style: italic; font-size: 18px; font-weight: 700;
+  }
+  .slider-cell.gold  .readout { color: var(--gold-deep); }
+  .slider-cell.olive .readout { color: var(--olive-deep); }
+  .slider-cell.teal  .readout { color: var(--teal-deep); }
+  .slider-cell input[type=range] { width: 100%; height: 4px; }
+  .slider-cell.gold  input[type=range] { accent-color: var(--gold); }
+  .slider-cell.olive input[type=range] { accent-color: var(--olive); }
+  .slider-cell.teal  input[type=range] { accent-color: var(--teal); }
+  .slider-cell .hint {
+    font-family: 'Lora', serif; font-style: italic; font-size: 10.5px; color: var(--muted); margin-top: 1px;
+  }
+
+  /* Three method cards */
+  .methods {
+    margin-top: 18px;
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px;
+  }
+  @media (max-width: 1000px) { .methods { grid-template-columns: 1fr; } }
+  .method {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px 18px 18px;
+    border-top: 3px solid var(--gold);
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .method.gold   { border-top-color: var(--gold); }
+  .method.olive  { border-top-color: var(--olive); }
+  .method.teal   { border-top-color: var(--teal); }
+  .method-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  }
+  .method-head .ttl {
+    display: flex; align-items: baseline; gap: 9px;
+  }
+  .method-head .ttl .badge {
+    font-family: 'Outfit', sans-serif; font-size: 9.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+    padding: 3px 8px; border-radius: 999px;
+  }
+  .method.gold  .ttl .badge { background: var(--gold-soft); color: var(--gold-deep); }
+  .method.olive .ttl .badge { background: var(--olive-soft); color: var(--olive-deep); }
+  .method.teal  .ttl .badge { background: var(--teal-soft); color: var(--teal-deep); }
+  .method-head h4 { font-family: 'Lora', serif; font-size: 20px; font-weight: 700; line-height: 1.1; }
+  .method-head h4 em { font-style: italic; }
+  .method.gold  h4 em { color: var(--gold); }
+  .method.olive h4 em { color: var(--olive); }
+  .method.teal  h4 em { color: var(--teal); }
+  .method .one-liner {
+    font-family: 'Lora', serif; font-style: italic; font-size: 12.5px; color: var(--muted); line-height: 1.5;
+  }
+  .method .formula {
+    background: var(--bg); border: 1px solid var(--border); border-left: 3px solid var(--gold);
+    padding: 10px 14px 12px; border-radius: 7px;
+    text-align: center;
+    font-size: 15px;
+    line-height: 1.3;
+  }
+  .method.gold  .formula { border-left-color: var(--gold); }
+  .method.olive .formula { border-left-color: var(--olive); }
+  .method.teal  .formula { border-left-color: var(--teal); }
+  .method .formula .caption {
+    font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted); margin-top: 6px;
+  }
+  .method .result-card {
+    background: linear-gradient(135deg, var(--paper) 0%, var(--gold-soft) 100%);
+    border: 1px solid #efe1bd; border-radius: 10px;
+    padding: 14px 18px;
+    text-align: center;
+  }
+  .method.olive .result-card { background: linear-gradient(135deg, var(--paper) 0%, var(--olive-soft) 100%); border-color: #cbd9bb; }
+  .method.teal  .result-card { background: linear-gradient(135deg, var(--paper) 0%, var(--teal-soft) 100%); border-color: #b9dadc; }
+  .method .result-card .lbl {
+    font-size: 9.5px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700; color: var(--gold-deep);
+  }
+  .method.olive .result-card .lbl { color: var(--olive-deep); }
+  .method.teal  .result-card .lbl { color: var(--teal-deep); }
+  .method .result-card .big {
+    font-family: 'Lora', serif; font-weight: 700; font-style: italic; font-size: 40px; line-height: 1;
+    color: var(--gold-deep); margin-top: 5px; letter-spacing: -0.02em;
+  }
+  .method.olive .result-card .big { color: var(--olive-deep); }
+  .method.teal  .result-card .big { color: var(--teal-deep); }
+  .method .verdict {
+    margin-top: 6px;
+    font-family: 'Outfit', sans-serif; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700;
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 9px; border-radius: 999px;
+  }
+  .method .verdict.accept { color: #fff; background: var(--olive); }
+  .method .verdict.reject { color: #fff; background: var(--crimson); }
+  .method .compute {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); line-height: 1.6;
+    background: var(--bg); border: 1px dashed var(--line); border-radius: 6px;
+    padding: 8px 11px;
+  }
+  .method .compute b { color: var(--ink); font-weight: 700; }
+  .method .compute em { font-style: italic; color: var(--gold-deep); }
+
+  /* NPV chart */
+  .npv-card {
+    margin-top: 22px;
+    background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
+    padding: 20px 24px 18px;
+    position: relative;
+  }
+  .npv-card .info-btn { position: absolute; top: 16px; right: 18px; }
+  .npv-card svg { width: 100%; height: 280px; }
+  .npv-card .ax-cap {
+    font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted); margin-top: 8px; text-align: center;
+  }
+
+  /* Decision strip */
+  .decision {
+    margin-top: 22px;
+    background: linear-gradient(135deg, #fffaeb 0%, var(--paper) 100%);
+    border: 1px solid var(--gold); border-radius: 12px;
+    padding: 18px 22px;
+  }
+  .decision h3 { font-family: 'Lora', serif; font-size: 18px; font-weight: 700; }
+  .decision h3 em { font-style: italic; color: var(--gold-deep); }
+  .decision .body {
+    margin-top: 12px;
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;
+  }
+  @media (max-width: 900px) { .decision .body { grid-template-columns: 1fr; } }
+  .decision .row {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 9px; padding: 11px 13px;
+    border-top: 3px solid var(--gold);
+  }
+  .decision .row.olive { border-top-color: var(--olive); }
+  .decision .row.teal  { border-top-color: var(--teal); }
+  .decision .row .when {
+    font-family: 'Outfit', sans-serif; font-size: 9.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+    color: var(--gold-deep); margin-bottom: 5px;
+  }
+  .decision .row.olive .when { color: var(--olive-deep); }
+  .decision .row.teal  .when { color: var(--teal-deep); }
+  .decision .row .what {
+    font-family: 'Lora', serif; font-style: italic; font-size: 13px; color: var(--ink); line-height: 1.5;
+  }
+  .decision .row .what b { font-style: normal; color: var(--gold-deep); font-weight: 700; }
+  .decision .row.olive .what b { color: var(--olive-deep); }
+  .decision .row.teal  .what b { color: var(--teal-deep); }
+
+  /* Popover (click info icon) */
+  .pop-back {
+    position: fixed; inset: 0; z-index: 800;
+    background: rgba(20, 12, 12, 0.55);
+    backdrop-filter: blur(5px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.28s ease;
+  }
+  .pop-back.show { opacity: 1; pointer-events: auto; }
+  .pop-card {
+    background: var(--paper); border-radius: 12px;
+    max-width: 620px; width: 100%;
+    box-shadow: 0 18px 50px rgba(0,0,0,0.28);
+    transform: translateY(10px); transition: transform 0.28s ease;
+    overflow: hidden;
+  }
+  .pop-back.show .pop-card { transform: translateY(0); }
+  .pop-card .ph {
+    padding: 14px 22px;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-deep) 100%);
+    color: #fff;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .pop-card.olive .ph { background: linear-gradient(135deg, var(--olive) 0%, var(--olive-deep) 100%); }
+  .pop-card.teal  .ph { background: linear-gradient(135deg, var(--teal) 0%, var(--teal-deep) 100%); }
+  .pop-card.crimson .ph { background: linear-gradient(135deg, var(--crimson) 0%, var(--crimson-deep) 100%); }
+  .pop-card .ph h4 { font-family: 'Lora', serif; font-size: 18px; font-weight: 700; }
+  .pop-card .ph h4 em { font-style: italic; color: #ffeec4; }
+  .pop-card .ph .close {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3);
+    color: #fff; cursor: pointer; font-size: 16px; line-height: 1;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .pop-card .ph .close:hover { background: rgba(255,255,255,0.32); }
+  .pop-card .pb {
+    padding: 18px 22px 22px;
+    font-family: 'Lora', serif; font-size: 13.5px; color: var(--ink); line-height: 1.6;
+  }
+  .pop-card .pb p + p { margin-top: 9px; }
+  .pop-card .pb b { color: var(--gold-deep); font-weight: 700; }
+  .pop-card.olive .pb b { color: var(--olive-deep); }
+  .pop-card.teal .pb b { color: var(--teal-deep); }
+  .pop-card .pb em { font-style: italic; color: var(--muted); }
+
+  /* Footer */
+  .foot {
+    text-align: center; margin-top: 30px; padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- HEAD -->
+  <header class="head">
+    <div class="brand">
+      <span class="code">IE 4512 · Module 6</span>
+      <h1>IRR · ERR · <em>MIRR</em></h1>
+      <span class="tag">three rates, one project, one decision</span>
+    </div>
+    <nav class="nav">
+      <a href="index.html#module-6">← Module 6</a>
+      <a href="m6-internal-rate-of-return.html">Manhattan IRR</a>
+      <a href="m6-incremental-irr-playoff.html">ΔIRR Game</a>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div>
+      <div class="crumb">a working example · Magic Kingdom 2024</div>
+      <h2>Tiana's <em>Bayou Adventure</em></h2>
+      <div class="sub">
+        In June 2024, Walt Disney World opened a reimagined attraction on the bones of the old Splash Mountain. Imagine
+        you sit on the project finance team. The numbers below are a stylized version of the build &mdash; clean enough
+        to compute, real enough to matter. The question is simple: <b>is the return rate high enough to fund the project?</b>
+        The trouble is that there are three rates and they almost never agree.
+      </div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat">
+        <div class="lbl">Build cost</div>
+        <div class="val"><em>$120 M</em></div>
+        <div class="sub2">single year 0 outflow</div>
+      </div>
+      <div class="stat">
+        <div class="lbl">Net revenue</div>
+        <div class="val"><em>$22 M / yr</em></div>
+        <div class="sub2">years 1 through 10, tickets + merch</div>
+      </div>
+      <div class="stat">
+        <div class="lbl">Salvage</div>
+        <div class="val"><em>$8 M</em></div>
+        <div class="sub2">at end of year 10</div>
+      </div>
+      <div class="stat">
+        <div class="lbl">Life</div>
+        <div class="val"><em>10 years</em></div>
+        <div class="sub2">planning horizon</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CASH FLOW TIMELINE -->
+  <section class="section">
+    <div class="section-head">
+      <h3>The <em>cash flow</em> the math is acting on</h3>
+      <span class="meta">visualize first</span>
+      <div class="sub">A single big outflow at year 0 (the build) and ten years of steady inflows. Year 10 stacks the last revenue with the salvage value. Hover the bars to read exact numbers.</div>
+    </div>
+    <div class="cashflow-card">
+      <button class="info-btn" data-pop="cashflow" aria-label="About this chart">i</button>
+      <svg id="cf-svg" viewBox="0 0 900 220" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div class="legend">
+        <div class="it"><div class="sw" style="background:var(--crimson)"></div>outflow (build cost)</div>
+        <div class="it"><div class="sw" style="background:var(--olive)"></div>inflow (net revenue)</div>
+        <div class="it"><div class="sw" style="background:var(--gold)"></div>salvage at year 10</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTROL BAR -->
+  <section class="controls" id="controls">
+    <span class="lbl">Tune the<br>rates &rarr;</span>
+    <div class="slider-cell gold">
+      <div class="row1"><span class="label-main">MARR · i</span><span class="readout" id="marr-val">10.0%</span></div>
+      <input type="range" id="marr" min="2" max="25" step="0.25" value="10" aria-label="MARR">
+      <div class="hint">the hurdle the project must clear</div>
+    </div>
+    <div class="slider-cell olive">
+      <div class="row1"><span class="label-main">Finance rate · i<sub>f</sub></span><span class="readout" id="fin-val">10.0%</span></div>
+      <input type="range" id="fin" min="2" max="20" step="0.25" value="10" aria-label="Finance rate (for MIRR outflows)">
+      <div class="hint">cost of borrowing for outflows · MIRR</div>
+    </div>
+    <div class="slider-cell teal">
+      <div class="row1"><span class="label-main">Reinvest rate · i<sub>r</sub></span><span class="readout" id="rinv-val">8.0%</span></div>
+      <input type="range" id="rinv" min="2" max="20" step="0.25" value="8" aria-label="Reinvestment rate (for MIRR inflows)">
+      <div class="hint">realistic rate inflows actually earn · MIRR</div>
+    </div>
+  </section>
+
+  <!-- THREE METHODS -->
+  <section class="methods">
+
+    <!-- IRR -->
+    <div class="method gold">
+      <div class="method-head">
+        <div class="ttl"><span class="badge">Method 1</span><h4>Internal · <em>IRR</em></h4></div>
+        <button class="info-btn" data-pop="irr" aria-label="About IRR">i</button>
+      </div>
+      <div class="one-liner">The single rate that makes the project's net present value exactly zero. No external assumptions.</div>
+      <div class="formula">
+        \[ \mathrm{NPV}(\mathrm{IRR}) = \sum_{t=0}^{n} \frac{CF_t}{(1+\mathrm{IRR})^t} = 0 \]
+        <div class="caption">solve for the rate, numerically (Newton-Raphson or bisection)</div>
+      </div>
+      <div class="result-card">
+        <div class="lbl">IRR</div>
+        <div class="big" id="irr-val">—</div>
+        <span class="verdict" id="irr-verdict">—</span>
+      </div>
+      <div class="compute" id="irr-compute"></div>
+    </div>
+
+    <!-- ERR -->
+    <div class="method olive">
+      <div class="method-head">
+        <div class="ttl"><span class="badge">Method 2</span><h4>External · <em>ERR</em></h4></div>
+        <button class="info-btn olive" data-pop="err" aria-label="About ERR">i</button>
+      </div>
+      <div class="one-liner">Move every inflow forward to year n at the MARR, every outflow back to year 0 at the MARR, then solve for the rate that links them.</div>
+      <div class="formula">
+        \[ \mathrm{ERR} = \left(\frac{FW_{+}(i)}{PW_{-}(i)}\right)^{1/n} - 1 \]
+        <div class="caption">single rate <em>i</em> = MARR used for both directions</div>
+      </div>
+      <div class="result-card">
+        <div class="lbl">ERR · at MARR</div>
+        <div class="big" id="err-val">—</div>
+        <span class="verdict" id="err-verdict">—</span>
+      </div>
+      <div class="compute" id="err-compute"></div>
+    </div>
+
+    <!-- MIRR -->
+    <div class="method teal">
+      <div class="method-head">
+        <div class="ttl"><span class="badge">Method 3</span><h4>Modified · <em>MIRR</em></h4></div>
+        <button class="info-btn teal" data-pop="mirr" aria-label="About MIRR">i</button>
+      </div>
+      <div class="one-liner">Same shape as ERR but uses two distinct rates: borrowing cost for the outflows, realistic reinvestment for the inflows.</div>
+      <div class="formula">
+        \[ \mathrm{MIRR} = \left(\frac{FW_{+}(i_r)}{PW_{-}(i_f)}\right)^{1/n} - 1 \]
+        <div class="caption"><em>i<sub>f</sub></em> = finance rate &middot; <em>i<sub>r</sub></em> = reinvestment rate</div>
+      </div>
+      <div class="result-card">
+        <div class="lbl">MIRR · two rates</div>
+        <div class="big" id="mirr-val">—</div>
+        <span class="verdict" id="mirr-verdict">—</span>
+      </div>
+      <div class="compute" id="mirr-compute"></div>
+    </div>
+
+  </section>
+
+  <!-- NPV CURVE -->
+  <section class="npv-card">
+    <button class="info-btn" data-pop="npv" aria-label="About the NPV curve">i</button>
+    <div class="section-head" style="border:none;margin-bottom:8px;padding-bottom:0;">
+      <h3>Where the <em>NPV crosses zero</em></h3>
+      <span class="meta">why we even need a rate</span>
+      <div class="sub">The NPV of this project as a function of the discount rate. The point where it crosses zero is the IRR. Mark MARR on the same axis to see if the project clears it.</div>
+    </div>
+    <svg id="npv-svg" viewBox="0 0 1100 280" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div class="ax-cap">discount rate <em>r</em> · NPV(r) in million dollars</div>
+  </section>
+
+  <!-- DECISION STRIP -->
+  <section class="decision">
+    <h3>When do you reach for <em>which</em>?</h3>
+    <div class="body">
+      <div class="row">
+        <div class="when">Use IRR when</div>
+        <div class="what">cash flows are <b>conventional</b> (one sign change), the project is <b>small relative to the firm</b>, and the implicit reinvestment-at-IRR assumption is <em>plausible</em>.</div>
+      </div>
+      <div class="row olive">
+        <div class="when">Use ERR when</div>
+        <div class="what">cash flows are <b>non-conventional</b>, multiple IRRs are possible, and you want to be explicit that intermediate inflows are reinvested at the firm's MARR, not at the project's own IRR.</div>
+      </div>
+      <div class="row teal">
+        <div class="when">Use MIRR when</div>
+        <div class="what">the firm's <b>cost of borrowing differs from</b> the rate it can reinvest at, and you want both realities to show up in one number. The Excel <code>MIRR(values, finance_rate, reinvest_rate)</code> function does this.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="foot">IE 4512 · Module 6 · Three rates, one project</div>
+
+</div>
+
+<!-- INFO POPOVERS -->
+<div class="pop-back" id="pop-back">
+  <div class="pop-card" id="pop-card">
+    <div class="ph"><h4 id="pop-title"></h4><button class="close" id="pop-close" aria-label="Close">×</button></div>
+    <div class="pb" id="pop-body"></div>
+  </div>
+</div>
+
+<script>
+  // ===== Project cash flows =====
+  // Year 0: build, Years 1-9: revenue, Year 10: revenue + salvage
+  const PROJECT = {
+    build: 120,         // $ M outflow at t=0
+    revenue: 22,        // $ M / year inflow for years 1..n
+    salvage: 8,         // $ M extra at year n
+    n: 10
+  };
+  function getCashFlows(p = PROJECT) {
+    const cfs = [-p.build];
+    for (let t = 1; t < p.n; t++) cfs.push(p.revenue);
+    cfs.push(p.revenue + p.salvage);
+    return cfs;
+  }
+
+  // ===== Solvers =====
+  function npv(cfs, r) {
+    let s = 0;
+    for (let t = 0; t < cfs.length; t++) s += cfs[t] / Math.pow(1 + r, t);
+    return s;
+  }
+  function irrBisect(cfs, lo = -0.99, hi = 5) {
+    const f = r => npv(cfs, r);
+    let fLo = f(lo), fHi = f(hi);
+    if (fLo * fHi > 0) return null;
+    for (let i = 0; i < 200; i++) {
+      const m = (lo + hi) / 2;
+      const fm = f(m);
+      if (Math.abs(fm) < 1e-7) return m;
+      if (fLo * fm < 0) { hi = m; fHi = fm; }
+      else { lo = m; fLo = fm; }
+    }
+    return (lo + hi) / 2;
+  }
+  function errRate(cfs, marr) {
+    const n = cfs.length - 1;
+    let pvNeg = 0, fvPos = 0;
+    cfs.forEach((cf, t) => {
+      if (cf < 0) pvNeg += -cf / Math.pow(1 + marr, t);
+      else fvPos += cf * Math.pow(1 + marr, n - t);
+    });
+    if (pvNeg <= 0) return null;
+    return Math.pow(fvPos / pvNeg, 1 / n) - 1;
+  }
+  function mirrRate(cfs, finance, reinvest) {
+    const n = cfs.length - 1;
+    let pvNeg = 0, fvPos = 0;
+    cfs.forEach((cf, t) => {
+      if (cf < 0) pvNeg += -cf / Math.pow(1 + finance, t);
+      else fvPos += cf * Math.pow(1 + reinvest, n - t);
+    });
+    if (pvNeg <= 0) return null;
+    return Math.pow(fvPos / pvNeg, 1 / n) - 1;
+  }
+  function fmtPct(r, d = 2) { return r === null || isNaN(r) ? '—' : (r * 100).toFixed(d) + '%'; }
+  function fmtMoney(v) { return '$' + Number(v).toFixed(1) + ' M'; }
+
+  // ===== State =====
+  const state = { marr: 0.10, finance: 0.10, reinvest: 0.08 };
+
+  // ===== Cash-flow timeline SVG =====
+  function drawCashflow() {
+    const svg = document.getElementById('cf-svg');
+    const cfs = getCashFlows();
+    const n = cfs.length;
+    const W = 900, H = 220;
+    const padL = 60, padR = 30, padT = 24, padB = 36;
+    const x0 = padL, x1 = W - padR;
+    const yMid = padT + (H - padT - padB) * 0.55; // axis a bit below mid
+
+    const max = 30; // max bar value for scaling (revenue+salvage = 30)
+    const min = 120; // largest outflow magnitude
+    const scaleUp = (yMid - padT) / max;
+    const scaleDn = (H - padB - yMid) / min;
+
+    const colW = (x1 - x0) / n;
+    let svgHTML = '';
+    // Axis line
+    svgHTML += `<line x1="${x0}" y1="${yMid}" x2="${x1}" y2="${yMid}" stroke="#5a5247" stroke-width="1"/>`;
+    // 0 reference label
+    svgHTML += `<text x="${x0 - 8}" y="${yMid + 4}" text-anchor="end" font-family="Outfit,sans-serif" font-size="10" fill="#8b7355">$ 0</text>`;
+    // bars
+    cfs.forEach((cf, t) => {
+      const cx = x0 + colW * (t + 0.5);
+      const bw = Math.min(36, colW * 0.62);
+      if (cf < 0) {
+        const h = -cf * scaleDn;
+        svgHTML += `<rect x="${cx - bw / 2}" y="${yMid}" width="${bw}" height="${h}" fill="#8a2828" rx="2"/>`;
+        svgHTML += `<text x="${cx}" y="${yMid + h + 14}" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" font-weight="700" fill="#8a2828">${cf}</text>`;
+      } else if (cf > 0) {
+        if (t === n - 1) {
+          // stacked: revenue then salvage on top
+          const rev = PROJECT.revenue, sal = PROJECT.salvage;
+          const hRev = rev * scaleUp;
+          const hSal = sal * scaleUp;
+          svgHTML += `<rect x="${cx - bw / 2}" y="${yMid - hRev}" width="${bw}" height="${hRev}" fill="#5c7a4a" rx="2"/>`;
+          svgHTML += `<rect x="${cx - bw / 2}" y="${yMid - hRev - hSal}" width="${bw}" height="${hSal}" fill="#b8860b" rx="2"/>`;
+          svgHTML += `<text x="${cx}" y="${yMid - hRev - hSal - 5}" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" font-weight="700" fill="#5a5247">+${cf}</text>`;
+        } else {
+          const h = cf * scaleUp;
+          svgHTML += `<rect x="${cx - bw / 2}" y="${yMid - h}" width="${bw}" height="${h}" fill="#5c7a4a" rx="2"/>`;
+          svgHTML += `<text x="${cx}" y="${yMid - h - 5}" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" font-weight="700" fill="#5c7a4a">+${cf}</text>`;
+        }
+      }
+      // year labels
+      svgHTML += `<text x="${cx}" y="${H - 14}" text-anchor="middle" font-family="Outfit,sans-serif" font-size="11" font-weight="600" fill="#5a5247">${t}</text>`;
+    });
+    svgHTML += `<text x="${(x0 + x1) / 2}" y="${H - 1}" text-anchor="middle" font-family="Outfit,sans-serif" font-size="10" letter-spacing="0.16em" font-weight="700" fill="#8b7355">YEAR · t</text>`;
+    svg.innerHTML = svgHTML;
+  }
+
+  // ===== NPV curve chart =====
+  function drawNPV() {
+    const svg = document.getElementById('npv-svg');
+    const cfs = getCashFlows();
+    const W = 1100, H = 280;
+    const padL = 60, padR = 30, padT = 20, padB = 50;
+    const x0 = padL, x1 = W - padR;
+    const y0 = padT, y1 = H - padB;
+
+    const rMin = 0, rMax = 0.30;
+    // Compute NPV at a range of rates
+    const pts = [];
+    let nMin = 0, nMax = 0;
+    for (let i = 0; i <= 60; i++) {
+      const r = rMin + (rMax - rMin) * (i / 60);
+      const v = npv(cfs, r);
+      pts.push([r, v]);
+      if (v < nMin) nMin = v;
+      if (v > nMax) nMax = v;
+    }
+    // y axis scale: pad symmetrically
+    const yPad = (nMax - nMin) * 0.08;
+    const yMin = nMin - yPad, yMax = nMax + yPad;
+
+    function xPos(r) { return x0 + (r - rMin) / (rMax - rMin) * (x1 - x0); }
+    function yPos(v) { return y1 - (v - yMin) / (yMax - yMin) * (y1 - y0); }
+
+    let html = '';
+    // y axis grid + 0 line
+    html += `<line x1="${x0}" y1="${y0}" x2="${x0}" y2="${y1}" stroke="#5a5247" stroke-width="1"/>`;
+    html += `<line x1="${x0}" y1="${y1}" x2="${x1}" y2="${y1}" stroke="#e8e3d4" stroke-width="0.7"/>`;
+    const y0Px = yPos(0);
+    html += `<line x1="${x0}" y1="${y0Px}" x2="${x1}" y2="${y0Px}" stroke="#1a1a1a" stroke-width="1" stroke-dasharray="4 3"/>`;
+    html += `<text x="${x1 - 6}" y="${y0Px - 6}" text-anchor="end" font-family="Outfit,sans-serif" font-size="10" font-weight="700" fill="#1a1a1a">NPV = 0</text>`;
+    // x ticks (every 5%)
+    for (let r = 0; r <= 30; r += 5) {
+      const xPx = xPos(r / 100);
+      html += `<line x1="${xPx}" y1="${y1}" x2="${xPx}" y2="${y1 + 4}" stroke="#5a5247" stroke-width="0.7"/>`;
+      html += `<text x="${xPx}" y="${y1 + 16}" text-anchor="middle" font-family="Outfit,sans-serif" font-size="10" fill="#5a5247">${r}%</text>`;
+    }
+    html += `<text x="${(x0 + x1) / 2}" y="${y1 + 36}" text-anchor="middle" font-family="Outfit,sans-serif" font-size="11" letter-spacing="0.16em" font-weight="700" fill="#8b7355">DISCOUNT RATE · r</text>`;
+    // y ticks
+    const yTicks = 5;
+    for (let i = 0; i <= yTicks; i++) {
+      const v = yMin + (yMax - yMin) * (i / yTicks);
+      const yPx = yPos(v);
+      html += `<line x1="${x0 - 4}" y1="${yPx}" x2="${x0}" y2="${yPx}" stroke="#5a5247" stroke-width="0.7"/>`;
+      html += `<text x="${x0 - 8}" y="${yPx + 3}" text-anchor="end" font-family="Outfit,sans-serif" font-size="10" fill="#5a5247">${v.toFixed(0)}</text>`;
+    }
+
+    // Curve
+    const pathD = pts.map((p, i) => (i === 0 ? 'M' : 'L') + ` ${xPos(p[0]).toFixed(2)} ${yPos(p[1]).toFixed(2)}`).join(' ');
+    html += `<path d="${pathD}" stroke="#b8860b" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+
+    // Mark IRR
+    const irr = irrBisect(cfs);
+    if (irr !== null && irr >= rMin && irr <= rMax) {
+      const xIRR = xPos(irr), yIRR = yPos(0);
+      html += `<circle cx="${xIRR}" cy="${yIRR}" r="6" fill="#fff" stroke="#b8860b" stroke-width="2.6"/>`;
+      html += `<line x1="${xIRR}" y1="${yIRR}" x2="${xIRR}" y2="${y0 + 10}" stroke="#b8860b" stroke-width="0.8" stroke-dasharray="2 3" opacity="0.6"/>`;
+      html += `<text x="${xIRR + 8}" y="${y0 + 20}" font-family="Outfit,sans-serif" font-size="11" font-weight="700" fill="#b8860b">IRR ≈ ${(irr * 100).toFixed(1)}%</text>`;
+    }
+    // Mark MARR
+    const m = state.marr;
+    if (m >= rMin && m <= rMax) {
+      const xM = xPos(m);
+      html += `<line x1="${xM}" y1="${y0}" x2="${xM}" y2="${y1}" stroke="#5c7a4a" stroke-width="1.4" stroke-dasharray="6 3"/>`;
+      html += `<text x="${xM + 6}" y="${y1 - 6}" font-family="Outfit,sans-serif" font-size="11" font-weight="700" fill="#5c7a4a">MARR ${(m * 100).toFixed(1)}%</text>`;
+    }
+    // Mark ERR
+    const e = errRate(cfs, state.marr);
+    if (e !== null && e >= rMin && e <= rMax) {
+      const xE = xPos(e), yE = yPos(0);
+      html += `<circle cx="${xE}" cy="${yE}" r="4.5" fill="#5c7a4a"/>`;
+      html += `<text x="${xE}" y="${y1 - 22}" text-anchor="middle" font-family="Outfit,sans-serif" font-size="10" font-weight="700" fill="#5c7a4a">ERR ${(e * 100).toFixed(1)}%</text>`;
+    }
+    // Mark MIRR
+    const mi = mirrRate(cfs, state.finance, state.reinvest);
+    if (mi !== null && mi >= rMin && mi <= rMax) {
+      const xMi = xPos(mi), yMi = yPos(0);
+      html += `<circle cx="${xMi}" cy="${yMi}" r="4.5" fill="#0e7c80"/>`;
+      html += `<text x="${xMi}" y="${y1 - 8}" text-anchor="middle" font-family="Outfit,sans-serif" font-size="10" font-weight="700" fill="#0e7c80">MIRR ${(mi * 100).toFixed(1)}%</text>`;
+    }
+
+    svg.innerHTML = html;
+  }
+
+  // ===== Update method cards =====
+  function updateMethods() {
+    const cfs = getCashFlows();
+    const irr = irrBisect(cfs);
+    const err = errRate(cfs, state.marr);
+    const mirr = mirrRate(cfs, state.finance, state.reinvest);
+
+    // IRR card
+    document.getElementById('irr-val').textContent = fmtPct(irr);
+    const irrV = document.getElementById('irr-verdict');
+    if (irr !== null && irr > state.marr) {
+      irrV.textContent = '✓ accept · IRR > MARR'; irrV.className = 'verdict accept';
+    } else {
+      irrV.textContent = '✗ reject · IRR < MARR'; irrV.className = 'verdict reject';
+    }
+    const pvNeg = -cfs[0];
+    const fvPosAtMarr = (function () {
+      let s = 0;
+      cfs.forEach((cf, t) => { if (cf > 0) s += cf * Math.pow(1 + state.marr, cfs.length - 1 - t); });
+      return s;
+    })();
+    document.getElementById('irr-compute').innerHTML =
+      `NPV(${(irr * 100).toFixed(2)}%) = 0 by definition.<br>` +
+      `<em>If MARR were 0%, NPV = ${npv(cfs, 0).toFixed(1)} M.</em>`;
+
+    // ERR card
+    document.getElementById('err-val').textContent = fmtPct(err);
+    const errV = document.getElementById('err-verdict');
+    if (err !== null && err > state.marr) {
+      errV.textContent = '✓ accept · ERR > MARR'; errV.className = 'verdict accept';
+    } else {
+      errV.textContent = '✗ reject · ERR < MARR'; errV.className = 'verdict reject';
+    }
+    document.getElementById('err-compute').innerHTML =
+      `<b>PW<sub>−</sub></b> = ${pvNeg.toFixed(1)} M&nbsp;&middot;&nbsp; ` +
+      `<b>FW<sub>+</sub>(${(state.marr * 100).toFixed(1)}%)</b> = ${fvPosAtMarr.toFixed(1)} M<br>` +
+      `<em>(${fvPosAtMarr.toFixed(1)} / ${pvNeg.toFixed(1)})<sup>1/10</sup> − 1 = ${(err !== null ? (err * 100).toFixed(2) : '—')}%</em>`;
+
+    // MIRR card
+    const fvPosAtReinv = (function () {
+      let s = 0;
+      cfs.forEach((cf, t) => { if (cf > 0) s += cf * Math.pow(1 + state.reinvest, cfs.length - 1 - t); });
+      return s;
+    })();
+    const pvNegAtFin = (function () {
+      let s = 0;
+      cfs.forEach((cf, t) => { if (cf < 0) s += -cf / Math.pow(1 + state.finance, t); });
+      return s;
+    })();
+    document.getElementById('mirr-val').textContent = fmtPct(mirr);
+    const mirrV = document.getElementById('mirr-verdict');
+    if (mirr !== null && mirr > state.marr) {
+      mirrV.textContent = '✓ accept · MIRR > MARR'; mirrV.className = 'verdict accept';
+    } else {
+      mirrV.textContent = '✗ reject · MIRR < MARR'; mirrV.className = 'verdict reject';
+    }
+    document.getElementById('mirr-compute').innerHTML =
+      `<b>PW<sub>−</sub>(${(state.finance * 100).toFixed(1)}%)</b> = ${pvNegAtFin.toFixed(1)} M&nbsp;&middot;&nbsp;` +
+      `<b>FW<sub>+</sub>(${(state.reinvest * 100).toFixed(1)}%)</b> = ${fvPosAtReinv.toFixed(1)} M<br>` +
+      `<em>(${fvPosAtReinv.toFixed(1)} / ${pvNegAtFin.toFixed(1)})<sup>1/10</sup> − 1 = ${(mirr !== null ? (mirr * 100).toFixed(2) : '—')}%</em>`;
+  }
+
+  // ===== Wire controls =====
+  ['marr', 'fin', 'rinv'].forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener('input', () => {
+      if (id === 'marr') state.marr = +el.value / 100;
+      if (id === 'fin')  state.finance = +el.value / 100;
+      if (id === 'rinv') state.reinvest = +el.value / 100;
+      document.getElementById('marr-val').textContent = (state.marr * 100).toFixed(1) + '%';
+      document.getElementById('fin-val').textContent  = (state.finance * 100).toFixed(1) + '%';
+      document.getElementById('rinv-val').textContent = (state.reinvest * 100).toFixed(1) + '%';
+      updateMethods();
+      drawNPV();
+    });
+  });
+
+  // ===== Popovers =====
+  const popBack = document.getElementById('pop-back');
+  const popCard = document.getElementById('pop-card');
+  const popTitle = document.getElementById('pop-title');
+  const popBody = document.getElementById('pop-body');
+  const POPS = {
+    cashflow: {
+      cls: '',
+      title: 'Reading this <em>cash flow</em>',
+      body: `
+        <p>The horizontal axis is time, in years. Bars below the axis are <b>outflows</b> (money out of the firm). Bars above are <b>inflows</b>.</p>
+        <p>At year 0 the firm pays the full $120 M build cost. From year 1 through year 10 the attraction returns $22 M per year. At year 10 the salvage value adds another $8 M on top of that year's revenue, so the final bar stacks two colors.</p>
+        <p>Every rate of return method on this page is just a different way to summarize the <em>same</em> cash flow into a single number.</p>
+      `
+    },
+    irr: {
+      cls: '',
+      title: 'What IRR <em>assumes</em>',
+      body: `
+        <p>IRR is the rate that drives the project's NPV to zero. It is "internal" because no outside rate is needed — the numbers come only from the project itself.</p>
+        <p>The hidden assumption is that every dollar the project pays out is <b>reinvested at the IRR</b>. If the IRR is 13% and the firm can actually only earn 6% on those dollars, the IRR overstates the true return.</p>
+        <p>IRR can also <b>misbehave</b> on non-conventional cash flows. A project with more than one sign change in its CF can have multiple IRRs — or none — and the rule "accept if IRR &gt; MARR" stops working cleanly.</p>
+      `
+    },
+    err: {
+      cls: 'olive',
+      title: 'Why ERR <em>fixes</em> IRR',
+      body: `
+        <p>ERR sidesteps the reinvestment trap by making the assumption explicit. Every inflow is <b>compounded forward</b> to the end of the project at MARR. Every outflow is <b>discounted back</b> to year 0 at MARR. Then a single rate is solved that links the two collapsed values across n years.</p>
+        <p>Because the implicit reinvestment rate is MARR rather than the project's own IRR, ERR is usually <em>smaller</em> than IRR when MARR &lt; IRR.</p>
+        <p>ERR also has the property that there is <b>exactly one solution</b>, even for non-conventional cash flows.</p>
+      `
+    },
+    mirr: {
+      cls: 'teal',
+      title: 'When MIRR is the <em>right</em> choice',
+      body: `
+        <p>MIRR has the same shape as ERR but uses <b>two different rates</b>. Outflows are discounted at the firm's <em>finance rate</em> (cost of borrowing). Inflows are compounded at the <em>reinvestment rate</em> (a realistic rate the firm can earn on incoming cash).</p>
+        <p>This matters most when the firm <b>borrows at one rate and reinvests at another</b>. Treating both with a single MARR can hide the real picture.</p>
+        <p>The Excel function <code>MIRR(values, finance_rate, reinvest_rate)</code> implements this exactly.</p>
+      `
+    },
+    npv: {
+      cls: '',
+      title: 'What this <em>NPV curve</em> shows',
+      body: `
+        <p>The gold curve is the project's NPV as a function of the discount rate <em>r</em>. Where it <b>crosses zero</b> is, by definition, the IRR.</p>
+        <p>The olive dashed line is your chosen MARR. If the gold curve sits <em>above</em> the MARR line at the IRR point, the project clears the hurdle.</p>
+        <p>The olive dot is ERR; the teal dot is MIRR. Both sit on the NPV = 0 axis — they are <em>also</em> rates of return, but defined under different reinvestment assumptions, which is why they land at different x positions than the IRR.</p>
+      `
+    }
+  };
+  function openPop(key) {
+    const p = POPS[key]; if (!p) return;
+    popCard.className = 'pop-card' + (p.cls ? ' ' + p.cls : '');
+    popTitle.innerHTML = p.title;
+    popBody.innerHTML = p.body;
+    popBack.classList.add('show');
+  }
+  function closePop() { popBack.classList.remove('show'); }
+  document.querySelectorAll('[data-pop]').forEach(btn => {
+    btn.addEventListener('click', () => openPop(btn.dataset.pop));
+  });
+  document.getElementById('pop-close').addEventListener('click', closePop);
+  popBack.addEventListener('click', e => { if (e.target === popBack) closePop(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closePop(); });
+
+  // ===== Boot =====
+  drawCashflow();
+  drawNPV();
+  updateMethods();
+</script>
+
+</body>
+</html>
