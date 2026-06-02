@@ -67,72 +67,139 @@
   .page.active { opacity: 1; pointer-events: auto; transform: translateX(0); }
   .page.left { transform: translateX(-40px); }
 
-  /* ============ PAGE 1 — COVER ============ */
+  /* ============ PAGE 1 — CONCEPTS / DEFINITIONS ============ */
   .cover {
     flex: 1; min-height: 0;
-    display: grid; grid-template-columns: 1.2fr 1fr; gap: 14px;
-    background: var(--paper); border: 1px solid var(--border); border-radius: 14px;
+    display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 12px;
+    background: transparent;
     overflow: hidden;
   }
   @media (max-width: 920px) { .cover { grid-template-columns: 1fr; } }
-  .cover .text {
-    padding: 30px 36px 30px;
-    display: flex; flex-direction: column; gap: 14px; justify-content: center;
-    background: linear-gradient(135deg, var(--paper) 0%, var(--gold-soft) 100%);
+  .cover .image-col {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
+    overflow: hidden;
+    display: grid; grid-template-rows: 1.05fr 1fr;
   }
-  .cover .text .crumb {
+  .cover .image {
+    background-image: url('images/m6/three-rates-cover.png');
+    background-size: cover; background-position: center;
+    position: relative;
+    min-height: 0;
+  }
+  .cover .image::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,0) 50%, rgba(20,12,12,0.5) 100%);
+  }
+  .cover .image .caption {
+    position: absolute; bottom: 0; left: 0; right: 0; padding: 14px 18px;
+    color: #fff;
+  }
+  .cover .image .caption .crumb {
     font-family: 'Outfit', sans-serif;
-    font-size: 10.5px; letter-spacing: 0.3em; text-transform: uppercase; font-weight: 700;
-    color: var(--gold-deep);
+    font-size: 9.5px; letter-spacing: 0.28em; text-transform: uppercase; font-weight: 700;
+    color: #f0c878; opacity: 0.9; margin-bottom: 3px;
   }
-  .cover .text h2 {
-    font-family: 'Lora', serif; font-size: 38px; font-weight: 700; line-height: 1.05; letter-spacing: -0.01em;
+  .cover .image .caption h2 {
+    font-family: 'Lora', serif; font-size: 22px; font-weight: 700; line-height: 1.05;
   }
-  .cover .text h2 em { font-style: italic; color: var(--gold-deep); }
-  .cover .text .lede {
-    font-family: 'Lora', serif; font-style: italic; font-size: 15px; color: var(--muted); line-height: 1.55;
+  .cover .image .caption h2 em { font-style: italic; color: #f0c878; }
+  .cover .intro {
+    padding: 14px 18px 14px;
+    display: flex; flex-direction: column; gap: 8px;
+    background: linear-gradient(135deg, var(--paper) 0%, var(--gold-soft) 100%);
+    border-top: 1px solid #efe1bd;
+    min-height: 0; overflow-y: auto;
   }
-  .cover .text .lede b { color: var(--ink); font-weight: 700; font-style: normal; }
-  .cover .bullets {
-    display: flex; flex-direction: column; gap: 7px;
+  .cover .intro h4 { font-family: 'Lora', serif; font-size: 14px; font-weight: 700; }
+  .cover .intro h4 em { font-style: italic; color: var(--gold-deep); }
+  .cover .intro p {
+    font-family: 'Lora', serif; font-style: italic; font-size: 12.5px; color: var(--muted); line-height: 1.55;
   }
-  .cover .bullet {
-    display: flex; gap: 10px; align-items: flex-start;
-    padding: 8px 12px;
-    background: var(--paper); border: 1px solid #efe1bd; border-radius: 8px;
+  .cover .intro p b { color: var(--ink); font-weight: 700; font-style: normal; }
+
+  .cover .defs-col {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
+    padding: 18px 22px 16px;
+    display: flex; flex-direction: column; gap: 10px;
+    min-height: 0; overflow-y: auto;
+  }
+  .cover .defs-head {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+    padding-bottom: 9px; border-bottom: 1px solid var(--border);
+  }
+  .cover .defs-head h3 { font-family: 'Lora', serif; font-size: 17px; font-weight: 700; }
+  .cover .defs-head h3 em { font-style: italic; color: var(--gold); }
+  .cover .defs-head .meta {
+    font-family: 'Outfit', sans-serif; font-size: 9.5px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft);
+  }
+
+  .def-card {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 9px;
+    padding: 10px 14px;
     border-left: 3px solid var(--gold);
+    display: grid; grid-template-columns: auto 1fr 0.6fr; gap: 14px;
+    align-items: center;
   }
-  .cover .bullet .icon {
-    width: 22px; height: 22px; border-radius: 50%;
-    background: var(--gold-soft); color: var(--gold-deep);
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-    font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700;
+  @media (max-width: 720px) { .def-card { grid-template-columns: 1fr; } }
+  .def-card.olive { border-left-color: var(--olive); }
+  .def-card.teal  { border-left-color: var(--teal); }
+  .def-card .head-col {
+    display: flex; flex-direction: column; gap: 3px; min-width: 120px;
   }
-  .cover .bullet .txt { font-size: 12.5px; color: var(--ink); line-height: 1.45; }
-  .cover .bullet .txt b { color: var(--gold-deep); font-weight: 700; }
-  .cover .text .cta {
+  .def-card .badge {
+    font-family: 'Outfit', sans-serif;
+    font-size: 8.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+    padding: 2px 8px; border-radius: 999px;
+    align-self: flex-start;
+  }
+  .def-card.gold  .badge { background: var(--gold-soft); color: var(--gold-deep); }
+  .def-card.olive .badge { background: var(--olive-soft); color: var(--olive-deep); }
+  .def-card.teal  .badge { background: var(--teal-soft); color: var(--teal-deep); }
+  .def-card h4 {
+    font-family: 'Lora', serif; font-size: 18px; font-weight: 700; line-height: 1.05;
+  }
+  .def-card h4 em { font-style: italic; }
+  .def-card.gold  h4 em { color: var(--gold-deep); }
+  .def-card.olive h4 em { color: var(--olive-deep); }
+  .def-card.teal  h4 em { color: var(--teal-deep); }
+  .def-card .def {
+    font-family: 'Lora', serif; font-size: 12.5px; color: var(--ink); line-height: 1.5;
+  }
+  .def-card .def b {
+    font-style: normal; font-weight: 700;
+  }
+  .def-card.gold  .def b { color: var(--gold-deep); }
+  .def-card.olive .def b { color: var(--olive-deep); }
+  .def-card.teal  .def b { color: var(--teal-deep); }
+  .def-card .def em { font-style: italic; color: var(--muted); }
+  .def-card .mini-formula {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 6px;
+    padding: 6px 10px;
+    text-align: center;
+    font-size: 12px;
+  }
+  .def-card .mini-formula .caption {
+    font-family: 'Lora', serif; font-style: italic; font-size: 9.5px; color: var(--muted); margin-top: 2px;
+  }
+
+  .cover .cta-row {
+    display: flex; align-items: center; gap: 12px; justify-content: space-between;
     margin-top: 4px;
-    display: flex; align-items: center; gap: 12px;
   }
+  .cover .cta-row .next-link {
+    font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted);
+  }
+  .cover .cta-row .next-link b { color: var(--gold-deep); font-style: normal; font-weight: 700; }
   .cover .start-btn {
     font-family: 'Outfit', sans-serif; font-size: 12.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
-    padding: 11px 22px; border-radius: 9px; cursor: pointer;
+    padding: 10px 22px; border-radius: 9px; cursor: pointer;
     background: var(--gold-deep); color: #fff; border: 1px solid var(--gold-deep);
     display: inline-flex; align-items: center; gap: 9px;
     transition: all 0.16s ease;
   }
   .cover .start-btn:hover { background: #6b4f08; transform: translateY(-1px); box-shadow: 0 8px 22px rgba(184,134,11,0.34); }
   .cover .start-btn svg { width: 14px; height: 14px; }
-  .cover .image {
-    background-image: url('images/m6/three-rates-cover.png');
-    background-size: cover; background-position: center;
-    position: relative;
-  }
-  .cover .image::after {
-    content: ''; position: absolute; inset: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(184,134,11,0.04) 100%);
-  }
 
   /* ============ PAGE 2 — METHODS TOOL ============ */
   .tool-grid {
@@ -515,26 +582,75 @@
   <!-- ============ DECK ============ -->
   <div class="deck">
 
-    <!-- PAGE 1 — COVER -->
+    <!-- PAGE 1 — CONCEPTS / DEFINITIONS -->
     <section class="page active" data-page="1">
       <div class="cover">
-        <div class="text">
-          <span class="crumb">IE 4512 · Module 6 · One-page tool</span>
-          <h2>Three rates,<br><em>one project</em></h2>
-          <div class="lede">The same cash flow can give you three different answers. <b>IRR</b> tells one story, <b>ERR</b> tells a more honest one, and <b>MIRR</b> tells the realistic one with two rates. Each method asks the same dollars a different question about how they earn.</div>
-          <div class="bullets">
-            <div class="bullet"><div class="icon">1</div><div class="txt"><b>Methods page</b> — tune project numbers and rates, see all three computed live.</div></div>
-            <div class="bullet"><div class="icon">2</div><div class="txt"><b>Disney case</b> — apply it to Tiana's Bayou Adventure with the canonical numbers.</div></div>
-            <div class="bullet"><div class="icon">i</div><div class="txt">Click the <b>(i) icons</b> on each method to read what the math is really assuming.</div></div>
+
+        <div class="image-col">
+          <div class="image">
+            <div class="caption">
+              <div class="crumb">IE 4512 · Module 6</div>
+              <h2>Three rates,<br><em>one project</em></h2>
+            </div>
           </div>
-          <div class="cta">
+          <div class="intro">
+            <h4>Why <em>three</em> methods?</h4>
+            <p>For the same cash flow you can compute <b>three different</b> rates of return, and they almost never agree. The difference is in what each method assumes about the rate at which money <em>between</em> year 0 and year n is reinvested.</p>
+            <p>IRR is silent about that assumption (it bakes the project's own IRR in implicitly). ERR makes the reinvestment rate explicit (it uses the MARR). MIRR goes further: <b>two</b> rates &mdash; one for the cost of borrowing, one for what the firm can actually earn on incoming cash.</p>
+          </div>
+        </div>
+
+        <div class="defs-col">
+          <div class="defs-head">
+            <h3>The <em>definitions</em></h3>
+            <span class="meta">page 1 of 3</span>
+          </div>
+
+          <div class="def-card gold">
+            <div class="head-col">
+              <span class="badge">Method 1</span>
+              <h4>Internal · <em>IRR</em></h4>
+            </div>
+            <div class="def">The discount rate that drives <b>NPV to exactly zero</b> for the project's cash flow. "Internal" because no outside rate is needed &mdash; the value is solved from the project alone. <em>Hidden assumption: every dollar paid out is reinvested at the IRR itself.</em></div>
+            <div class="mini-formula">
+              \[ \mathrm{NPV}(r)=0 \]
+              <div class="caption">solve r numerically</div>
+            </div>
+          </div>
+
+          <div class="def-card olive">
+            <div class="head-col">
+              <span class="badge">Method 2</span>
+              <h4>External · <em>ERR</em></h4>
+            </div>
+            <div class="def">Inflows are <b>compounded forward</b> to year n at the MARR; outflows are <b>discounted back</b> to year 0 at the MARR. Then a single rate is solved that links the two collapsed values across n years. <em>Fixes the IRR reinvestment trap; always has one solution.</em></div>
+            <div class="mini-formula">
+              \[ \mathrm{ERR} = \left(\tfrac{FW_{+}(i)}{PW_{-}(i)}\right)^{1/n} - 1 \]
+              <div class="caption">both directions at i = MARR</div>
+            </div>
+          </div>
+
+          <div class="def-card teal">
+            <div class="head-col">
+              <span class="badge">Method 3</span>
+              <h4>Modified · <em>MIRR</em></h4>
+            </div>
+            <div class="def">Same shape as ERR but with <b>two different rates</b>. Outflows discount at the firm's <em>finance rate</em> (cost of borrowing). Inflows compound at the <em>reinvestment rate</em> (what the firm can actually earn on cash). <em>Excel: <code>MIRR(values, finance, reinvest)</code>.</em></div>
+            <div class="mini-formula">
+              \[ \mathrm{MIRR} = \left(\tfrac{FW_{+}(i_r)}{PW_{-}(i_f)}\right)^{1/n} - 1 \]
+              <div class="caption">i<sub>f</sub> finance · i<sub>r</sub> reinvest</div>
+            </div>
+          </div>
+
+          <div class="cta-row">
+            <div class="next-link">Next: <b>tune the numbers</b> and watch all three rates respond live →</div>
             <button class="start-btn" id="cover-start">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 4 20 12 6 20 6 4"/></svg>
-              Start with the methods
+              Open the tool
             </button>
           </div>
         </div>
-        <div class="image" aria-hidden="true"></div>
+
       </div>
     </section>
 
