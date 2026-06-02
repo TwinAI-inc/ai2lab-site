@@ -514,13 +514,15 @@
 
 <script>
   // ===== Project data =====
+  // Initial investments deliberately do NOT follow the alphabetical name order, so
+  // students cannot just pick A, B, C… in sequence. They must read the P column.
   const PROJECTS = [
     { id: 'DN', cls: 'dn',     name: 'Do Nothing', P: 0,    A: 0,   S: 0,   n: 10 },
-    { id: 'A',  cls: 'proj-a', name: 'Project A',  P: 1000, A: 200, S: 100, n: 10 },
-    { id: 'B',  cls: 'proj-b', name: 'Project B',  P: 2000, A: 350, S: 200, n: 10 },
-    { id: 'C',  cls: 'proj-c', name: 'Project C',  P: 3000, A: 550, S: 300, n: 10 },
-    { id: 'D',  cls: 'proj-d', name: 'Project D',  P: 4000, A: 700, S: 400, n: 10 },
-    { id: 'E',  cls: 'proj-e', name: 'Project E',  P: 5000, A: 850, S: 500, n: 10 },
+    { id: 'A',  cls: 'proj-a', name: 'Project A',  P: 3000, A: 550, S: 300, n: 10 },
+    { id: 'B',  cls: 'proj-b', name: 'Project B',  P: 1000, A: 200, S: 100, n: 10 },
+    { id: 'C',  cls: 'proj-c', name: 'Project C',  P: 5000, A: 850, S: 500, n: 10 },
+    { id: 'D',  cls: 'proj-d', name: 'Project D',  P: 2000, A: 350, S: 200, n: 10 },
+    { id: 'E',  cls: 'proj-e', name: 'Project E',  P: 4000, A: 700, S: 400, n: 10 },
   ];
 
   // ===== IRR solver — uniform annual savings A with end salvage S =====
@@ -568,7 +570,18 @@
     used: new Set(),     // project ids currently in play (defender or in a settled match)
     eliminated: new Set(),
     champion: null,
+    poolOrder: [],       // shuffled display order for the pool
   };
+
+  // Fisher–Yates shuffle, returns a new array
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
 
   function init() {
     state.rounds = PROJECTS.slice(1).map((_, i) => ({
@@ -582,6 +595,11 @@
     state.used = new Set([PROJECTS[0].id]);
     state.eliminated = new Set();
     state.champion = null;
+    // Shuffle the pool so the next-lowest-investment is not the next card down.
+    // Keep Do Nothing at the very top so it is visually distinct as the baseline.
+    const dn = PROJECTS.filter(p => p.id === 'DN');
+    const others = PROJECTS.filter(p => p.id !== 'DN');
+    state.poolOrder = [...dn, ...shuffle(others)];
   }
 
   // ===== Rendering =====
@@ -634,7 +652,7 @@
   function renderPool() {
     let html = '';
     let remaining = 0;
-    PROJECTS.forEach(p => {
+    state.poolOrder.forEach(p => {
       const isUsed = state.used.has(p.id);
       const isElim = state.eliminated.has(p.id);
       let cls = p.cls;
@@ -669,10 +687,7 @@
       if (rd.challenger) {
         challengerHTML = `<div class="slot challenger filled"><div class="role-tag">Challenger</div>${slotCardHTML(rd.challenger)}</div>`;
       } else if (isCurrent) {
-        // Find expected next project (next-lowest-P not used and not eliminated)
-        const next = nextChallenger();
-        const hint = next ? `Drag <b>${next.name}</b> &mdash; the next cheapest unused project.` : 'Drag a project…';
-        challengerHTML = `<div class="slot challenger" data-round="${idx}"><div class="role-tag">Challenger</div><div class="placeholder">${hint}</div></div>`;
+        challengerHTML = `<div class="slot challenger" data-round="${idx}"><div class="role-tag">Challenger</div><div class="placeholder">Drop the next <b>challenger</b> here</div></div>`;
       } else {
         challengerHTML = `<div class="slot challenger"><div class="role-tag">Challenger</div><div class="placeholder">locked until previous round resolves</div></div>`;
       }
@@ -725,7 +740,7 @@
           <div class="round-head">
             <span class="badge">${badgeIcon}${isFinal ? 'Final' : 'Round ' + (idx + 1)}</span>
             <span class="title">${isFinal ? 'For the <em>crown</em>' : 'Defender vs <em>challenger</em>'}</span>
-            ${isCurrent ? '<span class="ask">Drag the next cheapest unused project into the challenger slot.</span>' : ''}
+            ${isCurrent ? '<span class="ask">Pick the right challenger from the pool. Drop a wrong one and the slot refuses it.</span>' : ''}
           </div>
           <div class="match">
             ${defenderHTML}
@@ -762,10 +777,11 @@
 
   function nextChallenger() {
     // Return the next-lowest-P project not used and not eliminated.
-    for (const p of PROJECTS) {
-      if (!state.used.has(p.id) && !state.eliminated.has(p.id)) return p;
-    }
-    return null;
+    // PROJECTS is not stored in sorted-P order so we sort here.
+    const remaining = PROJECTS.filter(p => !state.used.has(p.id) && !state.eliminated.has(p.id));
+    if (!remaining.length) return null;
+    remaining.sort((a, b) => a.P - b.P);
+    return remaining[0];
   }
 
   // ===== Drag and drop =====
@@ -822,7 +838,11 @@
     const expected = nextChallenger();
     if (!expected) return;
     if (dropped.id !== expected.id) {
-      showToast(`Wrong order — ${expected.name} has the lowest unused investment, drop it first.`);
+      // Generic feedback — do not reveal the correct project
+      const hint = dropped.P > expected.P
+        ? `${dropped.name} is not the next challenger — its initial investment is too high.`
+        : `${dropped.name} is not the next challenger — try a different one.`;
+      showToast(hint);
       return;
     }
 
