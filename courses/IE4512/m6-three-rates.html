@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Module 6 · IRR · ERR · MIRR — Three Rates, One Project</title>
+<title>Module 6 · IRR · ERR · MIRR — One Project, Three Pages</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script>
   window.MathJax = {
@@ -17,12 +17,10 @@
   :root {
     --bg: #faf9f5; --paper: #ffffff; --ink: #1a1a1a; --muted: #5a5247; --soft: #8b7355;
     --border: #e8e3d4; --line: #d4cfc0;
-    --blue: #1947d6; --blue-soft: #eef2ff;
     --gold: #b8860b; --gold-deep: #8a6608; --gold-soft: #faf3e0;
     --olive: #5c7a4a; --olive-deep: #455d36; --olive-soft: #f0f4ea;
     --crimson: #8a2828; --crimson-deep: #6b1e1e; --crimson-soft: #fdf2f3;
     --teal: #0e7c80; --teal-deep: #0a5e62; --teal-soft: #e6f4f4;
-    --purple: #7c3aed; --purple-soft: #f3eeff;
   }
   html, body { height: 100%; }
   body {
@@ -42,19 +40,26 @@
     display: flex; justify-content: space-between; align-items: center; gap: 14px;
     padding: 7px 16px; background: var(--paper); border: 1px solid var(--border);
     border-radius: 10px; border-top: 3px solid var(--gold); flex-wrap: wrap;
+    transition: border-top-color 0.4s ease;
   }
+  .head.olive { border-top-color: var(--olive); }
+  .head.teal  { border-top-color: var(--teal); }
   .brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
-  .brand .code { font-size: 10px; color: var(--gold); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; }
+  .brand .code { font-size: 10px; color: var(--gold); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; transition: color 0.4s; }
+  .head.olive .brand .code { color: var(--olive-deep); }
+  .head.teal  .brand .code { color: var(--teal-deep); }
   .brand h1 { font-family: 'Lora', Georgia, serif; font-size: 17px; font-weight: 700; line-height: 1; }
-  .brand h1 em { font-style: italic; color: var(--gold); font-weight: 400; }
+  .brand h1 em { font-style: italic; color: var(--gold); font-weight: 400; transition: color 0.4s; }
+  .head.olive .brand h1 em { color: var(--olive-deep); }
+  .head.teal  .brand h1 em { color: var(--teal-deep); }
   .brand .tag { font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted); }
   .head .nav { display: flex; gap: 6px; }
-  .head .nav a, .head .nav button {
+  .head .nav a {
     font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
     color: var(--soft); text-decoration: none; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px;
-    transition: all 0.15s; background: var(--paper); font-family: 'Outfit', sans-serif; cursor: pointer;
+    transition: all 0.15s; background: var(--paper); font-family: 'Outfit', sans-serif;
   }
-  .head .nav a:hover, .head .nav button:hover { color: var(--gold); border-color: var(--gold); background: var(--gold-soft); }
+  .head .nav a:hover { color: var(--gold); border-color: var(--gold); background: var(--gold-soft); }
 
   /* DECK */
   .deck { flex: 1; min-height: 0; position: relative; }
@@ -67,278 +72,126 @@
   .page.active { opacity: 1; pointer-events: auto; transform: translateX(0); }
   .page.left { transform: translateX(-40px); }
 
-  /* ============ PAGE 1 — CONCEPTS / DEFINITIONS ============ */
-  .cover {
+  /* ============ Method page (used by all 3 pages, color-themed) ============ */
+  .method-page {
     flex: 1; min-height: 0;
-    display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 12px;
-    background: transparent;
-    overflow: hidden;
+    display: grid; grid-template-columns: 0.95fr 1.05fr; gap: 12px;
   }
-  @media (max-width: 920px) { .cover { grid-template-columns: 1fr; } }
-  .cover .image-col {
+  @media (max-width: 1000px) { .method-page { grid-template-columns: 1fr; } }
+
+  /* Project context column (left) */
+  .ctx-col {
     background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
     overflow: hidden;
     display: grid; grid-template-rows: 1.05fr 1fr;
   }
-  .cover .image {
-    background-image: url('images/m6/three-rates-cover.png');
+  .ctx-image {
+    background-image: url('images/m6/three-rates-disney.png');
     background-size: cover; background-position: center;
-    position: relative;
-    min-height: 0;
+    position: relative; min-height: 0;
   }
-  .cover .image::after {
+  .ctx-image::after {
     content: ''; position: absolute; inset: 0;
-    background: linear-gradient(180deg, rgba(255,255,255,0) 50%, rgba(20,12,12,0.5) 100%);
+    background: linear-gradient(180deg, rgba(20,12,12,0) 50%, rgba(20,12,12,0.72) 100%);
   }
-  .cover .image .caption {
-    position: absolute; bottom: 0; left: 0; right: 0; padding: 14px 18px;
+  .ctx-image .caption {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 14px 18px;
     color: #fff;
   }
-  .cover .image .caption .crumb {
+  .ctx-image .caption .crumb {
     font-family: 'Outfit', sans-serif;
     font-size: 9.5px; letter-spacing: 0.28em; text-transform: uppercase; font-weight: 700;
     color: #f0c878; opacity: 0.9; margin-bottom: 3px;
   }
-  .cover .image .caption h2 {
-    font-family: 'Lora', serif; font-size: 22px; font-weight: 700; line-height: 1.05;
-  }
-  .cover .image .caption h2 em { font-style: italic; color: #f0c878; }
-  .cover .intro {
-    padding: 14px 18px 14px;
-    display: flex; flex-direction: column; gap: 8px;
-    background: linear-gradient(135deg, var(--paper) 0%, var(--gold-soft) 100%);
-    border-top: 1px solid #efe1bd;
-    min-height: 0; overflow-y: auto;
-  }
-  .cover .intro h4 { font-family: 'Lora', serif; font-size: 14px; font-weight: 700; }
-  .cover .intro h4 em { font-style: italic; color: var(--gold-deep); }
-  .cover .intro p {
-    font-family: 'Lora', serif; font-style: italic; font-size: 12.5px; color: var(--muted); line-height: 1.55;
-  }
-  .cover .intro p b { color: var(--ink); font-weight: 700; font-style: normal; }
+  .ctx-image .caption h3 { font-family: 'Lora', serif; font-size: 22px; font-weight: 700; line-height: 1.05; }
+  .ctx-image .caption h3 em { font-style: italic; color: #f0c878; }
+  .ctx-image .caption .where { font-family: 'Lora', serif; font-style: italic; font-size: 12px; opacity: 0.88; margin-top: 2px; }
 
-  .cover .defs-col {
-    background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
-    padding: 18px 22px 16px;
-    display: flex; flex-direction: column; gap: 10px;
-    min-height: 0; overflow-y: auto;
+  .ctx-body {
+    padding: 12px 16px 14px;
+    display: flex; flex-direction: column; gap: 8px;
+    min-height: 0; overflow: hidden;
   }
-  .cover .defs-head {
-    display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
-    padding-bottom: 9px; border-bottom: 1px solid var(--border);
+  .ctx-body .ctx-head {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+    padding-bottom: 6px; border-bottom: 1px solid var(--border);
   }
-  .cover .defs-head h3 { font-family: 'Lora', serif; font-size: 17px; font-weight: 700; }
-  .cover .defs-head h3 em { font-style: italic; color: var(--gold); }
-  .cover .defs-head .meta {
-    font-family: 'Outfit', sans-serif; font-size: 9.5px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700;
+  .ctx-body .ctx-head h4 { font-family: 'Lora', serif; font-size: 13.5px; font-weight: 700; }
+  .ctx-body .ctx-head h4 em { font-style: italic; color: var(--gold); }
+  .ctx-body .ctx-head .meta {
+    font-family: 'Outfit', sans-serif; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
     color: var(--soft);
   }
+  .num-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+  }
+  .num-grid .nm {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 7px;
+    padding: 6px 9px;
+    display: flex; flex-direction: column; gap: 0;
+  }
+  .num-grid .nm .l {
+    font-family: 'Outfit', sans-serif; font-size: 8px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft);
+  }
+  .num-grid .nm .v {
+    font-family: 'Lora', serif; font-style: italic; font-size: 14px; font-weight: 700; color: var(--ink);
+    line-height: 1.1;
+  }
+  .num-grid .nm .v em { font-style: italic; color: var(--gold-deep); }
 
-  .def-card {
-    background: var(--bg); border: 1px solid var(--border); border-radius: 9px;
-    padding: 10px 14px;
-    border-left: 3px solid var(--gold);
-    display: grid; grid-template-columns: auto 1fr 0.6fr; gap: 14px;
-    align-items: center;
+  .cf-wrap {
+    flex: 1; min-height: 0;
+    background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 10px;
+    display: flex; flex-direction: column;
+    position: relative;
   }
-  @media (max-width: 720px) { .def-card { grid-template-columns: 1fr; } }
-  .def-card.olive { border-left-color: var(--olive); }
-  .def-card.teal  { border-left-color: var(--teal); }
-  .def-card .head-col {
-    display: flex; flex-direction: column; gap: 3px; min-width: 120px;
+  .cf-wrap svg { flex: 1; min-height: 0; width: 100%; }
+  .cf-wrap .legend {
+    display: flex; gap: 11px; flex-wrap: wrap; margin-top: 4px;
+    font-family: 'Outfit', sans-serif; font-size: 9.5px;
   }
-  .def-card .badge {
+  .cf-wrap .legend .it { display: inline-flex; align-items: center; gap: 4px; color: var(--muted); }
+  .cf-wrap .legend .sw { width: 9px; height: 9px; border-radius: 2px; }
+
+  /* Method content column (right) */
+  .method-col {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px 22px 18px;
+    display: flex; flex-direction: column; gap: 11px;
+    min-height: 0; overflow: hidden;
+    border-top: 4px solid var(--gold);
+  }
+  .method-col.olive { border-top-color: var(--olive); }
+  .method-col.teal  { border-top-color: var(--teal); }
+
+  .method-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  }
+  .method-head .ttl-block { display: flex; flex-direction: column; gap: 3px; }
+  .method-head .badge {
     font-family: 'Outfit', sans-serif;
-    font-size: 8.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
-    padding: 2px 8px; border-radius: 999px;
+    font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700;
+    padding: 2px 9px; border-radius: 999px;
     align-self: flex-start;
   }
-  .def-card.gold  .badge { background: var(--gold-soft); color: var(--gold-deep); }
-  .def-card.olive .badge { background: var(--olive-soft); color: var(--olive-deep); }
-  .def-card.teal  .badge { background: var(--teal-soft); color: var(--teal-deep); }
-  .def-card h4 {
-    font-family: 'Lora', serif; font-size: 18px; font-weight: 700; line-height: 1.05;
-  }
-  .def-card h4 em { font-style: italic; }
-  .def-card.gold  h4 em { color: var(--gold-deep); }
-  .def-card.olive h4 em { color: var(--olive-deep); }
-  .def-card.teal  h4 em { color: var(--teal-deep); }
-  .def-card .def {
-    font-family: 'Lora', serif; font-size: 12.5px; color: var(--ink); line-height: 1.5;
-  }
-  .def-card .def b {
-    font-style: normal; font-weight: 700;
-  }
-  .def-card.gold  .def b { color: var(--gold-deep); }
-  .def-card.olive .def b { color: var(--olive-deep); }
-  .def-card.teal  .def b { color: var(--teal-deep); }
-  .def-card .def em { font-style: italic; color: var(--muted); }
-  .def-card .mini-formula {
-    background: var(--paper); border: 1px solid var(--border); border-radius: 6px;
-    padding: 6px 10px;
-    text-align: center;
-    font-size: 12px;
-  }
-  .def-card .mini-formula .caption {
-    font-family: 'Lora', serif; font-style: italic; font-size: 9.5px; color: var(--muted); margin-top: 2px;
-  }
+  .method-col.gold  .badge { background: var(--gold-soft); color: var(--gold-deep); }
+  .method-col.olive .badge { background: var(--olive-soft); color: var(--olive-deep); }
+  .method-col.teal  .badge { background: var(--teal-soft); color: var(--teal-deep); }
+  .method-head h2 { font-family: 'Lora', serif; font-size: 26px; font-weight: 700; line-height: 1.05; letter-spacing: -0.01em; }
+  .method-head h2 em { font-style: italic; }
+  .method-col.gold  h2 em { color: var(--gold-deep); }
+  .method-col.olive h2 em { color: var(--olive-deep); }
+  .method-col.teal  h2 em { color: var(--teal-deep); }
 
-  .cover .cta-row {
-    display: flex; align-items: center; gap: 12px; justify-content: space-between;
-    margin-top: 4px;
-  }
-  .cover .cta-row .next-link {
-    font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted);
-  }
-  .cover .cta-row .next-link b { color: var(--gold-deep); font-style: normal; font-weight: 700; }
-  .cover .start-btn {
-    font-family: 'Outfit', sans-serif; font-size: 12.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
-    padding: 10px 22px; border-radius: 9px; cursor: pointer;
-    background: var(--gold-deep); color: #fff; border: 1px solid var(--gold-deep);
-    display: inline-flex; align-items: center; gap: 9px;
-    transition: all 0.16s ease;
-  }
-  .cover .start-btn:hover { background: #6b4f08; transform: translateY(-1px); box-shadow: 0 8px 22px rgba(184,134,11,0.34); }
-  .cover .start-btn svg { width: 14px; height: 14px; }
-
-  /* ============ PAGE 2 — METHODS TOOL ============ */
-  .tool-grid {
-    flex: 1; min-height: 0;
-    display: grid;
-    grid-template-rows: auto minmax(0, 1fr);
-    gap: 8px;
-  }
-
-  .controls {
-    background: var(--paper); border: 1px solid var(--border); border-radius: 10px;
-    padding: 9px 14px;
-    display: grid;
-    grid-template-columns: auto repeat(4, 1fr) 1px repeat(3, 1fr);
-    gap: 12px;
-    align-items: center;
-  }
-  @media (max-width: 1180px) {
-    .controls { grid-template-columns: repeat(4, 1fr); }
-    .controls .divider, .controls .group-label { display: none; }
-  }
-  .controls .group-label {
-    font-family: 'Outfit', sans-serif;
-    font-size: 8.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
-    color: var(--gold-deep); line-height: 1.15; text-align: right;
-  }
-  .controls .divider { width: 1px; height: 36px; background: var(--line); }
-  .ctrl-cell {
-    display: flex; flex-direction: column; gap: 1px; min-width: 0;
-  }
-  .ctrl-cell .lbl {
-    font-family: 'Outfit', sans-serif; font-size: 8.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
-  }
-  .ctrl-cell.gold .lbl  { color: var(--gold-deep); }
-  .ctrl-cell.olive .lbl { color: var(--olive-deep); }
-  .ctrl-cell.teal .lbl  { color: var(--teal-deep); }
-  .ctrl-cell .row { display: flex; align-items: baseline; gap: 4px; }
-  .ctrl-cell input[type=number] {
-    width: 100%; padding: 3px 6px;
-    border: 1px solid var(--border); border-radius: 5px;
-    font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700; color: var(--ink);
-    background: var(--bg); outline: none; text-align: right;
-  }
-  .ctrl-cell input[type=number]:focus { border-color: var(--gold); background: #fff; box-shadow: 0 0 0 2px rgba(184,134,11,0.12); }
-  .ctrl-cell .readout {
-    font-family: 'Lora', serif; font-style: italic; font-size: 15px; font-weight: 700; line-height: 1;
-  }
-  .ctrl-cell.gold .readout  { color: var(--gold-deep); }
-  .ctrl-cell.olive .readout { color: var(--olive-deep); }
-  .ctrl-cell.teal .readout  { color: var(--teal-deep); }
-  .ctrl-cell input[type=range] { width: 100%; height: 4px; accent-color: var(--gold); }
-  .ctrl-cell.olive input[type=range] { accent-color: var(--olive); }
-  .ctrl-cell.teal  input[type=range] { accent-color: var(--teal); }
-
-  .methods-stack {
-    min-height: 0;
-    display: grid; grid-template-rows: 1fr 1fr 1fr auto;
-    gap: 8px;
-  }
-
-  .method {
-    background: var(--paper); border: 1px solid var(--border); border-radius: 10px;
-    padding: 10px 14px;
-    border-left: 3px solid var(--gold);
-    display: grid; grid-template-columns: 0.48fr 1fr 0.55fr; gap: 14px;
-    align-items: center; min-height: 0;
-  }
-  @media (max-width: 720px) { .method { grid-template-columns: 1fr; } }
-  .method.gold  { border-left-color: var(--gold); }
-  .method.olive { border-left-color: var(--olive); }
-  .method.teal  { border-left-color: var(--teal); }
-
-  .method-title { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-  .method-title .ttl { display: flex; align-items: center; gap: 7px; }
-  .method-title .badge {
-    font-family: 'Outfit', sans-serif;
-    font-size: 8.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
-    padding: 2px 7px; border-radius: 999px;
-  }
-  .method.gold  .badge { background: var(--gold-soft); color: var(--gold-deep); }
-  .method.olive .badge { background: var(--olive-soft); color: var(--olive-deep); }
-  .method.teal  .badge { background: var(--teal-soft); color: var(--teal-deep); }
-  .method-title h4 { font-family: 'Lora', serif; font-size: 19px; font-weight: 700; line-height: 1.05; }
-  .method-title h4 em { font-style: italic; }
-  .method.gold  h4 em { color: var(--gold); }
-  .method.olive h4 em { color: var(--olive); }
-  .method.teal  h4 em { color: var(--teal); }
-  .method-title .one-liner {
-    font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted); line-height: 1.4;
-  }
-
-  .method-formula {
-    background: var(--bg); border: 1px solid var(--border); border-radius: 7px;
-    padding: 8px 12px;
-    text-align: center;
-    font-size: 13px;
-    min-width: 0; overflow: hidden;
-  }
-  .method-formula .caption {
-    font-family: 'Lora', serif; font-style: italic; font-size: 9.5px; color: var(--muted); margin-top: 2px;
-  }
-  .method-formula .compute {
-    font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); line-height: 1.4;
-    margin-top: 4px;
-  }
-  .method-formula .compute b { color: var(--ink); font-weight: 700; }
-
-  .method-result {
-    display: flex; flex-direction: column; align-items: center; gap: 3px;
-  }
-  .method-result .lbl {
-    font-family: 'Outfit', sans-serif; font-size: 8.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
-  }
-  .method.gold  .method-result .lbl { color: var(--gold-deep); }
-  .method.olive .method-result .lbl { color: var(--olive-deep); }
-  .method.teal  .method-result .lbl { color: var(--teal-deep); }
-  .method-result .big {
-    font-family: 'Lora', serif; font-style: italic; font-weight: 700; font-size: 32px; line-height: 1;
-    letter-spacing: -0.02em;
-  }
-  .method.gold  .method-result .big { color: var(--gold-deep); }
-  .method.olive .method-result .big { color: var(--olive-deep); }
-  .method.teal  .method-result .big { color: var(--teal-deep); }
-  .method-result .verdict {
-    font-family: 'Outfit', sans-serif; font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700;
-    padding: 2px 7px; border-radius: 999px;
-  }
-  .method-result .verdict.accept { color: #fff; background: var(--olive); }
-  .method-result .verdict.reject { color: #fff; background: var(--crimson); }
-  .method-result .info-btn { margin-top: 2px; }
-
-  /* Info icon button */
   .info-btn {
-    width: 22px; height: 22px;
+    width: 26px; height: 26px;
     border-radius: 50%;
     background: var(--gold-soft); border: 1.5px solid var(--gold);
     color: var(--gold-deep);
     display: inline-flex; align-items: center; justify-content: center;
-    font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 800;
+    font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 800;
     cursor: pointer;
     transition: all 0.15s ease;
     flex-shrink: 0;
@@ -349,143 +202,133 @@
   .info-btn.teal  { background: var(--teal-soft); border-color: var(--teal); color: var(--teal-deep); }
   .info-btn.teal:hover { background: var(--teal); color: #fff; box-shadow: 0 4px 12px rgba(14,124,128,0.4); }
 
-  /* Bottom action buttons on page 2 */
-  .actions-bar {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
-  }
-  .action-btn {
-    background: var(--paper); border: 1px solid var(--border); border-radius: 9px;
-    padding: 8px 14px;
-    display: flex; align-items: center; gap: 11px;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    text-align: left;
-    font-family: inherit;
-  }
-  .action-btn:hover { border-color: var(--gold); background: var(--gold-soft); transform: translateY(-1px); }
-  .action-btn .ico {
-    width: 32px; height: 32px; border-radius: 8px;
-    background: var(--gold-soft); border: 1px solid var(--gold);
-    display: flex; align-items: center; justify-content: center;
-    color: var(--gold-deep);
-    flex-shrink: 0;
-  }
-  .action-btn .ico svg { width: 18px; height: 18px; }
-  .action-btn .copy { display: flex; flex-direction: column; min-width: 0; }
-  .action-btn .copy .lbl {
-    font-family: 'Outfit', sans-serif; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
-    color: var(--gold-deep);
-  }
-  .action-btn .copy .ttl {
-    font-family: 'Lora', serif; font-size: 13px; font-weight: 700; color: var(--ink); line-height: 1.15;
-  }
-  .action-btn .copy .ttl em { font-style: italic; color: var(--gold-deep); }
-
-  /* ============ PAGE 3 — DISNEY CASE ============ */
-  .disney {
-    flex: 1; min-height: 0;
-    display: grid; grid-template-columns: 0.95fr 1.05fr; gap: 12px;
-  }
-  @media (max-width: 1000px) { .disney { grid-template-columns: 1fr; } }
-  .disney-left {
-    background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
-    overflow: hidden;
-    display: grid; grid-template-rows: 1.1fr 1fr;
-  }
-  .disney-image {
-    background-image: url('images/m6/three-rates-disney.png');
-    background-size: cover; background-position: center;
-    min-height: 0;
-    position: relative;
-  }
-  .disney-image::after {
-    content: ''; position: absolute; inset: 0;
-    background: linear-gradient(180deg, rgba(20,12,12,0) 50%, rgba(20,12,12,0.7) 100%);
-  }
-  .disney-image .caption {
-    position: absolute; left: 0; right: 0; bottom: 0; padding: 18px 22px;
-    color: #fff; z-index: 1;
-  }
-  .disney-image .caption .crumb {
-    font-family: 'Outfit', sans-serif;
-    font-size: 9.5px; letter-spacing: 0.28em; text-transform: uppercase; font-weight: 700;
-    color: #f0c878; opacity: 0.9; margin-bottom: 4px;
-  }
-  .disney-image .caption h3 { font-family: 'Lora', serif; font-size: 24px; font-weight: 700; line-height: 1.05; }
-  .disney-image .caption h3 em { font-style: italic; color: #f0c878; }
-  .disney-image .caption .where { font-family: 'Lora', serif; font-style: italic; font-size: 12.5px; opacity: 0.88; margin-top: 3px; }
-
-  .disney-story {
-    padding: 14px 18px 16px;
-    display: flex; flex-direction: column; gap: 8px;
-    min-height: 0; overflow-y: auto;
-  }
-  .disney-story h4 { font-family: 'Lora', serif; font-size: 15px; font-weight: 700; }
-  .disney-story h4 em { font-style: italic; color: var(--gold); }
-  .disney-story p { font-family: 'Lora', serif; font-size: 12.5px; color: var(--ink); line-height: 1.5; }
-  .disney-story p b { color: var(--gold-deep); font-weight: 700; }
-  .disney-story .reset-btn {
-    align-self: flex-start;
-    font-family: 'Outfit', sans-serif; font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700;
-    padding: 7px 14px; border-radius: 6px; cursor: pointer;
-    background: var(--gold-soft); color: var(--gold-deep); border: 1px solid var(--gold);
-    transition: all 0.15s;
-  }
-  .disney-story .reset-btn:hover { background: var(--gold); color: #fff; }
-
-  .disney-right {
-    background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
-    padding: 14px 18px 16px;
-    display: flex; flex-direction: column; gap: 10px; min-height: 0;
-  }
-  .disney-right .panel-head {
-    display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
-    padding-bottom: 8px; border-bottom: 1px solid var(--border);
-  }
-  .disney-right .panel-head h3 { font-family: 'Lora', serif; font-size: 16px; font-weight: 700; line-height: 1.1; }
-  .disney-right .panel-head h3 em { font-style: italic; color: var(--gold); }
-  .disney-right .panel-head .meta {
-    font-family: 'Outfit', sans-serif; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
-    color: var(--soft);
-  }
-  .disney-cf {
-    flex: 1; min-height: 0;
+  .def-block {
     background: var(--bg); border: 1px solid var(--border); border-radius: 9px;
-    padding: 10px 12px;
-    display: flex; flex-direction: column;
-    position: relative;
+    padding: 11px 14px;
+    border-left: 3px solid var(--gold);
   }
-  .disney-cf .info-btn { position: absolute; top: 9px; right: 9px; }
-  .disney-cf svg { flex: 1; min-height: 0; width: 100%; }
-  .disney-cf .legend {
-    display: flex; gap: 12px; flex-wrap: wrap; margin-top: 4px;
-    font-family: 'Outfit', sans-serif; font-size: 10px;
+  .method-col.olive .def-block { border-left-color: var(--olive); }
+  .method-col.teal  .def-block { border-left-color: var(--teal); }
+  .def-block p {
+    font-family: 'Lora', serif; font-size: 13px; color: var(--ink); line-height: 1.55;
   }
-  .disney-cf .legend .it { display: inline-flex; align-items: center; gap: 5px; color: var(--muted); }
-  .disney-cf .legend .sw { width: 10px; height: 10px; border-radius: 2px; }
+  .def-block p b { color: var(--gold-deep); font-weight: 700; }
+  .method-col.olive .def-block p b { color: var(--olive-deep); }
+  .method-col.teal  .def-block p b { color: var(--teal-deep); }
+  .def-block p em { font-style: italic; color: var(--muted); }
+  .def-block .assumption {
+    margin-top: 7px; padding-top: 7px; border-top: 1px dashed var(--line);
+    font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted);
+  }
+  .def-block .assumption b { color: var(--gold-deep); font-style: normal; font-weight: 700; }
+  .method-col.olive .def-block .assumption b { color: var(--olive-deep); }
+  .method-col.teal  .def-block .assumption b { color: var(--teal-deep); }
 
-  .verdict-tbl {
-    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;
+  .formula-block {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 14px 9px;
+    text-align: center;
+    font-size: 16px;
   }
-  .verdict-tbl .vt {
-    background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px;
+  .formula-block .caption {
+    font-family: 'Lora', serif; font-style: italic; font-size: 11px; color: var(--muted); margin-top: 3px;
+  }
+
+  .sliders-row {
+    display: grid; gap: 9px;
+  }
+  .sliders-row.single { grid-template-columns: 1fr; }
+  .sliders-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+  @media (max-width: 720px) { .sliders-row.triple { grid-template-columns: 1fr; } }
+  .slider-cell {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+    padding: 7px 11px;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .slider-cell .row1 { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .slider-cell .lbl {
+    font-family: 'Outfit', sans-serif; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+  }
+  .slider-cell.gold .lbl  { color: var(--gold-deep); }
+  .slider-cell.olive .lbl { color: var(--olive-deep); }
+  .slider-cell.teal .lbl  { color: var(--teal-deep); }
+  .slider-cell .readout {
+    font-family: 'Lora', serif; font-style: italic; font-size: 17px; font-weight: 700; line-height: 1;
+  }
+  .slider-cell.gold .readout  { color: var(--gold-deep); }
+  .slider-cell.olive .readout { color: var(--olive-deep); }
+  .slider-cell.teal .readout  { color: var(--teal-deep); }
+  .slider-cell input[type=range] { width: 100%; height: 4px; accent-color: var(--gold); }
+  .slider-cell.olive input[type=range] { accent-color: var(--olive); }
+  .slider-cell.teal  input[type=range] { accent-color: var(--teal); }
+  .slider-cell .hint { font-family: 'Lora', serif; font-style: italic; font-size: 10.5px; color: var(--muted); }
+
+  /* Big result row */
+  .result-row {
+    background: linear-gradient(135deg, var(--paper) 0%, var(--gold-soft) 100%);
+    border: 1px solid #efe1bd; border-radius: 10px;
+    padding: 13px 18px;
+    display: grid; grid-template-columns: auto 1fr auto; gap: 16px; align-items: center;
+  }
+  .method-col.olive .result-row { background: linear-gradient(135deg, var(--paper) 0%, var(--olive-soft) 100%); border-color: #cbd9bb; }
+  .method-col.teal  .result-row { background: linear-gradient(135deg, var(--paper) 0%, var(--teal-soft) 100%); border-color: #b9dadc; }
+  .result-row .label-block { display: flex; flex-direction: column; gap: 1px; }
+  .result-row .lbl {
+    font-family: 'Outfit', sans-serif; font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700;
+  }
+  .method-col.gold  .result-row .lbl { color: var(--gold-deep); }
+  .method-col.olive .result-row .lbl { color: var(--olive-deep); }
+  .method-col.teal  .result-row .lbl { color: var(--teal-deep); }
+  .result-row .compute {
+    font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted); line-height: 1.4;
+  }
+  .result-row .compute b { color: var(--ink); font-weight: 700; }
+  .result-row .big {
+    font-family: 'Lora', serif; font-style: italic; font-weight: 700; font-size: 44px; line-height: 1;
+    letter-spacing: -0.02em;
+    text-align: center; min-width: 130px;
+  }
+  .method-col.gold  .result-row .big { color: var(--gold-deep); }
+  .method-col.olive .result-row .big { color: var(--olive-deep); }
+  .method-col.teal  .result-row .big { color: var(--teal-deep); }
+  .result-row .verdict {
+    font-family: 'Outfit', sans-serif; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700;
+    padding: 5px 11px; border-radius: 999px;
+  }
+  .result-row .verdict.accept { color: #fff; background: var(--olive); }
+  .result-row .verdict.reject { color: #fff; background: var(--crimson); }
+
+  /* Comparison strip (page 2 + page 3) */
+  .compare-strip {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+  .compare-strip.two { grid-template-columns: 1fr 1fr; }
+  .cmp-card {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
     border-top: 3px solid var(--gold);
-    display: flex; flex-direction: column; gap: 1px; align-items: center; text-align: center;
+    padding: 7px 11px;
+    display: flex; flex-direction: column; gap: 0; align-items: center;
   }
-  .verdict-tbl .vt.olive { border-top-color: var(--olive); }
-  .verdict-tbl .vt.teal { border-top-color: var(--teal); }
-  .verdict-tbl .vt .lbl {
-    font-family: 'Outfit', sans-serif; font-size: 8.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+  .cmp-card.olive { border-top-color: var(--olive); }
+  .cmp-card.teal  { border-top-color: var(--teal); }
+  .cmp-card.dim { opacity: 0.62; }
+  .cmp-card .nm {
+    font-family: 'Outfit', sans-serif; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
   }
-  .verdict-tbl .vt.gold .lbl  { color: var(--gold-deep); }
-  .verdict-tbl .vt.olive .lbl { color: var(--olive-deep); }
-  .verdict-tbl .vt.teal .lbl  { color: var(--teal-deep); }
-  .verdict-tbl .vt .v {
-    font-family: 'Lora', serif; font-style: italic; font-size: 22px; font-weight: 700; line-height: 1;
+  .cmp-card.gold .nm  { color: var(--gold-deep); }
+  .cmp-card.olive .nm { color: var(--olive-deep); }
+  .cmp-card.teal .nm  { color: var(--teal-deep); }
+  .cmp-card .v {
+    font-family: 'Lora', serif; font-style: italic; font-weight: 700; font-size: 22px; line-height: 1;
   }
-  .verdict-tbl .vt.gold .v  { color: var(--gold-deep); }
-  .verdict-tbl .vt.olive .v { color: var(--olive-deep); }
-  .verdict-tbl .vt.teal .v  { color: var(--teal-deep); }
+  .cmp-card.gold .v  { color: var(--gold-deep); }
+  .cmp-card.olive .v { color: var(--olive-deep); }
+  .cmp-card.teal .v  { color: var(--teal-deep); }
+  .cmp-card .vd {
+    font-family: 'Lora', serif; font-style: italic; font-size: 10px; color: var(--muted); margin-top: 1px;
+  }
 
   /* ============ FOOTER NAV ============ */
   .footer-nav {
@@ -498,7 +341,10 @@
     width: 8px; height: 8px; border-radius: 50%; background: var(--border); cursor: pointer;
     transition: all 0.2s;
   }
-  .footer-nav .dot.active { background: var(--gold); transform: scale(1.3); }
+  .footer-nav .dot.active { transform: scale(1.3); }
+  .footer-nav .dot[data-go="1"].active { background: var(--gold); }
+  .footer-nav .dot[data-go="2"].active { background: var(--olive); }
+  .footer-nav .dot[data-go="3"].active { background: var(--teal); }
   .footer-nav .dot:hover { background: var(--gold); }
   .footer-nav .label { font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted); margin-left: 8px; }
   .nav-btn {
@@ -557,8 +403,6 @@
   .pop-card .pb b { color: var(--gold-deep); font-weight: 700; }
   .pop-card.olive .pb b { color: var(--olive-deep); }
   .pop-card.teal .pb b { color: var(--teal-deep); }
-  .pop-card .pb em { font-style: italic; color: var(--muted); }
-  .pop-card.wide { max-width: 980px; }
 </style>
 </head>
 <body>
@@ -566,11 +410,11 @@
 <div class="app">
 
   <!-- ============ HEAD ============ -->
-  <header class="head">
+  <header class="head" id="head">
     <div class="brand">
-      <span class="code">IE 4512 · Module 6</span>
-      <h1>IRR · ERR · <em>MIRR</em></h1>
-      <span class="tag">three rates, one project</span>
+      <span class="code" id="brand-code">IE 4512 · Module 6</span>
+      <h1 id="brand-title">IRR · ERR · <em>MIRR</em></h1>
+      <span class="tag">three pages, one project</span>
     </div>
     <nav class="nav">
       <a href="index.html#module-6">← Module 6</a>
@@ -582,230 +426,243 @@
   <!-- ============ DECK ============ -->
   <div class="deck">
 
-    <!-- PAGE 1 — CONCEPTS / DEFINITIONS -->
+    <!-- PAGE 1 — IRR -->
     <section class="page active" data-page="1">
-      <div class="cover">
+      <div class="method-page">
 
-        <div class="image-col">
-          <div class="image">
-            <div class="caption">
-              <div class="crumb">IE 4512 · Module 6</div>
-              <h2>Three rates,<br><em>one project</em></h2>
-            </div>
-          </div>
-          <div class="intro">
-            <h4>Why <em>three</em> methods?</h4>
-            <p>For the same cash flow you can compute <b>three different</b> rates of return, and they almost never agree. The difference is in what each method assumes about the rate at which money <em>between</em> year 0 and year n is reinvested.</p>
-            <p>IRR is silent about that assumption (it bakes the project's own IRR in implicitly). ERR makes the reinvestment rate explicit (it uses the MARR). MIRR goes further: <b>two</b> rates &mdash; one for the cost of borrowing, one for what the firm can actually earn on incoming cash.</p>
-          </div>
-        </div>
-
-        <div class="defs-col">
-          <div class="defs-head">
-            <h3>The <em>definitions</em></h3>
-            <span class="meta">page 1 of 3</span>
-          </div>
-
-          <div class="def-card gold">
-            <div class="head-col">
-              <span class="badge">Method 1</span>
-              <h4>Internal · <em>IRR</em></h4>
-            </div>
-            <div class="def">The discount rate that drives <b>NPV to exactly zero</b> for the project's cash flow. "Internal" because no outside rate is needed &mdash; the value is solved from the project alone. <em>Hidden assumption: every dollar paid out is reinvested at the IRR itself.</em></div>
-            <div class="mini-formula">
-              \[ \mathrm{NPV}(r)=0 \]
-              <div class="caption">solve r numerically</div>
-            </div>
-          </div>
-
-          <div class="def-card olive">
-            <div class="head-col">
-              <span class="badge">Method 2</span>
-              <h4>External · <em>ERR</em></h4>
-            </div>
-            <div class="def">Inflows are <b>compounded forward</b> to year n at the MARR; outflows are <b>discounted back</b> to year 0 at the MARR. Then a single rate is solved that links the two collapsed values across n years. <em>Fixes the IRR reinvestment trap; always has one solution.</em></div>
-            <div class="mini-formula">
-              \[ \mathrm{ERR} = \left(\tfrac{FW_{+}(i)}{PW_{-}(i)}\right)^{1/n} - 1 \]
-              <div class="caption">both directions at i = MARR</div>
-            </div>
-          </div>
-
-          <div class="def-card teal">
-            <div class="head-col">
-              <span class="badge">Method 3</span>
-              <h4>Modified · <em>MIRR</em></h4>
-            </div>
-            <div class="def">Same shape as ERR but with <b>two different rates</b>. Outflows discount at the firm's <em>finance rate</em> (cost of borrowing). Inflows compound at the <em>reinvestment rate</em> (what the firm can actually earn on cash). <em>Excel: <code>MIRR(values, finance, reinvest)</code>.</em></div>
-            <div class="mini-formula">
-              \[ \mathrm{MIRR} = \left(\tfrac{FW_{+}(i_r)}{PW_{-}(i_f)}\right)^{1/n} - 1 \]
-              <div class="caption">i<sub>f</sub> finance · i<sub>r</sub> reinvest</div>
-            </div>
-          </div>
-
-          <div class="cta-row">
-            <div class="next-link">Next: <b>tune the numbers</b> and watch all three rates respond live →</div>
-            <button class="start-btn" id="cover-start">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 4 20 12 6 20 6 4"/></svg>
-              Open the tool
-            </button>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- PAGE 2 — METHODS TOOL -->
-    <section class="page" data-page="2">
-      <div class="tool-grid">
-
-        <!-- Combined controls bar: project tuners + rate sliders -->
-        <section class="controls">
-          <span class="group-label">Project<br>numbers</span>
-          <div class="ctrl-cell gold"><span class="lbl">Build · P</span><input type="number" id="p-build" value="120" min="10" max="500" step="5"></div>
-          <div class="ctrl-cell gold"><span class="lbl">Revenue · A</span><input type="number" id="p-revenue" value="22" min="1" max="100" step="1"></div>
-          <div class="ctrl-cell gold"><span class="lbl">Salvage · S</span><input type="number" id="p-salvage" value="8" min="0" max="100" step="1"></div>
-          <div class="ctrl-cell gold"><span class="lbl">Life · n</span><input type="number" id="p-n" value="10" min="3" max="25" step="1"></div>
-          <div class="divider"></div>
-          <div class="ctrl-cell gold">
-            <div class="row"><span class="lbl">MARR</span><span class="readout" id="marr-val" style="margin-left:auto">10.0%</span></div>
-            <input type="range" id="marr" min="2" max="25" step="0.25" value="10" aria-label="MARR">
-          </div>
-          <div class="ctrl-cell olive">
-            <div class="row"><span class="lbl">Finance i<sub>f</sub></span><span class="readout" id="fin-val" style="margin-left:auto">10.0%</span></div>
-            <input type="range" id="fin" min="2" max="20" step="0.25" value="10" aria-label="Finance rate">
-          </div>
-          <div class="ctrl-cell teal">
-            <div class="row"><span class="lbl">Reinvest i<sub>r</sub></span><span class="readout" id="rinv-val" style="margin-left:auto">8.0%</span></div>
-            <input type="range" id="rinv" min="2" max="20" step="0.25" value="8" aria-label="Reinvestment rate">
-          </div>
-        </section>
-
-        <!-- Three method cards stacked -->
-        <div class="methods-stack">
-
-          <div class="method gold">
-            <div class="method-title">
-              <div class="ttl"><span class="badge">Method 1</span></div>
-              <h4>Internal · <em>IRR</em></h4>
-              <div class="one-liner">Rate that drives NPV to zero. Assumes reinvestment at the IRR itself.</div>
-            </div>
-            <div class="method-formula">
-              \[ \mathrm{NPV}(r) = \sum_{t=0}^{n} \frac{CF_t}{(1+r)^t} = 0 \]
-              <div class="caption">solve r numerically</div>
-              <div class="compute" id="irr-compute">—</div>
-            </div>
-            <div class="method-result">
-              <span class="lbl">IRR</span>
-              <span class="big" id="irr-val">—</span>
-              <span class="verdict" id="irr-verdict">—</span>
-              <button class="info-btn" data-pop="irr" aria-label="About IRR">i</button>
-            </div>
-          </div>
-
-          <div class="method olive">
-            <div class="method-title">
-              <div class="ttl"><span class="badge">Method 2</span></div>
-              <h4>External · <em>ERR</em></h4>
-              <div class="one-liner">Inflows compound at MARR, outflows discount at MARR. One rate, no ambiguity.</div>
-            </div>
-            <div class="method-formula">
-              \[ \mathrm{ERR} = \left(\frac{FW_{+}(i)}{PW_{-}(i)}\right)^{1/n} - 1 \]
-              <div class="caption">both directions use i = MARR</div>
-              <div class="compute" id="err-compute">—</div>
-            </div>
-            <div class="method-result">
-              <span class="lbl">ERR</span>
-              <span class="big" id="err-val">—</span>
-              <span class="verdict" id="err-verdict">—</span>
-              <button class="info-btn olive" data-pop="err" aria-label="About ERR">i</button>
-            </div>
-          </div>
-
-          <div class="method teal">
-            <div class="method-title">
-              <div class="ttl"><span class="badge">Method 3</span></div>
-              <h4>Modified · <em>MIRR</em></h4>
-              <div class="one-liner">Two rates — finance for outflows, reinvest for inflows. The realistic version.</div>
-            </div>
-            <div class="method-formula">
-              \[ \mathrm{MIRR} = \left(\frac{FW_{+}(i_r)}{PW_{-}(i_f)}\right)^{1/n} - 1 \]
-              <div class="caption">i<sub>f</sub> finance · i<sub>r</sub> reinvest</div>
-              <div class="compute" id="mirr-compute">—</div>
-            </div>
-            <div class="method-result">
-              <span class="lbl">MIRR</span>
-              <span class="big" id="mirr-val">—</span>
-              <span class="verdict" id="mirr-verdict">—</span>
-              <button class="info-btn teal" data-pop="mirr" aria-label="About MIRR">i</button>
-            </div>
-          </div>
-
-          <!-- Action buttons -->
-          <div class="actions-bar">
-            <button class="action-btn" data-pop="npv">
-              <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 16 9 10 13 14 21 6"/><polyline points="14 6 21 6 21 13"/></svg></div>
-              <div class="copy">
-                <span class="lbl">View · chart</span>
-                <span class="ttl">NPV vs <em>r</em> curve</span>
-              </div>
-            </button>
-            <button class="action-btn" data-pop="decision">
-              <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
-              <div class="copy">
-                <span class="lbl">Decide</span>
-                <span class="ttl">When to use <em>which</em></span>
-              </div>
-            </button>
-          </div>
-
-        </div>
-
-      </div>
-    </section>
-
-    <!-- PAGE 3 — DISNEY CASE -->
-    <section class="page" data-page="3">
-      <div class="disney">
-
-        <div class="disney-left">
-          <div class="disney-image">
+        <div class="ctx-col">
+          <div class="ctx-image">
             <div class="caption">
               <div class="crumb">a working example · Magic Kingdom 2024</div>
               <h3>Tiana's <em>Bayou Adventure</em></h3>
               <div class="where">opened June 2024 · the Splash Mountain rebuild</div>
             </div>
           </div>
-          <div class="disney-story">
-            <h4>The <em>numbers</em> on the table</h4>
-            <p>Disney rebuilt the old Splash Mountain into a Tiana-themed log flume opening on the Splash bones. Imagine a stylized version where the build runs $120 M, the attraction earns $22 M per year in net ticket and merch attribution for ten years, and the project closes with $8 M of salvage value at the end of year 10.</p>
-            <p>Set the MARR slider on the previous page to <b>10%</b> and watch the three rates split:</p>
-            <p><b>IRR</b> says one number based on the project itself. <b>ERR</b> says a smaller, more honest number because reinvestment happens at the firm's MARR, not at the project's own internal rate. <b>MIRR</b> can land different again if the finance and reinvest rates diverge.</p>
-            <button class="reset-btn" id="reset-disney">Reset to demo numbers</button>
+          <div class="ctx-body">
+            <div class="ctx-head">
+              <h4>The <em>cash flow</em></h4>
+              <span class="meta">stylized</span>
+            </div>
+            <div class="num-grid">
+              <div class="nm"><div class="l">Build P</div><div class="v"><em>$120 M</em></div></div>
+              <div class="nm"><div class="l">Revenue A</div><div class="v"><em>$22 M/yr</em></div></div>
+              <div class="nm"><div class="l">Salvage S</div><div class="v"><em>$8 M</em></div></div>
+              <div class="nm"><div class="l">Life n</div><div class="v"><em>10 yr</em></div></div>
+            </div>
+            <div class="cf-wrap">
+              <svg id="cf-svg-1" viewBox="0 0 900 220" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"></svg>
+              <div class="legend">
+                <div class="it"><div class="sw" style="background:var(--crimson)"></div>outflow</div>
+                <div class="it"><div class="sw" style="background:var(--olive)"></div>revenue</div>
+                <div class="it"><div class="sw" style="background:var(--gold)"></div>salvage</div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="disney-right">
-          <div class="panel-head">
-            <h3>Cash flow · <em>this project</em></h3>
-            <span class="meta">at current sliders</span>
+        <div class="method-col gold">
+          <div class="method-head">
+            <div class="ttl-block">
+              <span class="badge">Method 1 of 3</span>
+              <h2>Internal · <em>IRR</em></h2>
+            </div>
+            <button class="info-btn" data-pop="irr" aria-label="About IRR">i</button>
           </div>
-          <div class="disney-cf">
-            <button class="info-btn" data-pop="cashflow" aria-label="About this chart">i</button>
-            <svg id="cf-svg" viewBox="0 0 900 240" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"></svg>
-            <div class="legend">
-              <div class="it"><div class="sw" style="background:var(--crimson)"></div>outflow</div>
-              <div class="it"><div class="sw" style="background:var(--olive)"></div>revenue</div>
-              <div class="it"><div class="sw" style="background:var(--gold)"></div>salvage</div>
+
+          <div class="def-block">
+            <p>The discount rate that drives <b>NPV exactly to zero</b> for the project's cash flow. It is called "internal" because no outside rate is needed &mdash; the value is solved from the project alone.</p>
+            <div class="assumption"><b>Hidden assumption:</b> every dollar the project pays out is reinvested at the IRR itself. If the firm cannot really earn that rate on incoming cash, IRR <em>overstates</em> the true return.</div>
+          </div>
+
+          <div class="formula-block">
+            \[ \mathrm{NPV}(r) = \sum_{t=0}^{n} \frac{CF_t}{(1+r)^t} = 0 \]
+            <div class="caption">solve r numerically (bisection or Newton-Raphson)</div>
+          </div>
+
+          <div class="sliders-row single">
+            <div class="slider-cell gold">
+              <div class="row1"><span class="lbl">MARR · hurdle rate</span><span class="readout" id="marr-val-1">10.0%</span></div>
+              <input type="range" class="marr-slider" min="2" max="25" step="0.25" value="10" aria-label="MARR">
+              <span class="hint">used only for the accept/reject verdict on IRR</span>
             </div>
           </div>
-          <div class="panel-head" style="border:none;padding-bottom:0;">
-            <h3>What each method <em>says</em></h3>
-            <span class="meta">live</span>
+
+          <div class="result-row">
+            <div class="label-block">
+              <span class="lbl">IRR</span>
+              <span class="compute" id="irr-compute">—</span>
+            </div>
+            <span class="big" id="irr-val">—</span>
+            <span class="verdict" id="irr-verdict">—</span>
           </div>
-          <div class="verdict-tbl">
-            <div class="vt gold"><span class="lbl">IRR</span><span class="v" id="d-irr">—</span></div>
-            <div class="vt olive"><span class="lbl">ERR</span><span class="v" id="d-err">—</span></div>
-            <div class="vt teal"><span class="lbl">MIRR</span><span class="v" id="d-mirr">—</span></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- PAGE 2 — ERR -->
+    <section class="page" data-page="2">
+      <div class="method-page">
+
+        <div class="ctx-col">
+          <div class="ctx-image">
+            <div class="caption">
+              <div class="crumb">a working example · Magic Kingdom 2024</div>
+              <h3>Tiana's <em>Bayou Adventure</em></h3>
+              <div class="where">same cash flow as page 1</div>
+            </div>
+          </div>
+          <div class="ctx-body">
+            <div class="ctx-head">
+              <h4>The <em>cash flow</em></h4>
+              <span class="meta">stylized</span>
+            </div>
+            <div class="num-grid">
+              <div class="nm"><div class="l">Build P</div><div class="v"><em>$120 M</em></div></div>
+              <div class="nm"><div class="l">Revenue A</div><div class="v"><em>$22 M/yr</em></div></div>
+              <div class="nm"><div class="l">Salvage S</div><div class="v"><em>$8 M</em></div></div>
+              <div class="nm"><div class="l">Life n</div><div class="v"><em>10 yr</em></div></div>
+            </div>
+            <div class="cf-wrap">
+              <svg id="cf-svg-2" viewBox="0 0 900 220" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"></svg>
+              <div class="legend">
+                <div class="it"><div class="sw" style="background:var(--crimson)"></div>outflow</div>
+                <div class="it"><div class="sw" style="background:var(--olive)"></div>revenue</div>
+                <div class="it"><div class="sw" style="background:var(--gold)"></div>salvage</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="method-col olive">
+          <div class="method-head">
+            <div class="ttl-block">
+              <span class="badge">Method 2 of 3</span>
+              <h2>External · <em>ERR</em></h2>
+            </div>
+            <button class="info-btn olive" data-pop="err" aria-label="About ERR">i</button>
+          </div>
+
+          <div class="def-block">
+            <p>Inflows are <b>compounded forward</b> to year n at the MARR. Outflows are <b>discounted back</b> to year 0 at the MARR. Then a single rate is solved that links the two collapsed values across n years.</p>
+            <div class="assumption"><b>How it fixes IRR:</b> reinvestment happens at the firm's MARR, not at the project's own IRR. Always one solution, even for non-conventional cash flows.</div>
+          </div>
+
+          <div class="formula-block">
+            \[ \mathrm{ERR} = \left(\frac{FW_{+}(i)}{PW_{-}(i)}\right)^{1/n} - 1 \]
+            <div class="caption">both directions use i = MARR</div>
+          </div>
+
+          <div class="sliders-row single">
+            <div class="slider-cell olive">
+              <div class="row1"><span class="lbl">MARR · used in calc & verdict</span><span class="readout" id="marr-val-2">10.0%</span></div>
+              <input type="range" class="marr-slider" min="2" max="25" step="0.25" value="10" aria-label="MARR">
+              <span class="hint">ERR moves with MARR &mdash; change it and watch the rate slide</span>
+            </div>
+          </div>
+
+          <div class="result-row">
+            <div class="label-block">
+              <span class="lbl">ERR</span>
+              <span class="compute" id="err-compute">—</span>
+            </div>
+            <span class="big" id="err-val">—</span>
+            <span class="verdict" id="err-verdict">—</span>
+          </div>
+
+          <div class="compare-strip two">
+            <div class="cmp-card gold"><span class="nm">IRR</span><span class="v" id="cmp2-irr">—</span><span class="vd">page 1</span></div>
+            <div class="cmp-card olive"><span class="nm">ERR · this page</span><span class="v" id="cmp2-err">—</span><span class="vd" id="cmp2-diff">—</span></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- PAGE 3 — MIRR -->
+    <section class="page" data-page="3">
+      <div class="method-page">
+
+        <div class="ctx-col">
+          <div class="ctx-image">
+            <div class="caption">
+              <div class="crumb">a working example · Magic Kingdom 2024</div>
+              <h3>Tiana's <em>Bayou Adventure</em></h3>
+              <div class="where">same project, two rates this time</div>
+            </div>
+          </div>
+          <div class="ctx-body">
+            <div class="ctx-head">
+              <h4>The <em>cash flow</em></h4>
+              <span class="meta">stylized</span>
+            </div>
+            <div class="num-grid">
+              <div class="nm"><div class="l">Build P</div><div class="v"><em>$120 M</em></div></div>
+              <div class="nm"><div class="l">Revenue A</div><div class="v"><em>$22 M/yr</em></div></div>
+              <div class="nm"><div class="l">Salvage S</div><div class="v"><em>$8 M</em></div></div>
+              <div class="nm"><div class="l">Life n</div><div class="v"><em>10 yr</em></div></div>
+            </div>
+            <div class="cf-wrap">
+              <svg id="cf-svg-3" viewBox="0 0 900 220" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"></svg>
+              <div class="legend">
+                <div class="it"><div class="sw" style="background:var(--crimson)"></div>outflow</div>
+                <div class="it"><div class="sw" style="background:var(--olive)"></div>revenue</div>
+                <div class="it"><div class="sw" style="background:var(--gold)"></div>salvage</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="method-col teal">
+          <div class="method-head">
+            <div class="ttl-block">
+              <span class="badge">Method 3 of 3</span>
+              <h2>Modified · <em>MIRR</em></h2>
+            </div>
+            <button class="info-btn teal" data-pop="mirr" aria-label="About MIRR">i</button>
+          </div>
+
+          <div class="def-block">
+            <p>Same shape as ERR, but with <b>two different rates</b>. Outflows discount at the firm's <em>finance rate</em> (cost of borrowing). Inflows compound at the <em>reinvestment rate</em> (what the firm can actually earn on incoming cash).</p>
+            <div class="assumption"><b>When to use:</b> the firm borrows at one rate and reinvests at another. Excel computes it as <code>MIRR(values, finance, reinvest)</code>.</div>
+          </div>
+
+          <div class="formula-block">
+            \[ \mathrm{MIRR} = \left(\frac{FW_{+}(i_r)}{PW_{-}(i_f)}\right)^{1/n} - 1 \]
+            <div class="caption">i<sub>f</sub> finance · i<sub>r</sub> reinvest</div>
+          </div>
+
+          <div class="sliders-row triple">
+            <div class="slider-cell teal">
+              <div class="row1"><span class="lbl">MARR</span><span class="readout" id="marr-val-3">10.0%</span></div>
+              <input type="range" class="marr-slider" min="2" max="25" step="0.25" value="10">
+              <span class="hint">hurdle</span>
+            </div>
+            <div class="slider-cell teal">
+              <div class="row1"><span class="lbl">Finance i<sub>f</sub></span><span class="readout" id="fin-val">10.0%</span></div>
+              <input type="range" id="fin-slider" min="2" max="20" step="0.25" value="10">
+              <span class="hint">outflows</span>
+            </div>
+            <div class="slider-cell teal">
+              <div class="row1"><span class="lbl">Reinvest i<sub>r</sub></span><span class="readout" id="rinv-val">8.0%</span></div>
+              <input type="range" id="rinv-slider" min="2" max="20" step="0.25" value="8">
+              <span class="hint">inflows</span>
+            </div>
+          </div>
+
+          <div class="result-row">
+            <div class="label-block">
+              <span class="lbl">MIRR</span>
+              <span class="compute" id="mirr-compute">—</span>
+            </div>
+            <span class="big" id="mirr-val">—</span>
+            <span class="verdict" id="mirr-verdict">—</span>
+          </div>
+
+          <div class="compare-strip">
+            <div class="cmp-card gold"><span class="nm">IRR</span><span class="v" id="cmp3-irr">—</span><span class="vd">page 1</span></div>
+            <div class="cmp-card olive"><span class="nm">ERR</span><span class="v" id="cmp3-err">—</span><span class="vd">page 2</span></div>
+            <div class="cmp-card teal"><span class="nm">MIRR · here</span><span class="v" id="cmp3-mirr">—</span><span class="vd" id="cmp3-decision">—</span></div>
           </div>
         </div>
 
@@ -821,7 +678,7 @@
       <span class="dot active" data-go="1"></span>
       <span class="dot" data-go="2"></span>
       <span class="dot" data-go="3"></span>
-      <span class="label" id="page-label">Cover</span>
+      <span class="label" id="page-label">Page 1 · IRR</span>
     </div>
     <button class="nav-btn" id="next">Next <span>→</span></button>
   </nav>
@@ -883,18 +740,17 @@
 
   // ===== State =====
   const state = { marr: 0.10, finance: 0.10, reinvest: 0.08 };
-  const DEMO = { build: 120, revenue: 22, salvage: 8, n: 10, marr: 0.10, finance: 0.10, reinvest: 0.08 };
 
-  // ===== Cash-flow timeline SVG =====
-  function drawCashflow() {
-    const svg = document.getElementById('cf-svg');
+  // ===== Cash-flow timeline SVG (renders into a given target id) =====
+  function drawCashflowInto(svgId) {
+    const svg = document.getElementById(svgId);
+    if (!svg) return;
     const cfs = getCashFlows();
     const n = cfs.length;
-    const W = 900, H = 240;
-    const padL = 56, padR = 24, padT = 22, padB = 36;
+    const W = 900, H = 220;
+    const padL = 50, padR = 24, padT = 22, padB = 32;
     const x0 = padL, x1 = W - padR;
     const yMid = padT + (H - padT - padB) * 0.55;
-
     const max = Math.max(1, PROJECT.revenue + PROJECT.salvage);
     const min = Math.max(1, PROJECT.build);
     const scaleUp = (yMid - padT) / max;
@@ -903,11 +759,10 @@
 
     let html = '';
     html += `<line x1="${x0}" y1="${yMid}" x2="${x1}" y2="${yMid}" stroke="#5a5247" stroke-width="1"/>`;
-    html += `<text x="${x0 - 8}" y="${yMid + 4}" text-anchor="end" font-family="Outfit,sans-serif" font-size="10" fill="#8b7355">$ 0</text>`;
-
+    html += `<text x="${x0 - 6}" y="${yMid + 4}" text-anchor="end" font-family="Outfit,sans-serif" font-size="10" fill="#8b7355">0</text>`;
     cfs.forEach((cf, t) => {
       const cx = x0 + colW * (t + 0.5);
-      const bw = Math.min(36, colW * 0.62);
+      const bw = Math.min(34, colW * 0.62);
       if (cf < 0) {
         const h = -cf * scaleDn;
         html += `<g><title>Year ${t}: outflow $${(-cf).toFixed(0)} M</title>`;
@@ -917,8 +772,7 @@
       } else if (cf > 0) {
         if (t === n - 1) {
           const rev = PROJECT.revenue, sal = PROJECT.salvage;
-          const hRev = rev * scaleUp;
-          const hSal = sal * scaleUp;
+          const hRev = rev * scaleUp, hSal = sal * scaleUp;
           html += `<g><title>Year ${t}: rev $${rev} M + salvage $${sal} M</title>`;
           html += `<rect x="${cx - bw / 2}" y="${yMid - hRev}" width="${bw}" height="${hRev}" fill="#5c7a4a" rx="2" style="cursor:help"/>`;
           html += `<rect x="${cx - bw / 2}" y="${yMid - hRev - hSal}" width="${bw}" height="${hSal}" fill="#b8860b" rx="2" style="cursor:help"/>`;
@@ -932,178 +786,75 @@
           html += `</g>`;
         }
       }
-      html += `<text x="${cx}" y="${H - 14}" text-anchor="middle" font-family="Outfit,sans-serif" font-size="11" font-weight="600" fill="#5a5247">${t}</text>`;
+      html += `<text x="${cx}" y="${H - 14}" text-anchor="middle" font-family="Outfit,sans-serif" font-size="10.5" font-weight="600" fill="#5a5247">${t}</text>`;
     });
     html += `<text x="${(x0 + x1) / 2}" y="${H - 1}" text-anchor="middle" font-family="Outfit,sans-serif" font-size="10" letter-spacing="0.18em" font-weight="700" fill="#8b7355">YEAR · t</text>`;
     svg.innerHTML = html;
   }
 
-  // ===== NPV curve (inside popover) =====
-  function renderNPVChart() {
+  // ===== Update all values =====
+  function refreshAll() {
     const cfs = getCashFlows();
-    const W = 880, H = 320;
-    const padL = 60, padR = 30, padT = 24, padB = 56;
-    const x0 = padL, x1 = W - padR;
-    const y0 = padT, y1 = H - padB;
-    const rMin = 0, rMax = 0.30;
-    const pts = [];
-    let nMin = 0, nMax = 0;
-    for (let i = 0; i <= 60; i++) {
-      const r = rMin + (rMax - rMin) * (i / 60);
-      const v = npv(cfs, r);
-      pts.push([r, v]);
-      if (v < nMin) nMin = v;
-      if (v > nMax) nMax = v;
-    }
-    const yPad = (nMax - nMin) * 0.08;
-    const yMin = nMin - yPad, yMax = nMax + yPad;
-    const xPos = r => x0 + (r - rMin) / (rMax - rMin) * (x1 - x0);
-    const yPos = v => y1 - (v - yMin) / (yMax - yMin) * (y1 - y0);
-
-    let html = '';
-    html += `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">`;
-    html += `<line x1="${x0}" y1="${y0}" x2="${x0}" y2="${y1}" stroke="#5a5247" stroke-width="1"/>`;
-    html += `<line x1="${x0}" y1="${y1}" x2="${x1}" y2="${y1}" stroke="#e8e3d4" stroke-width="0.7"/>`;
-    const y0Px = yPos(0);
-    html += `<line x1="${x0}" y1="${y0Px}" x2="${x1}" y2="${y0Px}" stroke="#1a1a1a" stroke-width="1" stroke-dasharray="4 3"/>`;
-    html += `<text x="${x1 - 6}" y="${y0Px - 6}" text-anchor="end" font-family="Outfit,sans-serif" font-size="10.5" font-weight="700" fill="#1a1a1a">NPV = 0</text>`;
-    for (let r = 0; r <= 30; r += 5) {
-      const xPx = xPos(r / 100);
-      html += `<line x1="${xPx}" y1="${y1}" x2="${xPx}" y2="${y1 + 4}" stroke="#5a5247" stroke-width="0.7"/>`;
-      html += `<text x="${xPx}" y="${y1 + 18}" text-anchor="middle" font-family="Outfit,sans-serif" font-size="10.5" fill="#5a5247">${r}%</text>`;
-    }
-    html += `<text x="${(x0 + x1) / 2}" y="${y1 + 40}" text-anchor="middle" font-family="Outfit,sans-serif" font-size="11" letter-spacing="0.16em" font-weight="700" fill="#8b7355">DISCOUNT RATE · r</text>`;
-    const yTicks = 5;
-    for (let i = 0; i <= yTicks; i++) {
-      const v = yMin + (yMax - yMin) * (i / yTicks);
-      const yPx = yPos(v);
-      html += `<line x1="${x0 - 4}" y1="${yPx}" x2="${x0}" y2="${yPx}" stroke="#5a5247" stroke-width="0.7"/>`;
-      html += `<text x="${x0 - 8}" y="${yPx + 3}" text-anchor="end" font-family="Outfit,sans-serif" font-size="10.5" fill="#5a5247">${v.toFixed(0)}</text>`;
-    }
-    const pathD = pts.map((p, i) => (i === 0 ? 'M' : 'L') + ` ${xPos(p[0]).toFixed(2)} ${yPos(p[1]).toFixed(2)}`).join(' ');
-    html += `<path d="${pathD}" stroke="#b8860b" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
-    const irr = irrBisect(cfs);
-    if (irr !== null && irr >= rMin && irr <= rMax) {
-      const xIRR = xPos(irr), yIRR = yPos(0);
-      html += `<circle cx="${xIRR}" cy="${yIRR}" r="6" fill="#fff" stroke="#b8860b" stroke-width="2.6"/>`;
-      html += `<text x="${xIRR + 8}" y="${y0 + 16}" font-family="Outfit,sans-serif" font-size="11" font-weight="700" fill="#b8860b">IRR ${(irr * 100).toFixed(1)}%</text>`;
-    }
-    const m = state.marr;
-    if (m >= rMin && m <= rMax) {
-      const xM = xPos(m);
-      html += `<line x1="${xM}" y1="${y0}" x2="${xM}" y2="${y1}" stroke="#5c7a4a" stroke-width="1.4" stroke-dasharray="6 3"/>`;
-      html += `<text x="${xM + 6}" y="${y1 - 6}" font-family="Outfit,sans-serif" font-size="11" font-weight="700" fill="#5c7a4a">MARR ${(m * 100).toFixed(1)}%</text>`;
-    }
-    const e = errRate(cfs, state.marr);
-    if (e !== null && e >= rMin && e <= rMax) {
-      const xE = xPos(e), yE = yPos(0);
-      html += `<circle cx="${xE}" cy="${yE}" r="4.5" fill="#5c7a4a"/>`;
-      html += `<text x="${xE}" y="${y1 - 24}" text-anchor="middle" font-family="Outfit,sans-serif" font-size="10.5" font-weight="700" fill="#5c7a4a">ERR ${(e * 100).toFixed(1)}%</text>`;
-    }
-    const mi = mirrRate(cfs, state.finance, state.reinvest);
-    if (mi !== null && mi >= rMin && mi <= rMax) {
-      const xMi = xPos(mi), yMi = yPos(0);
-      html += `<circle cx="${xMi}" cy="${yMi}" r="4.5" fill="#0e7c80"/>`;
-      html += `<text x="${xMi}" y="${y1 - 10}" text-anchor="middle" font-family="Outfit,sans-serif" font-size="10.5" font-weight="700" fill="#0e7c80">MIRR ${(mi * 100).toFixed(1)}%</text>`;
-    }
-    html += `</svg>`;
-    return html;
-  }
-
-  // ===== Update method cards =====
-  function updateMethods() {
-    const cfs = getCashFlows();
-    const irr = irrBisect(cfs);
-    const err = errRate(cfs, state.marr);
+    const irr  = irrBisect(cfs);
+    const err  = errRate(cfs, state.marr);
     const mirr = mirrRate(cfs, state.finance, state.reinvest);
     const nLife = cfs.length - 1;
 
+    // sync all MARR sliders + readouts to current state
+    document.querySelectorAll('.marr-slider').forEach(s => { if (+s.value !== state.marr * 100) s.value = state.marr * 100; });
+    document.querySelectorAll('[id^="marr-val-"]').forEach(el => el.textContent = (state.marr * 100).toFixed(1) + '%');
+    document.getElementById('fin-val').textContent  = (state.finance * 100).toFixed(1) + '%';
+    document.getElementById('rinv-val').textContent = (state.reinvest * 100).toFixed(1) + '%';
+
+    // Page 1 — IRR
     document.getElementById('irr-val').textContent = fmtPct(irr);
     const irrV = document.getElementById('irr-verdict');
-    if (irr !== null && irr > state.marr) { irrV.textContent = '✓ accept'; irrV.className = 'verdict accept'; }
-    else { irrV.textContent = '✗ reject'; irrV.className = 'verdict reject'; }
+    if (irr !== null && irr > state.marr) { irrV.textContent = '✓ accept · IRR > MARR'; irrV.className = 'verdict accept'; }
+    else { irrV.textContent = '✗ reject · IRR < MARR'; irrV.className = 'verdict reject'; }
+    document.getElementById('irr-compute').innerHTML = `NPV(${irr !== null ? (irr * 100).toFixed(2) : '—'}%) = 0 · n=${nLife} yr`;
 
+    // Page 2 — ERR
     const pvNeg = -cfs[0];
-    const fvPosAtMarr = (() => { let s = 0; cfs.forEach((cf, t) => { if (cf > 0) s += cf * Math.pow(1 + state.marr, cfs.length - 1 - t); }); return s; })();
-    document.getElementById('irr-compute').innerHTML =
-      `NPV(${irr !== null ? (irr * 100).toFixed(2) : '—'}%) = 0 · n=${nLife} yr`;
-
+    const fvPosAtMarr = (() => { let s = 0; cfs.forEach((cf, t) => { if (cf > 0) s += cf * Math.pow(1 + state.marr, nLife - t); }); return s; })();
     document.getElementById('err-val').textContent = fmtPct(err);
     const errV = document.getElementById('err-verdict');
-    if (err !== null && err > state.marr) { errV.textContent = '✓ accept'; errV.className = 'verdict accept'; }
-    else { errV.textContent = '✗ reject'; errV.className = 'verdict reject'; }
-    document.getElementById('err-compute').innerHTML =
-      `<b>FW<sub>+</sub></b>=${fvPosAtMarr.toFixed(1)}M · <b>PW<sub>−</sub></b>=${pvNeg.toFixed(1)}M`;
+    if (err !== null && err > state.marr) { errV.textContent = '✓ accept · ERR > MARR'; errV.className = 'verdict accept'; }
+    else { errV.textContent = '✗ reject · ERR < MARR'; errV.className = 'verdict reject'; }
+    document.getElementById('err-compute').innerHTML = `<b>FW<sub>+</sub></b>=${fvPosAtMarr.toFixed(1)}M · <b>PW<sub>−</sub></b>=${pvNeg.toFixed(1)}M`;
+    document.getElementById('cmp2-irr').textContent = fmtPct(irr, 1);
+    document.getElementById('cmp2-err').textContent = fmtPct(err, 1);
+    if (irr !== null && err !== null) {
+      const diff = (err - irr) * 100;
+      document.getElementById('cmp2-diff').textContent = (diff >= 0 ? '+' : '') + diff.toFixed(2) + ' pts vs IRR';
+    } else { document.getElementById('cmp2-diff').textContent = '—'; }
 
-    const fvPosAtReinv = (() => { let s = 0; cfs.forEach((cf, t) => { if (cf > 0) s += cf * Math.pow(1 + state.reinvest, cfs.length - 1 - t); }); return s; })();
+    // Page 3 — MIRR
+    const fvPosAtReinv = (() => { let s = 0; cfs.forEach((cf, t) => { if (cf > 0) s += cf * Math.pow(1 + state.reinvest, nLife - t); }); return s; })();
     const pvNegAtFin = (() => { let s = 0; cfs.forEach((cf, t) => { if (cf < 0) s += -cf / Math.pow(1 + state.finance, t); }); return s; })();
     document.getElementById('mirr-val').textContent = fmtPct(mirr);
     const mirrV = document.getElementById('mirr-verdict');
-    if (mirr !== null && mirr > state.marr) { mirrV.textContent = '✓ accept'; mirrV.className = 'verdict accept'; }
-    else { mirrV.textContent = '✗ reject'; mirrV.className = 'verdict reject'; }
-    document.getElementById('mirr-compute').innerHTML =
-      `<b>FW<sub>+</sub></b>=${fvPosAtReinv.toFixed(1)}M · <b>PW<sub>−</sub></b>=${pvNegAtFin.toFixed(1)}M`;
+    if (mirr !== null && mirr > state.marr) { mirrV.textContent = '✓ accept · MIRR > MARR'; mirrV.className = 'verdict accept'; }
+    else { mirrV.textContent = '✗ reject · MIRR < MARR'; mirrV.className = 'verdict reject'; }
+    document.getElementById('mirr-compute').innerHTML = `<b>FW<sub>+</sub></b>=${fvPosAtReinv.toFixed(1)}M · <b>PW<sub>−</sub></b>=${pvNegAtFin.toFixed(1)}M`;
+    document.getElementById('cmp3-irr').textContent  = fmtPct(irr, 1);
+    document.getElementById('cmp3-err').textContent  = fmtPct(err, 1);
+    document.getElementById('cmp3-mirr').textContent = fmtPct(mirr, 1);
+    if (mirr !== null) {
+      document.getElementById('cmp3-decision').textContent = (mirr > state.marr ? '✓ accept' : '✗ reject');
+    }
 
-    // Disney page verdict table
-    document.getElementById('d-irr').textContent = fmtPct(irr, 1);
-    document.getElementById('d-err').textContent = fmtPct(err, 1);
-    document.getElementById('d-mirr').textContent = fmtPct(mirr, 1);
+    // redraw all three cf charts
+    drawCashflowInto('cf-svg-1');
+    drawCashflowInto('cf-svg-2');
+    drawCashflowInto('cf-svg-3');
   }
 
-  // ===== Master refresh =====
-  function refreshAll() {
-    document.getElementById('marr-val').textContent = (state.marr * 100).toFixed(1) + '%';
-    document.getElementById('fin-val').textContent  = (state.finance * 100).toFixed(1) + '%';
-    document.getElementById('rinv-val').textContent = (state.reinvest * 100).toFixed(1) + '%';
-    drawCashflow();
-    updateMethods();
-  }
-
-  // ===== Wire rate sliders =====
-  ['marr', 'fin', 'rinv'].forEach(id => {
-    document.getElementById(id).addEventListener('input', e => {
-      if (id === 'marr') state.marr = +e.target.value / 100;
-      if (id === 'fin')  state.finance = +e.target.value / 100;
-      if (id === 'rinv') state.reinvest = +e.target.value / 100;
-      refreshAll();
-    });
+  // ===== Wire sliders (any MARR slider updates global state) =====
+  document.querySelectorAll('.marr-slider').forEach(s => {
+    s.addEventListener('input', e => { state.marr = +e.target.value / 100; refreshAll(); });
   });
-
-  // ===== Wire project tuners =====
-  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
-  [['p-build','build',10,500],['p-revenue','revenue',1,100],['p-salvage','salvage',0,100],['p-n','n',3,25]].forEach(([id, key, lo, hi]) => {
-    const el = document.getElementById(id);
-    el.addEventListener('input', () => {
-      let v = parseFloat(el.value);
-      if (isNaN(v)) return;
-      v = clamp(v, lo, hi);
-      PROJECT[key] = key === 'n' ? Math.round(v) : v;
-      refreshAll();
-    });
-    el.addEventListener('change', () => {
-      let v = parseFloat(el.value);
-      if (isNaN(v)) v = PROJECT[key];
-      v = clamp(v, lo, hi);
-      if (key === 'n') v = Math.round(v);
-      el.value = v;
-      PROJECT[key] = v;
-      refreshAll();
-    });
-  });
-
-  // Reset to demo on page 3
-  document.getElementById('reset-disney').addEventListener('click', () => {
-    PROJECT.build = DEMO.build; PROJECT.revenue = DEMO.revenue; PROJECT.salvage = DEMO.salvage; PROJECT.n = DEMO.n;
-    state.marr = DEMO.marr; state.finance = DEMO.finance; state.reinvest = DEMO.reinvest;
-    document.getElementById('p-build').value = DEMO.build;
-    document.getElementById('p-revenue').value = DEMO.revenue;
-    document.getElementById('p-salvage').value = DEMO.salvage;
-    document.getElementById('p-n').value = DEMO.n;
-    document.getElementById('marr').value = DEMO.marr * 100;
-    document.getElementById('fin').value  = DEMO.finance * 100;
-    document.getElementById('rinv').value = DEMO.reinvest * 100;
-    refreshAll();
-  });
+  document.getElementById('fin-slider').addEventListener('input', e => { state.finance = +e.target.value / 100; refreshAll(); });
+  document.getElementById('rinv-slider').addEventListener('input', e => { state.reinvest = +e.target.value / 100; refreshAll(); });
 
   // ===== Paged-deck navigation =====
   const pages = document.querySelectorAll('.page');
@@ -1111,7 +862,9 @@
   const prevBtn = document.getElementById('prev');
   const nextBtn = document.getElementById('next');
   const label = document.getElementById('page-label');
-  const labels = { 1: 'Cover', 2: 'The three methods', 3: 'Tiana\'s Bayou Adventure' };
+  const head = document.getElementById('head');
+  const labels = { 1: 'Page 1 · IRR', 2: 'Page 2 · ERR', 3: 'Page 3 · MIRR' };
+  const headThemes = { 1: '', 2: 'olive', 3: 'teal' };
   let current = 1;
   const N = pages.length;
   function go(n) {
@@ -1124,6 +877,7 @@
     });
     dots.forEach(d => d.classList.toggle('active', +d.dataset.go === n));
     label.textContent = labels[n];
+    head.className = 'head' + (headThemes[n] ? ' ' + headThemes[n] : '');
     prevBtn.disabled = n === 1;
     nextBtn.disabled = n === N;
     current = n;
@@ -1131,7 +885,6 @@
   prevBtn.addEventListener('click', () => go(current - 1));
   nextBtn.addEventListener('click', () => go(current + 1));
   dots.forEach(d => d.addEventListener('click', () => go(+d.dataset.go)));
-  document.getElementById('cover-start').addEventListener('click', () => go(2));
   document.addEventListener('keydown', e => {
     if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); go(current + 1); }
     else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(current - 1); }
@@ -1147,15 +900,6 @@
   const popTitle = document.getElementById('pop-title');
   const popBody = document.getElementById('pop-body');
   const POPS = {
-    cashflow: {
-      cls: '',
-      title: 'Reading this <em>cash flow</em>',
-      body: () => `
-        <p>The horizontal axis is time, in years. Bars below the axis are <b>outflows</b>; bars above are <b>inflows</b>.</p>
-        <p>At year 0 the firm pays the full build cost. From year 1 through year ${PROJECT.n - 1} the attraction returns the annual revenue. At year ${PROJECT.n} the salvage value adds on top of that year's revenue, so the final bar stacks two colors.</p>
-        <p>Every rate-of-return method on this page is just a different way to summarize the <em>same</em> cash flow into a single number.</p>
-      `
-    },
     irr: {
       cls: '',
       title: 'What IRR <em>assumes</em>',
@@ -1182,55 +926,18 @@
         <p>This matters most when the firm <b>borrows at one rate and reinvests at another</b>. Treating both with a single MARR can hide the real picture.</p>
         <p>The Excel function <code>MIRR(values, finance_rate, reinvest_rate)</code> implements this exactly.</p>
       `
-    },
-    npv: {
-      cls: '', wide: true,
-      title: 'NPV vs <em>discount rate</em>',
-      body: () => `
-        <p>The gold curve is the project's NPV as a function of the discount rate <em>r</em>. Where it <b>crosses zero</b> is, by definition, the IRR. The olive dashed line is your chosen MARR. The olive and teal dots mark ERR and MIRR on the NPV-zero axis.</p>
-        <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;margin-top:10px;">${renderNPVChart()}</div>
-        <p style="text-align:center;font-style:italic;color:var(--muted);font-size:11px;margin-top:8px;">NPV in millions of dollars · r as a percentage</p>
-      `
-    },
-    decision: {
-      cls: '',
-      title: 'When do you reach for <em>which</em>?',
-      body: () => `
-        <p>Three rates exist for three different situations. The decision rule is the same: accept if the rate &gt; MARR. The art is in picking the right rate.</p>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px;">
-          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 11px;border-top:3px solid var(--gold);">
-            <div style="font-family:Outfit,sans-serif;font-size:9px;letter-spacing:0.18em;text-transform:uppercase;font-weight:700;color:var(--gold-deep);margin-bottom:4px;">Use IRR when</div>
-            <div style="font-family:Lora,serif;font-style:italic;font-size:12.5px;color:var(--ink);line-height:1.5;">cash flows are <b style="color:var(--gold-deep);font-style:normal;">conventional</b> (one sign change), the project is <b style="color:var(--gold-deep);font-style:normal;">small relative to the firm</b>, and the reinvestment-at-IRR assumption is plausible.</div>
-          </div>
-          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 11px;border-top:3px solid var(--olive);">
-            <div style="font-family:Outfit,sans-serif;font-size:9px;letter-spacing:0.18em;text-transform:uppercase;font-weight:700;color:var(--olive-deep);margin-bottom:4px;">Use ERR when</div>
-            <div style="font-family:Lora,serif;font-style:italic;font-size:12.5px;color:var(--ink);line-height:1.5;">cash flows are <b style="color:var(--olive-deep);font-style:normal;">non-conventional</b>, multiple IRRs are possible, and you want inflows reinvested at MARR.</div>
-          </div>
-          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 11px;border-top:3px solid var(--teal);">
-            <div style="font-family:Outfit,sans-serif;font-size:9px;letter-spacing:0.18em;text-transform:uppercase;font-weight:700;color:var(--teal-deep);margin-bottom:4px;">Use MIRR when</div>
-            <div style="font-family:Lora,serif;font-style:italic;font-size:12.5px;color:var(--ink);line-height:1.5;">the firm's <b style="color:var(--teal-deep);font-style:normal;">cost of borrowing differs</b> from the rate it can reinvest at. Excel: <code>MIRR(values, fin, reinv)</code>.</div>
-          </div>
-        </div>
-      `
     }
   };
   function openPop(key) {
     const p = POPS[key]; if (!p) return;
-    let cls = 'pop-card';
-    if (p.cls) cls += ' ' + p.cls;
-    if (p.wide) cls += ' wide';
-    popCard.className = cls;
+    popCard.className = 'pop-card' + (p.cls ? ' ' + p.cls : '');
     popTitle.innerHTML = p.title;
     popBody.innerHTML = typeof p.body === 'function' ? p.body() : p.body;
     popBack.classList.add('show');
-    if (window.MathJax && window.MathJax.typesetPromise) {
-      window.MathJax.typesetPromise([popBody]);
-    }
+    if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([popBody]);
   }
   function closePop() { popBack.classList.remove('show'); }
-  document.querySelectorAll('[data-pop]').forEach(btn => {
-    btn.addEventListener('click', () => openPop(btn.dataset.pop));
-  });
+  document.querySelectorAll('[data-pop]').forEach(btn => btn.addEventListener('click', () => openPop(btn.dataset.pop)));
   document.getElementById('pop-close').addEventListener('click', closePop);
   popBack.addEventListener('click', e => { if (e.target === popBack) closePop(); });
 
