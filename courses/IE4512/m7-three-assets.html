@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Module 7 · Three Assets, Three Depreciation Stories</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;500;600;700&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf9f5; --paper: #ffffff; --ink: #1a1a1a; --muted: #5a5247; --soft: #8b7355;
+    --border: #e8e3d4; --line: #d4cfc0;
+    --gold: #b8860b; --gold-deep: #8a6608; --gold-soft: #faf3e0;
+    --olive: #5c7a4a; --olive-deep: #455d36; --olive-soft: #f0f4ea;
+    --crimson: #8a2828; --crimson-deep: #6b1e1e; --crimson-soft: #fdf2f3;
+    --teal: #0e7c80; --teal-deep: #0a5e62; --teal-soft: #e6f4f4;
+    --purple: #7c3aed;
+  }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: 'Outfit', -apple-system, system-ui, sans-serif; font-size: 13px; line-height: 1.5;
+    overflow: hidden;
+  }
+  .app {
+    height: 100vh; display: flex; flex-direction: column;
+    max-width: 1500px; margin: 0 auto; padding: 12px 22px 10px;
+  }
+
+  /* HEAD */
+  .head {
+    display: flex; justify-content: space-between; align-items: center; gap: 14px;
+    padding: 8px 16px; background: var(--paper); border: 1px solid var(--border);
+    border-radius: 10px; border-top: 3px solid var(--gold); flex-wrap: wrap; flex-shrink: 0;
+    transition: border-top-color 0.4s ease;
+  }
+  .head.olive { border-top-color: var(--olive); }
+  .head.teal  { border-top-color: var(--teal); }
+  .brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .brand .code { font-size: 10px; color: var(--gold); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; transition: color 0.4s; }
+  .head.olive .brand .code { color: var(--olive-deep); }
+  .head.teal  .brand .code { color: var(--teal-deep); }
+  .brand h1 { font-family: 'Lora', Georgia, serif; font-size: 19px; font-weight: 700; line-height: 1; }
+  .brand h1 em { font-style: italic; color: var(--gold); font-weight: 400; transition: color 0.4s; }
+  .head.olive .brand h1 em { color: var(--olive-deep); }
+  .head.teal  .brand h1 em { color: var(--teal-deep); }
+  .brand .tag { font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted); }
+  .head .nav { display: flex; gap: 6px; }
+  .head .nav a, .head .nav button {
+    font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft); text-decoration: none; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px;
+    transition: all 0.15s; background: var(--paper); font-family: 'Outfit', sans-serif; cursor: pointer;
+  }
+  .head .nav a:hover, .head .nav button:hover { color: var(--gold); border-color: var(--gold); background: var(--gold-soft); }
+
+  /* DECK */
+  .deck { flex: 1; min-height: 0; position: relative; margin-top: 12px; }
+  .page {
+    position: absolute; inset: 0; opacity: 0; pointer-events: none;
+    transform: translateX(40px);
+    transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    display: flex; flex-direction: column;
+  }
+  .page.active { opacity: 1; pointer-events: auto; transform: translateX(0); }
+  .page.left { transform: translateX(-40px); }
+
+  .page-head {
+    flex-shrink: 0; padding-bottom: 10px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap;
+  }
+  .page-head h2 { font-family: 'Lora', serif; font-size: 26px; font-weight: 700; line-height: 1.15; }
+  .page-head h2 em { font-style: italic; color: var(--gold); }
+  .page.olive .page-head h2 em { color: var(--olive); }
+  .page.teal  .page-head h2 em { color: var(--teal); }
+  .page-head .sub {
+    font-family: 'Lora', serif; font-style: italic; font-size: 13px; color: var(--muted);
+    max-width: 720px; margin-top: 3px; line-height: 1.5;
+  }
+  .page-head .marker {
+    font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700; color: var(--soft);
+  }
+  .page-head .marker .n { color: var(--gold); }
+  .page.olive .page-head .marker .n { color: var(--olive); }
+  .page.teal  .page-head .marker .n { color: var(--teal); }
+
+  .page-body { flex: 1; min-height: 0; padding-top: 14px; display: flex; flex-direction: column; gap: 14px; }
+
+  /* HERO stage */
+  .hero-stage {
+    flex: 1; min-height: 0; display: grid; grid-template-columns: 1.05fr 1fr; gap: 18px;
+  }
+  @media (max-width: 920px) { .hero-stage { grid-template-columns: 1fr; } }
+
+  /* Image side */
+  .img-card {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 14px;
+    overflow: hidden; position: relative;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    display: flex; flex-direction: column;
+  }
+  .img-card .photo {
+    flex: 1; background-size: cover; background-position: center;
+    position: relative; filter: sepia(0.22) contrast(1.05);
+  }
+  .img-card .photo::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(60,40,12,0) 42%, rgba(40,28,8,0.82) 100%);
+  }
+  .img-card .overlay {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 22px 26px 22px;
+    color: #fff; z-index: 1;
+  }
+  .img-card .overlay .kicker {
+    font-size: 10.5px; letter-spacing: 0.24em; text-transform: uppercase; font-weight: 700;
+    opacity: 0.92; margin-bottom: 6px; color: #f0d488;
+  }
+  .page.olive .img-card .overlay .kicker { color: #c8d8b4; }
+  .page.teal  .img-card .overlay .kicker { color: #9cd2d4; }
+  .img-card .overlay h3 { font-family: 'Lora', serif; font-size: 30px; font-weight: 700; line-height: 1.05; letter-spacing: -0.01em; }
+  .img-card .overlay h3 em { font-style: italic; color: #f0d488; }
+  .page.olive .img-card .overlay h3 em { color: #c8d8b4; }
+  .page.teal  .img-card .overlay h3 em { color: #9cd2d4; }
+  .img-card .overlay .where { font-family: 'Lora', serif; font-style: italic; font-size: 14px; opacity: 0.92; margin-top: 4px; }
+  .img-card .photo-credit {
+    position: absolute; bottom: 8px; right: 12px; z-index: 2;
+    font-family: 'Outfit', sans-serif; font-size: 8.5px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: rgba(255,255,255,0.42);
+  }
+
+  /* Polaroid (for Boeing personal photo) */
+  .polaroid {
+    position: absolute; top: 20px; right: 24px;
+    width: 168px;
+    background: #fdfaf2; border: 1px solid #d8cfb6;
+    padding: 8px 8px 22px;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.36);
+    transform: rotate(4.5deg);
+    z-index: 3;
+  }
+  .polaroid .polaroid-photo {
+    width: 100%; height: 152px;
+    background: #ddd8c8;
+    background-image: url('images/m7/dehghani-boeing.jpg');
+    background-size: cover; background-position: center;
+    border: 1px solid #c7bda3;
+  }
+  .polaroid .polaroid-caption {
+    font-family: 'Caveat', cursive; font-size: 18px; color: #2a2a3a; text-align: center; line-height: 1.1;
+    margin-top: 5px;
+  }
+  .polaroid .placeholder {
+    position: absolute; inset: 12px 12px 26px;
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    font-family: 'Outfit', sans-serif; font-size: 9.5px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--soft); padding: 0 8px;
+    pointer-events: none;
+  }
+
+  /* Q&A card on the right */
+  .qa-card {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 14px;
+    padding: 22px 26px 22px;
+    display: flex; flex-direction: column; gap: 14px;
+    border-top: 4px solid var(--gold);
+    min-height: 0; overflow-y: auto;
+  }
+  .page.olive .qa-card { border-top-color: var(--olive); }
+  .page.teal  .qa-card { border-top-color: var(--teal); }
+
+  .qa-head {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+    padding-bottom: 8px; border-bottom: 1px dotted var(--line);
+  }
+  .qa-head .crumb {
+    font-family: 'Outfit', sans-serif; font-size: 9.5px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700;
+    color: var(--gold-deep);
+  }
+  .page.olive .qa-head .crumb { color: var(--olive-deep); }
+  .page.teal  .qa-head .crumb { color: var(--teal-deep); }
+  .qa-head .step {
+    font-family: 'Outfit', sans-serif; font-size: 9.5px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft);
+  }
+  .qa-card h4 { font-family: 'Lora', serif; font-size: 21px; font-weight: 700; line-height: 1.2; }
+  .qa-card h4 em { font-style: italic; color: var(--gold-deep); }
+  .page.olive .qa-card h4 em { color: var(--olive-deep); }
+  .page.teal  .qa-card h4 em { color: var(--teal-deep); }
+
+  .qa-card .lede {
+    font-family: 'Lora', serif; font-style: italic; font-size: 13px; color: var(--muted); line-height: 1.55;
+  }
+  .qa-card .lede b { color: var(--ink); font-weight: 700; font-style: normal; }
+
+  /* Reveal blanks */
+  .reveals {
+    display: flex; flex-direction: column; gap: 10px;
+    margin-top: 4px;
+  }
+  .reveal {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 9px;
+    padding: 11px 14px;
+    border-left: 3px solid var(--gold);
+    display: grid; grid-template-columns: auto 1fr auto; gap: 11px; align-items: center;
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+  .page.olive .reveal { border-left-color: var(--olive); }
+  .page.teal  .reveal { border-left-color: var(--teal); }
+  .reveal:hover { background: var(--gold-soft); border-color: var(--gold); }
+  .page.olive .reveal:hover { background: var(--olive-soft); border-color: var(--olive); }
+  .page.teal  .reveal:hover { background: var(--teal-soft); border-color: var(--teal); }
+  .reveal.shown { cursor: default; }
+  .reveal.shown:hover { background: var(--bg); border-color: var(--border); }
+  .reveal .n {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--gold); color: #fff;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .page.olive .reveal .n { background: var(--olive); }
+  .page.teal  .reveal .n { background: var(--teal); }
+  .reveal.shown .n { background: var(--olive-deep); }
+  .reveal .q-text {
+    font-family: 'Lora', serif; font-size: 13.5px; color: var(--ink); line-height: 1.4;
+  }
+  .reveal .q-text b { font-weight: 700; }
+  .reveal .blank {
+    display: inline-block; background: var(--gold-soft); color: var(--gold-deep);
+    padding: 1px 10px; border-radius: 4px; border: 1px dashed var(--gold);
+    font-family: 'JetBrains Mono', monospace; font-size: 12.5px; font-weight: 700;
+    min-width: 50px; text-align: center;
+  }
+  .page.olive .reveal .blank { background: var(--olive-soft); color: var(--olive-deep); border-color: var(--olive); }
+  .page.teal  .reveal .blank { background: var(--teal-soft); color: var(--teal-deep); border-color: var(--teal); }
+  .reveal.shown .blank {
+    background: var(--olive-soft); color: var(--olive-deep); border: 1px solid var(--olive);
+    border-style: solid;
+  }
+  .reveal .tap {
+    font-family: 'Outfit', sans-serif; font-size: 9.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+    color: var(--gold-deep);
+    background: var(--paper); padding: 4px 9px; border-radius: 999px;
+    border: 1px solid var(--gold);
+  }
+  .page.olive .reveal .tap { color: var(--olive-deep); border-color: var(--olive); }
+  .page.teal  .reveal .tap { color: var(--teal-deep); border-color: var(--teal); }
+  .reveal.shown .tap { display: none; }
+  .reveal .source {
+    grid-column: 2 / -1;
+    font-family: 'Lora', serif; font-style: italic; font-size: 11px; color: var(--muted);
+    line-height: 1.4;
+    display: none;
+  }
+  .reveal.shown .source { display: block; margin-top: 3px; }
+
+  /* Insight reveal at the end of each page */
+  .insight-block {
+    background: linear-gradient(135deg, var(--gold-soft) 0%, #f7e9c4 100%);
+    border: 1.5px solid var(--gold);
+    border-radius: 10px;
+    padding: 12px 16px;
+    opacity: 0; max-height: 0; overflow: hidden;
+    transition: opacity 0.35s ease, max-height 0.4s ease, padding 0.4s ease;
+  }
+  .page.olive .insight-block { background: linear-gradient(135deg, var(--olive-soft) 0%, #dbe7c4 100%); border-color: var(--olive); }
+  .page.teal  .insight-block { background: linear-gradient(135deg, var(--teal-soft) 0%, #bee0e2 100%); border-color: var(--teal); }
+  .insight-block.show { opacity: 1; max-height: 360px; padding: 12px 16px; }
+  .insight-block .h {
+    font-family: 'Outfit', sans-serif; font-size: 9.5px; letter-spacing: 0.24em; text-transform: uppercase; font-weight: 700;
+    color: var(--gold-deep); margin-bottom: 5px;
+  }
+  .page.olive .insight-block .h { color: var(--olive-deep); }
+  .page.teal  .insight-block .h { color: var(--teal-deep); }
+  .insight-block p {
+    font-family: 'Lora', serif; font-size: 13.5px; line-height: 1.6; color: var(--ink);
+  }
+  .insight-block p em { font-style: italic; color: var(--muted); }
+  .insight-block p b { font-weight: 700; }
+
+  /* Linker between pages */
+  .arc-strip {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 9px;
+    padding: 8px 14px;
+    display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+    font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted);
+    flex-shrink: 0;
+  }
+  .arc-strip .dots {
+    display: flex; gap: 6px; align-items: center;
+  }
+  .arc-strip .dotnode {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 9px; border-radius: 999px;
+    font-family: 'Outfit', sans-serif; font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    background: var(--bg); color: var(--muted); border: 1px solid var(--border);
+  }
+  .arc-strip .dotnode.gold.on  { background: var(--gold);  color: #fff; border-color: var(--gold);  }
+  .arc-strip .dotnode.olive.on { background: var(--olive); color: #fff; border-color: var(--olive); }
+  .arc-strip .dotnode.teal.on  { background: var(--teal);  color: #fff; border-color: var(--teal);  }
+
+  /* FOOTER nav */
+  .footer-nav {
+    flex-shrink: 0; margin-top: 10px;
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    padding: 8px 14px; background: var(--paper); border: 1px solid var(--border); border-radius: 10px;
+  }
+  .footer-nav .ind { display: flex; gap: 8px; align-items: center; }
+  .footer-nav .dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--border); cursor: pointer;
+    transition: all 0.2s;
+  }
+  .footer-nav .dot.active { transform: scale(1.3); }
+  .footer-nav .dot[data-go="1"].active { background: var(--gold); }
+  .footer-nav .dot[data-go="2"].active { background: var(--olive); }
+  .footer-nav .dot[data-go="3"].active { background: var(--teal); }
+  .footer-nav .dot:hover { background: var(--gold); }
+  .footer-nav .label { font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted); margin-left: 8px; }
+  .nav-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'Outfit', sans-serif; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+    padding: 7px 14px; border: 1px solid var(--border); border-radius: 7px;
+    background: var(--paper); color: var(--ink); cursor: pointer; transition: all 0.15s;
+  }
+  .nav-btn:hover:not(:disabled) { color: var(--gold-deep); border-color: var(--gold); background: var(--gold-soft); }
+  .nav-btn:disabled { opacity: 0.32; cursor: not-allowed; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <header class="head" id="head">
+    <div class="brand">
+      <span class="code">IE 4512 · Module 7</span>
+      <h1>Three Assets, <em>Three Stories</em></h1>
+      <span class="tag">depreciation, told three different ways</span>
+    </div>
+    <nav class="nav">
+      <a href="index.html#module-7">← Module 7</a>
+      <button onclick="window.print()">Print</button>
+    </nav>
+  </header>
+
+  <div class="deck">
+
+    <!-- PAGE 1 — EMPIRE STATE BUILDING -->
+    <section class="page active" data-page="1">
+      <div class="page-head">
+        <div>
+          <h2>The Empire State Building, <em>1931</em></h2>
+          <div class="sub">An iconic asset, depreciated for 94 years. Three numbers tell the whole depreciation story &mdash; guess each one before you flip it over.</div>
+        </div>
+        <div class="marker"><span class="n">1</span> / 3 &middot; the long life</div>
+      </div>
+
+      <div class="page-body">
+
+        <div class="hero-stage">
+          <div class="img-card">
+            <div class="photo" style="background-image: url('images/m7/empire-state-1931.png');"></div>
+            <div class="overlay">
+              <div class="kicker">Manhattan &middot; opened 1 May 1931</div>
+              <h3>Empire State <em>Building</em></h3>
+              <div class="where">102 stories &middot; 380 m &middot; the tallest in the world until 1970</div>
+            </div>
+          </div>
+
+          <div class="qa-card">
+            <div class="qa-head">
+              <span class="crumb">Story · part 1 of 3</span>
+              <span class="step">click each row to reveal</span>
+            </div>
+            <h4>What does the IRS think this building is <em>worth</em>?</h4>
+            <div class="lede">In 1931, in the depths of the Great Depression, a syndicate spent a year and a day building the tallest thing on Earth. They put it on the books, started depreciating it, and never stopped. <b>Write down your guess for each blank below, then tap to reveal.</b></div>
+
+            <div class="reveals">
+              <div class="reveal" data-key="cost">
+                <div class="n">1</div>
+                <div class="q-text">Total cost to build it in <b>1931</b>: <span class="blank">$ ___ M</span></div>
+                <div class="tap">tap</div>
+                <div class="source">Final cost was reported at $40,948,900 (Empire State Building Inc., 1931 audited figures). Roughly $815 M in 2024 dollars adjusted for CPI. About 18% under budget despite a one-year build.</div>
+              </div>
+              <div class="reveal" data-key="book">
+                <div class="n">2</div>
+                <div class="q-text">Tax <b>book value</b> on the firm's depreciation schedule today: <span class="blank">≈ $ ___</span></div>
+                <div class="tap">tap</div>
+                <div class="source">Essentially zero. After 94 years of straight-line, ADR, ACRS and MACRS layered on top of one another, the original 1931 basis was fully recovered by the early 1980s. Subsequent rehab basis (new HVAC, the 2018 lobby reconstruction, antennas) carries its own MACRS clock but the building shell itself is gone from the books.</div>
+              </div>
+              <div class="reveal" data-key="market">
+                <div class="n">3</div>
+                <div class="q-text"><b>Market value</b> today (Empire State Realty Trust 2024 disclosure): <span class="blank">$ ___ B</span></div>
+                <div class="tap">tap</div>
+                <div class="source">Roughly $2.3 B as a standalone asset (the larger Empire State Realty Trust market cap is ~$3 B and the building is the dominant asset). Annual rent roll ≈ $250 M. Observation deck alone clears ~$130 M per year.</div>
+              </div>
+            </div>
+
+            <div class="insight-block" id="ins-1">
+              <div class="h">The lesson · page 1</div>
+              <p>An asset can be worth <b>zero on the books</b> and a fortune <b>in the world</b>. Depreciation is not the same thing as the asset wearing out &mdash; it is a <em>tax accounting choice</em>. Empire State outlived its depreciable life by decades and is still earning rent every day. <b>Book value &ne; market value.</b></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="arc-strip">
+          <span>The story so far &rarr;</span>
+          <div class="dots">
+            <span class="dotnode gold on">1 · long life</span>
+            <span class="dotnode olive">2 · exact life</span>
+            <span class="dotnode teal">3 · second life</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- PAGE 2 — LAS VEGAS MIRAGE -->
+    <section class="page olive" data-page="2">
+      <div class="page-head">
+        <div>
+          <h2>The Las Vegas Mirage, <em>1989</em></h2>
+          <div class="sub">A casino that opened on a Wednesday in 1989 and was scheduled, by the IRS, to live until the mid 2020s. It died nearly to the year. <em>Guess the date.</em></div>
+        </div>
+        <div class="marker"><span class="n">2</span> / 3 &middot; the exact life</div>
+      </div>
+
+      <div class="page-body">
+
+        <div class="hero-stage">
+          <div class="img-card">
+            <div class="photo" style="background-image: url('images/m7/vegas-1989.png');"></div>
+            <div class="overlay">
+              <div class="kicker">Las Vegas Strip &middot; opened 22 Nov 1989</div>
+              <h3>The <em>Mirage</em></h3>
+              <div class="where">Steve Wynn &middot; $630 M to build &middot; 3,044 rooms &middot; modern-Vegas Year Zero</div>
+            </div>
+          </div>
+
+          <div class="qa-card">
+            <div class="qa-head">
+              <span class="crumb">Story · part 2 of 3</span>
+              <span class="step">click each row to reveal</span>
+            </div>
+            <h4>The casino that <em>died on schedule</em></h4>
+            <div class="lede">The Mirage was the most expensive hotel ever built in 1989. The IRS gives <b>nonresidential real property</b> a 39-year class life. Walking past it in 2024, would you have guessed it was already at the end of its tax life?</div>
+
+            <div class="reveals">
+              <div class="reveal" data-key="cost2">
+                <div class="n">1</div>
+                <div class="q-text">Total cost to build (1989): <span class="blank">$ ___ M</span></div>
+                <div class="tap">tap</div>
+                <div class="source">$630 M, the most expensive hotel in the world at the time. Bankrolled by junk-bond financing from Michael Milken at Drexel Burnham. Steve Wynn's wager: that Las Vegas could be re-imagined as a destination resort, not just a gambling stop.</div>
+              </div>
+              <div class="reveal" data-key="life">
+                <div class="n">2</div>
+                <div class="q-text">IRS class life for nonresidential real property under MACRS: <span class="blank">___ years</span></div>
+                <div class="tap">tap</div>
+                <div class="source">39 years exactly (post-1993 buildings; the Mirage was actually placed in service in late 1989 under the then-current 31.5-year class). Either way, the wrecking ball was scheduled.</div>
+              </div>
+              <div class="reveal" data-key="demo">
+                <div class="n">3</div>
+                <div class="q-text">Year demolished to make way for Hard Rock Las Vegas: <span class="blank">___</span></div>
+                <div class="tap">tap</div>
+                <div class="source">Demolition began in 2024 &mdash; about 35 years after opening. The structure was fully depreciated. The land underneath, the most valuable acreage on the Strip, kept all of the value.</div>
+              </div>
+            </div>
+
+            <div class="insight-block" id="ins-2">
+              <div class="h">The lesson · page 2</div>
+              <p>Sometimes depreciation lands <b>right on top</b> of the asset's economic life. The Mirage hit zero on the books and got knocked down within a year of doing so. <em>But the land never depreciates.</em> When the structure went to zero, the basis didn't disappear &mdash; it migrated into the land, which Hard Rock paid a fortune for. <b>Depreciate the building. Never the dirt.</b></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="arc-strip">
+          <span>The story so far &rarr;</span>
+          <div class="dots">
+            <span class="dotnode gold">1 · long life</span>
+            <span class="dotnode olive on">2 · exact life</span>
+            <span class="dotnode teal">3 · second life</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- PAGE 3 — BOEING 747 -->
+    <section class="page teal" data-page="3">
+      <div class="page-head">
+        <div>
+          <h2>The Boeing 747, <em>1969 → 2022</em></h2>
+          <div class="sub">A plane built to last decades. Airlines depreciate it in about 25 years. Then something interesting happens. <em>What?</em></div>
+        </div>
+        <div class="marker"><span class="n">3</span> / 3 &middot; the second life</div>
+      </div>
+
+      <div class="page-body">
+
+        <div class="hero-stage">
+          <div class="img-card">
+            <div class="photo" style="background-image: url('images/m7/boeing-747.png');"></div>
+            <div class="polaroid">
+              <div class="polaroid-photo"></div>
+              <div class="polaroid-caption">Prof. M.D. at Boeing</div>
+              <div class="placeholder">drop personal photo at<br>images/m7/dehghani-boeing.jpg</div>
+            </div>
+            <div class="overlay">
+              <div class="kicker">Everett, WA &middot; first flight 9 Feb 1969</div>
+              <h3>Boeing <em>747</em></h3>
+              <div class="where">"Queen of the Skies" &middot; 1,574 built &middot; 53-year production run</div>
+            </div>
+          </div>
+
+          <div class="qa-card">
+            <div class="qa-head">
+              <span class="crumb">Story · part 3 of 3</span>
+              <span class="step">click each row to reveal</span>
+            </div>
+            <h4>Salvage value is a <em>decision</em>, not a guess</h4>
+            <div class="lede">Boeing rolled the last 747 off the line in December 2022 after 53 years of production. <b>But the planes did not retire when Boeing did.</b> They went into a second life that depreciation can't quite capture.</div>
+
+            <div class="reveals">
+              <div class="reveal" data-key="airline">
+                <div class="n">1</div>
+                <div class="q-text">Years airlines depreciate a 747 over (book life): <span class="blank">___ years</span></div>
+                <div class="tap">tap</div>
+                <div class="source">Typically 20-25 years for major airlines (Delta, BA, Lufthansa) on a SLN schedule with a salvage assumption around 10-15% of cost. IRS MACRS class for commercial aircraft is 7 years &mdash; much shorter than book life, which is the source of permanent book/tax differences airlines disclose every quarter.</div>
+              </div>
+              <div class="reveal" data-key="cargo">
+                <div class="n">2</div>
+                <div class="q-text">What happens after the passenger book life? <span class="blank">___</span></div>
+                <div class="tap">tap</div>
+                <div class="source">Cargo conversion. The interior is gutted, a side cargo door is cut into the upper fuselage, and the plane flies another 10-15 years as a freighter for FedEx, UPS, Atlas Air, Cathay Pacific Cargo. Conversion cost: ~$30 M. Resulting useful life extension: huge.</div>
+              </div>
+              <div class="reveal" data-key="boneyard">
+                <div class="n">3</div>
+                <div class="q-text">Final destination once even the cargo life ends: <span class="blank">_____ desert</span></div>
+                <div class="tap">tap</div>
+                <div class="source">Mojave Boneyard (officially: Southern California Logistics Airport, Victorville) or Pinal Air Park in Arizona. The dry climate preserves the airframe. Engines, avionics, landing gear are stripped and resold for millions. The hulk goes to scrap aluminum for a few thousand dollars. <em>Salvage value is whatever the airline negotiates at the end &mdash; it is not a number you wrote down in year 0.</em></div>
+              </div>
+            </div>
+
+            <div class="insight-block" id="ins-3">
+              <div class="h">The lesson · page 3</div>
+              <p>Salvage value is an <b>active management decision</b>, not a fixed input. The 747 has at least three depreciable lives stacked end to end &mdash; passenger, cargo, parts &mdash; and the airline chooses how much of each life to claim. The textbook says <em>S</em> is a constant. <b>The world says <em>S</em> is a choice you make every year.</b></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="arc-strip">
+          <span>The story so far &rarr;</span>
+          <div class="dots">
+            <span class="dotnode gold">1 · long life</span>
+            <span class="dotnode olive">2 · exact life</span>
+            <span class="dotnode teal on">3 · second life</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+
+  <nav class="footer-nav">
+    <button class="nav-btn" id="prev"><span>&larr;</span> Prev</button>
+    <div class="ind">
+      <span class="dot active" data-go="1"></span>
+      <span class="dot" data-go="2"></span>
+      <span class="dot" data-go="3"></span>
+      <span class="label" id="page-label">Empire State · the long life</span>
+    </div>
+    <button class="nav-btn" id="next">Next <span>&rarr;</span></button>
+  </nav>
+
+</div>
+
+<script>
+  // Page navigation
+  const pages = document.querySelectorAll('.page');
+  const dots = document.querySelectorAll('.footer-nav .dot');
+  const prevBtn = document.getElementById('prev');
+  const nextBtn = document.getElementById('next');
+  const label = document.getElementById('page-label');
+  const head = document.getElementById('head');
+  const labels = {
+    1: 'Empire State · the long life',
+    2: 'Mirage · the exact life',
+    3: 'Boeing 747 · the second life'
+  };
+  const themes = { 1: '', 2: 'olive', 3: 'teal' };
+  let current = 1;
+  const N = pages.length;
+  function go(n) {
+    if (n < 1 || n > N || n === current) return;
+    pages.forEach(p => {
+      const i = +p.dataset.page;
+      p.classList.remove('active', 'left');
+      if (i === n) p.classList.add('active');
+      else if (i < n) p.classList.add('left');
+    });
+    dots.forEach(d => d.classList.toggle('active', +d.dataset.go === n));
+    label.textContent = labels[n];
+    head.className = 'head' + (themes[n] ? ' ' + themes[n] : '');
+    prevBtn.disabled = n === 1;
+    nextBtn.disabled = n === N;
+    current = n;
+  }
+  prevBtn.addEventListener('click', () => go(current - 1));
+  nextBtn.addEventListener('click', () => go(current + 1));
+  dots.forEach(d => d.addEventListener('click', () => go(+d.dataset.go)));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); go(current + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(current - 1); }
+    else if (e.key === 'Home') go(1);
+    else if (e.key === 'End') go(N);
+  });
+  prevBtn.disabled = true;
+
+  // Reveal taps — show source + reveal blank; once all 3 revealed on a page, show insight
+  const insightByPage = { 1: 'ins-1', 2: 'ins-2', 3: 'ins-3' };
+  const answers = {
+    cost:   { blank: '$40.9 M' },
+    book:   { blank: '≈ $0' },
+    market: { blank: '$2.3 B' },
+    cost2:  { blank: '$630 M' },
+    life:   { blank: '39 years' },
+    demo:   { blank: '2024' },
+    airline:{ blank: '20–25 yr' },
+    cargo:  { blank: 'cargo conversion' },
+    boneyard:{ blank: 'Mojave desert' },
+  };
+  document.querySelectorAll('.reveal').forEach(rev => {
+    rev.addEventListener('click', () => {
+      if (rev.classList.contains('shown')) return;
+      rev.classList.add('shown');
+      const key = rev.dataset.key;
+      const blankSpan = rev.querySelector('.blank');
+      if (answers[key] && blankSpan) blankSpan.textContent = answers[key].blank;
+
+      // If all 3 reveals on this page are shown, fade in the insight
+      const pageSection = rev.closest('.page');
+      const all = pageSection.querySelectorAll('.reveal');
+      const shown = pageSection.querySelectorAll('.reveal.shown').length;
+      if (shown === all.length) {
+        const pageNum = +pageSection.dataset.page;
+        const ins = document.getElementById(insightByPage[pageNum]);
+        if (ins) ins.classList.add('show');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
