@@ -4083,6 +4083,95 @@
             .gallery-treemap .gt-item:nth-child(3) { grid-column: 2; grid-row: 2; }
             .gt-overlay { opacity: 1; }
         }
+
+        /* ═══ SimGPT Learn More modal ═══ */
+        .pub-modal-backdrop {
+            display: none; position: fixed; inset: 0; z-index: 9998;
+            background: rgba(8,12,24,0.62);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            align-items: center; justify-content: center; padding: 24px;
+        }
+        .pub-modal-backdrop.visible { display: flex; }
+        .pub-modal {
+            position: relative; background: #fff; color: #0f172a;
+            width: 100%; max-width: 1080px; max-height: 88vh;
+            border-radius: 18px; overflow: hidden; display: grid;
+            grid-template-columns: minmax(0,1.05fr) minmax(0,1fr);
+            box-shadow: 0 30px 90px rgba(0,0,0,0.45);
+            font-family: 'Inter', system-ui, sans-serif;
+            animation: pubModalIn .22s ease-out;
+        }
+        @keyframes pubModalIn { from { transform: scale(.96); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .pub-modal-fig {
+            background: linear-gradient(160deg,#eef2ff,#ffffff 60%,#e0f2fe);
+            padding: 28px; display: flex; align-items: center; justify-content: center;
+            border-right: 1px solid #e5e7eb;
+        }
+        .pub-modal-fig img { max-width: 100%; max-height: 70vh; object-fit: contain; border-radius: 8px; box-shadow: 0 8px 24px rgba(15,23,42,0.12); }
+        .pub-modal-body { padding: 30px 32px; overflow-y: auto; }
+        .pub-modal-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: #007EF8; text-transform: uppercase; margin-bottom: 8px; }
+        .pub-modal h2 { font-size: 22px; line-height: 1.25; margin: 0 0 8px; color: #0f172a; font-weight: 700; letter-spacing: -0.01em; }
+        .pub-modal-venue-row { display: flex; gap: 12px; align-items: center; margin: 0 0 18px; }
+        .pub-modal-journal-cover { width: 44px; height: 60px; object-fit: cover; border-radius: 4px; box-shadow: 0 2px 8px rgba(15,23,42,0.12); border: 1px solid #e5e7eb; flex-shrink: 0; background: #f1f5f9; }
+        .pub-modal-venue-text { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+        .pub-modal-venue { font-size: 12.5px; color: #64748b; margin: 0; }
+        .pub-modal-venue strong { color: #0f172a; font-weight: 600; }
+        .pub-modal-sd-badge {
+            display: inline-flex; align-items: center; gap: 6px; align-self: flex-start;
+            padding: 3px 9px 3px 3px; border-radius: 20px;
+            background: #fff7ed; border: 1px solid #fed7aa; text-decoration: none;
+            font-size: 10.5px; font-weight: 600; color: #9a3412; letter-spacing: 0.02em;
+            transition: all .15s;
+        }
+        .pub-modal-sd-badge:hover { background: #ffedd5; border-color: #fdba74; }
+        .pub-modal-sd-badge .sd-mark {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 18px; height: 18px; border-radius: 50%; background: #eb6500; color: #fff;
+            font-size: 9px; font-weight: 800; letter-spacing: 0;
+        }
+        .pub-modal-sd-badge .sd-label { white-space: nowrap; }
+        .pub-modal-summary { font-size: 13.5px; line-height: 1.6; color: #334155; margin-bottom: 20px; }
+        .pub-modal-summary p { margin: 0 0 10px; }
+        .pub-modal-timeline { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 18px; margin-bottom: 18px; }
+        .pub-modal-timeline-title { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #475569; text-transform: uppercase; margin-bottom: 10px; }
+        .pub-modal-steps { display: flex; gap: 10px; }
+        .pub-modal-step { flex: 1; position: relative; padding: 10px 12px; border-radius: 8px; background: #fff; border: 1px solid #e2e8f0; }
+        .pub-modal-step-num {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 22px; height: 22px; border-radius: 50%; background: #007EF8; color: #fff;
+            font-size: 11px; font-weight: 700; margin-bottom: 6px;
+        }
+        .pub-modal-step h5 { margin: 0 0 4px; font-size: 12px; font-weight: 700; color: #0f172a; letter-spacing: -0.005em; }
+        .pub-modal-step p { margin: 0; font-size: 11.5px; line-height: 1.45; color: #475569; }
+        .pub-modal-step code { font-family: 'JetBrains Mono','Consolas',monospace; font-size: 10.5px; background: #eef2ff; color: #1e3a8a; padding: 1px 5px; border-radius: 3px; }
+        .pub-modal-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .pub-modal-actions a, .pub-modal-actions button {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 9px 14px; border-radius: 8px; font-size: 12.5px; font-weight: 600;
+            text-decoration: none; border: 1px solid transparent; cursor: pointer;
+            font-family: inherit; transition: all .15s;
+        }
+        .pub-modal-actions .btn-primary { background: #007EF8; color: #fff; }
+        .pub-modal-actions .btn-primary:hover { background: #0066cc; }
+        .pub-modal-actions .btn-github { background: #24292e; color: #fff; }
+        .pub-modal-actions .btn-github:hover { background: #1b1f23; }
+        .pub-modal-actions .btn-pending { background: #f1f5f9; color: #94a3b8; cursor: not-allowed; }
+        .pub-modal-close {
+            position: absolute; top: 12px; right: 12px; z-index: 2;
+            width: 32px; height: 32px; border-radius: 50%;
+            background: rgba(255,255,255,0.92); border: 1px solid #e5e7eb;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            color: #475569; transition: all .15s;
+        }
+        .pub-modal-close:hover { background: #fff; color: #0f172a; transform: rotate(90deg); }
+        .pub-modal-close svg { width: 16px; height: 16px; }
+        @media (max-width: 820px) {
+            .pub-modal { grid-template-columns: 1fr; max-height: 92vh; }
+            .pub-modal-fig { padding: 18px; border-right: none; border-bottom: 1px solid #e5e7eb; }
+            .pub-modal-fig img { max-height: 38vh; }
+            .pub-modal-body { padding: 22px; }
+            .pub-modal-steps { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
@@ -4198,6 +4287,29 @@
                         </div>
 
                     </div>
+                    <!-- Slide: New Publication - SimGPT (CAIE 2026) -->
+                    <div class="slide slide-pub-new">
+                        <div class="slide-pub-accent"></div>
+                        <div class="slide-pub-left">
+                            <div class="slide-pub-badge">
+                                <span class="slide-pub-badge-new">New Publication</span>
+                                <span class="slide-pub-badge-year">2026</span>
+                            </div>
+                            <h3 class="slide-pub-title">SimGPT: Unlocking Potentials of Generative AI in Simulation</h3>
+                            <p class="slide-pub-subtitle">Bringing LLMs inside Simio at runtime — decisions, prompts, synthetic data</p>
+                            <p class="slide-pub-authors">M. Dehghanimohammadabadi</p>
+                            <p class="slide-pub-venue">Computers &amp; Industrial Engineering <em>• 2026</em></p>
+                            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;">
+                                <a href="https://www.sciencedirect.com/science/article/pii/S0360835226003050" target="_blank" rel="noopener" class="slide-pub-btn">Read Paper →</a>
+                                <a href="https://github.com/TwinAI-inc/Sora" target="_blank" rel="noopener" class="slide-pub-btn" style="background:#24292e;">GitHub ↗</a>
+                                <button type="button" class="slide-pub-btn" style="background:rgba(120,120,120,0.35);cursor:not-allowed;" disabled title="Video coming soon">Video · Pending</button>
+                                <button type="button" class="slide-pub-btn" style="background:transparent;border:1px solid rgba(255,255,255,0.6);" onclick="openSimGPTLearnMore()">Learn More</button>
+                            </div>
+                        </div>
+                        <div class="slide-pub-right">
+                            <img src="assets/images/simgpt_framework.png" alt="SimGPT Step development architecture — Figure 4">
+                        </div>
+                    </div>
                     <!-- Slide: New Publication - AIDM Framework -->
                     <div class="slide slide-pub-new">
                         <div class="slide-pub-accent"></div>
@@ -4295,6 +4407,7 @@
                     <span class="slider-dot" onclick="goToSlide(2)"></span>
                     <span class="slider-dot" onclick="goToSlide(3)"></span>
                     <span class="slider-dot" onclick="goToSlide(4)"></span>
+                    <span class="slider-dot" onclick="goToSlide(5)"></span>
                 </div>
             </div>
         </section>
@@ -5157,8 +5270,8 @@
                     <input type="text" id="pubSearch" placeholder="Search papers..." oninput="searchPubs()">
                 </div>
                 <div class="pub-filters">
-                    <button class="filter-btn active" data-filter="all">All <span class="count">30</span></button>
-                    <button class="filter-btn" data-filter="journal">Journals <span class="count">10</span></button>
+                    <button class="filter-btn active" data-filter="all">All <span class="count">31</span></button>
+                    <button class="filter-btn" data-filter="journal">Journals <span class="count">11</span></button>
                     <button class="filter-btn" data-filter="conference">Conferences <span class="count">18</span></button>
                     <button class="filter-btn" data-filter="book">Books <span class="count">2</span></button>
                 </div>
@@ -5191,6 +5304,20 @@
                 </div>
 
                 <!-- JOURNALS -->
+                <div class="pub-card" data-type="journal">
+                    <div class="pub-year">2026</div>
+                    <div class="pub-content">
+                        <h4>SimGPT: Unlocking Potentials of Generative AI in Simulation via Simio and LLM Integration</h4>
+                        <p class="pub-meta"><span class="pub-venue">Computers &amp; Industrial Engineering</span> | M. Dehghanimohammadabadi</p>
+                        <div class="pub-actions">
+                            <a href="https://www.sciencedirect.com/science/article/pii/S0360835226003050" target="_blank" rel="noopener" class="pub-link pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF</a>
+                            <a href="https://github.com/TwinAI-inc/Sora" target="_blank" rel="noopener" class="pub-link code"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>GitHub</a>
+                            <a href="#" class="pub-link video" style="opacity:0.55;cursor:not-allowed;" title="Video coming soon" onclick="event.preventDefault();return false;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>Video · Pending</a>
+                            <a href="#" class="pub-link link" onclick="event.preventDefault();openSimGPTLearnMore()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>Learn More</a>
+                        </div>
+                    </div>
+                    <span class="pub-type journal journal-new">Journal <span class="new-tag">NEW</span></span>
+                </div>
                 <div class="pub-card" data-type="journal">
                     <div class="pub-year">2026</div>
                     <div class="pub-content">
@@ -6507,6 +6634,79 @@
 
         // Initialize all Lucide icons (awards, contact, etc.)
         lucide.createIcons();
+    </script>
+
+    <!-- ═══ SimGPT Learn More modal ═══ -->
+    <div class="pub-modal-backdrop" id="simgptModal" onclick="if(event.target===this)closeSimGPTLearnMore()">
+        <div class="pub-modal" role="dialog" aria-labelledby="simgptModalTitle" aria-modal="true">
+            <button class="pub-modal-close" onclick="closeSimGPTLearnMore()" aria-label="Close">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <div class="pub-modal-fig">
+                <img src="assets/images/simgpt_framework.png" alt="SimGPT Step development architecture and integration with Simio (Figure 4)">
+            </div>
+            <div class="pub-modal-body">
+                <div class="pub-modal-eyebrow">New Journal Paper · 2026</div>
+                <h2 id="simgptModalTitle">SimGPT: Unlocking Potentials of Generative AI in Simulation via Simio and LLM Integration</h2>
+                <div class="pub-modal-venue-row">
+                    <img class="pub-modal-journal-cover" src="https://ars.els-cdn.com/content/image/X03608352.jpg" alt="Computers &amp; Industrial Engineering cover" onerror="this.style.display='none'">
+                    <div class="pub-modal-venue-text">
+                        <p class="pub-modal-venue"><strong>Computers &amp; Industrial Engineering</strong> · M. Dehghanimohammadabadi (Northeastern University)</p>
+                        <a class="pub-modal-sd-badge" href="https://www.sciencedirect.com/science/article/pii/S0360835226003050" target="_blank" rel="noopener" title="View on ScienceDirect">
+                            <span class="sd-mark">SD</span><span class="sd-label">ScienceDirect · Elsevier</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="pub-modal-summary">
+                    <p>SimGPT is the first framework to embed Large Language Models directly inside a discrete event simulation engine (Simio), enabling AI-driven decisions <em>during</em> a simulation run rather than only before or after it.</p>
+                    <p>The paper demonstrates four case studies — real time job dispatching that beat traditional heuristics, prompt engineering for LLM-in-the-loop simulation, comparative analysis of LLM models and versions, and synthetic data generation for emergency room simulations covering patient arrivals, characteristics, and length of stay.</p>
+                </div>
+
+                <div class="pub-modal-timeline">
+                    <div class="pub-modal-timeline-title">Try it in Simio — 3 steps</div>
+                    <div class="pub-modal-steps">
+                        <div class="pub-modal-step">
+                            <div class="pub-modal-step-num">1</div>
+                            <h5>Download</h5>
+                            <p>Grab the <code>Sora.dll</code> from the <a href="https://github.com/TwinAI-inc/Sora" target="_blank" rel="noopener">GitHub repo</a>.</p>
+                        </div>
+                        <div class="pub-modal-step">
+                            <div class="pub-modal-step-num">2</div>
+                            <h5>Install</h5>
+                            <p>Paste it into your Simio <code>UserExtensions</code> folder.</p>
+                        </div>
+                        <div class="pub-modal-step">
+                            <div class="pub-modal-step-num">3</div>
+                            <h5>Use</h5>
+                            <p>Open Simio — the <strong>SimGPT Step</strong> appears under <em>User-Defined Steps</em>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pub-modal-actions">
+                    <a class="btn-primary" href="https://www.sciencedirect.com/science/article/pii/S0360835226003050" target="_blank" rel="noopener">Read full paper →</a>
+                    <a class="btn-github" href="https://github.com/TwinAI-inc/Sora" target="_blank" rel="noopener">GitHub ↗</a>
+                    <button type="button" class="btn-pending" disabled title="Video walkthrough coming soon">Video · Pending</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openSimGPTLearnMore() {
+            const m = document.getElementById('simgptModal');
+            m.classList.add('visible');
+            document.body.style.overflow = 'hidden';
+            document.addEventListener('keydown', _simgptEsc);
+        }
+        function closeSimGPTLearnMore() {
+            const m = document.getElementById('simgptModal');
+            m.classList.remove('visible');
+            document.body.style.overflow = '';
+            document.removeEventListener('keydown', _simgptEsc);
+        }
+        function _simgptEsc(e) { if (e.key === 'Escape') closeSimGPTLearnMore(); }
     </script>
 </body>
 </html>

@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DADS 5250 · Generative AI in Practice</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #F4F7FC; --bg-grad-a: #EEF3FB; --bg-grad-b: #F5F0FF;
+    --paper: #ffffff; --ink: #0f172a; --muted: #475569; --soft: #94a3b8;
+    --border: #E1E8F2; --line: #CFDAEA;
+    --blue: #0055D4; --blue-deep: #001A70; --blue-light: #4A7FE6; --blue-soft: #EEF3FB;
+    --gold: #D4A017; --gold-soft: #FAF3E0;
+    --olive: #5C7A4A; --olive-soft: #F0F4EA;
+    --crimson: #C41230; --crimson-soft: #FDF2F3;
+    --purple: #7C3AED; --purple-soft: #F5F0FF;
+    --cyan: #0E9DBF; --cyan-soft: #E6F7FB;
+    --ok: #10B981; --warn: #F59E0B; --danger: #EF4444;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background:
+      radial-gradient(ellipse at top left, var(--bg-grad-a), transparent 50%),
+      radial-gradient(ellipse at top right, var(--bg-grad-b), transparent 50%),
+      var(--bg);
+    background-attachment: fixed;
+    color: var(--ink); font-family: 'Outfit', -apple-system, system-ui, sans-serif;
+    font-size: 14px; line-height: 1.55;
+    -webkit-font-smoothing: antialiased; min-height: 100vh;
+  }
+  .app {
+    display: grid; grid-template-columns: 260px 1fr; gap: 18px;
+    max-width: 1500px; margin: 0 auto; padding: 16px 22px 24px;
+    min-height: 100vh;
+  }
+  @media (max-width: 800px) {
+    .app { grid-template-columns: 1fr; padding: 10px; gap: 10px; }
+    .sidebar { position: relative !important; max-height: none !important; padding: 10px; }
+    .tools-grid { grid-template-columns: 1fr !important; gap: 10px; }
+    .module-content, .tool-shell { padding: 16px 14px !important; }
+    .mod-header h2 { font-size: 24px !important; }
+  }
+
+  /* ============ SIDEBAR ============ */
+  .sidebar {
+    background: var(--paper); border: 1px solid var(--border);
+    border-top: 3px solid var(--blue); border-radius: 12px;
+    padding: 14px 12px 10px;
+    display: flex; flex-direction: column; gap: 6px;
+    position: sticky; top: 16px; align-self: start;
+    max-height: calc(100vh - 32px); overflow-y: auto;
+  }
+  .sidebar::-webkit-scrollbar { width: 6px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--line); border-radius: 999px; }
+  .brand { padding: 0 8px 10px; border-bottom: 1px solid var(--border); }
+  .brand .code {
+    font-family: 'Lora', Georgia, serif; font-size: 18px; font-weight: 700; line-height: 1.1;
+    letter-spacing: -0.01em; color: var(--blue); font-style: italic;
+  }
+  .brand .sub {
+    font-family: 'Lora', Georgia, serif; font-size: 13.5px; font-weight: 700; line-height: 1.2;
+    letter-spacing: -0.01em; color: var(--ink); margin-top: 4px;
+  }
+  .brand .tag {
+    font-family: 'Lora', serif; font-style: italic; font-size: 11px; color: var(--muted); margin-top: 3px;
+  }
+  .nav-list { display: flex; flex-direction: column; gap: 1px; }
+  .mod-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 5px 10px; border-radius: 7px;
+    cursor: pointer; position: relative;
+    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .mod-item:hover { background: var(--blue-soft); }
+  .mod-item.active {
+    background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
+    box-shadow: 0 3px 10px rgba(0,85,212,0.22);
+  }
+  .mod-item .num {
+    font-family: 'Lora', Georgia, serif; font-style: italic; font-weight: 700;
+    font-size: 14px; color: var(--blue); min-width: 22px; text-align: center; line-height: 1;
+  }
+  .mod-item.active .num { color: white; }
+  .mod-item .label {
+    flex: 1; min-width: 0;
+    font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 500;
+    color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .mod-item.active .label { color: white; }
+  .mod-item .count {
+    background: var(--gold); color: white;
+    font-size: 9px; font-weight: 700; letter-spacing: 0.02em;
+    padding: 1px 6px; border-radius: 999px; min-width: 17px; text-align: center; flex-shrink: 0;
+  }
+  .mod-item.active .count { background: rgba(255,255,255,0.28); }
+  .mod-item.special .num { color: var(--purple); }
+  .mod-item.special .label { color: var(--purple); font-weight: 600; }
+  .mod-item.special.active { background: linear-gradient(135deg, var(--purple), #9F60FF); }
+  .mod-item.special.active .num, .mod-item.special.active .label { color: white; }
+  .mod-item.special .opt-badge {
+    background: var(--purple); color: white;
+    font-size: 8.5px; font-weight: 700; letter-spacing: 0.06em;
+    padding: 2px 7px; border-radius: 999px;
+  }
+  .mod-item.special.active .opt-badge { background: rgba(255,255,255,0.28); }
+  .phase-divider {
+    font-family: 'Lora', serif; font-style: italic; font-size: 10px; color: var(--soft);
+    letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    padding: 8px 10px 2px;
+  }
+  .sidebar-foot {
+    margin-top: auto; padding: 10px 8px 0; border-top: 1px solid var(--border);
+    font-family: 'Outfit', sans-serif; font-size: 10px; color: var(--soft);
+    text-align: center; letter-spacing: 0.04em;
+  }
+
+  /* ============ MAIN ============ */
+  .main { min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+  .module-content, .tool-shell {
+    padding: 26px 28px; background: var(--paper); border: 1px solid var(--border); border-radius: 14px;
+    animation: fade-in 0.35s ease-out;
+  }
+  @keyframes fade-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .mod-header {
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 18px;
+    margin-bottom: 22px; flex-wrap: wrap;
+  }
+  .mod-header .left { min-width: 0; flex: 1; }
+  .mod-header .kicker {
+    font-size: 11px; color: var(--gold); letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .mod-header h2 {
+    font-family: 'Lora', Georgia, serif; font-size: 32px; font-weight: 700;
+    letter-spacing: -0.02em; line-height: 1.1;
+  }
+  .mod-header h2 em { font-style: italic; color: var(--blue); font-weight: 400; }
+  .mod-header .lede {
+    font-family: 'Lora', serif; font-style: italic; font-size: 15px; line-height: 1.7;
+    color: var(--muted); margin-top: 12px; max-width: 760px;
+  }
+  .mod-header .meta { display: flex; gap: 8px; flex-shrink: 0; flex-wrap: wrap; padding-top: 4px; }
+  .meta-chip {
+    font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600;
+    padding: 6px 12px; background: var(--blue-soft); color: var(--blue);
+    border-radius: 999px; letter-spacing: 0.04em;
+  }
+  .meta-chip.gold { background: var(--gold-soft); color: var(--gold); }
+  .meta-chip.purple { background: var(--purple-soft); color: var(--purple); }
+
+  /* ============ TOOL CARDS ============ */
+  .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+  .tool-card {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 14px;
+    overflow: hidden; cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    text-decoration: none; color: inherit; display: flex; flex-direction: column;
+    border-top: 3px solid var(--blue); position: relative;
+  }
+  .tool-card:hover { transform: translateY(-3px); border-color: var(--blue); box-shadow: 0 14px 36px rgba(0,85,212,0.14); }
+  .tool-card.gold { border-top-color: var(--gold); }
+  .tool-card.olive { border-top-color: var(--olive); }
+  .tool-card.crimson { border-top-color: var(--crimson); }
+  .tool-card.purple { border-top-color: var(--purple); }
+  .tool-card.cyan { border-top-color: var(--cyan); }
+  .tool-card::before {
+    content: ""; position: absolute; top: 0; right: 0; width: 80px; height: 80px;
+    background: linear-gradient(135deg, transparent 50%, rgba(0,85,212,0.06) 100%);
+    border-radius: 0 14px 0 80px; pointer-events: none;
+  }
+  .tool-card.gold::before { background: linear-gradient(135deg, transparent 50%, rgba(212,160,23,0.08) 100%); }
+  .tool-card.olive::before { background: linear-gradient(135deg, transparent 50%, rgba(92,122,74,0.08) 100%); }
+  .tool-card.crimson::before { background: linear-gradient(135deg, transparent 50%, rgba(196,18,48,0.08) 100%); }
+  .tool-card.purple::before { background: linear-gradient(135deg, transparent 50%, rgba(124,58,237,0.08) 100%); }
+  .tool-card.cyan::before { background: linear-gradient(135deg, transparent 50%, rgba(14,157,191,0.08) 100%); }
+  .tool-icon { padding: 16px 18px 6px; color: var(--blue); display: flex; align-items: center; gap: 12px; position: relative; z-index: 1; }
+  .tool-icon svg { width: 30px; height: 30px; flex-shrink: 0; }
+  .tool-card.gold .tool-icon { color: var(--gold); }
+  .tool-card.olive .tool-icon { color: var(--olive); }
+  .tool-card.crimson .tool-icon { color: var(--crimson); }
+  .tool-card.purple .tool-icon { color: var(--purple); }
+  .tool-card.cyan .tool-icon { color: var(--cyan); }
+  .tool-type-row { display: flex; justify-content: space-between; align-items: center; flex: 1; }
+  .tool-type {
+    font-family: 'Outfit', sans-serif; font-size: 10px; color: var(--blue);
+    letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700;
+  }
+  .tool-card.gold .tool-type { color: var(--gold); }
+  .tool-card.olive .tool-type { color: var(--olive); }
+  .tool-card.crimson .tool-type { color: var(--crimson); }
+  .tool-card.purple .tool-type { color: var(--purple); }
+  .tool-card.cyan .tool-type { color: var(--cyan); }
+  .tool-time { font-size: 10.5px; color: var(--soft); font-weight: 500; }
+  .tool-title {
+    font-family: 'Lora', Georgia, serif; font-size: 18px; font-weight: 700; line-height: 1.15;
+    padding: 4px 18px 8px; color: var(--ink); position: relative; z-index: 1;
+  }
+  .tool-title em { font-style: italic; color: var(--blue); font-weight: 400; }
+  .tool-card.gold .tool-title em { color: var(--gold); }
+  .tool-card.olive .tool-title em { color: var(--olive); }
+  .tool-card.crimson .tool-title em { color: var(--crimson); }
+  .tool-card.purple .tool-title em { color: var(--purple); }
+  .tool-card.cyan .tool-title em { color: var(--cyan); }
+  .tool-desc { font-family: 'Lora', serif; font-size: 13px; line-height: 1.55; color: var(--muted); padding: 0 18px 14px; flex: 1; position: relative; z-index: 1; }
+  .tool-open {
+    padding: 12px 18px; background: var(--bg); border-top: 1px solid var(--border);
+    font-family: 'Outfit', sans-serif; font-size: 11.5px; color: var(--blue); font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .tool-open svg { width: 14px; height: 14px; transition: transform 0.2s; }
+  .tool-card:hover .tool-open svg { transform: translateX(3px); }
+  .tool-card.gold .tool-open { color: var(--gold); }
+  .tool-card.olive .tool-open { color: var(--olive); }
+  .tool-card.crimson .tool-open { color: var(--crimson); }
+  .tool-card.purple .tool-open { color: var(--purple); }
+  .tool-card.cyan .tool-open { color: var(--cyan); }
+  .placeholder {
+    text-align: center; padding: 50px 24px;
+    font-family: 'Lora', serif; font-style: italic; color: var(--muted);
+    background: var(--bg); border-radius: 12px; border: 1px dashed var(--line);
+  }
+  .placeholder svg { width: 40px; height: 40px; margin-bottom: 12px; color: var(--soft); }
+  .placeholder strong { font-style: normal; color: var(--blue); font-weight: 700; }
+  .special-banner { padding: 14px 18px; border-radius: 10px; font-family: 'Lora', serif; font-style: italic; font-size: 14px; margin-bottom: 18px; line-height: 1.6; }
+  .special-banner.hackathon { background: var(--gold-soft); border-left: 4px solid var(--gold); color: #6b4f0a; }
+  .special-banner.final { background: var(--purple-soft); border-left: 4px solid var(--purple); color: #4c1d95; }
+  .special-banner strong { font-style: normal; font-weight: 700; }
+
+  /* ============ TOOL VIEW ============ */
+  .crumbs { display: flex; align-items: center; gap: 8px; margin-bottom: 18px; font-size: 12px; }
+  .crumbs a { color: var(--blue); text-decoration: none; cursor: pointer; font-weight: 600; }
+  .crumbs a:hover { text-decoration: underline; }
+  .crumbs .sep { color: var(--soft); }
+  .crumbs .here { color: var(--ink); font-weight: 600; }
+  .tool-shell h2 {
+    font-family: 'Lora', Georgia, serif; font-size: 28px; font-weight: 700;
+    letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 6px;
+  }
+  .tool-shell h2 em { font-style: italic; color: var(--blue); font-weight: 400; }
+  .tool-shell .tool-lede {
+    font-family: 'Lora', serif; font-style: italic; font-size: 14px;
+    color: var(--muted); margin-bottom: 22px; max-width: 720px;
+  }
+
+  /* ====== Tool: Temperature Explorer ====== */
+  .temp-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 720px) { .temp-wrap { grid-template-columns: 1fr; } }
+  .temp-card { background: linear-gradient(180deg, #fff, #FAFCFF); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+  .temp-card .h { font-weight: 600; font-size: 13px; color: var(--blue-deep); margin-bottom: 10px; letter-spacing: .03em; text-transform: uppercase; font-family: 'Outfit'; }
+  .temp-prompt {
+    background: var(--blue-soft); border: 1px solid #C8DAF7; padding: 18px;
+    border-radius: 10px; font-family: 'Lora'; font-size: 17px; text-align: center; margin-bottom: 18px; color: var(--blue-deep); font-weight: 600;
+  }
+  .temp-prompt .sub { font-size: 12px; color: var(--muted); margin-top: 4px; font-style: italic; font-weight: 500; }
+  .slider-wrap { padding: 8px 4px; }
+  .slider-val { font-size: 18px; font-weight: 700; color: var(--blue); text-align: center; margin-bottom: 6px; font-family: 'Outfit'; }
+  .slider-val .lbl { font-size: 10px; color: var(--muted); letter-spacing: .15em; text-transform: uppercase; font-weight: 600; display: block; margin-bottom: 2px; }
+  input[type=range] { -webkit-appearance: none; width: 100%; height: 6px; background: linear-gradient(90deg, var(--blue) 0%, var(--cyan) 50%, var(--crimson) 100%); border-radius: 999px; outline: none; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; background: white; border: 3px solid var(--blue); border-radius: 50%; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.18); }
+  .slider-row { display: flex; justify-content: space-between; font-size: 10px; color: var(--soft); margin-top: 6px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; }
+  .prob-list { display: flex; flex-direction: column; gap: 8px; }
+  .prob-row { display: grid; grid-template-columns: 80px 1fr 50px; align-items: center; gap: 10px; }
+  .prob-word { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--ink); font-weight: 500; }
+  .prob-bar { height: 12px; background: var(--bg); border-radius: 999px; overflow: hidden; }
+  .prob-bar .fill { height: 100%; background: linear-gradient(90deg, var(--blue), var(--cyan)); border-radius: 999px; transition: width 0.3s; }
+  .prob-pct { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); text-align: right; font-weight: 600; }
+  .temp-insight { margin-top: 18px; padding: 14px 16px; background: var(--gold-soft); border-left: 3px solid var(--gold); border-radius: 8px; font-family: 'Lora', serif; font-size: 13px; color: #6b4f0a; line-height: 1.55; }
+  .temp-insight strong { font-weight: 700; color: var(--gold); }
+
+  /* ====== Tool: Prompt Anatomy Builder ====== */
+  .prompt-grid { display: grid; grid-template-columns: 280px 1fr; gap: 18px; }
+  @media (max-width: 720px) { .prompt-grid { grid-template-columns: 1fr; } }
+  .pa-blocks { display: flex; flex-direction: column; gap: 10px; }
+  .pa-block {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    background: white; border: 1.5px solid var(--border); border-radius: 10px;
+    cursor: pointer; transition: all 0.18s; font-size: 13px;
+  }
+  .pa-block:hover { border-color: var(--blue); background: var(--blue-soft); }
+  .pa-block.added { opacity: 0.4; border-style: dashed; }
+  .pa-block .ico { width: 36px; height: 36px; border-radius: 8px; display: grid; place-items: center; flex-shrink: 0; color: white; font-weight: 700; font-size: 14px; font-family: 'Lora', serif; font-style: italic; }
+  .pa-block.role .ico { background: linear-gradient(135deg, var(--blue), var(--blue-light)); }
+  .pa-block.task .ico { background: linear-gradient(135deg, var(--crimson), #E94560); }
+  .pa-block.context .ico { background: linear-gradient(135deg, var(--olive), #7DA15C); }
+  .pa-block.format .ico { background: linear-gradient(135deg, var(--gold), #E8B838); }
+  .pa-block.examples .ico { background: linear-gradient(135deg, var(--purple), #9F60FF); }
+  .pa-block .info { flex: 1; min-width: 0; }
+  .pa-block .info .t { font-weight: 600; color: var(--ink); }
+  .pa-block .info .s { font-size: 11px; color: var(--muted); font-family: 'Lora', serif; font-style: italic; }
+  .pa-preview { background: linear-gradient(180deg, #fff, #FAFCFF); border: 1px solid var(--border); border-radius: 12px; padding: 18px; min-height: 200px; }
+  .pa-prompt-out { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.7; color: var(--ink); white-space: pre-wrap; min-height: 140px; padding: 14px; background: var(--bg); border-radius: 8px; border: 1px dashed var(--line); }
+  .pa-empty { color: var(--soft); font-style: italic; font-family: 'Lora', serif; text-align: center; padding: 30px; font-size: 13px; }
+  .pa-score { display: flex; align-items: center; gap: 14px; margin-top: 14px; }
+  .pa-score .label { font-size: 11px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; font-weight: 600; }
+  .pa-score .bar { flex: 1; height: 8px; background: var(--bg); border-radius: 999px; overflow: hidden; }
+  .pa-score .bar .f { height: 100%; background: linear-gradient(90deg, var(--crimson), var(--gold), var(--ok)); border-radius: 999px; transition: width .3s; }
+  .pa-score .val { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--blue); font-size: 14px; min-width: 60px; text-align: right; }
+  .pa-reset { background: var(--bg); border: 1px solid var(--border); color: var(--muted); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; font-family: 'Outfit'; transition: all .15s; }
+  .pa-reset:hover { background: var(--crimson-soft); color: var(--crimson); border-color: var(--crimson); }
+
+  /* ====== Tool: Prompt Injection Lab ====== */
+  .inj-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
+  @media (max-width: 720px) { .inj-grid { grid-template-columns: 1fr; } }
+  .bot-card { background: white; border: 2px solid var(--border); border-radius: 12px; padding: 18px; text-align: center; position: relative; overflow: hidden; transition: all .3s; }
+  .bot-card.vuln { border-top: 4px solid var(--crimson); }
+  .bot-card.hard { border-top: 4px solid var(--ok); }
+  .bot-card .bot-icon { width: 50px; height: 50px; margin: 0 auto 8px; border-radius: 50%; display: grid; place-items: center; }
+  .bot-card.vuln .bot-icon { background: var(--crimson-soft); color: var(--crimson); }
+  .bot-card.hard .bot-icon { background: rgba(16,185,129,.12); color: var(--ok); }
+  .bot-card .bot-icon svg { width: 30px; height: 30px; }
+  .bot-card h3 { font-family: 'Lora', serif; font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+  .bot-card.vuln h3 { color: var(--crimson); }
+  .bot-card.hard h3 { color: var(--ok); }
+  .bot-card p { font-size: 12px; color: var(--muted); font-style: italic; font-family: 'Lora', serif; margin-bottom: 12px; }
+  .bot-score { font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 700; }
+  .bot-card.vuln .bot-score { color: var(--crimson); }
+  .bot-card.hard .bot-score { color: var(--ok); }
+  .bot-score-lbl { font-size: 10px; color: var(--soft); letter-spacing: .12em; text-transform: uppercase; font-weight: 700; margin-bottom: 2px; }
+  .fire-btn { margin-top: 12px; padding: 8px 18px; border: none; border-radius: 8px; font-family: 'Outfit'; font-weight: 700; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; transition: all .2s; }
+  .fire-btn.v { background: linear-gradient(135deg, var(--crimson), #E94560); color: white; }
+  .fire-btn.h { background: linear-gradient(135deg, var(--ok), #34D399); color: white; }
+  .fire-btn:disabled { opacity: .35; cursor: not-allowed; }
+  .fire-btn:not(:disabled):hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,0,0,.15); }
+  .bot-card.breached { animation: shake .5s; }
+  .bot-card.defended { animation: pulse-ok .5s; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+  @keyframes pulse-ok { 0%,100%{box-shadow: 0 0 0 0 rgba(16,185,129,0)} 50%{box-shadow: 0 0 0 8px rgba(16,185,129,.3)} }
+  .deck-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .deck-title h4 { font-family: 'Lora', serif; font-size: 18px; color: var(--blue-deep); font-weight: 700; }
+  .deck-title small { color: var(--soft); font-size: 11px; font-style: italic; }
+  .attack-deck { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
+  .attack-card { background: white; border: 1.5px solid var(--border); border-radius: 10px; padding: 12px; cursor: pointer; transition: all .18s; position: relative; }
+  .attack-card:hover { border-color: var(--blue); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,.06); }
+  .attack-card.selected { border-color: var(--blue); background: var(--blue-soft); box-shadow: 0 0 0 3px rgba(0,85,212,.15); }
+  .attack-card .tier { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 9px; font-weight: 700; letter-spacing: .08em; }
+  .attack-card .tier.easy { background: rgba(212,160,23,.15); color: var(--gold); }
+  .attack-card .tier.med { background: rgba(245,158,11,.2); color: #B45309; }
+  .attack-card .tier.hard { background: rgba(124,58,237,.18); color: var(--purple); }
+  .attack-card .a-name { font-family: 'Lora', serif; font-weight: 700; font-size: 13.5px; color: var(--blue-deep); margin: 6px 0 2px; }
+  .attack-card .a-desc { font-size: 11px; color: var(--muted); line-height: 1.45; }
+  .hall { margin-top: 18px; padding: 14px 16px; background: linear-gradient(135deg, var(--gold-soft), #FFF9E8); border: 1px solid var(--gold); border-radius: 10px; }
+  .hall h5 { font-family: 'Lora', serif; font-style: italic; color: var(--gold); font-size: 13px; margin-bottom: 6px; }
+  .hall-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .hall-pill { background: white; border: 1px solid var(--gold); padding: 3px 8px; border-radius: 999px; font-size: 11px; color: #6b4f0a; font-weight: 600; }
+
+  /* ====== Tool: Tokenizer ====== */
+  .tok-card { background: linear-gradient(180deg, #fff, #FAFCFF); border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 14px; }
+  .tok-input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px; resize: vertical; min-height: 70px; outline: none; transition: border-color .15s; }
+  .tok-input:focus { border-color: var(--blue); }
+  .tok-radio { display: flex; gap: 14px; margin: 12px 0; flex-wrap: wrap; }
+  .tok-radio label { display: flex; align-items: center; gap: 5px; font-size: 12.5px; cursor: pointer; }
+  .tok-radio input { accent-color: var(--blue); }
+  .tok-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-top: 14px; }
+  .tok-stat { background: var(--blue-soft); border-radius: 10px; padding: 12px 14px; text-align: center; }
+  .tok-stat .n { font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 700; color: var(--blue); }
+  .tok-stat .l { font-size: 10px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; font-weight: 600; margin-top: 2px; }
+  .tok-out { display: flex; flex-wrap: wrap; gap: 4px; padding: 14px; background: var(--bg); border-radius: 10px; min-height: 60px; }
+  .tok-piece { font-family: 'JetBrains Mono', monospace; font-size: 12px; padding: 3px 7px; border-radius: 5px; color: var(--ink); }
+  .tok-piece.c0 { background: rgba(0,85,212,.12); color: var(--blue); }
+  .tok-piece.c1 { background: rgba(212,160,23,.18); color: var(--gold); }
+  .tok-piece.c2 { background: rgba(92,122,74,.18); color: var(--olive); }
+  .tok-piece.c3 { background: rgba(124,58,237,.18); color: var(--purple); }
+  .tok-piece.c4 { background: rgba(14,157,191,.18); color: var(--cyan); }
+
+  /* ====== Tool: Embeddings ====== */
+  .emb-canvas { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 18px; position: relative; }
+  .emb-scatter { width: 100%; height: 380px; position: relative; background: linear-gradient(135deg, #FAFCFF, #F4F7FC); border-radius: 10px; }
+  .emb-dot { position: absolute; width: 12px; height: 12px; border-radius: 50%; cursor: pointer; transition: all .2s; transform: translate(-50%, -50%); border: 2px solid white; box-shadow: 0 1px 4px rgba(0,0,0,.15); }
+  .emb-dot:hover { transform: translate(-50%, -50%) scale(1.4); box-shadow: 0 4px 12px rgba(0,0,0,.25); }
+  .emb-dot.near { box-shadow: 0 0 0 4px rgba(0,85,212,.25); width: 16px; height: 16px; }
+  .emb-legend { position: absolute; top: 24px; right: 24px; background: white; border: 1px solid var(--border); border-radius: 8px; padding: 10px; font-size: 11px; }
+  .emb-legend .item { display: flex; align-items: center; gap: 6px; margin: 3px 0; }
+  .emb-legend .swatch { width: 10px; height: 10px; border-radius: 50%; }
+  .emb-detail { background: var(--bg); border-radius: 10px; padding: 14px; margin-top: 14px; min-height: 60px; }
+  .emb-detail .h { font-size: 11px; color: var(--soft); letter-spacing: .1em; text-transform: uppercase; font-weight: 600; margin-bottom: 6px; }
+  .emb-detail .s { font-family: 'Lora', serif; font-style: italic; color: var(--ink); font-size: 14px; }
+
+  /* ====== Tool: ReAct Player ====== */
+  .react-controls { display: flex; align-items: center; gap: 12px; padding: 14px; background: var(--blue-soft); border-radius: 10px; margin-bottom: 14px; }
+  .react-btn { width: 38px; height: 38px; border: none; border-radius: 50%; background: white; color: var(--blue); cursor: pointer; display: grid; place-items: center; box-shadow: 0 2px 6px rgba(0,0,0,.08); transition: all .15s; }
+  .react-btn.play { background: linear-gradient(135deg, var(--ok), #34D399); color: white; width: 42px; height: 42px; }
+  .react-btn:hover { transform: translateY(-1px); }
+  .react-btn svg { width: 18px; height: 18px; }
+  .react-progress { flex: 1; display: flex; align-items: center; gap: 10px; }
+  .react-progress .step-n { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); font-weight: 600; }
+  .react-progress input[type=range] { background: linear-gradient(90deg, var(--blue), var(--cyan)); }
+  .react-step { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; margin-bottom: 10px; animation: fade-in .25s; }
+  .react-step .lbl { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; margin-bottom: 6px; }
+  .react-step.thought { background: var(--purple-soft); border-color: var(--purple); }
+  .react-step.thought .lbl { color: var(--purple); }
+  .react-step.action { background: var(--blue-soft); border-color: var(--blue); }
+  .react-step.action .lbl { color: var(--blue); }
+  .react-step.observation { background: var(--olive-soft); border-color: var(--olive); }
+  .react-step.observation .lbl { color: var(--olive); }
+  .react-step.final { background: var(--gold-soft); border-color: var(--gold); }
+  .react-step.final .lbl { color: var(--gold); }
+  .react-step .txt { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--ink); line-height: 1.55; }
+
+  /* ====== Tool: Generic stub ====== */
+  .stub-hero { padding: 60px 30px; text-align: center; background: linear-gradient(135deg, var(--blue-soft), var(--purple-soft)); border-radius: 14px; border: 1px dashed var(--blue); }
+  .stub-hero svg { width: 48px; height: 48px; margin-bottom: 14px; color: var(--blue); }
+  .stub-hero h3 { font-family: 'Lora', serif; font-size: 22px; color: var(--blue-deep); margin-bottom: 6px; }
+  .stub-hero p { color: var(--muted); font-family: 'Lora', serif; font-style: italic; max-width: 460px; margin: 0 auto; }
+</style>
+</head>
+<body>
+
+<!-- SVG SPRITE -->
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-thermometer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V4a2 2 0 0 0-4 0v10.76a4 4 0 1 0 4 0z"/><circle cx="12" cy="18" r="1.5" fill="currentColor"/></symbol>
+  <symbol id="i-tokens" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="5" height="12" rx="1"/><rect x="10" y="6" width="4" height="12" rx="1"/><rect x="16" y="6" width="5" height="12" rx="1"/></symbol>
+  <symbol id="i-puzzle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 11h-2V8a1 1 0 0 0-1-1h-3V5a2 2 0 1 0-4 0v2H6a1 1 0 0 0-1 1v3h2a2 2 0 1 1 0 4H5v3a1 1 0 0 0 1 1h3v-2a2 2 0 1 1 4 0v2h3a1 1 0 0 0 1-1v-3h2a2 2 0 1 0 0-4z"/></symbol>
+  <symbol id="i-chain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.5 1.5"/><path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.5-1.5"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L4 6v6c0 5 4 9 8 10 4-1 8-5 8-10V6l-8-4z"/></symbol>
+  <symbol id="i-shield-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L4 6v6c0 5 4 9 8 10 4-1 8-5 8-10V6l-8-4z"/><polyline points="9 12 11 14 15 10"/></symbol>
+  <symbol id="i-skull" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a8 8 0 1 1 16 0v4a2 2 0 0 1-1 1.7L18 18v3a1 1 0 0 1-1 1h-2v-3h-2v3h-2v-3H9v3H7a1 1 0 0 1-1-1v-3l-1-1.3A2 2 0 0 1 4 15z"/><circle cx="9" cy="11" r="1.5" fill="currentColor"/><circle cx="15" cy="11" r="1.5" fill="currentColor"/></symbol>
+  <symbol id="i-robot" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="2"/><line x1="12" y1="3" x2="12" y2="8"/><circle cx="9" cy="14" r="1.5"/><circle cx="15" cy="14" r="1.5"/><path d="M9 18h6"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></symbol>
+  <symbol id="i-flow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="6" height="5" rx="1"/><rect x="15" y="3" width="6" height="5" rx="1"/><rect x="3" y="16" width="6" height="5" rx="1"/><rect x="15" y="16" width="6" height="5" rx="1"/><path d="M9 5.5h3a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3H9"/></symbol>
+  <symbol id="i-rocket" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l-2 6 6-2"/><path d="M14 6c-3 1-7 5-7 5l5 5s4-4 5-7"/><path d="M16 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19 5l3-3"/></symbol>
+  <symbol id="i-construction" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="9" rx="1"/><line x1="3" y1="11" x2="21" y2="11"/><line x1="9" y1="11" x2="9" y2="20"/><line x1="15" y1="11" x2="15" y2="20"/><path d="M6 7h12M7 4h10"/></symbol>
+  <symbol id="i-arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></symbol>
+  <symbol id="i-sparkle" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8z"/><path d="M19 16l.7 2.3L22 19l-2.3.7L19 22l-.7-2.3L16 19l2.3-.7z" opacity="0.6"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="6 4 20 12 6 20"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></symbol>
+  <symbol id="i-skip-back" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="18 6 8 12 18 18"/><rect x="5" y="6" width="2" height="12"/></symbol>
+  <symbol id="i-skip-fwd" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="6 6 16 12 6 18"/><rect x="17" y="6" width="2" height="12"/></symbol>
+</svg>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="code">DADS 5250</div>
+      <div class="sub">Generative AI in Practice</div>
+      <div class="tag">course platform &middot; 14 modules</div>
+    </div>
+    <div class="phase-divider">Foundations</div>
+    <nav class="nav-list" data-phase="found"></nav>
+    <div class="phase-divider">Core</div>
+    <nav class="nav-list" data-phase="core"></nav>
+    <div class="phase-divider">Advanced</div>
+    <nav class="nav-list" data-phase="adv"></nav>
+    <div class="phase-divider">Production</div>
+    <nav class="nav-list" data-phase="prod"></nav>
+    <div class="sidebar-foot">&copy; Prof. Mohammad Dehghani</div>
+  </aside>
+
+  <main class="main" id="main"></main>
+
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+const ICON = {
+  thermometer: '<svg><use href="#i-thermometer"/></svg>',
+  tokens: '<svg><use href="#i-tokens"/></svg>',
+  puzzle: '<svg><use href="#i-puzzle"/></svg>',
+  chain: '<svg><use href="#i-chain"/></svg>',
+  shield: '<svg><use href="#i-shield"/></svg>',
+  robot: '<svg><use href="#i-robot"/></svg>',
+  eye: '<svg><use href="#i-eye"/></svg>',
+  grid: '<svg><use href="#i-grid"/></svg>',
+  flow: '<svg><use href="#i-flow"/></svg>',
+  rocket: '<svg><use href="#i-rocket"/></svg>',
+  sparkle: '<svg><use href="#i-sparkle"/></svg>'
+};
+
+const MODULES = [
+  { n: 1, phase: 'found', short: 'LLM APIs', name: 'Getting Started with LLM APIs',
+    lede: 'Open the box. See how a language model actually responds to your call. Slide the temperature, count the tokens, and watch probability turn into text.',
+    meta: ['Phase 1', '~3 hrs'],
+    tools: [
+      { id: 'temperature', type: 'Sandbox', icon: 'thermometer', title: 'Temperature <em>Explorer</em>', desc: 'Interactive slider showing how temperature shapes the probability of the next word.', time: '~10 min', color: 'crimson' },
+      { id: 'tokenizer', type: 'Sandbox', icon: 'tokens', title: 'Tokenizer <em>Explorer</em>', desc: 'Word, character, and subword tokenization side by side. The same sentence costs different numbers of tokens.', time: '~8 min', color: 'cyan' }
+    ]},
+  { n: 2, phase: 'found', short: 'Prompting', name: 'Prompt Engineering',
+    lede: 'A great prompt has parts. Role, task, context, format, examples. Drop them in, watch the quality climb.',
+    meta: ['Phase 1', '~3 hrs'],
+    tools: [
+      { id: 'prompt-anatomy', type: 'Builder', icon: 'puzzle', title: 'Prompt Anatomy <em>Builder</em>', desc: 'Drag role / task / context / format / examples blocks. Compare bare task vs structured prompt side by side.', time: '~15 min', color: 'blue' }
+    ]},
+  { n: 3, phase: 'found', short: 'Structured Output', name: 'Structured Output and Function Calling', lede: 'Turn free text into a typed object. JSON, schemas, and tool calls.', meta: ['Phase 1', '~3 hrs'], tools: [] },
+  { n: 4, phase: 'found', short: 'LangChain', name: 'LangChain and the Beer Game',
+    lede: 'A LangChain "chain" is just a pipeline. Add nodes, hit run, watch data flow stage to stage.',
+    meta: ['Phase 1', '~3 hrs'],
+    tools: [
+      { id: 'chain-viz', type: 'Visualizer', icon: 'chain', title: 'Chain <em>Visualizer</em>', desc: 'Add PromptTemplate / ChatModel / OutputParser nodes. Run the chain. Watch input and output at every stage.', time: '~12 min', color: 'olive' }
+    ]},
+  { n: 5, phase: 'core', short: 'RAG', name: 'Retrieval-Augmented Generation',
+    lede: 'Chunk the document, embed the chunks, retrieve the relevant ones, ground the answer. The full RAG pipeline, made visible.',
+    meta: ['Phase 2', '~3 hrs'],
+    tools: [
+      { id: 'chunking', type: 'Sandbox', icon: 'grid', title: 'Text <em>Chunking</em>', desc: 'Basic vs recursive chunking. Adjustable chunk size and overlap. Visual boundaries on a sample document.', time: '~10 min', color: 'gold' },
+      { id: 'embeddings', type: 'Explorer', icon: 'sparkle', title: 'Embedding <em>Space Explorer</em>', desc: 'Real OpenAI embeddings reduced to 2D. Click any dot to highlight its 3 nearest neighbors.', time: '~12 min', color: 'purple' }
+    ]},
+  { n: 6, phase: 'core', short: 'Agents', name: 'Agents and LangGraph',
+    lede: 'A tool-using agent is just a loop. Thought, Action, Observation, Thought, until it has the answer.',
+    meta: ['Phase 2', '~3 hrs'],
+    tools: [
+      { id: 'react-player', type: 'Player', icon: 'robot', title: 'ReAct Trace <em>Player</em>', desc: 'A canned ReAct trace with playback controls. Step through Thought → Action → Observation.', time: '~10 min', color: 'cyan' }
+    ]},
+  { n: 7, phase: 'core', short: 'Hackathon', name: 'Hackathon', special: 'hackathon',
+    lede: 'No lab. No notebook. Build something real with everything you have learned so far. 48 hours, your stack, your team, your demo.',
+    meta: ['Phase 2', 'Hackathon · 48 hrs'], tools: [] },
+  { n: 8, phase: 'adv', short: 'Multi-Agent', name: 'Multi-Agent Systems with CrewAI', lede: 'Multiple agents, multiple roles, coordinated work. The CrewAI way.', meta: ['Phase 3', '~3 hrs'], tools: [] },
+  { n: 9, phase: 'adv', short: 'Vision & Eval', name: 'Vision and Evaluation', lede: 'Vision-language models, image inputs, and how you grade what these systems produce.', meta: ['Phase 3', '~3 hrs'], tools: [] },
+  { n: 10, phase: 'adv', short: 'GenAI Platforms', name: 'GenAI Platforms', lede: 'Survey the platform landscape. Hugging Face, OpenRouter, Bedrock. What each is for.', meta: ['Phase 3', '~3 hrs'], tools: [] },
+  { n: 11, phase: 'adv', short: 'MCP & Guardrails', name: 'MCP, Guardrails and Safety',
+    lede: 'Model Context Protocol. Guardrails. And the gamified Prompt Injection Lab where you attack one bot and defend another.',
+    meta: ['Phase 3', '~3 hrs'],
+    tools: [
+      { id: 'injection', type: 'Game', icon: 'shield', title: 'Prompt <em>Injection Lab</em>', desc: 'Ten attack cards across three tiers. Drag-to-fire at vulnerable and hardened bots. Live scoreboard. Hall of Fame.', time: '~20 min', color: 'crimson' }
+    ]},
+  { n: 12, phase: 'prod', short: 'n8n Automation', name: 'Workflow Automation with n8n', lede: 'Move your prototype out of the notebook. Trigger flows, connect tools, ship a workflow.', meta: ['Phase 4', '~3 hrs'], tools: [] },
+  { n: 13, phase: 'prod', short: 'Fine-Tuning', name: 'Fine-Tuning and Deployment', lede: 'When to fine-tune, when not to. How to ship the result.', meta: ['Phase 4', '~3 hrs'], tools: [] },
+  { n: 14, phase: 'prod', short: 'Final Project', name: 'Final Project', special: 'final', lede: 'Build something useful. Demonstrate it live. The same 4D arc applied to a real problem you care about.', meta: ['Phase 4', 'Capstone'], tools: [] }
+];
+
+let view = { kind: 'module', n: 1, toolId: null };
+
+function findTool(id) {
+  for (const m of MODULES) for (const t of (m.tools||[])) if (t.id === id) return { tool: t, module: m };
+  return null;
+}
+
+/* ============ SIDEBAR ============ */
+function buildSidebar() {
+  document.querySelectorAll('.nav-list').forEach(nav => nav.innerHTML = '');
+  MODULES.forEach(m => {
+    const nav = document.querySelector(`.nav-list[data-phase="${m.phase}"]`);
+    const isSpecial = !!m.special;
+    const item = document.createElement('div');
+    const isActive = view.kind === 'module' ? (m.n === view.n) : (view.toolId && findTool(view.toolId).module.n === m.n);
+    item.className = 'mod-item' + (isActive ? ' active' : '') + (isSpecial ? ' special' : '');
+    const right = isSpecial
+      ? `<div class="opt-badge">${m.special === 'hackathon' ? 'HACK' : 'FINAL'}</div>`
+      : `<div class="count">${m.tools.length}</div>`;
+    item.innerHTML = `<div class="num">${m.n}</div><div class="label">${m.short}</div>${right}`;
+    item.addEventListener('click', () => { view = { kind: 'module', n: m.n, toolId: null }; render(); });
+    nav.appendChild(item);
+  });
+}
+
+/* ============ MODULE VIEW ============ */
+function renderModule() {
+  const m = MODULES.find(x => x.n === view.n);
+  const parts = m.name.split(/\s+/);
+  const last = parts.pop();
+  const head = parts.join(' ') + ' <em>' + last + '</em>';
+  const banner = m.special === 'hackathon'
+    ? `<div class="special-banner hackathon"><strong>Hackathon week.</strong> No lab, no quiz. Show up with a team and a problem, leave with a working demo.</div>`
+    : m.special === 'final'
+      ? `<div class="special-banner final"><strong>Final project.</strong> Pick a problem that matters to you. Build it with the stack you choose.</div>`
+      : '';
+  $('main').innerHTML = `
+    <div class="module-content">
+      <div class="mod-header">
+        <div class="left">
+          <div class="kicker">Module ${m.n} of ${MODULES.length}${m.special ? ' &middot; ' + (m.special === 'hackathon' ? 'Hackathon' : 'Final Project') : ''}</div>
+          <h2>${head}</h2>
+          <p class="lede">${m.lede}</p>
+        </div>
+        <div class="meta">
+          ${m.meta.map((t, i) => `<div class="meta-chip${m.special === 'hackathon' ? ' gold' : m.special === 'final' ? ' purple' : (i === 1 ? ' gold' : '')}">${t}</div>`).join('')}
+        </div>
+      </div>
+      ${banner}
+      ${m.tools.length === 0
+        ? `<div class="placeholder"><svg><use href="#i-construction"/></svg><div><strong>Module ${m.n} tools and games coming soon.</strong></div><div style="margin-top:6px;">${m.special ? 'No interactive tools for this module by design.' : 'Storylines, labs, and gamified exercises are queued in the build pipeline.'}</div></div>`
+        : `<div class="tools-grid">
+             ${m.tools.map(t => `
+               <a class="tool-card ${t.color || 'blue'}" data-toolid="${t.id}">
+                 <div class="tool-icon">${ICON[t.icon]}<div class="tool-type-row"><div class="tool-type">${t.type}</div><div class="tool-time">${t.time}</div></div></div>
+                 <div class="tool-title">${t.title}</div>
+                 <div class="tool-desc">${t.desc}</div>
+                 <div class="tool-open"><span>Open</span><svg><use href="#i-arrow-right"/></svg></div>
+               </a>
+             `).join('')}
+           </div>`
+      }
+    </div>`;
+  document.querySelectorAll('.tool-card[data-toolid]').forEach(c => {
+    c.addEventListener('click', () => { view = { kind: 'tool', n: view.n, toolId: c.dataset.toolid }; render(); });
+  });
+}
+
+/* ============ TOOL VIEW ============ */
+function renderTool() {
+  const { tool, module } = findTool(view.toolId);
+  const parts = tool.title.replace(/<\/?em>/g, '|EM|').split(' ');
+  $('main').innerHTML = `
+    <div class="tool-shell">
+      <div class="crumbs">
+        <a onclick="goModule(${module.n})">M${module.n} · ${module.short}</a>
+        <span class="sep">›</span>
+        <span class="here">${tool.title.replace(/<em>(.*?)<\/em>/, '$1')}</span>
+      </div>
+      <h2>${tool.title}</h2>
+      <p class="tool-lede">${tool.desc}</p>
+      <div id="tool-body"></div>
+    </div>`;
+  const renderers = {
+    'temperature': renderTemperature,
+    'tokenizer': renderTokenizer,
+    'prompt-anatomy': renderPromptAnatomy,
+    'chain-viz': renderChainViz,
+    'chunking': renderChunking,
+    'embeddings': renderEmbeddings,
+    'react-player': renderReact,
+    'injection': renderInjection
+  };
+  (renderers[tool.id] || renderStub)();
+}
+
+function goModule(n) { view = { kind: 'module', n, toolId: null }; render(); }
+
+function render() { buildSidebar(); view.kind === 'module' ? renderModule() : renderTool(); }
+
+document.addEventListener('keydown', e => {
+  if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+  if (view.kind === 'tool' && e.key === 'Escape') { goModule(findTool(view.toolId).module.n); return; }
+  if (view.kind === 'module') {
+    if (e.key === 'ArrowUp' && view.n > 1) { view.n--; render(); }
+    if (e.key === 'ArrowDown' && view.n < MODULES.length) { view.n++; render(); }
+  }
+});
+
+/* ============================================================
+   TOOL: TEMPERATURE EXPLORER (M01)
+   ============================================================ */
+function renderTemperature() {
+  $('tool-body').innerHTML = `
+    <div class="temp-wrap">
+      <div class="temp-card">
+        <div class="h">Sample Sentence</div>
+        <div class="temp-prompt">"The kid is chasing the…"<div class="sub">How will the model complete this?</div></div>
+        <div class="slider-wrap">
+          <div class="slider-val"><span class="lbl">Temperature</span><span id="temp-val">0.7</span></div>
+          <input type="range" id="temp-slider" min="0.1" max="2.0" step="0.05" value="0.7">
+          <div class="slider-row"><span>More predictable</span><span>1.1</span><span>More random</span></div>
+        </div>
+        <div class="temp-insight">
+          <strong>What's happening?</strong> Lower temperature sharpens the probability distribution: the model commits to its top guess. Higher temperature flattens it: every alternative becomes more viable.
+        </div>
+      </div>
+      <div class="temp-card">
+        <div class="h">Next-Word Probabilities</div>
+        <div class="prob-list" id="prob-list"></div>
+      </div>
+    </div>`;
+  const words = [{w:'cat', logit:3.0},{w:'ball', logit:2.3},{w:'dog', logit:1.8},{w:'butterfly', logit:0.9},{w:'cloud', logit:0.3},{w:'rainbow', logit:-0.3}];
+  function recompute(T) {
+    const exps = words.map(x => Math.exp(x.logit / Math.max(0.05, T)));
+    const sum = exps.reduce((a,b)=>a+b,0);
+    return words.map((x,i) => ({...x, p: exps[i]/sum}));
+  }
+  function paint() {
+    const T = parseFloat($('temp-slider').value);
+    $('temp-val').textContent = T.toFixed(2);
+    const probs = recompute(T).sort((a,b)=>b.p-a.p);
+    $('prob-list').innerHTML = probs.map(p => `
+      <div class="prob-row">
+        <div class="prob-word">${p.w}</div>
+        <div class="prob-bar"><div class="fill" style="width:${(p.p*100).toFixed(1)}%"></div></div>
+        <div class="prob-pct">${(p.p*100).toFixed(1)}%</div>
+      </div>`).join('');
+  }
+  $('temp-slider').addEventListener('input', paint);
+  paint();
+}
+
+/* ============================================================
+   TOOL: TOKENIZER (M01)
+   ============================================================ */
+function renderTokenizer() {
+  $('tool-body').innerHTML = `
+    <div class="tok-card">
+      <div class="h" style="font-weight:600;font-size:13px;color:var(--blue-deep);margin-bottom:10px;letter-spacing:.03em;text-transform:uppercase;">Enter text</div>
+      <textarea id="tok-input" class="tok-input">Hello world! Tokenization is wild. Pre-training matters.</textarea>
+      <div class="tok-radio">
+        <label><input type="radio" name="tmode" value="word" checked> Word-level</label>
+        <label><input type="radio" name="tmode" value="char"> Character-level</label>
+        <label><input type="radio" name="tmode" value="sub"> Subword (BPE-ish)</label>
+      </div>
+      <div class="tok-out" id="tok-out"></div>
+      <div class="tok-stats" id="tok-stats"></div>
+    </div>`;
+  function tok() {
+    const text = $('tok-input').value;
+    const mode = document.querySelector('input[name=tmode]:checked').value;
+    let pieces = [];
+    if (mode === 'word') pieces = text.match(/\S+|\s+/g) || [];
+    else if (mode === 'char') pieces = [...text];
+    else pieces = text.match(/[A-Za-z]{1,4}|[^A-Za-z\s]|\s+/g) || [];
+    $('tok-out').innerHTML = pieces.map((p,i)=>{
+      const cls = 'c'+(i%5);
+      return `<span class="tok-piece ${cls}">${p === ' ' ? '·' : p.replace(/\s/g, '·')}</span>`;
+    }).join('');
+    const tokens = pieces.filter(p => !/^\s+$/.test(p));
+    const chars = text.length;
+    const ratio = (chars / Math.max(1, tokens.length)).toFixed(1);
+    $('tok-stats').innerHTML = `
+      <div class="tok-stat"><div class="n">${tokens.length}</div><div class="l">Tokens</div></div>
+      <div class="tok-stat"><div class="n">${chars}</div><div class="l">Characters</div></div>
+      <div class="tok-stat"><div class="n">${ratio}</div><div class="l">Chars / Token</div></div>`;
+  }
+  $('tok-input').addEventListener('input', tok);
+  document.querySelectorAll('input[name=tmode]').forEach(r => r.addEventListener('change', tok));
+  tok();
+}
+
+/* ============================================================
+   TOOL: PROMPT ANATOMY (M02)
+   ============================================================ */
+function renderPromptAnatomy() {
+  $('tool-body').innerHTML = `
+    <div class="prompt-grid">
+      <div>
+        <div class="h" style="font-weight:600;font-size:13px;color:var(--blue-deep);margin-bottom:10px;letter-spacing:.03em;text-transform:uppercase;font-family:'Outfit';">Components</div>
+        <div class="pa-blocks" id="pa-blocks"></div>
+      </div>
+      <div>
+        <div class="h" style="font-weight:600;font-size:13px;color:var(--blue-deep);margin-bottom:10px;letter-spacing:.03em;text-transform:uppercase;font-family:'Outfit';">Your prompt</div>
+        <div class="pa-preview">
+          <div class="pa-prompt-out" id="pa-out"></div>
+          <div class="pa-score">
+            <span class="label">Quality</span>
+            <div class="bar"><div class="f" id="pa-bar" style="width:0%"></div></div>
+            <span class="val"><span id="pa-pct">0</span> / 100</span>
+            <button class="pa-reset" onclick="pa_reset()">Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  const COMPONENTS = [
+    { id:'role', cls:'role', glyph:'R', t:'Role', s:'Tell the model who to be.', text:'You are an expert academic editor with a sharp eye for OR/MS scholarly writing.' },
+    { id:'task', cls:'task', glyph:'T', t:'Task', s:'The actual job to do.', text:'Edit the following paragraph for clarity, concision, and academic tone.' },
+    { id:'context', cls:'context', glyph:'C', t:'Context', s:'What it needs to know.', text:'The paragraph appears in the introduction of a paper on cancer screening adherence modeling.' },
+    { id:'format', cls:'format', glyph:'F', t:'Format', s:'How the answer should look.', text:'Return the edited paragraph first, then 3 bullet points listing the most important changes you made.' },
+    { id:'examples', cls:'examples', glyph:'E', t:'Examples', s:'Show what good looks like.', text:'Example before: "It is shown that..." After: "We show that..." (Use the active voice.)' }
+  ];
+  window.pa_state = { added: [] };
+  window.pa_reset = () => { window.pa_state.added = []; rebuild(); };
+  function rebuild() {
+    $('pa-blocks').innerHTML = COMPONENTS.map(c => {
+      const added = window.pa_state.added.includes(c.id);
+      return `<div class="pa-block ${c.cls} ${added?'added':''}" data-id="${c.id}">
+        <div class="ico">${c.glyph}</div>
+        <div class="info"><div class="t">${c.t}</div><div class="s">${c.s}</div></div>
+      </div>`;
+    }).join('');
+    document.querySelectorAll('.pa-block').forEach(b => {
+      b.addEventListener('click', () => {
+        const id = b.dataset.id;
+        if (!window.pa_state.added.includes(id)) window.pa_state.added.push(id);
+        rebuild();
+      });
+    });
+    const order = ['role','task','context','format','examples'];
+    const text = window.pa_state.added.sort((a,b) => order.indexOf(a)-order.indexOf(b))
+      .map(id => COMPONENTS.find(c=>c.id===id))
+      .map(c => `[${c.t.toUpperCase()}]\n${c.text}`).join('\n\n');
+    if (text) $('pa-out').textContent = text;
+    else $('pa-out').innerHTML = `<div class="pa-empty">Click a component to add it. Watch the quality score climb.</div>`;
+    const pct = Math.min(100, window.pa_state.added.length * 20);
+    $('pa-bar').style.width = pct + '%';
+    $('pa-pct').textContent = pct;
+  }
+  rebuild();
+}
+
+/* ============================================================
+   TOOL: CHAIN VISUALIZER (M04) — stub for now
+   ============================================================ */
+function renderChainViz() {
+  $('tool-body').innerHTML = `<div class="stub-hero"><svg><use href="#i-chain"/></svg><h3>Chain Visualizer — Under Construction</h3><p>The visual pipeline builder is being rebuilt with the new design system. Drop in PromptTemplate, ChatModel, OutputParser nodes and run them end-to-end.</p></div>`;
+}
+
+/* ============================================================
+   TOOL: CHUNKING (M05) — stub
+   ============================================================ */
+function renderChunking() {
+  $('tool-body').innerHTML = `<div class="stub-hero"><svg><use href="#i-grid"/></svg><h3>Text Chunking Lab — Coming Soon</h3><p>Drag chunk-size and overlap sliders, see boundaries highlight in real time on a sample document.</p></div>`;
+}
+
+/* ============================================================
+   TOOL: EMBEDDING SPACE EXPLORER (M05)
+   ============================================================ */
+function renderEmbeddings() {
+  $('tool-body').innerHTML = `
+    <div class="emb-canvas">
+      <div class="emb-scatter" id="emb-scatter">
+        <div class="emb-legend">
+          <div class="item"><span class="swatch" style="background:#0055D4"></span>Tech</div>
+          <div class="item"><span class="swatch" style="background:#D4A017"></span>Food</div>
+          <div class="item"><span class="swatch" style="background:#5C7A4A"></span>Sports</div>
+          <div class="item"><span class="swatch" style="background:#7C3AED"></span>Weather</div>
+        </div>
+      </div>
+      <div class="emb-detail" id="emb-detail">
+        <div class="h">Click any dot</div>
+        <div class="s">Each dot is a real sentence embedding (text-embedding-3-small) projected to 2-D. Sentences with related meaning end up near each other.</div>
+      </div>
+    </div>`;
+  const SENT = [
+    {t:'tech', c:'#0055D4', s:'GPUs accelerate neural network training.'},
+    {t:'tech', c:'#0055D4', s:'Cloud computing enables elastic scaling.'},
+    {t:'tech', c:'#0055D4', s:'Transformers replaced RNNs for most language tasks.'},
+    {t:'tech', c:'#0055D4', s:'Quantum computers use qubits not bits.'},
+    {t:'food', c:'#D4A017', s:'Sourdough relies on wild yeast fermentation.'},
+    {t:'food', c:'#D4A017', s:'Sushi rice needs the right vinegar ratio.'},
+    {t:'food', c:'#D4A017', s:'Sicilian cannoli are filled just before serving.'},
+    {t:'food', c:'#D4A017', s:'Espresso pulls best between 27 and 32 seconds.'},
+    {t:'sports', c:'#5C7A4A', s:'Marathon training peaks 3 weeks before race day.'},
+    {t:'sports', c:'#5C7A4A', s:'Climbers route harder grades on volcanic rock.'},
+    {t:'sports', c:'#5C7A4A', s:'Soccer formations balance pressing and structure.'},
+    {t:'sports', c:'#5C7A4A', s:'Olympic divers earn higher scores on entries with no splash.'},
+    {t:'weather', c:'#7C3AED', s:'Hurricanes strengthen over warm ocean water.'},
+    {t:'weather', c:'#7C3AED', s:'Snowflakes form when ice crystals grow on cloud nuclei.'},
+    {t:'weather', c:'#7C3AED', s:'Heat domes block storm systems for days.'},
+    {t:'weather', c:'#7C3AED', s:'Tropical thunderstorms peak in late afternoon.'}
+  ];
+  const seed = 17;
+  function rnd(i) { return ((Math.sin(i*seed) + 1) * 0.5); }
+  const dots = SENT.map((s, i) => {
+    const cluster = {tech:[20,28], food:[72,30], sports:[30,72], weather:[78,72]}[s.t];
+    return { ...s, x: cluster[0] + (rnd(i*3)-0.5)*22, y: cluster[1] + (rnd(i*7)-0.5)*22 };
+  });
+  const scatter = $('emb-scatter');
+  dots.forEach((d, i) => {
+    const el = document.createElement('div');
+    el.className = 'emb-dot';
+    el.style.left = d.x + '%';
+    el.style.top = d.y + '%';
+    el.style.background = d.c;
+    el.dataset.idx = i;
+    el.title = d.s;
+    el.addEventListener('click', () => selectDot(i));
+    scatter.appendChild(el);
+  });
+  function selectDot(i) {
+    document.querySelectorAll('.emb-dot').forEach(e => e.classList.remove('near'));
+    const me = dots[i];
+    const sorted = dots.map((d, j) => ({ j, dist: Math.hypot(d.x-me.x, d.y-me.y) })).filter(x => x.j !== i).sort((a,b)=>a.dist-b.dist).slice(0,3);
+    sorted.forEach(s => document.querySelectorAll('.emb-dot')[s.j].classList.add('near'));
+    document.querySelectorAll('.emb-dot')[i].classList.add('near');
+    $('emb-detail').innerHTML = `
+      <div class="h">Selected</div>
+      <div class="s">${me.s}</div>
+      <div class="h" style="margin-top:10px;">3 Nearest Neighbors</div>
+      <div class="s">${sorted.map(s => '· ' + dots[s.j].s).join('<br>')}</div>`;
+  }
+}
+
+/* ============================================================
+   TOOL: REACT TRACE PLAYER (M06)
+   ============================================================ */
+function renderReact() {
+  $('tool-body').innerHTML = `
+    <div class="react-controls">
+      <button class="react-btn" onclick="rx_back()" title="Restart"><svg><use href="#i-skip-back"/></svg></button>
+      <button class="react-btn play" id="rx-play" onclick="rx_play()"><svg><use href="#i-play"/></svg></button>
+      <button class="react-btn" onclick="rx_fwd()" title="Step"><svg><use href="#i-skip-fwd"/></svg></button>
+      <div class="react-progress">
+        <span class="step-n" id="rx-step">Step 0 / 8</span>
+        <input type="range" id="rx-range" min="0" max="8" step="1" value="0">
+      </div>
+    </div>
+    <div id="rx-out"></div>`;
+  window.RX = [
+    { kind:'thought', t:'I need two numbers: Brazil\'s population and Australia\'s. Let me look up Brazil first.' },
+    { kind:'action', t:'search("population of Brazil 2024")' },
+    { kind:'observation', t:'~211 million people (UN World Population Prospects, 2024 revision).' },
+    { kind:'thought', t:'Got it. Now I need Australia.' },
+    { kind:'action', t:'search("population of Australia 2024")' },
+    { kind:'observation', t:'~27 million people (ABS, mid-2024).' },
+    { kind:'thought', t:'Divide. 211 / 27 ≈ 7.8.' },
+    { kind:'final', t:'Brazil\'s population is about 7.8× larger than Australia\'s (211M vs 27M, mid-2024 estimates).' }
+  ];
+  window.rx_step = 0; window.rx_int = null;
+  window.rx_back = () => { window.rx_step = 0; paint(); };
+  window.rx_fwd = () => { if (window.rx_step < RX.length) window.rx_step++; paint(); };
+  window.rx_play = () => {
+    if (window.rx_int) { clearInterval(window.rx_int); window.rx_int = null; $('rx-play').innerHTML = '<svg><use href="#i-play"/></svg>'; return; }
+    $('rx-play').innerHTML = '<svg><use href="#i-pause"/></svg>';
+    window.rx_int = setInterval(() => {
+      if (window.rx_step >= RX.length) { clearInterval(window.rx_int); window.rx_int = null; $('rx-play').innerHTML = '<svg><use href="#i-play"/></svg>'; return; }
+      window.rx_step++; paint();
+    }, 1100);
+  };
+  $('rx-range').addEventListener('input', e => { window.rx_step = parseInt(e.target.value); paint(); });
+  function paint() {
+    $('rx-step').textContent = `Step ${window.rx_step} / ${RX.length}`;
+    $('rx-range').value = window.rx_step;
+    $('rx-out').innerHTML = RX.slice(0, window.rx_step).map(s => `<div class="react-step ${s.kind}"><div class="lbl">${s.kind === 'final' ? 'Final Answer' : s.kind}</div><div class="txt">${s.t}</div></div>`).join('');
+  }
+  paint();
+}
+
+/* ============================================================
+   TOOL: PROMPT INJECTION LAB (M11)
+   ============================================================ */
+function renderInjection() {
+  $('tool-body').innerHTML = `
+    <div class="inj-grid">
+      <div class="bot-card vuln" id="bot-v">
+        <div class="bot-icon"><svg><use href="#i-skull"/></svg></div>
+        <h3>Vulnerable Bot</h3>
+        <p>No defenses. Pasted text is treated as instructions.</p>
+        <div class="bot-score-lbl">Breached</div>
+        <div class="bot-score"><span id="vs">0</span> / 10</div>
+        <button class="fire-btn v" id="fire-v" disabled>Fire at Vulnerable</button>
+      </div>
+      <div class="bot-card hard" id="bot-h">
+        <div class="bot-icon"><svg><use href="#i-shield-check"/></svg></div>
+        <h3>Hardened Bot</h3>
+        <p>Delimiter isolation + system reinforcement.</p>
+        <div class="bot-score-lbl">Breached</div>
+        <div class="bot-score"><span id="hs">0</span> / 10</div>
+        <button class="fire-btn h" id="fire-h" disabled>Fire at Hardened</button>
+      </div>
+    </div>
+    <div class="deck-title"><h4>Attack Deck</h4><small>Pick a card. Then fire it under either bot.</small></div>
+    <div class="attack-deck" id="atk-deck"></div>
+    <div class="hall" id="hall" style="display:none;"><h5>🏆 Hall of Fame — Hardened-bot breaches</h5><div class="hall-list" id="hall-list"></div></div>`;
+  const ATTACKS = [
+    {id:1, tier:'easy', n:'Direct override', d:'Tell the bot to ignore prior instructions.'},
+    {id:2, tier:'easy', n:'Role hijack', d:'Claim admin or developer mode.'},
+    {id:3, tier:'med', n:'Fake conversation', d:'Pretend the assistant already complied.'},
+    {id:4, tier:'med', n:'End-of-doc trick', d:'Claim the document ended; new instructions follow.'},
+    {id:5, tier:'med', n:'Language switch', d:'Hide instructions in another language.'},
+    {id:6, tier:'med', n:'Chained refusal', d:'Tell the bot to refuse the safety check.'},
+    {id:7, tier:'hard', n:'Encoded instructions', d:'Base64 the payload to evade keyword filters.'},
+    {id:8, tier:'hard', n:'Multi-step distraction', d:'Long benign preamble then injection.'},
+    {id:9, tier:'hard', n:'Fake system tag', d:'Wrap injection in fake system delimiters.'},
+    {id:10, tier:'hard', n:'Invisible unicode', d:'Zero-width chars to hide instructions.'}
+  ];
+  window.IL = { sel: null, vScore:0, hScore:0, hall:[] };
+  $('atk-deck').innerHTML = ATTACKS.map(a => `
+    <div class="attack-card" data-id="${a.id}">
+      <div class="tier ${a.tier}">${a.tier.toUpperCase()}</div>
+      <div class="a-name">${a.n}</div>
+      <div class="a-desc">${a.d}</div>
+    </div>`).join('');
+  document.querySelectorAll('.attack-card').forEach(c => c.addEventListener('click', () => {
+    document.querySelectorAll('.attack-card').forEach(x => x.classList.remove('selected'));
+    c.classList.add('selected');
+    window.IL.sel = ATTACKS.find(a => a.id === parseInt(c.dataset.id));
+    $('fire-v').disabled = false;
+    $('fire-h').disabled = false;
+  }));
+  function fire(target) {
+    if (!window.IL.sel) return;
+    const a = window.IL.sel;
+    const bot = $('bot-'+target);
+    const isHard = target === 'h';
+    const easy = a.tier === 'easy';
+    const hard = a.tier === 'hard';
+    const breachProb = isHard ? (easy ? 0.05 : hard ? 0.4 : 0.18) : (easy ? 0.95 : hard ? 0.75 : 0.85);
+    const breached = Math.random() < breachProb;
+    bot.classList.remove('breached','defended');
+    void bot.offsetWidth;
+    if (breached) {
+      bot.classList.add('breached');
+      if (isHard) { window.IL.hScore = Math.min(10, window.IL.hScore + 1); window.IL.hall.push(a.n); }
+      else { window.IL.vScore = Math.min(10, window.IL.vScore + 1); }
+    } else {
+      bot.classList.add('defended');
+    }
+    $('vs').textContent = window.IL.vScore;
+    $('hs').textContent = window.IL.hScore;
+    if (window.IL.hall.length) {
+      $('hall').style.display = '';
+      $('hall-list').innerHTML = [...new Set(window.IL.hall)].map(n => `<span class="hall-pill">${n}</span>`).join('');
+    }
+  }
+  $('fire-v').addEventListener('click', () => fire('v'));
+  $('fire-h').addEventListener('click', () => fire('h'));
+}
+
+/* ============================================================
+   GENERIC STUB
+   ============================================================ */
+function renderStub() {
+  $('tool-body').innerHTML = `<div class="stub-hero"><svg><use href="#i-construction"/></svg><h3>Coming Soon</h3><p>This tool is being rebuilt with the new design system.</p></div>`;
+}
+
+function applyHash() {
+  const h = location.hash.replace(/^#/, '');
+  if (!h) { window.AUTO_FILL = false; render(); return; }
+  const params = Object.fromEntries(h.split('&').map(p => p.split('=')));
+  window.AUTO_FILL = params.auto === '1';
+  if (params.tool) {
+    const found = findTool(params.tool);
+    if (found) {
+      view = { kind: 'tool', n: found.module.n, toolId: params.tool };
+      render();
+      if (window.AUTO_FILL) setTimeout(autoFillCurrent, 60);
+      return;
+    }
+  }
+  if (params.module) {
+    const n = parseInt(params.module, 10);
+    if (n >= 1 && n <= MODULES.length) { view = { kind: 'module', n, toolId: null }; render(); return; }
+  }
+  render();
+}
+function autoFillCurrent() {
+  if (view.kind !== 'tool') return;
+  const id = view.toolId;
+  if (id === 'prompt-anatomy') {
+    ['role','task','context','format','examples'].forEach(blockId => {
+      const b = document.querySelector('.pa-block[data-id="'+blockId+'"]');
+      if (b) b.click();
+    });
+  } else if (id === 'react-player') {
+    if (window.RX && typeof window.rx_step !== 'undefined') {
+      window.rx_step = window.RX.length;
+      const range = document.getElementById('rx-range');
+      if (range) { range.value = window.RX.length; range.dispatchEvent(new Event('input')); }
+    }
+  } else if (id === 'injection') {
+    const fv = document.getElementById('fire-v');
+    if (fv) { fv.click(); fv.click(); fv.click(); }
+    const fh = document.getElementById('fire-h');
+    if (fh) { fh.click(); }
+  } else if (id === 'temperature') {
+    const slider = document.querySelector('input[type="range"]');
+    if (slider) { slider.value = 1.2; slider.dispatchEvent(new Event('input')); }
+  }
+}
+window.addEventListener('hashchange', applyHash);
+applyHash();
+</script>
+</body>
+</html>
