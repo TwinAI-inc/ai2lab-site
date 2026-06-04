@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Module 7 · MACRS Schedule Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf9f5; --paper: #ffffff; --ink: #1a1a1a; --muted: #5a5247; --soft: #8b7355;
+    --border: #e8e3d4; --line: #d4cfc0;
+    --gold: #b8860b; --gold-deep: #8a6608; --gold-soft: #faf3e0;
+    --olive: #5c7a4a; --olive-deep: #455d36; --olive-soft: #f0f4ea;
+    --crimson: #8a2828; --crimson-deep: #6b1e1e; --crimson-soft: #fdf2f3;
+    --teal: #0e7c80; --teal-deep: #0a5e62; --teal-soft: #e6f4f4;
+    --purple: #7c3aed; --purple-soft: #f3eeff;
+  }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: 'Outfit', -apple-system, system-ui, sans-serif; font-size: 13px; line-height: 1.45;
+    overflow: hidden;
+  }
+  .app {
+    height: 100vh; display: flex; flex-direction: column;
+    max-width: 1500px; margin: 0 auto; padding: 10px 18px; gap: 8px;
+  }
+
+  .head {
+    flex-shrink: 0;
+    display: flex; justify-content: space-between; align-items: center; gap: 14px;
+    padding: 8px 16px; background: var(--paper); border: 1px solid var(--border);
+    border-radius: 10px; border-top: 3px solid var(--purple); flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .brand .code { font-size: 10px; color: var(--purple); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; }
+  .brand h1 { font-family: 'Lora', Georgia, serif; font-size: 18px; font-weight: 700; line-height: 1; }
+  .brand h1 em { font-style: italic; color: var(--purple); font-weight: 400; }
+  .brand .tag { font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted); }
+  .head .nav { display: flex; gap: 6px; }
+  .head .nav a {
+    font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft); text-decoration: none; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px;
+    transition: all 0.15s; background: var(--paper);
+  }
+  .head .nav a:hover { color: var(--purple); border-color: var(--purple); background: var(--purple-soft); }
+
+  /* CLASS TABS */
+  .class-tabs {
+    flex-shrink: 0;
+    background: var(--paper); border: 1px solid var(--border); border-radius: 10px;
+    padding: 9px 14px;
+    display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center;
+  }
+  @media (max-width: 900px) { .class-tabs { grid-template-columns: 1fr; } }
+  .class-tabs .label {
+    font-family: 'Outfit', sans-serif; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700;
+    color: var(--purple); line-height: 1.2;
+  }
+  .class-tabs .tabs {
+    display: flex; gap: 5px; flex-wrap: wrap;
+  }
+  .class-tab {
+    padding: 6px 11px; border-radius: 7px; cursor: pointer;
+    background: var(--paper); border: 1.5px solid var(--border);
+    font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 700; color: var(--muted);
+    letter-spacing: 0.04em;
+    transition: all 0.15s;
+  }
+  .class-tab:hover { color: var(--purple); border-color: var(--purple); }
+  .class-tab.active {
+    background: var(--purple); color: #fff; border-color: var(--purple);
+    box-shadow: 0 3px 10px rgba(124,58,237,0.32);
+  }
+
+  /* COST + COMPARE */
+  .cost-block {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .cost-block .basis-input {
+    display: flex; align-items: center; gap: 5px;
+    padding: 5px 11px; background: var(--bg); border: 1px solid var(--border); border-radius: 7px;
+  }
+  .cost-block .basis-input label {
+    font-family: 'Outfit', sans-serif; font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    color: var(--purple);
+  }
+  .cost-block input[type=number] {
+    width: 95px; padding: 3px 7px;
+    border: 1px solid var(--border); border-radius: 5px;
+    font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; color: var(--ink);
+    background: #fff; outline: none; text-align: right;
+  }
+  .cost-block input[type=number]:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
+  .cost-block .compare-toggle {
+    display: flex; align-items: center; gap: 7px;
+    padding: 5px 11px;
+    background: var(--purple-soft); border: 1px solid var(--purple); border-radius: 7px;
+    cursor: pointer; user-select: none;
+    font-family: 'Outfit', sans-serif; font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700;
+    color: var(--purple);
+  }
+  .cost-block .switch {
+    width: 28px; height: 15px; background: var(--paper); border: 1px solid var(--purple); border-radius: 999px;
+    position: relative; transition: all 0.2s;
+  }
+  .cost-block .switch::after {
+    content: ''; position: absolute; left: 1px; top: 1px;
+    width: 11px; height: 11px; border-radius: 50%; background: var(--purple);
+    transition: transform 0.2s ease;
+  }
+  .cost-block .compare-toggle.on .switch { background: var(--purple); }
+  .cost-block .compare-toggle.on .switch::after { transform: translateX(13px); background: #fff; }
+
+  /* MAIN */
+  .main {
+    flex: 1; min-height: 0;
+    display: grid; grid-template-columns: 1.55fr 1fr; gap: 10px;
+  }
+  @media (max-width: 980px) {
+    .main { grid-template-columns: 1fr; }
+    html, body { overflow: auto; } .app { height: auto; }
+  }
+
+  /* CHART panel */
+  .chart-panel {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 16px;
+    display: flex; flex-direction: column; min-height: 0;
+  }
+  .chart-head {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+    padding-bottom: 7px; border-bottom: 1px solid var(--border); margin-bottom: 8px;
+  }
+  .chart-head h3 { font-family: 'Lora', serif; font-size: 16px; font-weight: 700; }
+  .chart-head h3 em { font-style: italic; color: var(--purple); }
+  .chart-head .meta {
+    font-family: 'Outfit', sans-serif; font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft);
+  }
+  .chart-wrap { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .chart-wrap svg { flex: 1; min-height: 0; width: 100%; }
+
+  .legend {
+    display: flex; gap: 14px; flex-wrap: wrap; margin-top: 4px;
+    font-family: 'Outfit', sans-serif; font-size: 11px;
+  }
+  .legend .it { display: inline-flex; align-items: center; gap: 5px; color: var(--muted); }
+  .legend .sw { width: 12px; height: 12px; border-radius: 3px; }
+  .legend strong { color: var(--ink); font-weight: 700; }
+
+  /* SIDE panel — class details */
+  .side-panel {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 16px;
+    display: flex; flex-direction: column; gap: 10px; min-height: 0; overflow: hidden;
+  }
+  .class-card {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 9px;
+    padding: 11px 14px;
+    border-left: 3px solid var(--purple);
+  }
+  .class-card .ttl-row {
+    display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap; margin-bottom: 5px;
+  }
+  .class-card .ttl-row .badge {
+    font-family: 'Outfit', sans-serif; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+    padding: 2px 8px; background: var(--purple); color: #fff; border-radius: 999px;
+  }
+  .class-card h2 {
+    font-family: 'Lora', serif; font-size: 19px; font-weight: 700; line-height: 1.1;
+  }
+  .class-card h2 em { font-style: italic; color: var(--purple); }
+  .class-card .one-line {
+    font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted); line-height: 1.4;
+    margin-top: 3px;
+  }
+
+  .meta-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+  }
+  .meta-item {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 7px;
+    padding: 7px 10px;
+  }
+  .meta-item .l {
+    font-family: 'Outfit', sans-serif; font-size: 8.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+    color: var(--purple);
+  }
+  .meta-item .v {
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: var(--ink); margin-top: 1px;
+  }
+
+  .examples {
+    background: var(--bg); border: 1px dashed var(--line); border-radius: 8px;
+    padding: 9px 12px;
+  }
+  .examples .h {
+    font-family: 'Outfit', sans-serif; font-size: 8.5px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft); margin-bottom: 3px;
+  }
+  .examples p {
+    font-family: 'Lora', serif; font-size: 12px; color: var(--ink); line-height: 1.5;
+  }
+  .examples p b { color: var(--purple); font-weight: 700; }
+
+  /* Year-by-year table */
+  .table-wrap {
+    flex: 1; min-height: 0; overflow-y: auto;
+    background: var(--paper); border: 1px solid var(--border); border-radius: 8px;
+    padding: 0;
+  }
+  table.macrs {
+    width: 100%; border-collapse: collapse;
+    font-family: 'JetBrains Mono', monospace; font-size: 11.5px;
+  }
+  table.macrs thead th {
+    position: sticky; top: 0;
+    background: var(--bg);
+    font-family: 'Outfit', sans-serif; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft);
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--border);
+    text-align: right;
+  }
+  table.macrs thead th:first-child { text-align: center; }
+  table.macrs thead th.purple-col { color: var(--purple); }
+  table.macrs tbody td {
+    padding: 5px 8px;
+    border-bottom: 1px dotted var(--line);
+    text-align: right;
+    color: var(--ink); font-weight: 600;
+  }
+  table.macrs tbody td:first-child {
+    text-align: center; font-weight: 700; color: var(--muted);
+  }
+  table.macrs tbody td.purple { color: var(--purple); font-weight: 700; }
+  table.macrs tfoot td {
+    padding: 6px 8px;
+    border-top: 2px solid var(--border);
+    text-align: right;
+    font-family: 'Outfit', sans-serif; font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft);
+  }
+  table.macrs tfoot td.purple-col { color: var(--purple); }
+  table.macrs tfoot td .total { font-family: 'Lora', serif; font-style: italic; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <header class="head">
+    <div class="brand">
+      <span class="code">IE 4512 · Module 7</span>
+      <h1>MACRS · <em>Schedule Explorer</em></h1>
+      <span class="tag">nine property classes, one table</span>
+    </div>
+    <nav class="nav">
+      <a href="index.html#module-7">← Module 7</a>
+      <a href="m7-three-assets.html">Three Stories</a>
+      <a href="m7-boeing-sln-vs-ddb.html">Boeing SLN/DDB</a>
+    </nav>
+  </header>
+
+  <!-- CLASS TABS -->
+  <section class="class-tabs">
+    <span class="label">Class</span>
+    <div class="tabs" id="class-tabs">
+      <!-- populated by JS -->
+    </div>
+    <div class="cost-block">
+      <div class="basis-input">
+        <label>Cost basis $</label>
+        <input type="number" id="basis" min="100" max="10000000" step="100" value="100000">
+      </div>
+      <div class="compare-toggle" id="compare">
+        <div class="switch"></div>
+        <span>Compare SLN &amp; DDB</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="main">
+
+    <!-- Chart panel -->
+    <div class="chart-panel">
+      <div class="chart-head">
+        <h3>Year-by-year <em>percentage</em></h3>
+        <span class="meta" id="recovery-note">200% DB · HY convention</span>
+      </div>
+      <div class="chart-wrap">
+        <svg id="macrs-svg" viewBox="0 0 800 380" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"></svg>
+        <div class="legend" id="legend">
+          <div class="it"><div class="sw" style="background:var(--purple)"></div><strong>MACRS</strong></div>
+          <div class="it compare-only" style="display:none"><div class="sw" style="background:var(--gold)"></div><strong>SLN</strong></div>
+          <div class="it compare-only" style="display:none"><div class="sw" style="background:var(--olive)"></div><strong>DDB</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Side panel -->
+    <div class="side-panel">
+      <div class="class-card">
+        <div class="ttl-row">
+          <span class="badge" id="badge">5-year</span>
+          <h2 id="class-title">5-yr · <em>200% DB</em></h2>
+        </div>
+        <div class="one-line" id="one-liner">—</div>
+      </div>
+
+      <div class="meta-grid">
+        <div class="meta-item"><div class="l">Recovery</div><div class="v" id="m-recovery">200% DB → SLN</div></div>
+        <div class="meta-item"><div class="l">Convention</div><div class="v" id="m-convention">Half-year</div></div>
+        <div class="meta-item"><div class="l">Total years</div><div class="v" id="m-total-years">6</div></div>
+        <div class="meta-item"><div class="l">Switch year</div><div class="v" id="m-switch">Yr 4</div></div>
+      </div>
+
+      <div class="examples">
+        <div class="h">Typical assets</div>
+        <p id="examples-text">Computers, copiers, light trucks, autos, office equipment, research and experimental property.</p>
+      </div>
+
+      <div class="table-wrap">
+        <table class="macrs">
+          <thead>
+            <tr>
+              <th>yr</th>
+              <th class="purple-col">MACRS %</th>
+              <th class="purple-col">Deduction</th>
+              <th class="purple-col">Book value</th>
+            </tr>
+          </thead>
+          <tbody id="dep-tbody"></tbody>
+          <tfoot>
+            <tr>
+              <td>Σ</td>
+              <td class="purple-col">100.00%</td>
+              <td class="purple-col"><span class="total" id="total-amt">$—</span></td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  // ===== MACRS data — IRS Pub 946 Table A-1 (half-year convention, 200%/150% DB) =====
+  const CLASSES = {
+    '3':    { name: '3-year', method: '200% DB → SLN', conv: 'Half-year', switchYear: 3,
+              pct: [33.33, 44.45, 14.81, 7.41],
+              examples: 'Rent-to-own property, special handling devices, tractor units for over-the-road use, race horses (older than 2), breeding hogs.',
+              oneLine: 'Short-life equipment that loses most of its value in the first three calendar years.' },
+    '5':    { name: '5-year', method: '200% DB → SLN', conv: 'Half-year', switchYear: 4,
+              pct: [20.00, 32.00, 19.20, 11.52, 11.52, 5.76],
+              examples: 'Computers, copiers, light trucks, autos, office equipment, research and experimental property, manufacturing equipment.',
+              oneLine: 'The workhorse class — most business equipment lands here.' },
+    '7':    { name: '7-year', method: '200% DB → SLN', conv: 'Half-year', switchYear: 5,
+              pct: [14.29, 24.49, 17.49, 12.49, 8.93, 8.92, 8.93, 4.46],
+              examples: 'Office furniture and fixtures, agricultural machinery, single-purpose agricultural structures, railroad track, commercial aircraft.',
+              oneLine: 'Heavier equipment with longer useful lives. Office furniture, not airplanes.' },
+    '10':   { name: '10-year', method: '200% DB → SLN', conv: 'Half-year', switchYear: 7,
+              pct: [10.00, 18.00, 14.40, 11.52, 9.22, 7.37, 6.55, 6.55, 6.56, 6.55, 3.28],
+              examples: 'Vessels, barges, tugs, water transport equipment, certain agricultural structures, single-purpose horticultural structures.',
+              oneLine: 'Longer-life industrial equipment, often marine or agricultural.' },
+    '15':   { name: '15-year', method: '150% DB → SLN', conv: 'Half-year', switchYear: 7,
+              pct: [5.00, 9.50, 8.55, 7.70, 6.93, 6.23, 5.90, 5.90, 5.91, 5.90, 5.91, 5.90, 5.91, 5.90, 5.91, 2.95],
+              examples: 'Qualified improvement property (QIP), restaurant property, retail improvements, land improvements (parking lots, fences, sidewalks), municipal sewers.',
+              oneLine: 'Land improvements and qualified building improvements. The 150% DB rate slows it down.' },
+    '20':   { name: '20-year', method: '150% DB → SLN', conv: 'Half-year', switchYear: 9,
+              pct: [3.750, 7.219, 6.677, 6.177, 5.713, 5.285, 4.888, 4.522, 4.462, 4.461, 4.462, 4.461, 4.462, 4.461, 4.462, 4.461, 4.462, 4.461, 4.462, 4.461, 2.231],
+              examples: 'Farm buildings (other than single-purpose), certain electric, gas, water and steam utility property, municipal sewers.',
+              oneLine: 'Farm buildings and utility infrastructure. Long horizon, slow recovery.' },
+    '27.5': { name: '27.5-year', method: 'Straight-line', conv: 'Mid-month', switchYear: null,
+              pct: null,
+              examples: 'Residential rental property — apartment buildings, rental houses, mobile home parks. Anything where >80% of gross rental income comes from dwelling units.',
+              oneLine: 'Residential rental. Straight-line with mid-month convention. No switching.' },
+    '39':   { name: '39-year', method: 'Straight-line', conv: 'Mid-month', switchYear: null,
+              pct: null,
+              examples: 'Nonresidential real property placed in service after May 12, 1993 — office buildings, retail, factories, hotels, warehouses, restaurants.',
+              oneLine: 'Commercial real estate. The slowest depreciation in the tax code.' },
+    '50':   { name: '50-year', method: 'Straight-line', conv: 'Half-year', switchYear: null,
+              pct: null,
+              examples: 'Certain railroad grading and tunnel bores. Mostly historical — rarely used in practice.',
+              oneLine: 'Railroad grading. You almost certainly will not depreciate anything under this class.' }
+  };
+
+  // For SLN-only classes (27.5, 39, 50), generate the table dynamically
+  function generateSLNTable(life, conv) {
+    // Mid-month: first year and last year get partial; middle years are full
+    // Simplified: assume placed in service mid-year (month 6.5)
+    // For 27.5: 100/27.5 ≈ 3.636% middle; first year ≈ 3.485% (mid-Jul placement); last year fills to 100
+    // For 39: similar, first year ≈ 2.461% middle 2.564%; last year completes
+    // For 50 (half-year): first and last 50%, middle 100/50 = 2%
+    if (conv === 'Half-year') {
+      const n = life;
+      const fullYear = 100 / n;
+      const pct = [fullYear / 2];
+      for (let i = 1; i < n; i++) pct.push(fullYear);
+      pct.push(fullYear / 2);
+      return pct;
+    } else if (conv === 'Mid-month') {
+      // Assume placed in service in June (month 6) — half year = 6.5 / 12
+      const n = life;
+      const fullYear = 100 / n;
+      const firstYr = fullYear * (6.5 / 12);
+      const pct = [firstYr];
+      for (let i = 1; i < n; i++) pct.push(fullYear);
+      pct.push(fullYear - firstYr);
+      return pct;
+    }
+    return [];
+  }
+
+  // ===== State =====
+  let current = '5';
+  let basis = 100000;
+  let compareMode = false;
+
+  // ===== Render tabs =====
+  function renderTabs() {
+    const container = document.getElementById('class-tabs');
+    container.innerHTML = '';
+    Object.keys(CLASSES).forEach(k => {
+      const btn = document.createElement('div');
+      btn.className = 'class-tab' + (k === current ? ' active' : '');
+      btn.textContent = CLASSES[k].name;
+      btn.addEventListener('click', () => { current = k; renderAll(); });
+      container.appendChild(btn);
+    });
+  }
+
+  // ===== Get current class's percentages =====
+  function getPercentages() {
+    const cls = CLASSES[current];
+    if (cls.pct) return cls.pct.slice();
+    // Generate for SLN classes
+    return generateSLNTable(parseFloat(current), cls.conv);
+  }
+
+  // ===== Compute SLN and DDB comparison schedules for the same life =====
+  function computeSLN(life) {
+    const annual = 100 / life;
+    return Array(life).fill(annual);
+  }
+  function computeDDB(life) {
+    const rate = 2 / life;
+    let bv = 100;
+    const out = [];
+    for (let t = 0; t < life; t++) {
+      const d = Math.min(rate * bv, bv);
+      out.push(d);
+      bv -= d;
+    }
+    return out;
+  }
+
+  // ===== Render side panel =====
+  function renderSidePanel() {
+    const cls = CLASSES[current];
+    const pcts = getPercentages();
+    const totalYears = pcts.length;
+    document.getElementById('badge').textContent = cls.name;
+    document.getElementById('class-title').innerHTML =
+      `${cls.name} · <em>${cls.method.split(' →')[0]}</em>`;
+    document.getElementById('one-liner').textContent = cls.oneLine;
+    document.getElementById('m-recovery').textContent = cls.method;
+    document.getElementById('m-convention').textContent = cls.conv;
+    document.getElementById('m-total-years').textContent = totalYears;
+    document.getElementById('m-switch').textContent = cls.switchYear ? `Yr ${cls.switchYear}` : '—';
+    document.getElementById('examples-text').textContent = cls.examples;
+    document.getElementById('recovery-note').textContent = `${cls.method} · ${cls.conv}`;
+  }
+
+  // ===== Render table =====
+  function renderTable() {
+    const pcts = getPercentages();
+    const tbody = document.getElementById('dep-tbody');
+    let bv = basis;
+    let html = '';
+    pcts.forEach((p, i) => {
+      const deduction = basis * p / 100;
+      bv -= deduction;
+      html += `<tr>
+        <td>${i + 1}</td>
+        <td class="purple">${p.toFixed(p < 1 ? 3 : 2)}%</td>
+        <td>$${deduction.toLocaleString('en-US', {maximumFractionDigits: 0})}</td>
+        <td>$${Math.max(0, bv).toLocaleString('en-US', {maximumFractionDigits: 0})}</td>
+      </tr>`;
+    });
+    tbody.innerHTML = html;
+    document.getElementById('total-amt').textContent =
+      '$' + basis.toLocaleString('en-US', {maximumFractionDigits: 0});
+  }
+
+  // ===== Render chart =====
+  function renderChart() {
+    const svg = document.getElementById('macrs-svg');
+    const pcts = getPercentages();
+    const cls = CLASSES[current];
+    const W = 800, H = 380;
+    const padL = 56, padR = 24, padT = 22, padB = 50;
+    const x0 = padL, x1 = W - padR;
+    const y0 = padT, y1 = H - padB;
+
+    // For comparison mode, also compute SLN and DDB at the same nominal life
+    let life = parseFloat(current);
+    if (current === '27.5') life = 28;
+    if (current === '39') life = 39;
+    if (current === '50') life = 50;
+    const slnArr = compareMode ? computeSLN(life) : null;
+    const ddbArr = compareMode ? computeDDB(life) : null;
+
+    // Max y
+    const allVals = pcts.slice();
+    if (compareMode) {
+      slnArr.forEach(v => allVals.push(v));
+      ddbArr.forEach(v => allVals.push(v));
+    }
+    const maxY = Math.max(...allVals) * 1.12;
+
+    const n = pcts.length;
+    const totalGroups = compareMode ? Math.max(pcts.length, slnArr.length, ddbArr.length) : pcts.length;
+    const groupW = (x1 - x0) / totalGroups;
+    const barsPerGroup = compareMode ? 3 : 1;
+    const barW = (groupW * 0.84) / barsPerGroup;
+
+    let html = '';
+    // Axes
+    html += `<line x1="${x0}" y1="${y0}" x2="${x0}" y2="${y1}" stroke="#5a5247" stroke-width="0.9"/>`;
+    html += `<line x1="${x0}" y1="${y1}" x2="${x1}" y2="${y1}" stroke="#5a5247" stroke-width="0.9"/>`;
+
+    // Y ticks
+    const yTicks = 5;
+    for (let i = 0; i <= yTicks; i++) {
+      const v = (maxY * i) / yTicks;
+      const yy = y1 - ((v / maxY) * (y1 - y0));
+      html += `<line x1="${x0 - 4}" y1="${yy}" x2="${x0}" y2="${yy}" stroke="#5a5247" stroke-width="0.7"/>`;
+      html += `<text x="${x0 - 8}" y="${yy + 3}" text-anchor="end" font-family="Outfit,sans-serif" font-size="10" fill="#5a5247">${v.toFixed(1)}%</text>`;
+    }
+    html += `<text transform="translate(${x0 - 38},${(y0 + y1) / 2}) rotate(-90)" text-anchor="middle" font-family="Outfit,sans-serif" font-size="10" letter-spacing="0.16em" font-weight="700" fill="#8b7355">PERCENT</text>`;
+
+    // Bars + X labels
+    for (let i = 0; i < totalGroups; i++) {
+      const gx = x0 + groupW * i;
+      const cx = gx + groupW / 2;
+      // X label
+      const tickStep = totalGroups > 20 ? 2 : 1;
+      if (i % tickStep === 0) {
+        html += `<text x="${cx}" y="${y1 + 18}" text-anchor="middle" font-family="Outfit,sans-serif" font-size="10" fill="#5a5247">${i + 1}</text>`;
+      }
+      // MACRS bar
+      if (i < pcts.length) {
+        const p = pcts[i];
+        const h = (p / maxY) * (y1 - y0);
+        const bx = compareMode ? gx + groupW / 2 - barW * 1.5 : gx + groupW / 2 - barW / 2;
+        html += `<rect x="${bx}" y="${y1 - h}" width="${barW}" height="${h}" fill="#7c3aed" rx="2"/>`;
+        // Label on top
+        if (p > 1 && (i < 8 || p > maxY / 4)) {
+          html += `<text x="${bx + barW / 2}" y="${y1 - h - 4}" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9.5" font-weight="700" fill="#7c3aed">${p.toFixed(p < 1 ? 2 : 1)}</text>`;
+        }
+      }
+      // SLN + DDB bars
+      if (compareMode) {
+        if (i < slnArr.length) {
+          const p = slnArr[i];
+          const h = (p / maxY) * (y1 - y0);
+          const bx = gx + groupW / 2 - barW / 2;
+          html += `<rect x="${bx}" y="${y1 - h}" width="${barW}" height="${h}" fill="#b8860b" rx="2" opacity="0.85"/>`;
+        }
+        if (i < ddbArr.length) {
+          const p = ddbArr[i];
+          const h = (p / maxY) * (y1 - y0);
+          const bx = gx + groupW / 2 + barW / 2;
+          html += `<rect x="${bx}" y="${y1 - h}" width="${barW}" height="${h}" fill="#5c7a4a" rx="2" opacity="0.85"/>`;
+        }
+      }
+    }
+
+    html += `<text x="${(x0 + x1) / 2}" y="${H - 8}" text-anchor="middle" font-family="Outfit,sans-serif" font-size="10.5" letter-spacing="0.18em" font-weight="700" fill="#8b7355">YEAR · t</text>`;
+
+    svg.innerHTML = html;
+
+    // Show/hide compare legend items
+    document.querySelectorAll('.compare-only').forEach(el => {
+      el.style.display = compareMode ? 'inline-flex' : 'none';
+    });
+  }
+
+  function renderAll() {
+    renderTabs();
+    renderSidePanel();
+    renderTable();
+    renderChart();
+  }
+
+  // ===== Wire inputs =====
+  document.getElementById('basis').addEventListener('input', e => {
+    const v = parseFloat(e.target.value);
+    if (!isNaN(v) && v > 0) { basis = v; renderTable(); }
+  });
+  document.getElementById('compare').addEventListener('click', () => {
+    compareMode = !compareMode;
+    document.getElementById('compare').classList.toggle('on', compareMode);
+    renderChart();
+  });
+
+  renderAll();
+</script>
+
+</body>
+</html>

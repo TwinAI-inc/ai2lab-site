@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Module 7 · Half-Year Convention Visualizer</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf9f5; --paper: #ffffff; --ink: #1a1a1a; --muted: #5a5247; --soft: #8b7355;
+    --border: #e8e3d4; --line: #d4cfc0;
+    --gold: #b8860b; --gold-deep: #8a6608; --gold-soft: #faf3e0;
+    --olive: #5c7a4a; --olive-deep: #455d36; --olive-soft: #f0f4ea;
+    --crimson: #8a2828; --crimson-deep: #6b1e1e; --crimson-soft: #fdf2f3;
+    --teal: #0e7c80; --teal-deep: #0a5e62; --teal-soft: #e6f4f4;
+    --purple: #7c3aed;
+  }
+  html, body { min-height: 100%; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: 'Outfit', -apple-system, system-ui, sans-serif; font-size: 13px; line-height: 1.5;
+  }
+  .app {
+    min-height: 100vh; display: flex; flex-direction: column;
+    max-width: 1400px; margin: 0 auto; padding: 12px 22px 24px; gap: 10px;
+  }
+
+  .head {
+    flex-shrink: 0;
+    display: flex; justify-content: space-between; align-items: center; gap: 14px;
+    padding: 8px 16px; background: var(--paper); border: 1px solid var(--border);
+    border-radius: 10px; border-top: 3px solid var(--olive); flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .brand .code { font-size: 10px; color: var(--olive); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; }
+  .brand h1 { font-family: 'Lora', Georgia, serif; font-size: 18px; font-weight: 700; line-height: 1; }
+  .brand h1 em { font-style: italic; color: var(--olive); font-weight: 400; }
+  .brand .tag { font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted); }
+  .head .nav { display: flex; gap: 6px; }
+  .head .nav a {
+    font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft); text-decoration: none; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px;
+  }
+  .head .nav a:hover { color: var(--olive); border-color: var(--olive); background: var(--olive-soft); }
+
+  /* Convention selector */
+  .conv-row {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 16px;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  .conv-row .label {
+    font-family: 'Outfit', sans-serif; font-size: 9.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+    color: var(--olive-deep);
+  }
+  .conv-tab {
+    padding: 7px 13px; border-radius: 7px; cursor: pointer;
+    background: var(--paper); border: 1.5px solid var(--border);
+    font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 700; color: var(--muted);
+    transition: all 0.15s;
+  }
+  .conv-tab:hover { color: var(--olive-deep); border-color: var(--olive); }
+  .conv-tab.active {
+    background: var(--olive); color: #fff; border-color: var(--olive);
+    box-shadow: 0 3px 10px rgba(92,122,74,0.32);
+  }
+
+  /* Hero "drag the asset" timeline */
+  .timeline-card {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
+    padding: 18px 24px 22px;
+  }
+  .timeline-card h2 {
+    font-family: 'Lora', serif; font-size: 19px; font-weight: 700; line-height: 1.15;
+  }
+  .timeline-card h2 em { font-style: italic; color: var(--olive); }
+  .timeline-card .lede {
+    font-family: 'Lora', serif; font-style: italic; font-size: 13px; color: var(--muted); margin-top: 4px;
+    line-height: 1.5; max-width: 720px;
+  }
+  .timeline-card .lede b { color: var(--ink); font-style: normal; font-weight: 700; }
+
+  .yr-line {
+    position: relative; margin-top: 28px; height: 92px;
+  }
+  .yr-line .track {
+    position: absolute; left: 0; right: 0; top: 36px;
+    height: 18px;
+    background: linear-gradient(90deg, var(--olive-soft), var(--paper), var(--olive-soft));
+    border: 1px solid var(--olive); border-radius: 999px;
+    overflow: hidden;
+  }
+  .yr-line .quarter {
+    position: absolute; top: 0; bottom: 0; width: 25%;
+    border-left: 1px dashed rgba(92,122,74,0.4);
+  }
+  .yr-line .quarter:first-child { border-left: none; }
+  .yr-line .month-labels {
+    position: absolute; left: 0; right: 0; top: 60px;
+    display: grid; grid-template-columns: repeat(12, 1fr);
+    font-family: 'Outfit', sans-serif; font-size: 10px; color: var(--soft);
+    text-align: center;
+  }
+  .yr-line .month-labels span { font-weight: 700; }
+  .yr-line .placement-marker {
+    position: absolute; top: 30px; width: 28px; height: 30px;
+    transform: translateX(-14px);
+    background: var(--crimson); border: 2px solid var(--crimson-deep); border-radius: 6px;
+    cursor: grab; user-select: none;
+    box-shadow: 0 6px 16px rgba(138,40,40,0.34);
+    z-index: 5;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .yr-line .placement-marker::after {
+    content: '🛠'; font-size: 14px;
+  }
+  .yr-line .placement-marker:active { cursor: grabbing; }
+  .yr-line .placement-label {
+    position: absolute; top: 4px;
+    transform: translateX(-50%);
+    font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--crimson); white-space: nowrap;
+    background: var(--crimson-soft); padding: 2px 8px; border-radius: 999px; border: 1px solid var(--crimson);
+    pointer-events: none;
+    z-index: 6;
+  }
+  .yr-line .irs-marker {
+    position: absolute; top: 26px;
+    transform: translateX(-50%);
+    z-index: 4;
+  }
+  .yr-line .irs-marker .dot {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #fff; border: 3px solid var(--olive);
+    margin: 0 auto;
+  }
+  .yr-line .irs-marker .label {
+    font-family: 'Outfit', sans-serif; font-size: 10.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--olive-deep);
+    margin-top: 4px; text-align: center; white-space: nowrap;
+  }
+  .yr-line .leader {
+    position: absolute; top: 30px;
+    border-top: 2px dashed var(--olive);
+    transform-origin: left center;
+    height: 0; z-index: 3;
+    transition: all 0.35s ease;
+  }
+
+  /* Q tick + month tick labels above the bar */
+  .yr-line .q-marks {
+    position: absolute; left: 0; right: 0; top: 0;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+  }
+  .yr-line .q-marks .q {
+    font-family: 'Outfit', sans-serif; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+    color: var(--muted); text-align: center;
+  }
+
+  /* Outcome panel */
+  .outcome-grid {
+    display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 10px;
+  }
+  @media (max-width: 920px) { .outcome-grid { grid-template-columns: 1fr; } }
+
+  .outcome-panel {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 18px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .outcome-panel h3 {
+    font-family: 'Lora', serif; font-size: 15px; font-weight: 700;
+  }
+  .outcome-panel h3 em { font-style: italic; color: var(--olive); }
+  .outcome-panel .row {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+    border-left: 3px solid var(--olive);
+    padding: 9px 12px;
+  }
+  .outcome-panel .row .l {
+    font-family: 'Outfit', sans-serif; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+    color: var(--olive-deep);
+  }
+  .outcome-panel .row .v {
+    font-family: 'Lora', serif; font-style: italic; font-size: 18px; font-weight: 700; color: var(--ink);
+    margin-top: 2px;
+  }
+  .outcome-panel .row .desc {
+    font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted); line-height: 1.4;
+    margin-top: 2px;
+  }
+  .outcome-panel .row .desc b { color: var(--olive-deep); font-style: normal; font-weight: 700; }
+
+  /* Year-by-year preview */
+  .preview-table {
+    border-collapse: collapse; width: 100%;
+    font-family: 'JetBrains Mono', monospace; font-size: 11.5px;
+  }
+  .preview-table thead th {
+    font-family: 'Outfit', sans-serif; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700;
+    color: var(--olive-deep);
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--border);
+    text-align: right;
+  }
+  .preview-table thead th:first-child { text-align: center; }
+  .preview-table tbody td {
+    padding: 5px 8px;
+    border-bottom: 1px dotted var(--line);
+    text-align: right;
+    color: var(--ink); font-weight: 600;
+  }
+  .preview-table tbody td:first-child {
+    text-align: center; font-weight: 700; color: var(--muted);
+  }
+  .preview-table tbody td.olive { color: var(--olive-deep); font-weight: 700; }
+  .preview-table tbody tr.partial td { background: var(--olive-soft); }
+
+  .why-card {
+    background: linear-gradient(135deg, var(--olive-soft) 0%, #dfeacf 100%);
+    border: 1.5px solid var(--olive); border-radius: 10px;
+    padding: 14px 18px;
+  }
+  .why-card h4 {
+    font-family: 'Lora', serif; font-size: 15px; font-weight: 700; line-height: 1.2;
+  }
+  .why-card h4 em { font-style: italic; color: var(--olive-deep); }
+  .why-card p {
+    font-family: 'Lora', serif; font-size: 12.5px; color: var(--ink); line-height: 1.55;
+    margin-top: 6px;
+  }
+  .why-card p b { color: var(--olive-deep); font-weight: 700; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <header class="head">
+    <div class="brand">
+      <span class="code">IE 4512 · Module 7</span>
+      <h1>Half-Year · <em>Convention</em></h1>
+      <span class="tag">why MACRS has n+1 years, not n</span>
+    </div>
+    <nav class="nav">
+      <a href="index.html#module-7">← Module 7</a>
+      <a href="m7-three-assets.html">Three Stories</a>
+      <a href="m7-macrs-explorer.html">MACRS Explorer</a>
+    </nav>
+  </header>
+
+  <!-- Convention selector -->
+  <section class="conv-row">
+    <span class="label">Convention</span>
+    <div class="conv-tab active" data-conv="half-year">Half-year</div>
+    <div class="conv-tab" data-conv="mid-quarter">Mid-quarter</div>
+    <div class="conv-tab" data-conv="mid-month">Mid-month (real property)</div>
+  </section>
+
+  <!-- Timeline -->
+  <section class="timeline-card">
+    <h2>Drag the asset to <em>when you bought it</em></h2>
+    <div class="lede">No matter what month you place the asset in service, the IRS pretends it was placed on a specific date for depreciation purposes. <b>Move the red marker</b> along the year and watch the olive marker snap to where the IRS will treat it.</div>
+
+    <div class="yr-line" id="yr-line">
+      <div class="q-marks">
+        <span class="q">Q1</span><span class="q">Q2</span><span class="q">Q3</span><span class="q">Q4</span>
+      </div>
+      <div class="track">
+        <div class="quarter" style="left:0%"></div>
+        <div class="quarter" style="left:25%"></div>
+        <div class="quarter" style="left:50%"></div>
+        <div class="quarter" style="left:75%"></div>
+      </div>
+      <div class="leader" id="leader"></div>
+      <div class="placement-marker" id="placement"></div>
+      <div class="placement-label" id="placement-label">Jan 1</div>
+      <div class="irs-marker" id="irs-marker">
+        <div class="dot"></div>
+        <div class="label" id="irs-label">IRS · July 1</div>
+      </div>
+      <div class="month-labels">
+        <span>J</span><span>F</span><span>M</span><span>A</span><span>M</span><span>J</span>
+        <span>J</span><span>A</span><span>S</span><span>O</span><span>N</span><span>D</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Outcome -->
+  <div class="outcome-grid">
+    <div class="outcome-panel">
+      <h3>What the IRS sees in <em>year 1</em></h3>
+      <div class="row">
+        <div class="l">Deemed placement</div>
+        <div class="v" id="out-placement">July 1 (mid-year)</div>
+        <div class="desc" id="out-placement-desc">Half-year convention treats every personal-property asset as if you placed it in service on July 1, regardless of the actual date.</div>
+      </div>
+      <div class="row">
+        <div class="l">First-year fraction</div>
+        <div class="v" id="out-fraction">50%</div>
+        <div class="desc">Half a year of normal annual depreciation. The other half migrates to a phantom <b>year n+1</b> at the end of the schedule.</div>
+      </div>
+      <div class="row">
+        <div class="l">Why the schedule has n+1 years</div>
+        <div class="v">n + 1</div>
+        <div class="desc">A 5-year MACRS property recovers over <b>6 calendar years</b>. Year 1 = 50%, years 2 through 5 = full, year 6 = the remaining 50%. The half-year convention is what creates that extra year.</div>
+      </div>
+    </div>
+
+    <div class="outcome-panel">
+      <h3>Year-by-year on a 5-year, 200% DB <em>schedule</em></h3>
+      <table class="preview-table">
+        <thead>
+          <tr>
+            <th>year</th>
+            <th>convention</th>
+            <th>% of basis</th>
+          </tr>
+        </thead>
+        <tbody id="preview-body">
+          <!-- populated -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="why-card">
+    <h4>Why does this <em>exist</em>?</h4>
+    <p>The IRS could ask you the exact day you placed each asset in service. They don't. The half-year convention is <b>administrative simplification</b>: it lets a small business buy a $40,000 truck in December and still claim half a year of depreciation, while the bigger firm that bought the same truck in March gets the same fraction. Mid-quarter is a backstop when too much of your basis (>40%) lands in Q4 — Congress's way of saying you cannot game the convention by waiting until year-end to buy everything.</p>
+    <p>Real estate gets <b>mid-month</b> because the dollar values are large enough that month-by-month precision starts to matter, but day-by-day still doesn't.</p>
+  </div>
+
+</div>
+
+<script>
+  // ===== State =====
+  let conv = 'half-year';
+  let placementMonth = 1; // 1..12
+
+  const ELS = {
+    line: document.getElementById('yr-line'),
+    marker: document.getElementById('placement'),
+    label: document.getElementById('placement-label'),
+    irs: document.getElementById('irs-marker'),
+    irsLabel: document.getElementById('irs-label'),
+    leader: document.getElementById('leader'),
+    outPlacement: document.getElementById('out-placement'),
+    outPlacementDesc: document.getElementById('out-placement-desc'),
+    outFraction: document.getElementById('out-fraction'),
+    preview: document.getElementById('preview-body'),
+  };
+
+  // ===== Position helpers =====
+  function monthToPct(m) {
+    // m=1 -> 4.17% (mid-January), m=12 -> 95.83% (mid-December)
+    return ((m - 0.5) / 12) * 100;
+  }
+  function irsPct(conv, m) {
+    if (conv === 'half-year') return 50; // July 1
+    if (conv === 'mid-month') return ((m - 0.5) / 12) * 100; // mid of placement month
+    if (conv === 'mid-quarter') {
+      // Quarter mid-points: 12.5%, 37.5%, 62.5%, 87.5%
+      const q = Math.ceil(m / 3);
+      return ((q - 0.5) / 4) * 100;
+    }
+    return 50;
+  }
+  function irsLabel(conv, m) {
+    if (conv === 'half-year') return 'IRS · July 1 (mid-year)';
+    if (conv === 'mid-month') {
+      const names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      return `IRS · mid-${names[m-1]}`;
+    }
+    if (conv === 'mid-quarter') {
+      const qMidNames = ['mid-Feb (Q1)', 'mid-May (Q2)', 'mid-Aug (Q3)', 'mid-Nov (Q4)'];
+      const q = Math.ceil(m / 3);
+      return `IRS · ${qMidNames[q-1]}`;
+    }
+    return 'IRS';
+  }
+  function placementName(m) {
+    const names = ['Jan 1','Feb 1','Mar 1','Apr 1','May 1','Jun 1','Jul 1','Aug 1','Sep 1','Oct 1','Nov 1','Dec 1'];
+    return names[m-1];
+  }
+
+  // ===== Render position =====
+  function render() {
+    const placePct = monthToPct(placementMonth);
+    const treatPct = irsPct(conv, placementMonth);
+    ELS.marker.style.left = placePct + '%';
+    ELS.label.style.left = placePct + '%';
+    ELS.label.textContent = `placed in ${placementName(placementMonth).split(' ')[0]}`;
+    ELS.irs.style.left = treatPct + '%';
+    ELS.irsLabel.textContent = irsLabel(conv, placementMonth);
+
+    // Leader line between placement and IRS marker
+    const trackPx = ELS.line.offsetWidth;
+    const xPlace = trackPx * placePct / 100;
+    const xIrs = trackPx * treatPct / 100;
+    const dx = xIrs - xPlace;
+    const len = Math.abs(dx);
+    ELS.leader.style.left = (Math.min(xPlace, xIrs)) + 'px';
+    ELS.leader.style.width = len + 'px';
+
+    // Outcome
+    if (conv === 'half-year') {
+      ELS.outPlacement.textContent = 'July 1 (mid-year)';
+      ELS.outPlacementDesc.innerHTML = 'Half-year convention treats every personal-property asset as if you placed it in service on <b>July 1</b>, regardless of the actual date.';
+      ELS.outFraction.textContent = '50%';
+    } else if (conv === 'mid-month') {
+      const names = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      const m = placementMonth;
+      const firstYearMonths = 12 - m + 0.5;
+      const frac = (firstYearMonths / 12 * 100).toFixed(2);
+      ELS.outPlacement.textContent = `mid-${names[m-1]} of year 1`;
+      ELS.outPlacementDesc.innerHTML = 'Mid-month convention treats real property as if placed in service on the <b>15th of the month</b> it was actually placed. Used only for residential rental (27.5-yr) and commercial real estate (39-yr).';
+      ELS.outFraction.textContent = frac + '%';
+    } else if (conv === 'mid-quarter') {
+      const q = Math.ceil(placementMonth / 3);
+      const qMid = ['mid-Feb', 'mid-May', 'mid-Aug', 'mid-Nov'];
+      const fracs = [87.5, 62.5, 37.5, 12.5];
+      ELS.outPlacement.textContent = `${qMid[q-1]} (Q${q})`;
+      ELS.outPlacementDesc.innerHTML = 'Mid-quarter convention kicks in <b>only when more than 40% of your total basis</b> for the year was placed in service in Q4. The first-year fraction depends on which quarter the asset landed in.';
+      ELS.outFraction.textContent = fracs[q-1] + '%';
+    }
+
+    // 5-year MACRS preview table
+    let schedule;
+    if (conv === 'half-year') {
+      schedule = [
+        { yr: 1, conv: 'half', pct: 20.00 },
+        { yr: 2, conv: 'full', pct: 32.00 },
+        { yr: 3, conv: 'full', pct: 19.20 },
+        { yr: 4, conv: 'full', pct: 11.52 },
+        { yr: 5, conv: 'full', pct: 11.52 },
+        { yr: 6, conv: 'half', pct: 5.76 },
+      ];
+    } else if (conv === 'mid-quarter') {
+      // Q1 example: 35.00, 26.00, 15.60, 11.01, 11.01, 1.38
+      const q = Math.ceil(placementMonth / 3);
+      const tables = {
+        1: [35.00, 26.00, 15.60, 11.01, 11.01, 1.38],
+        2: [25.00, 30.00, 18.00, 11.37, 11.37, 4.26],
+        3: [15.00, 34.00, 20.40, 12.24, 11.30, 7.06],
+        4: [5.00, 38.00, 22.80, 13.68, 10.94, 9.58],
+      };
+      const t = tables[q];
+      schedule = t.map((p, i) => ({ yr: i + 1, conv: i === 0 ? `Q${q}` : (i === t.length - 1 ? 'remainder' : 'full'), pct: p }));
+    } else if (conv === 'mid-month') {
+      // Use a 27.5-year residential rental example
+      const m = placementMonth;
+      const names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const monthsLeft = 12 - m + 0.5;
+      const yearOne = (monthsLeft / 27.5 * 100);
+      schedule = [
+        { yr: 1, conv: `mid-${names[m-1]}`, pct: yearOne },
+        { yr: 2, conv: 'full', pct: 100/27.5 },
+        { yr: 3, conv: 'full', pct: 100/27.5 },
+        { yr: '…', conv: '…', pct: null },
+        { yr: 28, conv: 'final', pct: (100/27.5) - yearOne },
+      ];
+    }
+
+    ELS.preview.innerHTML = schedule.map(s =>
+      `<tr class="${s.conv === 'half' || /Q\d/.test(s.conv) || /mid-/.test(s.conv) || s.conv === 'final' || s.conv === 'remainder' ? 'partial' : ''}">
+        <td>${s.yr}</td>
+        <td>${s.conv}</td>
+        <td class="olive">${s.pct === null ? '…' : s.pct.toFixed(2) + '%'}</td>
+      </tr>`
+    ).join('');
+  }
+
+  // ===== Drag =====
+  let dragging = false;
+  ELS.marker.addEventListener('mousedown', e => { dragging = true; e.preventDefault(); });
+  document.addEventListener('mouseup', () => { dragging = false; });
+  document.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    const rect = ELS.line.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const pct = Math.max(0, Math.min(100, (x / rect.width) * 100));
+    // snap to a month center (12 slots)
+    const m = Math.max(1, Math.min(12, Math.round(pct / 100 * 12 + 0.5)));
+    placementMonth = m;
+    render();
+  });
+  // Touch
+  ELS.marker.addEventListener('touchstart', () => { dragging = true; });
+  document.addEventListener('touchend', () => { dragging = false; });
+  document.addEventListener('touchmove', e => {
+    if (!dragging) return;
+    const rect = ELS.line.getBoundingClientRect();
+    const x = e.touches[0].clientX - rect.left;
+    const pct = Math.max(0, Math.min(100, (x / rect.width) * 100));
+    const m = Math.max(1, Math.min(12, Math.round(pct / 100 * 12 + 0.5)));
+    placementMonth = m;
+    render();
+  });
+
+  // ===== Convention tabs =====
+  document.querySelectorAll('.conv-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      conv = tab.dataset.conv;
+      document.querySelectorAll('.conv-tab').forEach(t => t.classList.toggle('active', t === tab));
+      render();
+    });
+  });
+
+  // ===== Boot =====
+  // Set default to July (m=7) so the half-year/IRS marker visibly aligns with the placement
+  placementMonth = 7;
+  render();
+  // Re-render on resize so leader line stays aligned
+  window.addEventListener('resize', render);
+</script>
+
+</body>
+</html>

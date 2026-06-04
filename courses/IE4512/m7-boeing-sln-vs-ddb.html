@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Module 7 · Boeing 747 — SLN vs DDB Playground</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf9f5; --paper: #ffffff; --ink: #1a1a1a; --muted: #5a5247; --soft: #8b7355;
+    --border: #e8e3d4; --line: #d4cfc0;
+    --gold: #b8860b; --gold-deep: #8a6608; --gold-soft: #faf3e0;
+    --olive: #5c7a4a; --olive-deep: #455d36; --olive-soft: #f0f4ea;
+    --crimson: #8a2828; --crimson-deep: #6b1e1e; --crimson-soft: #fdf2f3;
+    --teal: #0e7c80; --teal-deep: #0a5e62; --teal-soft: #e6f4f4;
+    --purple: #7c3aed;
+  }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: 'Outfit', -apple-system, system-ui, sans-serif; font-size: 13px; line-height: 1.45;
+    overflow: hidden;
+  }
+  .app {
+    height: 100vh; display: flex; flex-direction: column;
+    max-width: 1500px; margin: 0 auto; padding: 10px 18px;
+    gap: 8px;
+  }
+
+  /* HEAD */
+  .head {
+    flex-shrink: 0;
+    display: flex; justify-content: space-between; align-items: center; gap: 14px;
+    padding: 8px 16px; background: var(--paper); border: 1px solid var(--border);
+    border-radius: 10px; border-top: 3px solid var(--teal); flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .brand .code { font-size: 10px; color: var(--teal); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; }
+  .brand h1 { font-family: 'Lora', Georgia, serif; font-size: 18px; font-weight: 700; line-height: 1; }
+  .brand h1 em { font-style: italic; color: var(--teal); font-weight: 400; }
+  .brand .tag { font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted); }
+  .head .nav { display: flex; gap: 6px; }
+  .head .nav a {
+    font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft); text-decoration: none; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px;
+    transition: all 0.15s; background: var(--paper); font-family: 'Outfit', sans-serif;
+  }
+  .head .nav a:hover { color: var(--teal); border-color: var(--teal); background: var(--teal-soft); }
+
+  /* CONTROLS */
+  .controls {
+    flex-shrink: 0;
+    background: var(--paper); border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 16px;
+    display: grid; grid-template-columns: auto 1fr 1fr 1fr auto auto; gap: 16px; align-items: center;
+  }
+  @media (max-width: 1100px) {
+    .controls { grid-template-columns: 1fr 1fr 1fr; }
+    .controls .group-label, .controls .preset-btn, .controls .convert-toggle { grid-column: 1 / -1; }
+  }
+  .controls .group-label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700;
+    color: var(--teal-deep); line-height: 1.2; max-width: 110px;
+  }
+  .ctrl {
+    display: flex; flex-direction: column; gap: 3px; min-width: 0;
+  }
+  .ctrl .row1 { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; }
+  .ctrl .lbl {
+    font-family: 'Outfit', sans-serif; font-size: 9.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+    color: var(--teal-deep);
+  }
+  .ctrl .readout {
+    font-family: 'Lora', serif; font-style: italic; font-size: 16px; font-weight: 700; color: var(--teal-deep);
+    line-height: 1;
+  }
+  .ctrl input[type=range] {
+    width: 100%; height: 20px; -webkit-appearance: none; appearance: none;
+    background: transparent; cursor: pointer; outline: none; padding: 0; margin: 2px 0;
+  }
+  .ctrl input[type=range]::-webkit-slider-runnable-track {
+    height: 5px; border-radius: 999px;
+    background: linear-gradient(90deg, var(--teal) 0%, rgba(14,124,128,0.2) 100%);
+  }
+  .ctrl input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 16px; height: 16px; margin-top: -5.5px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #fff 0%, var(--teal-soft) 100%);
+    border: 2.5px solid var(--teal-deep);
+    box-shadow: 0 2px 6px rgba(14,124,128,0.3);
+    cursor: grab;
+    transition: transform 0.15s ease;
+  }
+  .ctrl input[type=range]::-moz-range-track {
+    height: 5px; border-radius: 999px;
+    background: linear-gradient(90deg, var(--teal) 0%, rgba(14,124,128,0.2) 100%);
+  }
+  .ctrl input[type=range]::-moz-range-thumb {
+    width: 16px; height: 16px; border-radius: 50%;
+    background: linear-gradient(135deg, #fff 0%, var(--teal-soft) 100%);
+    border: 2.5px solid var(--teal-deep);
+  }
+  .ctrl input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.18); }
+
+  .convert-toggle {
+    display: flex; align-items: center; gap: 8px;
+    padding: 5px 12px;
+    background: var(--teal-soft); border: 1px solid var(--teal); border-radius: 8px;
+    cursor: pointer; user-select: none;
+    font-family: 'Outfit', sans-serif; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700;
+    color: var(--teal-deep);
+  }
+  .convert-toggle .switch {
+    width: 30px; height: 16px; background: var(--paper); border: 1px solid var(--teal); border-radius: 999px;
+    position: relative; transition: all 0.2s;
+  }
+  .convert-toggle .switch::after {
+    content: ''; position: absolute; left: 1.5px; top: 1.5px;
+    width: 11px; height: 11px; border-radius: 50%; background: var(--teal-deep);
+    transition: transform 0.2s ease;
+  }
+  .convert-toggle.on .switch { background: var(--teal); }
+  .convert-toggle.on .switch::after { transform: translateX(13px); background: #fff; }
+
+  .preset-btn {
+    font-family: 'Outfit', sans-serif; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700;
+    padding: 7px 13px; border-radius: 7px; cursor: pointer;
+    background: var(--paper); color: var(--ink); border: 1px solid var(--border);
+    transition: all 0.15s ease;
+  }
+  .preset-btn:hover { border-color: var(--teal); color: var(--teal-deep); background: var(--teal-soft); }
+
+  /* MAIN */
+  .main {
+    flex: 1; min-height: 0;
+    display: grid; grid-template-columns: 1fr 0.78fr; gap: 10px;
+  }
+  @media (max-width: 980px) {
+    .main { grid-template-columns: 1fr; }
+    html, body { overflow: auto; } .app { height: auto; }
+  }
+
+  /* Chart panel */
+  .chart-panel {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 16px;
+    display: flex; flex-direction: column; min-height: 0; position: relative;
+  }
+  .chart-head {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+    padding-bottom: 8px; border-bottom: 1px solid var(--border); margin-bottom: 8px;
+  }
+  .chart-head h3 { font-family: 'Lora', serif; font-size: 15px; font-weight: 700; }
+  .chart-head h3 em { font-style: italic; color: var(--teal); }
+  .chart-head .info-btn {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--teal-soft); border: 1.5px solid var(--teal); color: var(--teal-deep);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 800;
+    cursor: pointer; transition: all 0.15s ease;
+  }
+  .chart-head .info-btn:hover { background: var(--teal); color: #fff; transform: scale(1.1); }
+
+  .chart-wrap { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 6px; }
+  .chart-wrap svg { flex: 1; min-height: 0; width: 100%; }
+
+  .legend {
+    display: flex; gap: 14px; flex-wrap: wrap; padding: 4px 0;
+    font-family: 'Outfit', sans-serif; font-size: 11px;
+  }
+  .legend .it { display: inline-flex; align-items: center; gap: 5px; color: var(--muted); }
+  .legend .swatch { width: 14px; height: 3px; border-radius: 2px; }
+  .legend .it.gold .swatch  { background: var(--gold); }
+  .legend .it.olive .swatch { background: var(--olive); }
+  .legend .it.purple .swatch { background: var(--purple); }
+  .legend .it strong { color: var(--ink); font-weight: 700; }
+
+  .crossover-info {
+    background: var(--teal-soft); border: 1px solid var(--teal); border-radius: 8px;
+    padding: 8px 12px;
+    font-family: 'Lora', serif; font-style: italic; font-size: 12.5px; color: var(--ink); line-height: 1.4;
+  }
+  .crossover-info b { color: var(--teal-deep); font-style: normal; font-weight: 700; }
+
+  /* Table panel */
+  .table-panel {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 16px;
+    display: flex; flex-direction: column; min-height: 0; overflow: hidden;
+  }
+  .table-head {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+    padding-bottom: 8px; border-bottom: 1px solid var(--border); margin-bottom: 6px;
+  }
+  .table-head h3 { font-family: 'Lora', serif; font-size: 15px; font-weight: 700; }
+  .table-head h3 em { font-style: italic; color: var(--teal); }
+  .table-head .meta {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--soft);
+  }
+  .table-scroll {
+    flex: 1; min-height: 0; overflow-y: auto;
+  }
+  table.dep {
+    width: 100%; border-collapse: collapse; font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  }
+  table.dep thead th {
+    position: sticky; top: 0;
+    background: var(--bg);
+    font-family: 'Outfit', sans-serif; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft);
+    padding: 6px 5px 6px;
+    border-bottom: 1px solid var(--border);
+    text-align: right;
+  }
+  table.dep thead th:first-child { text-align: center; }
+  table.dep thead th.gold-col   { color: var(--gold-deep); }
+  table.dep thead th.olive-col  { color: var(--olive-deep); }
+  table.dep thead th.purple-col { color: var(--purple); }
+  table.dep tbody td {
+    padding: 4px 5px;
+    border-bottom: 1px dotted var(--line);
+    text-align: right;
+    color: var(--ink); font-weight: 600;
+  }
+  table.dep tbody td:first-child {
+    text-align: center; font-weight: 700; color: var(--muted);
+  }
+  table.dep tbody td.gold   { color: var(--gold-deep); }
+  table.dep tbody td.olive  { color: var(--olive-deep); }
+  table.dep tbody td.purple { color: var(--purple); }
+  table.dep tbody tr.crossover {
+    background: var(--teal-soft);
+  }
+  table.dep tbody tr.crossover td:first-child::after {
+    content: ' ◀'; color: var(--teal-deep); font-weight: 700;
+  }
+
+  table.dep tfoot td {
+    padding: 6px 5px 4px;
+    border-top: 2px solid var(--border);
+    text-align: right;
+    font-family: 'Outfit', sans-serif; font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft);
+  }
+  table.dep tfoot td:first-child { text-align: center; }
+  table.dep tfoot td.gold-col   { color: var(--gold-deep); }
+  table.dep tfoot td.olive-col  { color: var(--olive-deep); }
+  table.dep tfoot td.purple-col { color: var(--purple); }
+  table.dep tfoot td .total-amt { font-family: 'Lora', serif; font-style: italic; font-size: 12.5px; }
+
+  /* POPOVER */
+  .pop-back {
+    position: fixed; inset: 0; z-index: 800;
+    background: rgba(20, 12, 12, 0.55);
+    backdrop-filter: blur(5px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  .pop-back.show { opacity: 1; pointer-events: auto; }
+  .pop-card {
+    background: var(--paper); border-radius: 12px;
+    max-width: 680px; width: 100%; max-height: 92vh;
+    box-shadow: 0 18px 50px rgba(0,0,0,0.28);
+    transform: translateY(10px); transition: transform 0.25s ease;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .pop-back.show .pop-card { transform: translateY(0); }
+  .pop-card .ph {
+    padding: 13px 22px;
+    background: linear-gradient(135deg, var(--teal) 0%, var(--teal-deep) 100%);
+    color: #fff;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .pop-card .ph h4 { font-family: 'Lora', serif; font-size: 17px; font-weight: 700; }
+  .pop-card .ph h4 em { font-style: italic; color: #9cd2d4; }
+  .pop-card .ph .close {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3);
+    color: #fff; cursor: pointer; font-size: 16px; line-height: 1;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .pop-card .pb {
+    padding: 18px 22px 22px;
+    font-family: 'Lora', serif; font-size: 13px; color: var(--ink); line-height: 1.55;
+    overflow-y: auto;
+  }
+  .pop-card .pb p + p { margin-top: 8px; }
+  .pop-card .pb b { color: var(--teal-deep); font-weight: 700; }
+  .pop-card .pb code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: var(--bg); padding: 1px 5px; border-radius: 3px; border: 1px solid var(--border); }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <header class="head">
+    <div class="brand">
+      <span class="code">IE 4512 · Module 7</span>
+      <h1>Boeing 747 · <em>SLN vs DDB</em></h1>
+      <span class="tag">two depreciation schedules on one airplane</span>
+    </div>
+    <nav class="nav">
+      <a href="index.html#module-7">← Module 7</a>
+      <a href="m7-three-assets.html">Three Stories</a>
+    </nav>
+  </header>
+
+  <section class="controls">
+    <span class="group-label">Tune the<br>airplane →</span>
+    <div class="ctrl">
+      <div class="row1"><span class="lbl">Cost · B</span><span class="readout" id="cost-val">$180 M</span></div>
+      <input type="range" id="cost" min="50" max="400" step="5" value="180">
+    </div>
+    <div class="ctrl">
+      <div class="row1"><span class="lbl">Salvage · S</span><span class="readout" id="salv-val">$10 M</span></div>
+      <input type="range" id="salv" min="0" max="80" step="1" value="10">
+    </div>
+    <div class="ctrl">
+      <div class="row1"><span class="lbl">Life · n</span><span class="readout" id="life-val">20 yr</span></div>
+      <input type="range" id="life" min="5" max="30" step="1" value="20">
+    </div>
+    <div class="convert-toggle" id="convert">
+      <div class="switch"></div>
+      <span>Cargo conversion at year n</span>
+    </div>
+    <button class="preset-btn" id="reset-btn">Reset to 747</button>
+  </section>
+
+  <div class="main">
+
+    <!-- LEFT — chart -->
+    <div class="chart-panel">
+      <div class="chart-head">
+        <h3>Book value over <em>time</em></h3>
+        <button class="info-btn" data-pop="chart" title="About this chart">i</button>
+      </div>
+      <div class="chart-wrap">
+        <svg id="bv-svg" viewBox="0 0 760 360" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"></svg>
+        <div class="legend">
+          <div class="it gold"><div class="swatch"></div><strong>SLN</strong> · straight line</div>
+          <div class="it olive"><div class="swatch"></div><strong>DDB</strong> · double declining</div>
+          <div class="it purple"><div class="swatch"></div><strong>DDB → SLN</strong> · switch at the crossover</div>
+        </div>
+        <div class="crossover-info" id="crossover-info">
+          <b>Crossover year:</b> the year SLN of the remaining basis on the remaining life first exceeds the DDB amount. Smart firms switch to SLN here and recover more depreciation in the final years.
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT — table -->
+    <div class="table-panel">
+      <div class="table-head">
+        <h3>Year by <em>year</em></h3>
+        <span class="meta" id="depreciable-base">depreciable: $— M</span>
+      </div>
+      <div class="table-scroll">
+        <table class="dep" id="dep-table">
+          <thead>
+            <tr>
+              <th>yr</th>
+              <th class="gold-col">SLN</th>
+              <th class="olive-col">DDB</th>
+              <th class="purple-col">DDB→SLN</th>
+              <th class="purple-col">BV</th>
+            </tr>
+          </thead>
+          <tbody id="dep-tbody"></tbody>
+          <tfoot>
+            <tr>
+              <td>Σ</td>
+              <td class="gold-col"><span class="total-amt" id="sln-total">—</span></td>
+              <td class="olive-col"><span class="total-amt" id="ddb-total">—</span></td>
+              <td class="purple-col"><span class="total-amt" id="switch-total">—</span></td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<div class="pop-back" id="pop-back">
+  <div class="pop-card">
+    <div class="ph"><h4 id="pop-title"></h4><button class="close" id="pop-close">×</button></div>
+    <div class="pb" id="pop-body"></div>
+  </div>
+</div>
+
+<script>
+  // ===== State =====
+  const state = { cost: 180, salv: 10, life: 20, convert: false };
+  const DEFAULT = { cost: 180, salv: 10, life: 20, convert: false };
+  // Cargo conversion: extends life by 10 yr, salvage triples
+  const CARGO = { lifeExt: 10, salvMul: 3 };
+
+  // ===== Compute schedules =====
+  // Returns { sln: [year-by-year], ddb: [...], switched: [...], bvSwitched: [...], crossoverYear: int|null }
+  function computeSchedules() {
+    let { cost, salv, life } = state;
+    if (state.convert) {
+      life = life + CARGO.lifeExt;
+      salv = Math.min(cost, salv * CARGO.salvMul);
+    }
+    const n = life;
+    const depreciable = Math.max(0, cost - salv);
+    const slnAnnual = depreciable / n;
+
+    const sln = []; const ddb = []; const switched = [];
+    let bvDDB = cost; let bvSwitched = cost;
+    const ddbRate = 2 / n;
+    let crossoverYear = null;
+    let switchedDone = false;
+
+    for (let t = 1; t <= n; t++) {
+      // SLN
+      sln.push(slnAnnual);
+
+      // DDB (capped at salvage)
+      const ddbRaw = ddbRate * bvDDB;
+      const ddbAllowed = Math.max(0, Math.min(ddbRaw, bvDDB - salv));
+      ddb.push(ddbAllowed);
+      bvDDB -= ddbAllowed;
+
+      // DDB switching to SLN — at each year, compare DDB on current bv vs SLN on remaining
+      const yearsLeft = n - t + 1;
+      const switchDDB = ddbRate * bvSwitched;
+      const slnOfRemaining = Math.max(0, (bvSwitched - salv) / yearsLeft);
+      let switchedAmt;
+      if (!switchedDone && switchDDB >= slnOfRemaining) {
+        switchedAmt = Math.max(0, Math.min(switchDDB, bvSwitched - salv));
+      } else {
+        if (!switchedDone) {
+          crossoverYear = t;
+          switchedDone = true;
+        }
+        switchedAmt = slnOfRemaining;
+      }
+      switched.push(switchedAmt);
+      bvSwitched -= switchedAmt;
+    }
+
+    // Book values over time (after each year), book value at year 0 is cost
+    const bvSlnSeries = [cost];
+    const bvDdbSeries = [cost];
+    const bvSwitchedSeries = [cost];
+    for (let t = 0; t < n; t++) {
+      bvSlnSeries.push(bvSlnSeries[t] - sln[t]);
+      bvDdbSeries.push(bvDdbSeries[t] - ddb[t]);
+      bvSwitchedSeries.push(bvSwitchedSeries[t] - switched[t]);
+    }
+
+    return { sln, ddb, switched, bvSlnSeries, bvDdbSeries, bvSwitchedSeries, crossoverYear, n, cost, salv, depreciable };
+  }
+
+  // ===== Render chart =====
+  function renderChart() {
+    const sch = computeSchedules();
+    const svg = document.getElementById('bv-svg');
+    const W = 760, H = 360;
+    const padL = 56, padR = 24, padT = 16, padB = 48;
+    const x0 = padL, x1 = W - padR;
+    const y0 = padT, y1 = H - padB;
+    const n = sch.n;
+    const maxY = sch.cost;
+    const minY = 0;
+
+    const xPos = t => x0 + (t / n) * (x1 - x0);
+    const yPos = v => y1 - ((v - minY) / (maxY - minY)) * (y1 - y0);
+
+    let html = '';
+    // Axes
+    html += `<line x1="${x0}" y1="${y0}" x2="${x0}" y2="${y1}" stroke="#5a5247" stroke-width="0.9"/>`;
+    html += `<line x1="${x0}" y1="${y1}" x2="${x1}" y2="${y1}" stroke="#5a5247" stroke-width="0.9"/>`;
+
+    // Salvage line
+    const yS = yPos(sch.salv);
+    html += `<line x1="${x0}" y1="${yS}" x2="${x1}" y2="${yS}" stroke="#5c7a4a" stroke-width="1" stroke-dasharray="4 3" opacity="0.5"/>`;
+    html += `<text x="${x1 - 6}" y="${yS - 5}" text-anchor="end" font-family="Outfit,sans-serif" font-size="10" font-weight="700" fill="#5c7a4a">salvage S = $${sch.salv.toFixed(0)} M</text>`;
+
+    // Y axis ticks (cost, 75%, 50%, 25%, 0)
+    [1.0, 0.75, 0.5, 0.25, 0].forEach(pct => {
+      const v = pct * maxY;
+      const yy = yPos(v);
+      html += `<line x1="${x0 - 4}" y1="${yy}" x2="${x0}" y2="${yy}" stroke="#5a5247" stroke-width="0.7"/>`;
+      html += `<text x="${x0 - 8}" y="${yy + 3}" text-anchor="end" font-family="Outfit,sans-serif" font-size="10" fill="#5a5247">$${v.toFixed(0)}</text>`;
+    });
+    html += `<text transform="translate(${x0 - 36},${(y0 + y1) / 2}) rotate(-90)" text-anchor="middle" font-family="Outfit,sans-serif" font-size="10" letter-spacing="0.16em" font-weight="700" fill="#8b7355">BOOK VALUE · $ M</text>`;
+
+    // X axis ticks
+    const tickStep = n > 20 ? 5 : (n > 10 ? 2 : 1);
+    for (let t = 0; t <= n; t += tickStep) {
+      const xx = xPos(t);
+      html += `<line x1="${xx}" y1="${y1}" x2="${xx}" y2="${y1 + 4}" stroke="#5a5247" stroke-width="0.7"/>`;
+      html += `<text x="${xx}" y="${y1 + 18}" text-anchor="middle" font-family="Outfit,sans-serif" font-size="10" fill="#5a5247">${t}</text>`;
+    }
+    html += `<text x="${(x0 + x1) / 2}" y="${H - 6}" text-anchor="middle" font-family="Outfit,sans-serif" font-size="10.5" letter-spacing="0.18em" font-weight="700" fill="#8b7355">YEAR · t</text>`;
+
+    // Helper to draw a line
+    function lineFrom(series, color, width, dash) {
+      const d = series.map((v, t) => (t === 0 ? 'M' : 'L') + ` ${xPos(t).toFixed(2)} ${yPos(v).toFixed(2)}`).join(' ');
+      return `<path d="${d}" stroke="${color}" stroke-width="${width}" fill="none" stroke-linecap="round" stroke-linejoin="round"${dash ? ' stroke-dasharray="' + dash + '"' : ''}/>`;
+    }
+
+    html += lineFrom(sch.bvSlnSeries, '#b8860b', 2.4);
+    html += lineFrom(sch.bvDdbSeries, '#5c7a4a', 2.4);
+    html += lineFrom(sch.bvSwitchedSeries, '#7c3aed', 2.6, '4 3');
+
+    // Crossover marker
+    if (sch.crossoverYear !== null) {
+      const xX = xPos(sch.crossoverYear);
+      const yX = yPos(sch.bvSwitchedSeries[sch.crossoverYear]);
+      html += `<line x1="${xX}" y1="${y0}" x2="${xX}" y2="${y1}" stroke="#7c3aed" stroke-width="0.9" stroke-dasharray="2 3" opacity="0.5"/>`;
+      html += `<circle cx="${xX}" cy="${yX}" r="6" fill="#fff" stroke="#7c3aed" stroke-width="2.4"/>`;
+      html += `<text x="${xX + 8}" y="${y0 + 16}" font-family="Outfit,sans-serif" font-size="11" font-weight="700" fill="#7c3aed">crossover · year ${sch.crossoverYear}</text>`;
+    }
+
+    svg.innerHTML = html;
+
+    // Crossover info text
+    const ci = document.getElementById('crossover-info');
+    if (sch.crossoverYear !== null) {
+      ci.innerHTML = `<b>Crossover at year ${sch.crossoverYear}.</b> From year ${sch.crossoverYear + 1} onward, switching to SLN of the remaining basis recovers more per year than continuing DDB on a shrinking book. Firms that switch end up at salvage on the dot; firms that don't switch leave money on the table.`;
+    } else {
+      ci.innerHTML = `<b>No crossover this configuration.</b> DDB outpaces SLN-on-remaining throughout the asset's life. Either the rate is high enough, the salvage cushion is small enough, or the life is short enough that DDB stays ahead.`;
+    }
+  }
+
+  // ===== Render table =====
+  function renderTable() {
+    const sch = computeSchedules();
+    const tbody = document.getElementById('dep-tbody');
+    const fmt = v => (v >= 100 ? v.toFixed(1) : v.toFixed(2));
+    let bvSwitched = sch.cost;
+    let html = '';
+    for (let t = 0; t < sch.n; t++) {
+      bvSwitched -= sch.switched[t];
+      const cls = (sch.crossoverYear === t + 1) ? 'crossover' : '';
+      html += `<tr class="${cls}">
+        <td>${t + 1}</td>
+        <td class="gold">${fmt(sch.sln[t])}</td>
+        <td class="olive">${fmt(sch.ddb[t])}</td>
+        <td class="purple">${fmt(sch.switched[t])}</td>
+        <td>${fmt(bvSwitched)}</td>
+      </tr>`;
+    }
+    tbody.innerHTML = html;
+
+    const slnTotal = sch.sln.reduce((a, b) => a + b, 0);
+    const ddbTotal = sch.ddb.reduce((a, b) => a + b, 0);
+    const switchTotal = sch.switched.reduce((a, b) => a + b, 0);
+    document.getElementById('sln-total').textContent = '$' + fmt(slnTotal) + 'M';
+    document.getElementById('ddb-total').textContent = '$' + fmt(ddbTotal) + 'M';
+    document.getElementById('switch-total').textContent = '$' + fmt(switchTotal) + 'M';
+    document.getElementById('depreciable-base').textContent =
+      `depreciable: $${fmt(sch.depreciable)}M · n=${sch.n}yr · S=$${fmt(sch.salv)}M`;
+  }
+
+  function refresh() {
+    document.getElementById('cost-val').textContent = '$' + state.cost + ' M';
+    document.getElementById('salv-val').textContent = '$' + state.salv + ' M';
+    document.getElementById('life-val').textContent = state.life + ' yr';
+    document.getElementById('convert').classList.toggle('on', state.convert);
+    renderChart();
+    renderTable();
+  }
+
+  // ===== Wire inputs =====
+  document.getElementById('cost').addEventListener('input', e => { state.cost = +e.target.value; refresh(); });
+  document.getElementById('salv').addEventListener('input', e => { state.salv = +e.target.value; refresh(); });
+  document.getElementById('life').addEventListener('input', e => { state.life = +e.target.value; refresh(); });
+  document.getElementById('convert').addEventListener('click', () => { state.convert = !state.convert; refresh(); });
+  document.getElementById('reset-btn').addEventListener('click', () => {
+    Object.assign(state, DEFAULT);
+    document.getElementById('cost').value = DEFAULT.cost;
+    document.getElementById('salv').value = DEFAULT.salv;
+    document.getElementById('life').value = DEFAULT.life;
+    refresh();
+  });
+
+  // ===== Popover =====
+  const popBack = document.getElementById('pop-back');
+  const popTitle = document.getElementById('pop-title');
+  const popBody = document.getElementById('pop-body');
+  const POPS = {
+    chart: {
+      title: 'Reading the <em>book value</em> chart',
+      body: `
+        <p>Three lines, three depreciation methods, one airplane.</p>
+        <p><b>Gold · SLN</b>: book value drops by the same dollar amount every year — a straight line from cost down to salvage. Total depreciation: cost minus salvage. Predictable. Conservative.</p>
+        <p><b>Olive · DDB</b>: book value drops by a fixed <em>percentage</em> (2/n) of the current book value every year. Front-loaded. Curve flattens as the book shrinks. The DDB rule says you cannot depreciate below salvage, so the curve flattens out at S.</p>
+        <p><b>Purple · DDB → SLN</b>: start with DDB, then switch to SLN on the remaining basis the first year SLN beats DDB. This is the rule under MACRS for 3, 5, 7, 10-yr classes. It guarantees you reach salvage exactly.</p>
+        <p>The dashed olive horizontal line is the salvage floor. Books cannot go below it.</p>
+        <p>Toggle <b>Cargo conversion</b> at the top to extend the life by 10 years and triple the salvage. Watch what happens to all three curves at once.</p>
+      `
+    }
+  };
+  document.querySelectorAll('[data-pop]').forEach(btn => btn.addEventListener('click', () => {
+    const p = POPS[btn.dataset.pop]; if (!p) return;
+    popTitle.innerHTML = p.title; popBody.innerHTML = p.body;
+    popBack.classList.add('show');
+  }));
+  document.getElementById('pop-close').addEventListener('click', () => popBack.classList.remove('show'));
+  popBack.addEventListener('click', e => { if (e.target === popBack) popBack.classList.remove('show'); });
+
+  // ===== Boot =====
+  refresh();
+</script>
+
+</body>
+</html>
