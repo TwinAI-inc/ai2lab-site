@@ -4307,7 +4307,7 @@
                             </div>
                         </div>
                         <div class="slide-pub-right">
-                            <img src="assets/images/simgpt_framework.png" alt="SimGPT Step development architecture — Figure 4">
+                            <img src="assets/images/simgpt_framework.png" alt="SimGPT Step development architecture — Figure 4" class="zoomable" onclick="openImgZoom(this.src, this.alt)">
                         </div>
                     </div>
                     <!-- Slide: New Publication - AIDM Framework -->
@@ -6644,7 +6644,7 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
             <div class="pub-modal-fig">
-                <img src="assets/images/simgpt_framework.png" alt="SimGPT Step development architecture and integration with Simio (Figure 4)">
+                <img src="assets/images/simgpt_framework.png" alt="SimGPT Step development architecture and integration with Simio (Figure 4)" class="zoomable" onclick="openImgZoom(this.src, this.alt)">
             </div>
             <div class="pub-modal-body">
                 <div class="pub-modal-eyebrow">New Journal Paper · 2026</div>
@@ -6708,6 +6708,65 @@
             document.removeEventListener('keydown', _simgptEsc);
         }
         function _simgptEsc(e) { if (e.key === 'Escape') closeSimGPTLearnMore(); }
+    </script>
+
+    <!-- ═══ Click-to-zoom image lightbox (full-resolution view) ═══ -->
+    <style>
+        .img-zoom-overlay {
+            position: fixed; inset: 0; z-index: 99999;
+            background: rgba(10, 12, 20, 0.93);
+            -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+            display: none; align-items: center; justify-content: center;
+            padding: 28px; cursor: zoom-out;
+        }
+        .img-zoom-overlay.open { display: flex; animation: imgZoomIn 0.18s ease-out; }
+        @keyframes imgZoomIn { from { opacity: 0; } to { opacity: 1; } }
+        .img-zoom-overlay img {
+            max-width: 96vw; max-height: 92vh;
+            border-radius: 10px; cursor: default;
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+            object-fit: contain;
+        }
+        .img-zoom-close {
+            position: fixed; top: 18px; right: 24px;
+            width: 42px; height: 42px; border-radius: 50%;
+            background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #fff; font-size: 24px; line-height: 1; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); transition: all 0.15s;
+        }
+        .img-zoom-close:hover { background: rgba(255, 255, 255, 0.22); transform: scale(1.05); }
+        .img-zoom-hint {
+            position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.7); font-size: 12px; letter-spacing: 0.3px;
+            background: rgba(255, 255, 255, 0.08); padding: 6px 14px; border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        img.zoomable { cursor: zoom-in; transition: filter 0.15s; }
+        img.zoomable:hover { filter: brightness(1.04); }
+    </style>
+    <div class="img-zoom-overlay" id="imgZoom" onclick="closeImgZoom(event)">
+        <button class="img-zoom-close" onclick="closeImgZoom()" aria-label="Close">&times;</button>
+        <img id="imgZoomImg" src="" alt="">
+        <div class="img-zoom-hint">Click anywhere or press Esc to close</div>
+    </div>
+    <script>
+        function openImgZoom(src, alt) {
+            var z = document.getElementById('imgZoom');
+            var im = document.getElementById('imgZoomImg');
+            im.src = src; im.alt = alt || '';
+            z.classList.add('open');
+            document.body.style.overflow = 'hidden';
+            document.addEventListener('keydown', _imgZoomEsc);
+        }
+        function closeImgZoom(e) {
+            if (e && e.target && e.target.tagName === 'IMG') return; // ignore clicks on the image itself
+            var z = document.getElementById('imgZoom');
+            z.classList.remove('open');
+            document.body.style.overflow = '';
+            document.removeEventListener('keydown', _imgZoomEsc);
+        }
+        function _imgZoomEsc(e) { if (e.key === 'Escape') closeImgZoom(); }
     </script>
 </body>
 </html>
