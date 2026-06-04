@@ -129,6 +129,19 @@
     text-align: center;
     font-weight: 600;
   }
+  input#nm {
+    letter-spacing: 0;
+    text-align: left;
+    font-weight: 500;
+  }
+  .field-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-align: left;
+    margin: 0 0 -6px 4px;
+    letter-spacing: 0.3px;
+  }
   input:focus {
     border-color: var(--it-green);
     background: #fff;
@@ -199,6 +212,18 @@
     <div class="meta">PRIVATE PREVIEW · ACCESS BY INVITATION</div>
 
     <form id="gate-form" autocomplete="off">
+      <div class="field-label">Your name</div>
+      <div class="input-wrap">
+        <input
+          type="text"
+          id="nm"
+          placeholder="e.g. Maria Rossi"
+          maxlength="40"
+          autocomplete="name"
+          aria-label="Your name"
+          required>
+      </div>
+      <div class="field-label">Access code</div>
       <div class="input-wrap">
         <input
           type="password"
@@ -212,7 +237,7 @@
           aria-label="Access code">
       </div>
       <div class="err-msg" id="err"></div>
-      <button type="submit">Unlock Itinerary</button>
+      <button type="submit">Enter Itinerary</button>
     </form>
 
     <div class="hint">
@@ -241,16 +266,27 @@
 
   const form = document.getElementById('gate-form');
   const input = document.getElementById('pw');
+  const nameInput = document.getElementById('nm');
   const err = document.getElementById('err');
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     err.textContent = '';
     input.classList.remove('error');
+    nameInput.classList.remove('error');
+
+    const name = nameInput.value.trim();
+    if (!name) {
+      nameInput.classList.add('error');
+      err.textContent = 'Please enter your name.';
+      nameInput.focus();
+      return;
+    }
     const v = input.value.trim();
     if (!v) return;
     const h = await sha256(v);
     if (h === GATE_HASH) {
+      try { localStorage.setItem('docItalyName', name); } catch (_) {}
       sessionStorage.setItem(FLAG_KEY, FLAG_VAL);
       location.replace('program.html');
     } else {
@@ -261,7 +297,11 @@
     }
   });
 
-  input.focus();
+  try {
+    const saved = localStorage.getItem('docItalyName');
+    if (saved) { nameInput.value = saved; input.focus(); }
+    else { nameInput.focus(); }
+  } catch (_) { nameInput.focus(); }
 </script>
 </body>
 </html>

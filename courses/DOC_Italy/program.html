@@ -1529,6 +1529,254 @@
     .day-type { font-size: 7.5px; }
   }
 
+  /* ========================================================================
+     COLLAB / EDIT LAYER — name, per-day notes, drag-and-drop itinerary edits
+     ======================================================================== */
+  /* Header account chip + edit toggle */
+  .acct-wrap { display: flex; align-items: center; gap: 8px; }
+  .acct-chip {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: rgba(255,255,255,0.9);
+    border: 1px solid var(--border);
+    border-radius: 50px; padding: 5px 10px 5px 6px;
+    font-size: 12px; font-weight: 600; color: var(--navy);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .acct-chip:hover { border-color: var(--navy); }
+  .acct-chip .av {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--it-green), #007a3b);
+    color: #fff; font-size: 11px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .acct-mode {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8.5px; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase; padding: 2px 6px; border-radius: 6px;
+  }
+  .acct-mode.local  { background: rgba(100,116,139,0.12); color: var(--muted); }
+  .acct-mode.firebase { background: rgba(0,146,70,0.12); color: var(--it-green); }
+  .btn-edit {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 13px; border-radius: 9px;
+    border: 1px solid var(--navy); background: var(--navy); color: #fff;
+    font-family: 'Outfit', sans-serif; font-size: 12.5px; font-weight: 600;
+    cursor: pointer; transition: all 0.15s; white-space: nowrap;
+  }
+  .btn-edit:hover { background: #2a2a48; }
+  .btn-edit.on { background: var(--neu-red); border-color: var(--neu-red); }
+  .btn-edit svg { width: 13px; height: 13px; }
+  @media (max-width: 640px) { .acct-chip .nm { display: none; } }
+
+  /* Edit-mode help banner */
+  .edit-banner {
+    display: none;
+    max-width: 1280px; margin: 0 auto; margin-top: -8px;
+    padding: 10px 28px;
+  }
+  body.edit-on .edit-banner { display: block; }
+  .edit-banner-inner {
+    background: #fbf5f7; border: 1px solid rgba(196,18,48,0.22);
+    border-radius: 10px; padding: 10px 14px;
+    font-size: 12px; color: var(--navy); line-height: 1.5;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  .edit-banner-inner strong { color: var(--neu-red); }
+  .edit-banner .reset-all {
+    margin-left: auto; padding: 5px 11px; border-radius: 7px;
+    border: 1px solid var(--border); background: #fff; color: var(--muted);
+    font-size: 11px; font-weight: 600; cursor: pointer;
+  }
+  .edit-banner .reset-all:hover { border-color: var(--neu-red); color: var(--neu-red); }
+
+  /* Activity rows (replace dc-tl in edit-aware mode) */
+  .dc-acts { position: relative; padding-left: 18px; margin-bottom: 4px; }
+  .dc-acts::before {
+    content: ''; position: absolute; left: 4px; top: 7px; bottom: 7px;
+    width: 1px; background: var(--border);
+  }
+  .act-row {
+    position: relative; display: flex; gap: 10px; align-items: flex-start;
+    margin-bottom: 6px;
+  }
+  .act-row:last-child { margin-bottom: 0; }
+  .act-row::before {
+    content: ''; position: absolute; left: -17px; top: 5px;
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--muted); box-shadow: 0 0 0 2.5px #fff; z-index: 1;
+  }
+  .act-row.t-class::before { background: var(--navy); }
+  .act-row.t-italian::before, .act-row.t-culture::before { background: var(--it-green); }
+  .act-row.t-tour::before { background: var(--neu-red); }
+  .act-row.t-trip::before, .act-row.t-orient::before { background: var(--gold); }
+  .act-row.t-weekend::before { background: #7c3aed; }
+  .act-row.t-lunch::before { background: #f5b942; }
+  .act-row.t-evening::before { background: #a78bfa; }
+  .act-row.t-holiday::before { background: #f59e0b; }
+  .act-row.t-travel::before { background: #0891b2; }
+  .act-row.t-milan::before { background: #e11d48; }
+  .act-row.t-free::before { background: #cbd5e1; }
+  .act-row.t-exam::before { background: var(--neu-red); box-shadow: 0 0 0 2.5px #fff, 0 0 0 4.5px rgba(196,18,48,0.22); }
+  .act-time {
+    font-family: 'JetBrains Mono', monospace; font-size: 9.5px; font-weight: 700;
+    color: var(--muted); letter-spacing: 0.04em; flex-shrink: 0; width: 86px;
+    padding-top: 1px; line-height: 1.3;
+  }
+  .act-text { flex: 1; min-width: 0; font-size: 11.5px; font-weight: 600; color: var(--text); line-height: 1.35; }
+  .act-row.t-free .act-text { color: var(--muted); font-style: italic; font-weight: 500; }
+  .act-text a { color: var(--neu-red); text-decoration: none; border-bottom: 1px dashed rgba(196,18,48,0.35); font-weight: 600; }
+  .act-text a::after { content: '↗'; font-size: 8.5px; margin-left: 2px; opacity: 0.55; vertical-align: super; }
+
+  /* Edit-mode controls on each row */
+  .act-handle, .act-del, .act-type, .act-time-input, .act-text-input { display: none; }
+  body.edit-on .act-row {
+    align-items: center; gap: 6px; background: #fff;
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 5px 6px 5px 8px; margin-bottom: 5px;
+  }
+  body.edit-on .act-row::before { left: -17px; top: 50%; transform: translateY(-50%); }
+  body.edit-on .act-text, body.edit-on .act-time { display: none; }
+  body.edit-on .act-handle {
+    display: inline-flex; cursor: grab; color: #94a3b8; font-size: 12px;
+    user-select: none; flex-shrink: 0; padding: 0 2px;
+  }
+  body.edit-on .act-handle:active { cursor: grabbing; }
+  body.edit-on .act-time-input {
+    display: block; width: 92px; flex-shrink: 0;
+    font-family: 'JetBrains Mono', monospace; font-size: 9.5px; font-weight: 600;
+    border: 1px solid var(--border); border-radius: 5px; padding: 4px 5px; color: var(--muted);
+    text-align: center;
+  }
+  body.edit-on .act-text-input {
+    display: block; flex: 1; min-width: 0;
+    font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 600; color: var(--text);
+    border: 1px solid var(--border); border-radius: 5px; padding: 5px 7px;
+  }
+  body.edit-on .act-text-input:focus, body.edit-on .act-time-input:focus,
+  body.edit-on .act-type:focus { outline: none; border-color: var(--it-green); box-shadow: 0 0 0 3px rgba(0,146,70,0.08); }
+  body.edit-on .act-type {
+    display: block; flex-shrink: 0; font-size: 10px; font-weight: 600;
+    border: 1px solid var(--border); border-radius: 5px; padding: 4px; color: var(--navy);
+    background: #fff; max-width: 92px;
+  }
+  body.edit-on .act-del {
+    display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+    width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--border);
+    background: #fff; color: var(--muted); font-size: 14px; line-height: 1; cursor: pointer;
+  }
+  body.edit-on .act-del:hover { background: var(--neu-red); color: #fff; border-color: var(--neu-red); }
+  .act-row.dragging { opacity: 0.45; }
+  .dc-acts.drag-over { background: rgba(0,146,70,0.04); border-radius: 8px; }
+
+  .dc-add { display: none; }
+  body.edit-on .dc-add {
+    display: inline-flex; align-items: center; gap: 5px;
+    margin: 8px 0 2px; padding: 5px 11px; border-radius: 7px;
+    border: 1px dashed var(--it-green); background: rgba(0,146,70,0.05);
+    color: var(--it-green); font-size: 11.5px; font-weight: 600; cursor: pointer;
+  }
+  body.edit-on .dc-add:hover { background: rgba(0,146,70,0.1); }
+  .dc-reset { display: none; }
+  body.edit-on .dc-reset {
+    display: inline-flex; align-items: center; gap: 4px; cursor: pointer;
+    font-size: 10px; font-weight: 600; color: var(--muted);
+    background: var(--soft); border: 1px solid var(--border); border-radius: 6px;
+    padding: 3px 8px; margin-left: auto;
+  }
+  body.edit-on .dc-reset:hover { color: var(--neu-red); border-color: var(--neu-red); }
+  .dc-edited-badge {
+    display: none; font-family: 'JetBrains Mono', monospace; font-size: 8px;
+    font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+    color: var(--it-green); background: rgba(0,146,70,0.1);
+    padding: 2px 6px; border-radius: 5px; margin-left: 8px;
+  }
+  .day-card.is-edited .dc-edited-badge { display: inline-block; }
+
+  /* Per-day notes */
+  .dc-notes { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border); }
+  .notes-head {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em;
+    color: var(--navy); margin-bottom: 8px;
+  }
+  .notes-head svg { width: 12px; height: 12px; }
+  .notes-head .notes-count { color: var(--muted); font-weight: 600; }
+  .notes-list { display: flex; flex-direction: column; gap: 7px; margin-bottom: 9px; }
+  .note-item {
+    background: var(--soft); border: 1px solid var(--border);
+    border-left: 3px solid var(--it-green); border-radius: 8px; padding: 7px 10px;
+  }
+  .note-meta { font-size: 10px; color: var(--muted); margin-bottom: 3px; display: flex; align-items: center; gap: 5px; }
+  .note-meta strong { color: var(--navy); font-weight: 700; }
+  .note-del {
+    margin-left: auto; cursor: pointer; color: #cbd5e1; font-size: 13px; line-height: 1;
+    border: none; background: none; padding: 0 2px;
+  }
+  .note-del:hover { color: var(--neu-red); }
+  .note-text { font-size: 12.5px; color: var(--text); line-height: 1.45; white-space: pre-wrap; word-break: break-word; }
+  .notes-empty { font-size: 11.5px; color: var(--muted); font-style: italic; margin-bottom: 9px; }
+  .notes-add { display: flex; gap: 6px; }
+  .note-input {
+    flex: 1; min-width: 0; font-family: 'Outfit', sans-serif; font-size: 12.5px;
+    border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; color: var(--text);
+  }
+  .note-input:focus { outline: none; border-color: var(--it-green); box-shadow: 0 0 0 3px rgba(0,146,70,0.08); }
+  .note-save {
+    flex-shrink: 0; padding: 8px 14px; border-radius: 8px; border: none;
+    background: var(--it-green); color: #fff; font-family: 'Outfit', sans-serif;
+    font-size: 12.5px; font-weight: 600; cursor: pointer;
+  }
+  .note-save:hover { background: #007a3b; }
+
+  /* Calendar side-panel notes (compact) */
+  .dp-notes { margin: 12px 0 4px; padding-top: 11px; border-top: 1px solid var(--border); }
+  .dp-notes .notes-list { margin-bottom: 8px; }
+  .dp-notes .note-item { padding: 6px 9px; }
+  .dp-notes .note-text { font-size: 11.5px; }
+  .dp-notes .note-input { padding: 7px 9px; font-size: 12px; }
+  .dp-notes .note-save { padding: 7px 12px; font-size: 12px; }
+
+  /* Calendar note dot */
+  .day-note-dot {
+    position: absolute; bottom: 5px; right: 5px;
+    width: 6px; height: 6px; border-radius: 50%; background: var(--it-green);
+    box-shadow: 0 0 0 2px #fff;
+  }
+
+  /* Name modal */
+  .name-modal {
+    position: fixed; inset: 0; z-index: 1200;
+    background: rgba(15,15,25,0.72); backdrop-filter: blur(8px);
+    display: none; align-items: center; justify-content: center; padding: 24px;
+  }
+  .name-modal.open { display: flex; }
+  .name-card {
+    background: #fff; border-radius: 20px; padding: 34px 32px 28px;
+    width: 100%; max-width: 400px; text-align: center;
+    box-shadow: 0 30px 80px rgba(15,23,42,0.3);
+  }
+  .name-card .flag-strip { display: flex; height: 6px; width: 70px; border-radius: 4px; overflow: hidden; margin: 0 auto 20px; }
+  .name-card .flag-strip > div { flex: 1; }
+  .name-card .flag-strip > div:nth-child(1) { background: var(--it-green); }
+  .name-card .flag-strip > div:nth-child(2) { background: #fff; border: 1px solid var(--border); border-left: none; border-right: none; }
+  .name-card .flag-strip > div:nth-child(3) { background: var(--it-red); }
+  .name-card h3 { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--navy); margin-bottom: 6px; }
+  .name-card p { font-size: 13px; color: var(--muted); margin-bottom: 18px; line-height: 1.5; }
+  .name-card input {
+    width: 100%; padding: 13px 15px; border: 1.5px solid var(--border); border-radius: 11px;
+    font-family: 'Outfit', sans-serif; font-size: 15px; color: var(--text); text-align: center; margin-bottom: 14px;
+  }
+  .name-card input:focus { outline: none; border-color: var(--it-green); box-shadow: 0 0 0 4px rgba(0,146,70,0.08); }
+  .name-card button {
+    width: 100%; padding: 13px; border: none; border-radius: 11px;
+    background: linear-gradient(135deg, var(--navy), #2a2a48); color: #fff;
+    font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .name-card button:hover { background: #2a2a48; }
+  .name-card .skip { display: block; margin-top: 12px; font-size: 11.5px; color: var(--muted); cursor: pointer; background: none; border: none; width: auto; padding: 0; }
+  .name-card .skip:hover { color: var(--navy); background: none; }
+
 </style>
 </head>
 <body>
@@ -1729,7 +1977,7 @@
     </div>
     <div class="log-card warn">
       <h3><i data-lucide="alert-triangle"></i> Holiday alert</h3>
-      <p><strong>Wed Jun 2, 2027 = Festa della Repubblica.</strong> Factories closed (Ferrari, Lamborghini, Maserati, Barilla all dark). Mantua day trip slotted on this date — UNESCO city, museums and historic sites stay open.</p>
+      <p><strong>Wed Jun 2, 2027 = Festa della Repubblica.</strong> Factories closed (Ferrari, Lamborghini, Maserati, Barilla all dark). Bologna day trip slotted on this date — the university city, porticoes, and the Quadrilatero food district stay open and lively.</p>
     </div>
     <div class="log-card warn">
       <h3><i data-lucide="calendar-clock"></i> Booking lead times</h3>
@@ -1746,7 +1994,7 @@
         <li><strong>Thu May 27</strong> · departure from US (overnight flight)</li>
         <li><strong>Fri May 28</strong> · arrive Parma · hotel check-in · light evening</li>
         <li><strong>Sat May 29 PM</strong> · Parma walking tour (Pilotta · Cathedral · Toscanini · aperitivo Garibaldi)</li>
-        <li><strong>Sun May 30 · 10am-4pm</strong> · cooking class + agriturismo lunch (cohort-bonding)</li>
+        <li><strong>Sun May 30 · 10am-4pm</strong> · Castello di Bardi excursion + village lunch (cohort-bonding; alt: Torrechiara)</li>
         <li>Mon May 31 PM now opens for course content (was walking tour)</li>
       </ul>
     </div>
@@ -1817,6 +2065,10 @@ const WIKI = {
   'Casa Toscanini': 'https://en.wikipedia.org/wiki/Arturo_Toscanini',
   'University of Parma': 'https://en.wikipedia.org/wiki/University_of_Parma',
   'UniPR': 'https://en.wikipedia.org/wiki/University_of_Parma',
+  // Castles (arrival weekend)
+  'Castello di Bardi': 'https://en.wikipedia.org/wiki/Bardi_Castle',
+  'Bardi': 'https://en.wikipedia.org/wiki/Bardi_Castle',
+  'Torrechiara': 'https://en.wikipedia.org/wiki/Castello_di_Torrechiara',
   // Mantua
   'Mantua': 'https://en.wikipedia.org/wiki/Mantua',
   'Palazzo Ducale': 'https://en.wikipedia.org/wiki/Ducal_Palace,_Mantua',
@@ -1929,7 +2181,7 @@ function linkifyWiki(text) {
 // ============================================================================
 const IMAGES = {
   '2027-05-31': 'images/day_welcome.png',
-  '2027-06-02': 'images/day_mantua.png',
+  '2027-06-02': 'images/day_bologna.png',
   '2027-06-03': 'images/day_pasta_class.png',
   '2027-06-04': 'images/day_parmigiano.png',
   '2027-06-07': 'images/day_barilla.png',
@@ -1939,7 +2191,7 @@ const IMAGES = {
   '2027-06-14': 'images/day_modena_acetaia.png',
   '2027-06-16': 'images/day_ferrari.png',
   '2027-06-17': 'images/day_pizza.png',
-  '2027-06-18': 'images/day_bologna.png',
+  '2027-06-18': 'images/day_mantua.png',
   '2027-06-19': 'images/day_milan_duomo.png',
   '2027-06-20': 'images/day_lake_garda.png',
   '2027-06-23': 'images/day_brembo.png',
@@ -1954,13 +2206,13 @@ const PARMA = [10.3279, 44.8015];
 const MILAN = [9.1900, 45.4642];
 
 const TRIPS = [
-  { name: 'Mantua', dayId: '2027-06-02', from: PARMA, to: [10.7914, 45.1564],
-    type: 'holiday', date: 'Wed Jun 2', dur: '1h', cost: '~€18 RT',
-    notes: 'UNESCO Renaissance city · scheduled on Repubblica holiday (factories closed)',
+  { name: 'Bologna', dayId: '2027-06-02', from: PARMA, to: [11.3426, 44.4949],
+    type: 'holiday', date: 'Wed Jun 2', dur: '50 min', cost: '~€20 RT',
+    notes: 'Holiday-safe pick · Università di Bologna 1088 · Asinelli Tower · Quadrilatero food walk',
     waypoints: [
-      { name: 'Palazzo Ducale + Camera degli Sposi', coords: [10.7935, 45.1602], desc: 'Mantegna fresco cycle · UNESCO' },
-      { name: 'Palazzo Te', coords: [10.7872, 45.1486], desc: 'Giulio Romano mannerist masterpiece' },
-      { name: 'Piazza Sordello + Duomo', coords: [10.7935, 45.1604], desc: 'Historic medieval centre' },
+      { name: 'Università di Bologna (Archiginnasio)', coords: [11.3434, 44.4920], desc: 'Oldest continuously-operating university · 1088' },
+      { name: 'Asinelli Tower', coords: [11.3470, 44.4945], desc: 'Climb the leaning medieval brick tower' },
+      { name: 'Piazza Maggiore + Quadrilatero', coords: [11.3437, 44.4938], desc: 'Historic food market district + tagliatelle al ragù' },
     ]},
   { name: 'Modena · Ferrari Mus + Acetaia', dayId: '2027-06-14', from: PARMA, to: [10.9252, 44.6471],
     type: 'trip', date: 'Mon Jun 14', dur: '30 min', cost: '~€8 RT',
@@ -1978,13 +2230,13 @@ const TRIPS = [
       { name: 'Ferrari Factory Bus tour', coords: [10.8710, 44.5340], desc: '45 min · 12:30 or 13:30 slot · on-bus only' },
       { name: 'Pista di Fiorano test track', coords: [10.852, 44.533], desc: 'Glimpse from factory tour route' },
     ]},
-  { name: 'Bologna', dayId: '2027-06-18', from: PARMA, to: [11.3426, 44.4949],
-    type: 'trip', date: 'Fri Jun 18', dur: '50 min', cost: '~€20 RT',
-    notes: 'Università di Bologna 1088 · Asinelli Tower · Quadrilatero food walk',
+  { name: 'Mantua', dayId: '2027-06-18', from: PARMA, to: [10.7914, 45.1564],
+    type: 'trip', date: 'Fri Jun 18', dur: '1h', cost: '~€18 RT',
+    notes: 'UNESCO Renaissance city · Palazzo Ducale + Camera degli Sposi · Palazzo Te',
     waypoints: [
-      { name: 'Università di Bologna (Archiginnasio)', coords: [11.3434, 44.4920], desc: 'Oldest continuously-operating university · 1088' },
-      { name: 'Asinelli Tower', coords: [11.3470, 44.4945], desc: 'Climb the leaning medieval brick tower' },
-      { name: 'Piazza Maggiore + Quadrilatero', coords: [11.3437, 44.4938], desc: 'Historic food market district + tagliatelle al ragù' },
+      { name: 'Palazzo Ducale + Camera degli Sposi', coords: [10.7935, 45.1602], desc: 'Mantegna fresco cycle · UNESCO' },
+      { name: 'Palazzo Te', coords: [10.7872, 45.1486], desc: 'Giulio Romano mannerist masterpiece' },
+      { name: 'Piazza Sordello + Duomo', coords: [10.7935, 45.1604], desc: 'Historic medieval centre' },
     ]},
   { name: 'Verona (optional)', dayId: '2027-06-05', from: PARMA, to: [10.9916, 45.4384],
     type: 'trip', date: 'Sat Jun 5', dur: '50 min FR', cost: '~€40 RT',
@@ -2077,7 +2329,7 @@ const WEEKLY_SCHEDULES = [
         { t: 'travel',  x: 'Pre-flight US' },
         { t: 'travel',  x: 'Land MXP/BLQ' },
         { t: 'free',    x: 'Sleep in / brunch' },
-        { t: 'orient',  x: 'Cooking class begins' },
+        { t: 'orient',  x: 'Bus → Castello di Bardi' },
       ],
       // Block 2
       [
@@ -2087,7 +2339,7 @@ const WEEKLY_SCHEDULES = [
         { t: 'travel',  x: 'Boarding US' },
         { t: 'travel',  x: 'Train → Parma' },
         { t: 'free',    x: 'Free morning' },
-        { t: 'orient',  x: 'Pasta-making' },
+        { t: 'orient',  x: 'Bardi castle tour' },
       ],
       // Lunch
       [
@@ -2097,7 +2349,7 @@ const WEEKLY_SCHEDULES = [
         { t: 'travel',  x: 'Lunch (US)' },
         { t: 'lunch',   x: 'Settle in hotel' },
         { t: 'lunch',   x: 'Lunch in centro' },
-        { t: 'lunch',   x: '★ Agriturismo lunch' },
+        { t: 'lunch',   x: '★ Village trattoria lunch' },
       ],
       // Block 3
       [
@@ -2107,7 +2359,7 @@ const WEEKLY_SCHEDULES = [
         { t: 'travel',  x: '(in flight)' },
         { t: 'orient',  x: 'Hotel check-in' },
         { t: 'orient',  x: '★ Parma walking tour' },
-        { t: 'orient',  x: 'Cooking class cont.' },
+        { t: 'orient',  x: 'Ramparts + valley walk' },
       ],
       // Block 4
       [
@@ -2146,20 +2398,20 @@ const WEEKLY_SCHEDULES = [
       // Block 1
       [
         { t: 'orient',  x: 'Campus tour' },
+        { t: 'orient',  x: 'UniPR orientation' },
+        { t: 'holiday', x: 'Bologna trip' },
         { t: 'class',   x: 'IE 4510' },
-        { t: 'holiday', x: 'Mantua trip' },
         { t: 'class',   x: 'IE 4510' },
-        { t: 'tour',    x: 'Parmigiano dairy' },
         { t: 'free',    x: 'Free / opt. Verona' },
         { t: 'free',    x: 'Free' },
       ],
       // Block 2
       [
         { t: 'orient',  x: 'Welcome talk' },
+        { t: 'orient',  x: 'Eng lab visit' },
+        { t: 'holiday', x: 'Asinelli Tower' },
         { t: 'class',   x: 'IE 4510' },
-        { t: 'holiday', x: 'Mantua palaces' },
         { t: 'class',   x: 'IE 4510' },
-        { t: 'tour',    x: 'Parmigiano dairy' },
         { t: 'free',    x: 'Verona Arena' },
         { t: 'free',    x: 'Free' },
       ],
@@ -2167,9 +2419,9 @@ const WEEKLY_SCHEDULES = [
       [
         { t: 'lunch',   x: 'Welcome lunch' },
         { t: 'lunch',   x: 'UniPR mensa' },
-        { t: 'lunch',   x: 'Mantua café' },
+        { t: 'lunch',   x: 'Quadrilatero lunch' },
         { t: 'lunch',   x: 'UniPR mensa' },
-        { t: 'lunch',   x: 'Parmigiano lunch' },
+        { t: 'lunch',   x: 'UniPR mensa' },
         { t: 'lunch',   x: 'Verona pranzo' },
         { t: 'free',    x: 'Free' },
       ],
@@ -2177,19 +2429,19 @@ const WEEKLY_SCHEDULES = [
       [
         { t: 'class',   x: 'UniPR Eng lab tour' },
         { t: 'italian', x: 'Italian #1' },
-        { t: 'holiday', x: 'Mantua walk' },
+        { t: 'holiday', x: 'Quadrilatero walk' },
         { t: 'italian', x: 'Italian #2' },
-        { t: 'tour',    x: 'Parmigiano (cont.)' },
+        { t: 'tour',    x: 'Parmigiano dairy' },
         { t: 'free',    x: 'Verona stroll' },
         { t: 'free',    x: 'Free' },
       ],
       // Block 4
       [
         { t: 'class',   x: 'Italian dean welcome' },
-        { t: 'class',   x: 'UniPR lab visit' },
+        { t: 'culture', x: 'Student meetup + culture' },
         { t: 'holiday', x: 'Return → Parma' },
         { t: 'culture', x: 'Pasta class' },
-        { t: 'tour',    x: 'Return → Parma' },
+        { t: 'tour',    x: 'Dairy tasting' },
         { t: 'culture', x: 'Arena (opera)' },
         { t: 'free',    x: 'Free' },
       ],
@@ -2290,7 +2542,7 @@ const WEEKLY_SCHEDULES = [
         { t: 'exam',    x: '★ MIDTERM' },
         { t: 'tour',    x: 'Ferrari Maranello' },
         { t: 'class',   x: 'IE 4510' },
-        { t: 'trip',    x: 'Bologna' },
+        { t: 'trip',    x: 'Mantua trip' },
         { t: 'travel',  x: 'Frecciarossa → Milan' },
         { t: 'trip',    x: 'Train → Como' },
       ],
@@ -2299,7 +2551,7 @@ const WEEKLY_SCHEDULES = [
         { t: 'exam',    x: 'MIDTERM (cont.)' },
         { t: 'tour',    x: 'Factory tour bus' },
         { t: 'class',   x: 'IE 4510' },
-        { t: 'trip',    x: 'Asinelli Tower' },
+        { t: 'trip',    x: 'Palazzo Ducale' },
         { t: 'travel',  x: 'Check in Milan' },
         { t: 'trip',    x: 'Como lakefront' },
       ],
@@ -2308,7 +2560,7 @@ const WEEKLY_SCHEDULES = [
         { t: 'lunch',   x: 'UniPR mensa' },
         { t: 'lunch',   x: 'Maranello café' },
         { t: 'lunch',   x: 'UniPR mensa' },
-        { t: 'lunch',   x: 'Tagliatelle al ragù' },
+        { t: 'lunch',   x: 'Mantua café' },
         { t: 'lunch',   x: 'Milan lunch' },
         { t: 'lunch',   x: 'Lakeside lunch' },
       ],
@@ -2317,7 +2569,7 @@ const WEEKLY_SCHEDULES = [
         { t: 'free',    x: 'FREE post-exam' },
         { t: 'tour',    x: 'Factory + F1 sim' },
         { t: 'italian', x: 'Italian #7 (last)' },
-        { t: 'trip',    x: 'Quadrilatero food walk' },
+        { t: 'trip',    x: 'Palazzo Te' },
         { t: 'culture', x: 'Brera + Castello walk' },
         { t: 'trip',    x: 'Funicolare Brunate' },
       ],
@@ -2448,14 +2700,15 @@ const DAYS = [
     sched: ['free', 'free', 'lunch', 'orient', 'orient', 'evening'],
     pills: ['gold:★ Cohort orientation', 'Free morning', '3 PM start']
   },
-  { date: '2027-05-30', dn: 30, dm: 'May', dw: 'Sun', wk: 0, type: 'orient', tag: 'Cooking class + agriturismo', icon: '🍝',
-    title: 'Cooking class + agriturismo lunch',
-    subtitle: '10 AM – 4 PM · Colli di Parma hills · pasta-making + multi-course Sunday lunch',
-    location: 'Colli di Parma agriturismo (~30 min south of Parma)',
-    body: `<p><strong>Cohort-bonding day.</strong> Bus transfer at <strong>10 AM</strong> from hotel to a working agriturismo in the Colli di Parma hills (Sala Baganza or Felino direction). Hands-on Italian cooking class: roll fresh egg pasta (tagliatelle, tortellini), make a quick ragù alla parmigiana, learn the difference between Parmigiano-Reggiano stagionature.</p>
-      <p>Long Italian Sunday lunch at the agriturismo: antipasto board with prosciutto + Parmigiano + culatello, the pasta you just made, secondo, dolce + Lambrusco/Malvasia. Return to Parma by 4 PM. Free evening — early night before Day 1 tomorrow.</p>`,
+  { date: '2027-05-30', dn: 30, dm: 'May', dw: 'Sun', wk: 0, type: 'orient', tag: 'Castello di Bardi', icon: '🏰',
+    title: 'Castello di Bardi excursion',
+    subtitle: '10 AM – 4 PM · medieval fortress in the Apennine foothills · cohort-bonding day',
+    location: 'Bardi · ~45 min SW of Parma (Val Ceno)',
+    body: `<p><strong>Cohort-bonding day.</strong> Bus transfer at <strong>10 AM</strong> to the <strong>Castello di Bardi</strong>, a dramatic 9th-century fortress built on a red-jasper spur above the Ceno valley — ramparts, courtyards, dungeons, and a panoramic walk over the Apennine foothills.</p>
+      <p>Long Italian lunch at a village trattoria below the castle. Return to Parma by ~4 PM, free evening — early night before Day 1 tomorrow.</p>
+      <p><em>Alternative for this slot or any free day: <strong>Castello di Torrechiara</strong> (~20 min south of Parma) — one of Italy's best-preserved frescoed castles, with the painted Camera d'Oro.</em></p>`,
     sched: ['orient', 'orient', 'lunch', 'orient', 'travel', 'evening'],
-    pills: ['gold:★★ Cohort glue', 'Half-day · 10am-4pm', 'Long Sunday lunch']
+    pills: ['gold:★★ Cohort glue', 'Half-day · 10am-4pm', 'Alt: Torrechiara']
   },
 
   // Week 1 — Orientation
@@ -2469,24 +2722,24 @@ const DAYS = [
     sched: ['orient', 'orient', 'visit', 'culture'],
     pills: ['First day', 'UniPR lab tour', 'Welcome dinner']
   },
-  { date: '2027-06-01', dn: 1, dm: 'Jun', dw: 'Tue', wk: 1, type: 'class', tag: 'Class day', icon: '📚',
-    title: 'First lecture day',
-    subtitle: 'AM 2 lecture blocks · PM Italian + UniPR engineering lab intro',
+  { date: '2027-06-01', dn: 1, dm: 'Jun', dw: 'Tue', wk: 1, type: 'class', tag: 'Lab + Italian', icon: '🔬',
+    title: 'UniPR lab + first Italian session',
+    subtitle: 'AM UniPR engineering lab + orientation · PM Italian #1 + Italian-student meetup + culture exchange',
     location: 'University of Parma · DIA',
-    body: `<p>Opening lectures for both courses (TBD 1000-level intro · cross-major). Course themes set: Italian innovation systems, manufacturing heritage, the link between cultural identity and industrial design.</p>
-      <p>Afternoon: first <strong>Italian language session</strong> at UniPR's Centro Linguistico di Ateneo (CLA). Late afternoon: engineering department lab visit — meet the host faculty.</p>`,
+    body: `<p>Morning at UniPR: department <strong>orientation</strong> and a guided <strong>engineering lab visit</strong> — a first look at the host institution's research, plus mentorship pairing with local Italian peers through the incoming-student office.</p>
+      <p>Afternoon: the first <strong>Italian language session</strong> at UniPR's Centro Linguistico di Ateneo (CLA), followed by a <strong>meet-and-greet with Italian students</strong> and an informal <strong>culture-exchange session</strong> — language tandem, campus life, and what to see around Parma.</p>`,
     sched: 'standard',
-    pills: ['Course intros', 'Italian Block 1']
+    pills: ['Lab visit AM', 'Italian Block 1', 'gold:Culture exchange']
   },
   { date: '2027-06-02', dn: 2, dm: 'Jun', dw: 'Wed', wk: 1, type: 'holiday', tag: 'Holiday · day trip', icon: '🇮🇹', flag: '⚠️',
-    title: 'Festa della Repubblica · Mantua day trip',
-    subtitle: 'UNESCO Renaissance city · ~1h by Regionale · ~€18 RT',
-    location: 'Mantua',
-    body: `<p>National holiday — factories and many businesses closed. <strong>Mantua</strong> stays open: museums, palaces, the historic Renaissance core.</p>
-      <p>Itinerary: <strong>Palazzo Ducale + Camera degli Sposi</strong> (Mantegna frescos), <strong>Palazzo Te</strong> (Giulio Romano's mannerist masterpiece), lunch on Piazza Sordello, walk along the lake. UNESCO World Heritage Site, low tourist density compared to Florence/Venice.</p>`,
+    title: 'Festa della Repubblica · Bologna day trip',
+    subtitle: 'Oldest university + Quadrilatero food district · ~50 min · ~€20 RT',
+    location: 'Bologna',
+    body: `<p>National holiday — factories and many businesses closed. <strong>Bologna</strong> stays wide open: the university quarter, the porticoes, and the Quadrilatero food market are at their liveliest on a festa.</p>
+      <p>Itinerary: <strong>Università di Bologna</strong> + the <strong>Archiginnasio anatomical theater</strong> (founded 1088 — oldest continuously-operating university in the Western world), climb the <strong>Asinelli Tower</strong> for the rooftop view, then a <strong>Quadrilatero food walk</strong> through the historic market lanes. Lunch: tagliatelle al ragù at the source.</p>`,
     sched: ['travel', 'visit', 'visit', 'travel'],
-    pills: ['UNESCO', 'Holiday-safe pick', 'gold:★ Underrated'],
-    map: { from: [10.3279, 44.8015], to: [10.7914, 45.1564], label: 'Parma → Mantua' }
+    pills: ['Holiday-safe pick', 'gold:★ University capital', 'Food walk'],
+    map: { from: [10.3279, 44.8015], to: [11.3426, 44.4949], label: 'Parma → Bologna' }
   },
   { date: '2027-06-03', dn: 3, dm: 'Jun', dw: 'Thu', wk: 1, type: 'class', tag: 'Class + workshop', icon: '🍝',
     title: 'Lectures + Pasta-making class',
@@ -2496,14 +2749,15 @@ const DAYS = [
     sched: ['commute', 'block', 'br', 'block', 'lunch', 'culture', 'br', 'culture'],
     pills: ['Crowd-pleaser', 'gold:★ Half-day workshop', 'Books fast']
   },
-  { date: '2027-06-04', dn: 4, dm: 'Jun', dw: 'Fri', wk: 1, type: 'tour', tag: 'Site visit', icon: '🧀',
-    title: 'Parmigiano-Reggiano dairy tour',
-    subtitle: 'Caseificio San Pier Damiani · 9 AM start · ~€55 pp',
-    location: 'Parma province · early start',
-    body: `<p>Full traditional dairy tour: copper cauldrons, the morning's curd, salt-bath room, aging warehouse with ~10,000 wheels. The 12-month / 24-month / 36-month tasting at the end is the punchline.</p>
-      <p>Operations-research framing: how a 1,000-year-old PDO (Protected Designation of Origin) consortium enforces process standardization across hundreds of independent producers.</p>`,
-    sched: ['travel', 'visit', 'visit', 'travel'],
-    pills: ['Site visit', 'Operations case']
+  { date: '2027-06-04', dn: 4, dm: 'Jun', dw: 'Fri', wk: 1, type: 'class', tag: 'Class + dairy tour', icon: '🧀',
+    title: 'Lectures + Parmigiano-Reggiano dairy tour',
+    subtitle: 'AM lectures at UniPR · PM Caseificio dairy tour + 12/24/36-month tasting',
+    location: 'Parma · DIA → Parma province',
+    body: `<p>Morning lectures for both courses at UniPR. Afternoon: <strong>Parmigiano-Reggiano dairy tour</strong> at a working caseificio — copper cauldrons, the curd, the salt-bath room, and the aging warehouse with thousands of wheels. The 12-month / 24-month / 36-month tasting at the end is the punchline.</p>
+      <p>Operations-research framing: how a 1,000-year-old PDO (Protected Designation of Origin) consortium enforces process standardization across hundreds of independent producers.</p>
+      <p><em>Note: traditional dairies make curd in the early morning — confirm the caseificio offers an afternoon visit + tasting slot, or book a tasting-focused afternoon program.</em></p>`,
+    sched: ['commute', 'block', 'br', 'block', 'lunch', 'visit', 'br', 'visit'],
+    pills: ['Site visit PM', 'gold:Operations case']
   },
   { date: '2027-06-05', dn: 5, dm: 'Jun', dw: 'Sat', wk: 1, type: 'free', tag: 'Free / optional Verona', icon: '🏟️',
     title: 'Optional · Verona day trip + Arena opera evening',
@@ -2624,13 +2878,13 @@ const DAYS = [
     pills: ['Evening', 'Process-variation case']
   },
   { date: '2027-06-18', dn: 18, dm: 'Jun', dw: 'Fri', wk: 3, type: 'trip', tag: 'Day trip', icon: '🏛️',
-    title: 'Bologna · oldest university',
-    subtitle: 'Regionale ~1h or Frecciarossa ~35 min · ~€20 RT',
-    location: 'Bologna',
-    body: `<p>Full day in <strong>Bologna</strong>. <strong>Università di Bologna</strong> tour (founded 1088 — oldest continuously-operating university in the Western world) + <strong>Archiginnasio anatomical theater</strong>. Climb the Asinelli Tower for the city view. Quadrilatero <strong>food walk</strong> through the historic market district. Lunch: tagliatelle al ragù at the source.</p>`,
+    title: 'Mantua · UNESCO Renaissance city',
+    subtitle: 'Regionale ~1h · ~€18 RT · low tourist density',
+    location: 'Mantua',
+    body: `<p>Full day in <strong>Mantua</strong> — a UNESCO World Heritage Renaissance city with a fraction of the crowds of Florence or Venice. <strong>Palazzo Ducale + Camera degli Sposi</strong> (Mantegna's fresco cycle), <strong>Palazzo Te</strong> (Giulio Romano's mannerist masterpiece), lunch on Piazza Sordello, and a walk along the three lakes that ring the old town.</p>`,
     sched: ['travel', 'visit', 'visit', 'lunch', 'visit', 'visit', 'travel'],
-    pills: ['gold:★ University capital', 'Already in proposal'],
-    map: { from: [10.3279, 44.8015], to: [11.3426, 44.4949], label: 'Parma → Bologna' }
+    pills: ['UNESCO', 'gold:★ Underrated', 'Renaissance core'],
+    map: { from: [10.3279, 44.8015], to: [10.7914, 45.1564], label: 'Parma → Mantua' }
   },
   { date: '2027-06-19', dn: 19, dm: 'Jun', dw: 'Sat', wk: 3, type: 'travel', tag: 'Move to Milan', icon: '🚄',
     title: 'Parma → Milan · settle in',
@@ -2730,6 +2984,7 @@ function renderCalendar() {
     if (d.empty) {
       cell.innerHTML = '';
     } else {
+      const hasNotes = DocStore.getNotes(d.date).length > 0;
       cell.innerHTML = `
         ${d.flag ? `<span class="day-flag">${d.flag}</span>` : ''}
         <div>
@@ -2738,6 +2993,7 @@ function renderCalendar() {
           <div class="day-type">${d.tag}</div>
         </div>
         <div class="day-meta">${d.icon || ''}</div>
+        ${hasNotes ? '<span class="day-note-dot" title="Has notes"></span>' : ''}
       `;
       // Click → update side panel (don't navigate)
       cell.addEventListener('click', (e) => {
@@ -2747,6 +3003,7 @@ function renderCalendar() {
     }
     grid.appendChild(cell);
   });
+  applyActiveTab();
 }
 
 // ============================================================================
@@ -2797,9 +3054,11 @@ function updateDayPanel(cellEl, date) {
     blocks = [{ time: 'All day', cell: { t: day.type, x: day.tag } }];
   }
 
+  OPEN_PANEL_DATE = date;
   // Highlight active cell
   document.querySelectorAll('.day-cell.popped').forEach(c => c.classList.remove('popped'));
-  cellEl.classList.add('popped');
+  const cell = cellEl || document.querySelector(`.day-cell[data-day="${date}"]`);
+  if (cell) cell.classList.add('popped');
 
   panel.innerHTML = `
     <div class="dp-header">
@@ -2817,6 +3076,7 @@ function updateDayPanel(cellEl, date) {
         </div>
       `).join('')}
     </div>
+    ${renderPanelNotes(date)}
     <div class="dp-footer">
       <a class="dp-link" href="#day-${date}">
         <i data-lucide="arrow-down"></i> Full day details
@@ -2845,20 +3105,10 @@ function renderDayCards() {
       ? `<div class="dc-image"><img src="${imageSrc}" alt="${d.title}" loading="lazy"></div>`
       : (d.map ? renderMiniMap(d.map) : '');
     const hasVisual = imageSrc || d.map;
-
-    // Build timeline blocks for this day from WEEKLY_SCHEDULES
-    let timelineBlocks = null;
-    for (const wk of WEEKLY_SCHEDULES) {
-      const idx = wk.headers.findIndex(h => dateKey(h.dn, h.dm) === d.date);
-      if (idx !== -1) {
-        timelineBlocks = wk.grid.map((row, i) => ({ time: PANEL_TIMES[i], cell: row[idx] }));
-        break;
-      }
-    }
-    const timelineHtml = timelineBlocks ? buildDayTimeline(timelineBlocks, d) : '';
+    const edited = !!DocStore.getEdits(d.date);
 
     return `
-      <div class="day-card t-${d.type}" id="day-${d.date}">
+      <div class="day-card t-${d.type}${edited ? ' is-edited' : ''}" id="day-${d.date}" data-date="${d.date}">
         <div class="dc-header">
           <div class="dc-date">
             <div class="dn">${d.dn}</div>
@@ -2866,7 +3116,7 @@ function renderDayCards() {
             <div class="dw">${d.dw}</div>
           </div>
           <div class="dc-info">
-            <span class="dc-tag t-${d.type}">${d.tag}</span>
+            <span class="dc-tag t-${d.type}">${d.tag}</span><span class="dc-edited-badge">✎ edited</span>
             <h3 class="dc-title">${linkifyWiki(d.title)}</h3>
             <div class="dc-subtitle">
               <i data-lucide="map-pin" class="ico"></i> ${linkifyWiki(d.location)}
@@ -2874,18 +3124,22 @@ function renderDayCards() {
               <span>${linkifyWiki(d.subtitle)}</span>
             </div>
           </div>
+          <button class="dc-reset" data-date="${d.date}" title="Reset this day to the original plan"><i data-lucide="rotate-ccw"></i> Reset</button>
         </div>
         <div class="dc-body ${hasVisual ? '' : 'no-map'}">
           <div class="dc-content">
-            ${timelineHtml}
+            <div class="dc-acts" data-date="${d.date}">${renderActivities(d.date)}</div>
+            <button class="dc-add" data-date="${d.date}"><i data-lucide="plus"></i> Add activity</button>
             ${pills ? `<div class="dc-tags">${pills}</div>` : ''}
           </div>
           ${visualHtml}
         </div>
+        ${renderNotes(d.date)}
       </div>
     `;
   }).join('');
 
+  wireDayCardsOnce();
   // Re-init lucide for newly inserted icons
   if (window.lucide) lucide.createIcons();
 }
@@ -3107,8 +3361,8 @@ const ITALY_DESTS = [
   { name: 'Parma', coords: [10.3279, 44.8015], cls: 'parma', desc: 'Home base · weeks 1–3' },
   { name: 'Modena', coords: [10.9252, 44.6471], cls: 'tour', desc: 'Day trip · Ferrari museum + acetaia' },
   { name: 'Maranello', coords: [10.8693, 44.5285], cls: 'tour', desc: 'Ferrari factory tour' },
-  { name: 'Bologna', coords: [11.3426, 44.4949], cls: 'trip', desc: 'Day trip · oldest university' },
-  { name: 'Mantua', coords: [10.7914, 45.1564], cls: 'trip', desc: 'Day trip · UNESCO city · Jun 2 holiday' },
+  { name: 'Bologna', coords: [11.3426, 44.4949], cls: 'trip', desc: 'Jun 2 holiday · oldest university + food walk' },
+  { name: 'Mantua', coords: [10.7914, 45.1564], cls: 'trip', desc: 'Jun 18 day trip · UNESCO Renaissance city' },
   { name: 'Verona', coords: [10.9916, 45.4384], cls: 'trip', desc: 'Optional day · Arena opera' },
   { name: 'Sirmione', coords: [10.6055, 45.4980], cls: 'weekend', desc: 'Weekend · Lake Garda' },
   { name: 'Monterosso', coords: [9.6539, 44.1466], cls: 'weekend', desc: 'Weekend · Cinque Terre' },
@@ -3373,9 +3627,365 @@ document.addEventListener('keydown', e => {
 });
 
 // ============================================================================
+// COLLAB LAYER — your name, per-day notes, and live drag-and-drop itinerary edits
+// ----------------------------------------------------------------------------
+// Storage is abstracted. By DEFAULT everything is saved in this browser only
+// (localStorage — private to each person, no server, no cost). To make notes
+// and edits SHARED across the whole cohort for FREE (no Azure), turn on Firebase:
+//
+//   ─── ENABLE FREE SHARED MODE (Firebase — no Azure, no credit card) ───
+//   1. console.firebase.google.com → "Add project" (any name) · free "Spark" plan.
+//   2. Build → Firestore Database → Create database → Start in test mode.
+//   3. Project settings (gear) → Your apps → Web (</>) → register → copy the
+//      firebaseConfig {...} object it shows you.
+//   4. Paste that object as FIREBASE_CONFIG below (replace null). Save, reload.
+//   5. (Recommended) Firestore → Rules tab, paste:
+//        rules_version = '2';
+//        service cloud.firestore {
+//          match /databases/{db}/documents {
+//            match /docitaly/{d}        { allow read, write: if true; }
+//            match /docitaly_notes/{d}  { allow read, write: if true; }
+//          }
+//        }
+//   That's it — notes + edits become live and shared. Until then they stay
+//   private per browser, and the whole page still works exactly the same.
+// ============================================================================
+const FIREBASE_CONFIG = null; // ← paste your firebaseConfig object here to go shared
+
+function uid(){ return 'a' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+function escapeHtml(s){ return String(s==null?'':s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+function escapeAttr(s){ return String(s==null?'':s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function fmtTime(ts){ try { const d=new Date(ts); return d.toLocaleDateString(undefined,{month:'short',day:'numeric'})+' '+d.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'}); } catch(e){ return ''; } }
+
+const ACT_TYPES = [
+  ['class','Lecture'], ['italian','Italian'], ['culture','Cultural'], ['orient','Orientation'],
+  ['tour','Industry tour'], ['trip','Day trip'], ['weekend','Weekend'], ['visit','Site visit'],
+  ['lunch','Lunch'], ['evening','Evening'], ['travel','Travel'], ['holiday','Holiday'],
+  ['exam','Exam'], ['free','Free'],
+];
+
+let EDIT_MODE = false;
+let OPEN_PANEL_DATE = null;
+
+// ---- Storage abstraction (localStorage by default, Firebase if configured) ----
+const DocStore = (() => {
+  const LS_KEY = 'docItaly2027';
+  const NAME_KEY = 'docItalyName';
+  let cache = { notes: {}, edits: {} };
+  let listeners = [];
+  let mode = 'local';
+  let F = null; // firebase fns + db
+
+  function emit(){ listeners.forEach(fn => { try { fn(cache); } catch(e){} }); }
+  function onChange(fn){ listeners.push(fn); }
+
+  function loadLocal(){
+    try { const raw = localStorage.getItem(LS_KEY); if (raw){ const o=JSON.parse(raw); cache.notes=o.notes||{}; cache.edits=o.edits||{}; } } catch(e){}
+  }
+  function saveLocal(){ try { localStorage.setItem(LS_KEY, JSON.stringify({notes:cache.notes, edits:cache.edits})); } catch(e){} }
+
+  // Name is always per-person (local), even in shared mode.
+  function getName(){ try { return localStorage.getItem(NAME_KEY) || ''; } catch(e){ return ''; } }
+  function setName(n){ try { localStorage.setItem(NAME_KEY, n); } catch(e){} emit(); }
+
+  function getNotes(date){ return (cache.notes[date] || []).slice().sort((a,b)=>(a.ts||0)-(b.ts||0)); }
+  function getEdits(date){ return cache.edits[date] || null; }
+
+  function persist(){ if (mode==='local'){ saveLocal(); } else { fbSetAll(); } emit(); }
+
+  function addNote(date, note){ if(!cache.notes[date]) cache.notes[date]=[]; cache.notes[date].push(note);
+    if (mode==='local'){ saveLocal(); emit(); } else { fbAddNote(date, note); emit(); } }
+  function deleteNote(date, id){ cache.notes[date]=(cache.notes[date]||[]).filter(n=>n.id!==id);
+    if (mode==='local'){ saveLocal(); emit(); } else { fbDeleteNote(id); emit(); } }
+  function setEdits(date, acts){ cache.edits[date]=acts; if(mode==='local'){ saveLocal(); } else { fbSetEdits(); } emit(); }
+  function setEditsBulk(map){ Object.keys(map).forEach(d=>{ cache.edits[d]=map[d]; }); if(mode==='local'){ saveLocal(); } else { fbSetEdits(); } emit(); }
+  function resetDay(date){ delete cache.edits[date]; if(mode==='local'){ saveLocal(); } else { fbSetEdits(); } emit(); }
+  function clearAllEdits(){ cache.edits={}; if(mode==='local'){ saveLocal(); } else { fbSetEdits(); } emit(); }
+
+  // ---- Firebase (free shared mode) ----
+  async function initFirebase(){
+    const appMod = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
+    const fs = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+    const app = appMod.initializeApp(FIREBASE_CONFIG);
+    const db = fs.getFirestore(app);
+    F = { db, fs };
+    mode = 'firebase';
+    fs.onSnapshot(fs.doc(db,'docitaly','shared'), snap => { const d=snap.data()||{}; cache.edits=d.edits||{}; emit(); });
+    fs.onSnapshot(fs.collection(db,'docitaly_notes'), qs => { const by={}; qs.forEach(s=>{ const n=s.data(); if(!by[n.date]) by[n.date]=[]; by[n.date].push(n); }); cache.notes=by; emit(); });
+  }
+  function fbAddNote(date, note){ try { F.fs.setDoc(F.fs.doc(F.db,'docitaly_notes',note.id), {...note, date}); } catch(e){ console.warn(e); } }
+  function fbDeleteNote(id){ try { F.fs.deleteDoc(F.fs.doc(F.db,'docitaly_notes',id)); } catch(e){ console.warn(e); } }
+  function fbSetEdits(){ try { F.fs.setDoc(F.fs.doc(F.db,'docitaly','shared'), {edits:cache.edits}, {merge:true}); } catch(e){ console.warn(e); } }
+  function fbSetAll(){ fbSetEdits(); }
+
+  async function init(){
+    if (FIREBASE_CONFIG && typeof FIREBASE_CONFIG==='object'){
+      try { await initFirebase(); return mode; }
+      catch(e){ console.warn('Firebase init failed — using private local storage.', e); mode='local'; loadLocal(); }
+    } else { loadLocal(); }
+    return mode;
+  }
+
+  return { init, onChange, getName, setName, getNotes, getEdits, addNote, deleteNote,
+           setEdits, setEditsBulk, resetDay, clearAllEdits, get mode(){ return mode; } };
+})();
+
+// ---- Activity model: base (from WEEKLY_SCHEDULES) merged with user edits ----
+function baseActivities(date){
+  for (const wk of WEEKLY_SCHEDULES){
+    const idx = wk.headers.findIndex(h => dateKey(h.dn, h.dm) === date);
+    if (idx !== -1){
+      return wk.grid.map((row,i) => ({ t: row[idx].t, time: WEEK_TIMES[i], x: row[idx].x }))
+        .filter(a => a.x && a.x !== '—')
+        .map((a,i) => ({ id: `${date}-b${i}`, t: a.t, time: a.time, x: a.x }));
+    }
+  }
+  return [];
+}
+function getDayActivities(date){
+  const e = DocStore.getEdits(date);
+  if (e) return e.map(a => ({...a}));
+  return baseActivities(date);
+}
+
+function renderActivities(date){
+  const acts = getDayActivities(date);
+  if (!acts.length) return '<div class="notes-empty">No scheduled blocks.</div>';
+  const opts = (sel) => ACT_TYPES.map(([v,l]) => `<option value="${v}"${v===sel?' selected':''}>${l}</option>`).join('');
+  return acts.map(a => `
+    <div class="act-row t-${a.t}" data-id="${a.id}" data-date="${date}" data-type="${a.t}"${EDIT_MODE?' draggable="true"':''}>
+      <span class="act-handle" title="Drag to reorder or move to another day">⋮⋮</span>
+      <span class="act-time">${escapeHtml(a.time || '')}</span>
+      <input class="act-time-input" value="${escapeAttr(a.time || '')}" placeholder="e.g. 13:35 — 16:55">
+      <span class="act-text">${linkifyWiki(escapeHtml(a.x))}</span>
+      <input class="act-text-input" value="${escapeAttr(a.x)}" placeholder="Activity">
+      <select class="act-type">${opts(a.t)}</select>
+      <button class="act-del" title="Delete">×</button>
+    </div>`).join('');
+}
+
+function renderNotes(date){
+  const notes = DocStore.getNotes(date);
+  const me = DocStore.getName();
+  const list = notes.length ? notes.map(n => `
+    <div class="note-item">
+      <div class="note-meta"><strong>${escapeHtml(n.name||'Someone')}</strong> · <span>${fmtTime(n.ts)}</span>
+        ${n.name===me ? `<button class="note-del" data-date="${date}" data-id="${n.id}" title="Delete">×</button>` : ''}
+      </div>
+      <div class="note-text">${escapeHtml(n.text)}</div>
+    </div>`).join('') : `<div class="notes-empty">No notes yet — be the first to add one.</div>`;
+  return `
+    <div class="dc-notes" data-date="${date}">
+      <div class="notes-head"><i data-lucide="message-square"></i> Notes <span class="notes-count">(${notes.length})</span></div>
+      <div class="notes-list">${list}</div>
+      <div class="notes-add">
+        <input class="note-input" data-date="${date}" placeholder="Add a note for this day…" maxlength="800">
+        <button class="note-save" data-date="${date}">Add</button>
+      </div>
+    </div>`;
+}
+
+// ---- Edit helpers ----
+function rebuildFromContainer(c){
+  const date = c.dataset.date;
+  return [...c.querySelectorAll('.act-row')].map((r,i) => ({
+    id: r.dataset.id || (date+'-n'+i+'-'+uid()),
+    t: r.dataset.type || 'class',
+    time: (r.querySelector('.act-time-input') ? r.querySelector('.act-time-input').value : (r.querySelector('.act-time')||{}).textContent || '').trim(),
+    x: (r.querySelector('.act-text-input') ? r.querySelector('.act-text-input').value : (r.querySelector('.act-text')||{}).textContent || '').trim(),
+  }));
+}
+function persistContainer(c){ if (c) DocStore.setEdits(c.dataset.date, rebuildFromContainer(c)); }
+function addActivity(date){ const acts = getDayActivities(date); acts.push({ id: uid(), t:'class', time:'', x:'New activity' }); DocStore.setEdits(date, acts); }
+// Works for both the day-card composer and the calendar side-panel composer.
+// `el` is the clicked Add button or the input that fired Enter; we find the
+// .note-input inside the same .notes-add wrapper.
+function noteComposerSubmit(el){
+  const scope = el.closest('.notes-add');
+  const inp = scope ? scope.querySelector('.note-input') : null;
+  if (!inp) return;
+  const date = inp.dataset.date;
+  const text = inp.value.trim(); if (!text) return;
+  const name = DocStore.getName();
+  if (!name){ DocItaly.askName(); return; }
+  DocStore.addNote(date, { id: uid(), name, text, ts: Date.now() });
+  inp.value = '';
+}
+
+// Compact notes block for the calendar side panel
+function renderPanelNotes(date){
+  const notes = DocStore.getNotes(date);
+  const me = DocStore.getName();
+  const items = notes.length ? notes.map(n => `
+    <div class="note-item">
+      <div class="note-meta"><strong>${escapeHtml(n.name||'Someone')}</strong> · <span>${fmtTime(n.ts)}</span>
+        ${n.name===me ? `<button class="note-del" data-date="${date}" data-id="${n.id}" title="Delete">×</button>` : ''}
+      </div>
+      <div class="note-text">${escapeHtml(n.text)}</div>
+    </div>`).join('') : `<div class="notes-empty">No notes yet for this day.</div>`;
+  return `
+    <div class="dp-notes">
+      <div class="notes-head"><i data-lucide="message-square"></i> Notes <span class="notes-count">(${notes.length})</span></div>
+      <div class="notes-list">${items}</div>
+      <div class="notes-add">
+        <input class="note-input" data-date="${date}" placeholder="Add a note…" maxlength="800">
+        <button class="note-save">Add</button>
+      </div>
+    </div>`;
+}
+
+function wirePanelOnce(){
+  const p = document.getElementById('dayPanel');
+  if (!p || p._wired) return; p._wired = true;
+  p.addEventListener('click', e => {
+    const save = e.target.closest('.note-save'); if (save){ noteComposerSubmit(save); return; }
+    const ndel = e.target.closest('.note-del'); if (ndel){ DocStore.deleteNote(ndel.dataset.date, ndel.dataset.id); return; }
+  });
+  p.addEventListener('keydown', e => {
+    if (e.key==='Enter' && e.target.classList && e.target.classList.contains('note-input')){ e.preventDefault(); noteComposerSubmit(e.target); }
+  });
+}
+
+// ---- Drag and drop (reorder within a day · move across days) ----
+let dragEl=null, dragDate=null;
+function getDragAfterElement(container, y){
+  const els = [...container.querySelectorAll('.act-row:not(.dragging)')];
+  let closest = { offset: -Infinity, el: null };
+  els.forEach(el => { const box=el.getBoundingClientRect(); const off=y-box.top-box.height/2; if (off<0 && off>closest.offset) closest={offset:off, el}; });
+  return closest.el;
+}
+function finishDrag(){
+  if (!dragEl) return;
+  dragEl.classList.remove('dragging');
+  const targetC = dragEl.closest('.dc-acts');
+  const targetDate = targetC ? targetC.dataset.date : dragDate;
+  const map = {};
+  const originC = document.querySelector(`.dc-acts[data-date="${dragDate}"]`);
+  if (originC) map[dragDate] = rebuildFromContainer(originC);
+  if (targetC && targetDate !== dragDate) map[targetDate] = rebuildFromContainer(targetC);
+  dragEl = null; dragDate = null;
+  if (Object.keys(map).length) DocStore.setEditsBulk(map);
+}
+
+function wireDayCardsOnce(){
+  const root = document.getElementById('dayCardsList');
+  if (!root || root._wired) return; root._wired = true;
+
+  root.addEventListener('click', e => {
+    const save = e.target.closest('.note-save'); if (save){ noteComposerSubmit(save); return; }
+    const ndel = e.target.closest('.note-del'); if (ndel){ DocStore.deleteNote(ndel.dataset.date, ndel.dataset.id); return; }
+    if (!EDIT_MODE) return;
+    const adel = e.target.closest('.act-del'); if (adel){ const c=adel.closest('.dc-acts'); adel.closest('.act-row').remove(); persistContainer(c); return; }
+    const add = e.target.closest('.dc-add'); if (add){ addActivity(add.dataset.date); return; }
+    const reset = e.target.closest('.dc-reset'); if (reset){ if (confirm('Reset this day to the original plan? Your notes are kept.')) DocStore.resetDay(reset.dataset.date); return; }
+  });
+  root.addEventListener('keydown', e => {
+    if (e.key==='Enter' && e.target.classList && e.target.classList.contains('note-input')){ e.preventDefault(); noteComposerSubmit(e.target); }
+  });
+  root.addEventListener('change', e => {
+    if (!EDIT_MODE) return;
+    if (e.target.classList.contains('act-type')){ const row=e.target.closest('.act-row'); row.dataset.type=e.target.value; row.className='act-row t-'+e.target.value; row.setAttribute('draggable','true'); persistContainer(row.closest('.dc-acts')); return; }
+    if (e.target.classList.contains('act-time-input') || e.target.classList.contains('act-text-input')){ persistContainer(e.target.closest('.dc-acts')); }
+  });
+  root.addEventListener('dragstart', e => {
+    const row = e.target.closest('.act-row'); if (!row || !EDIT_MODE) return;
+    dragEl = row; dragDate = row.closest('.dc-acts').dataset.date; row.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', row.dataset.id); } catch(_){}
+  });
+  root.addEventListener('dragover', e => {
+    if (!dragEl) return; const c = e.target.closest('.dc-acts'); if (!c) return;
+    e.preventDefault(); const after = getDragAfterElement(c, e.clientY);
+    if (after == null) c.appendChild(dragEl); else c.insertBefore(dragEl, after);
+  });
+  root.addEventListener('drop', e => { if (!dragEl) return; e.preventDefault(); finishDrag(); });
+  root.addEventListener('dragend', () => finishDrag());
+}
+
+// ---- Chrome: header account chip, edit toggle, edit banner, name modal ----
+const DocItaly = (() => {
+  function initUI(){ injectChrome(); wireDayCardsOnce(); wirePanelOnce(); }
+  function injectChrome(){
+    const headWrap = document.querySelector('header.app .head-wrap');
+    if (headWrap && !headWrap.querySelector('.acct-wrap')){
+      const wrap = document.createElement('div');
+      wrap.className = 'acct-wrap';
+      wrap.innerHTML = `
+        <button class="btn-edit" id="btnEdit"><i data-lucide="pencil"></i> <span>Edit itinerary</span></button>
+        <button class="acct-chip" id="acctChip" title="Click to set or change your name">
+          <span class="av" id="acctAv">?</span>
+          <span class="nm" id="acctName">Sign in</span>
+          <span class="acct-mode" id="acctMode"></span>
+        </button>`;
+      headWrap.appendChild(wrap);
+      wrap.querySelector('#btnEdit').addEventListener('click', toggleEdit);
+      wrap.querySelector('#acctChip').addEventListener('click', () => askName());
+    }
+    if (!document.querySelector('.edit-banner')){
+      const header = document.querySelector('header.app');
+      const banner = document.createElement('div');
+      banner.className = 'edit-banner';
+      banner.innerHTML = `<div class="edit-banner-inner">
+        <span><strong>Edit mode on.</strong> Drag the ⋮⋮ handle to reorder — or drag onto another day's card to move it · edit the time box to extend/shrink · <em>Add activity</em> adds a row · <em>Reset</em> restores a day.</span>
+        <button class="reset-all" id="resetAll">Reset all days</button></div>`;
+      header.insertAdjacentElement('afterend', banner);
+      banner.querySelector('#resetAll').addEventListener('click', () => { if (confirm('Reset ALL days to the original plan? Notes are kept.')) DocStore.clearAllEdits(); });
+    }
+    if (!document.getElementById('nameModal')){
+      const m = document.createElement('div');
+      m.className = 'name-modal'; m.id = 'nameModal';
+      m.innerHTML = `<div class="name-card">
+        <div class="flag-strip"><div></div><div></div><div></div></div>
+        <h3>Welcome to the Italian Corridor</h3>
+        <p id="nameModalSub"></p>
+        <input id="nameInput" type="text" placeholder="Your name" maxlength="40" autocomplete="off">
+        <button id="nameSave">Save my name</button>
+        <button class="skip" id="nameSkip">Skip for now</button></div>`;
+      document.body.appendChild(m);
+      const save = () => { const v=document.getElementById('nameInput').value.trim(); if (v) DocStore.setName(v); closeName(); };
+      m.querySelector('#nameSave').addEventListener('click', save);
+      m.querySelector('#nameSkip').addEventListener('click', closeName);
+      m.querySelector('#nameInput').addEventListener('keydown', e => { if (e.key==='Enter') save(); });
+      m.addEventListener('click', e => { if (e.target===m) closeName(); });
+    }
+    refreshChrome();
+  }
+  function refreshChrome(){
+    const name = DocStore.getName();
+    const av=document.getElementById('acctAv'), nm=document.getElementById('acctName'), md=document.getElementById('acctMode');
+    if (av) av.textContent = name ? name.trim()[0].toUpperCase() : '?';
+    if (nm) nm.textContent = name || 'Sign in';
+    if (md){ md.textContent = DocStore.mode==='firebase' ? 'shared' : 'private'; md.className = 'acct-mode ' + (DocStore.mode==='firebase'?'firebase':'local'); }
+  }
+  function toggleEdit(){
+    EDIT_MODE = !EDIT_MODE;
+    document.body.classList.toggle('edit-on', EDIT_MODE);
+    const b = document.getElementById('btnEdit');
+    if (b){ b.classList.toggle('on', EDIT_MODE); b.querySelector('span').textContent = EDIT_MODE ? 'Done editing' : 'Edit itinerary'; }
+    renderDayCards();
+    if (window.lucide) lucide.createIcons();
+  }
+  function askName(){
+    const m=document.getElementById('nameModal'); if(!m) return;
+    const sub=document.getElementById('nameModalSub'); if (sub) sub.textContent = DocStore.mode==='firebase' ? 'Add your name so your notes and edits are saved under it — shared live with the whole cohort.' : 'Add your name so your notes and edits are saved under it. Stored on this device.';
+    const inp=document.getElementById('nameInput'); if (inp) inp.value = DocStore.getName() || '';
+    m.classList.add('open'); setTimeout(() => inp && inp.focus(), 50);
+  }
+  function closeName(){ const m=document.getElementById('nameModal'); if (m) m.classList.remove('open'); }
+  return { initUI, refreshChrome, askName };
+})();
+
+function applyActiveTab(){
+  const active = document.querySelector('.cal-tab.active');
+  const wk = active ? active.dataset.wk : 'all';
+  document.querySelectorAll('.day-cell').forEach(cell => { cell.style.display = (wk==='all' || cell.dataset.wk===wk) ? '' : 'none'; });
+}
+
+// ============================================================================
 // BOOT
 // ============================================================================
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  await DocStore.init();
+  DocItaly.initUI();
   renderCalendar();
   renderPanelEmpty();
   renderTripTimeline();
@@ -3383,6 +3993,8 @@ document.addEventListener('DOMContentLoaded', () => {
   renderDayCards();
   setupTabs();
   wireLightbox();
+  DocStore.onChange(() => { renderCalendar(); renderDayCards(); if (OPEN_PANEL_DATE) updateDayPanel(null, OPEN_PANEL_DATE); DocItaly.refreshChrome(); });
+  if (!DocStore.getName()) DocItaly.askName();
   if (window.lucide) lucide.createIcons();
 });
 </script>
