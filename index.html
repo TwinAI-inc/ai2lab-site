@@ -4408,6 +4408,7 @@
                     <span class="slider-dot" onclick="goToSlide(3)"></span>
                     <span class="slider-dot" onclick="goToSlide(4)"></span>
                     <span class="slider-dot" onclick="goToSlide(5)"></span>
+                    <span class="slider-dot" onclick="goToSlide(6)"></span>
                 </div>
             </div>
         </section>
@@ -6248,7 +6249,7 @@
 
         // Hero Slider
         let currentSlide = 0;
-        const totalSlides = 4;
+        const totalSlides = document.querySelectorAll('#sliderContainer .slide').length;
 
         function updateSlider() {
             const container = document.getElementById('sliderContainer');
