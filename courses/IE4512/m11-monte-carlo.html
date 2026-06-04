@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Module 11 · Monte Carlo NPV Simulator</title>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(', '\\)']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #faf9f5; color: #1a1a1a;
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+    min-height: 100vh; padding: 24px;
+  }
+  .wrap { max-width: 1280px; margin: 0 auto; }
+
+  .hero {
+    padding: 18px 0 22px; border-top: 4px solid #8a2828; border-bottom: 1px solid #d4cfc0;
+    margin-bottom: 22px;
+  }
+  .kicker {
+    font-family: -apple-system, 'Inter', sans-serif; font-size: 11px; color: #8a2828;
+    letter-spacing: 0.22em; text-transform: uppercase; margin-bottom: 12px; font-weight: 600;
+  }
+  .title { font-family: Georgia, serif; font-size: 34px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
+  .title em { font-style: italic; font-weight: 400; color: #8a2828; }
+  .sub { font-family: Georgia, serif; font-size: 15px; font-style: italic; color: #5a5247; margin-top: 8px; line-height: 1.5; max-width: 760px; }
+
+  .grid {
+    display: grid; grid-template-columns: 380px 1fr; gap: 18px;
+  }
+  @media (max-width: 980px) { .grid { grid-template-columns: 1fr; } }
+
+  .panel { padding: 18px; background: #fff; border: 1px solid #e8e3d4; }
+  .panel h3 {
+    font-family: -apple-system, sans-serif; font-size: 10.5px; color: #8a2828;
+    letter-spacing: 0.18em; text-transform: uppercase; font-weight: 600; margin-bottom: 12px;
+  }
+
+  .input-block {
+    margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px dashed #ede7d4;
+  }
+  .input-block:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+  .input-block .name {
+    font-family: Georgia, serif; font-size: 15px; font-style: italic; margin-bottom: 6px;
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .input-block .name .det-val {
+    font-family: -apple-system, sans-serif; font-size: 13px; color: #5a5247;
+    font-style: normal;
+  }
+
+  .dist-tabs {
+    display: flex; gap: 4px; margin-bottom: 8px;
+  }
+  .dist-tab {
+    flex: 1; padding: 4px 6px; border: 1px solid #d4cfc0; background: #faf9f5;
+    font-family: -apple-system, sans-serif; font-size: 10.5px; color: #5a5247;
+    cursor: pointer; text-transform: uppercase; letter-spacing: 0.06em;
+    transition: background 0.15s;
+  }
+  .dist-tab:hover { background: #f0ebd9; }
+  .dist-tab.active { background: #8a2828; color: #fff; border-color: #8a2828; }
+
+  .param-row {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;
+  }
+  .param-row.two { grid-template-columns: 1fr 1fr; }
+  .param-row.one { grid-template-columns: 1fr; }
+  .param-row label {
+    font-family: -apple-system, sans-serif; font-size: 10px; color: #8b7355;
+    text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; display: block;
+  }
+  .param-row input {
+    width: 100%; padding: 5px 8px; border: 1px solid #d4cfc0; background: #fff;
+    font-family: -apple-system, sans-serif; font-size: 13px; color: #1a1a1a;
+  }
+  .param-row input:focus { outline: none; border-color: #8a2828; }
+
+  .runbar {
+    display: flex; gap: 10px; align-items: center; padding: 14px 18px;
+    background: #faf3e0; border: 1px solid #e8d9a8; margin-bottom: 16px;
+  }
+  .runbar label {
+    font-family: Georgia, serif; font-size: 14px; font-style: italic; color: #5a5247;
+  }
+  .runbar select {
+    padding: 6px 10px; border: 1px solid #d4cfc0; background: #fff;
+    font-family: -apple-system, sans-serif; font-size: 13px;
+  }
+  .btn-run {
+    margin-left: auto;
+    font-family: -apple-system, sans-serif; font-size: 12px; font-weight: 700;
+    padding: 9px 18px; border: none; background: #8a2828; color: #fff;
+    cursor: pointer; letter-spacing: 0.1em; text-transform: uppercase;
+    transition: background 0.15s;
+  }
+  .btn-run:hover { background: #6e1f1f; }
+  .btn-run:disabled { background: #b8a8a8; cursor: not-allowed; }
+  .btn-reset {
+    font-family: -apple-system, sans-serif; font-size: 11px; font-weight: 600;
+    padding: 8px 14px; border: 1px solid #8b7355; background: #fff; color: #5a5247;
+    cursor: pointer; letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .btn-reset:hover { background: #5a5247; color: #fff; border-color: #5a5247; }
+
+  .stats-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 18px;
+  }
+  @media (max-width: 720px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+  .stat {
+    padding: 12px 14px; background: #fff; border: 1px solid #e8e3d4;
+    border-left: 3px solid #8a2828;
+  }
+  .stat .lab {
+    font-family: -apple-system, sans-serif; font-size: 9.5px; color: #8b7355;
+    text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 2px;
+  }
+  .stat .num {
+    font-family: Georgia, serif; font-size: 22px; font-weight: 700; color: #1a1a1a;
+    letter-spacing: -0.01em;
+  }
+  .stat.pos .num { color: #5c7a4a; }
+  .stat.neg .num { color: #8a2828; }
+  .stat.warn { border-left-color: #b8860b; }
+  .stat.warn .lab { color: #b8860b; }
+
+  .charts-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  }
+  @media (max-width: 980px) { .charts-grid { grid-template-columns: 1fr; } }
+  .chart-card {
+    padding: 16px; background: #fff; border: 1px solid #e8e3d4;
+  }
+  .chart-card h4 {
+    font-family: -apple-system, sans-serif; font-size: 10.5px; color: #8a2828;
+    letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; margin-bottom: 10px;
+  }
+  .chart-card .legend {
+    font-family: Georgia, serif; font-size: 12px; font-style: italic;
+    color: #5a5247; margin-top: 8px; line-height: 1.5;
+  }
+  canvas { width: 100%; display: block; }
+
+  .takeaway {
+    margin-top: 16px; padding: 14px 18px; background: #faf3e0;
+    border-left: 3px solid #b8860b; font-style: italic; line-height: 1.6;
+    font-family: Georgia, serif; font-size: 14px;
+  }
+  .takeaway strong { font-style: normal; color: #b8860b; }
+
+  .formula-card {
+    margin-top: 16px; padding: 14px 18px; background: #f5f1e3;
+    border: 1px solid #e8d9a8; font-family: Georgia, serif;
+    line-height: 1.7;
+  }
+  .formula-card .lab {
+    font-family: -apple-system, sans-serif; font-size: 10.5px; color: #b8860b;
+    letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; margin-bottom: 6px;
+  }
+
+  .toggle-summary {
+    background: #fff; border: 1px solid #e8e3d4; padding: 12px 16px; cursor: pointer;
+    font-family: Georgia, serif; font-style: italic; font-size: 14px; color: #5a5247;
+    list-style: none; margin-bottom: 8px;
+  }
+  details[open] .toggle-summary { background: #faf3e0; border-color: #e8d9a8; }
+  .toggle-summary::before { content: '▸ '; color: #b8860b; font-weight: bold; font-style: normal; }
+  details[open] .toggle-summary::before { content: '▾ '; }
+
+  .empty-state {
+    padding: 50px 20px; text-align: center; color: #8b7355;
+    font-family: Georgia, serif; font-style: italic; font-size: 15px;
+    background: #fff; border: 1px dashed #d4cfc0;
+  }
+
+  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .nav-back {
+    font-family: -apple-system, sans-serif; font-size: 11.5px; font-weight: 600;
+    color: #5a5247; text-decoration: none; letter-spacing: 0.05em;
+  }
+  .nav-back:hover { color: #8a2828; }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    body { font-size: 13px; padding: 0 !important; }
+    .wrap { max-width: 100%; padding: 12px 10px 16px; }
+    .title { font-size: 22px !important; line-height: 1.2; }
+    .grid { grid-template-columns: 1fr !important; gap: 10px; }
+    .charts-grid { grid-template-columns: 1fr !important; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+    canvas, svg { max-width: 100% !important; }
+    button { min-height: 40px; padding: 9px 14px; font-size: 13px; }
+    input[type="number"], input[type="text"] { font-size: 16px !important; }
+    .panel, .chart-card { padding: 12px 14px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <a class="nav-back" href="index.html">&larr; back to course</a>
+    <a class="nav-back" href="https://www.ai2lab.ai" target="_blank">ai2lab.ai &rarr;</a>
+  </div>
+
+  <div class="hero">
+    <div class="kicker">Module 11 &middot; Probabilistic Risk Analysis</div>
+    <h1 class="title">Monte Carlo <em>NPV Simulator</em></h1>
+    <p class="sub">
+      Deterministic NPV asks one question and gives one number. Reality has dozens of unknowns.
+      Pick a distribution for each uncertain input, roll the dice 10,000 times, and look at the whole landscape of futures &mdash; not just the average.
+    </p>
+  </div>
+
+  <details style="margin-bottom: 18px;">
+    <summary class="toggle-summary">Why Monte Carlo? &nbsp;&middot;&nbsp; the math in one minute</summary>
+    <div class="formula-card">
+      <div class="lab">Trial NPV</div>
+      <p style="margin-top: 6px;">
+        For each trial \(k = 1, 2, \ldots, K\) we draw one sample from each distribution and compute:
+      </p>
+      <p style="margin: 8px 0 4px 0; padding-left: 14px;">
+        \( \mathrm{NPV}_k = -C_0 + \displaystyle\sum_{t=1}^{N_k} \frac{A_k - O_k}{(1+i)^t} + \frac{S_k}{(1+i)^{N_k}} \)
+      </p>
+      <p style="font-size: 13px; color: #5a5247; margin-top: 8px;">
+        where \(A_k\) is annual benefit, \(O_k\) is annual operating cost, \(N_k\) is project life, \(S_k\) is salvage, all drawn from their distributions on this trial.
+        Across \(K\) trials we then look at the <strong>distribution</strong> of \(\mathrm{NPV}_k\) &mdash; its mean, its spread, its probability of being negative.
+      </p>
+    </div>
+  </details>
+
+  <div class="grid">
+
+    <div class="panel">
+      <h3>Inputs &amp; Distributions</h3>
+
+      <!-- Initial cost -->
+      <div class="input-block" data-key="C0">
+        <div class="name">Initial investment <span class="det-val">deterministic</span></div>
+        <div class="param-row one">
+          <div>
+            <label>\(C_0\) ($)</label>
+            <input type="number" data-p="value" value="100000" step="1000" />
+          </div>
+        </div>
+      </div>
+
+      <!-- MARR -->
+      <div class="input-block" data-key="MARR">
+        <div class="name">MARR <span class="det-val">deterministic</span></div>
+        <div class="param-row one">
+          <div>
+            <label>\(i\) (%)</label>
+            <input type="number" data-p="value" value="10" step="0.5" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Annual benefit -->
+      <div class="input-block" data-key="A">
+        <div class="name">Annual benefit <span class="det-val"></span></div>
+        <div class="dist-tabs">
+          <button class="dist-tab" data-dist="triangular">Tri</button>
+          <button class="dist-tab" data-dist="normal">Normal</button>
+          <button class="dist-tab" data-dist="uniform">Uniform</button>
+          <button class="dist-tab" data-dist="fixed">Fixed</button>
+        </div>
+        <div class="dist-params"></div>
+      </div>
+
+      <!-- Annual operating cost -->
+      <div class="input-block" data-key="O">
+        <div class="name">Annual operating cost <span class="det-val"></span></div>
+        <div class="dist-tabs">
+          <button class="dist-tab" data-dist="triangular">Tri</button>
+          <button class="dist-tab" data-dist="normal">Normal</button>
+          <button class="dist-tab" data-dist="uniform">Uniform</button>
+          <button class="dist-tab" data-dist="fixed">Fixed</button>
+        </div>
+        <div class="dist-params"></div>
+      </div>
+
+      <!-- Salvage -->
+      <div class="input-block" data-key="S">
+        <div class="name">Salvage value <span class="det-val"></span></div>
+        <div class="dist-tabs">
+          <button class="dist-tab" data-dist="triangular">Tri</button>
+          <button class="dist-tab" data-dist="normal">Normal</button>
+          <button class="dist-tab" data-dist="uniform">Uniform</button>
+          <button class="dist-tab" data-dist="fixed">Fixed</button>
+        </div>
+        <div class="dist-params"></div>
+      </div>
+
+      <!-- Project life -->
+      <div class="input-block" data-key="N">
+        <div class="name">Project life (yrs) <span class="det-val"></span></div>
+        <div class="dist-tabs">
+          <button class="dist-tab" data-dist="triangular">Tri</button>
+          <button class="dist-tab" data-dist="uniform">Uniform</button>
+          <button class="dist-tab" data-dist="fixed">Fixed</button>
+        </div>
+        <div class="dist-params"></div>
+      </div>
+
+      <div style="margin-top: 14px; display: flex; gap: 8px;">
+        <button class="btn-reset" id="btn-reset">Reset to defaults</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="runbar">
+        <label>Trials:</label>
+        <select id="trials">
+          <option value="1000">1,000</option>
+          <option value="5000">5,000</option>
+          <option value="10000" selected>10,000</option>
+          <option value="25000">25,000</option>
+        </select>
+        <label>Seed:</label>
+        <input type="number" id="seed" value="42" min="1" max="999999" style="width: 80px; padding: 6px 8px; border: 1px solid #d4cfc0; font-family: -apple-system, sans-serif; font-size: 13px;" />
+        <button class="btn-run" id="btn-run">Run Simulation</button>
+      </div>
+
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat"><div class="lab">Mean NPV</div><div class="num" id="s-mean">&mdash;</div></div>
+        <div class="stat"><div class="lab">Median NPV</div><div class="num" id="s-median">&mdash;</div></div>
+        <div class="stat warn"><div class="lab">P(NPV &lt; 0)</div><div class="num" id="s-ploss">&mdash;</div></div>
+        <div class="stat"><div class="lab">Std deviation</div><div class="num" id="s-std">&mdash;</div></div>
+        <div class="stat"><div class="lab">5th percentile</div><div class="num" id="s-p5">&mdash;</div></div>
+        <div class="stat"><div class="lab">95th percentile</div><div class="num" id="s-p95">&mdash;</div></div>
+        <div class="stat"><div class="lab">Min NPV</div><div class="num" id="s-min">&mdash;</div></div>
+        <div class="stat"><div class="lab">Max NPV</div><div class="num" id="s-max">&mdash;</div></div>
+      </div>
+
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h4>Distribution of NPV outcomes</h4>
+          <canvas id="hist" width="600" height="280"></canvas>
+          <p class="legend" id="hist-legend">Run the simulation to see the histogram. Red area = trials that lost money.</p>
+        </div>
+        <div class="chart-card">
+          <h4>Tornado &mdash; variance drivers</h4>
+          <canvas id="tornado" width="600" height="280"></canvas>
+          <p class="legend" id="tornado-legend">Which input contributes most to NPV uncertainty? Longer bars = bigger influence.</p>
+        </div>
+      </div>
+
+      <div class="takeaway" id="takeaway" style="display:none;"></div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+// ============================================================
+// MULBERRY32 PRNG (seedable)
+// ============================================================
+function mulberry32(seed) {
+  let a = seed >>> 0;
+  return function() {
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = a;
+    t = Math.imul(t ^ t >>> 15, t | 1);
+    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+// ============================================================
+// DISTRIBUTION SAMPLERS
+// ============================================================
+const Samplers = {
+  triangular(rng, lo, mode, hi) {
+    const u = rng();
+    const F = (mode - lo) / (hi - lo);
+    if (u < F) return lo + Math.sqrt(u * (hi - lo) * (mode - lo));
+    return hi - Math.sqrt((1 - u) * (hi - lo) * (hi - mode));
+  },
+  uniform(rng, lo, hi) {
+    return lo + rng() * (hi - lo);
+  },
+  normal(rng, mean, std) {
+    // Box-Muller
+    let u1 = rng(); if (u1 < 1e-12) u1 = 1e-12;
+    const u2 = rng();
+    const z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+    return mean + std * z;
+  },
+  fixed(rng, v) { return v; }
+};
+
+// Expected value (mean) for tornado baseline
+function expectedValue(spec) {
+  if (spec.dist === 'fixed') return spec.value;
+  if (spec.dist === 'triangular') return (spec.lo + spec.mode + spec.hi) / 3;
+  if (spec.dist === 'uniform') return (spec.lo + spec.hi) / 2;
+  if (spec.dist === 'normal') return spec.mean;
+  return 0;
+}
+
+function sample(spec, rng) {
+  if (spec.dist === 'fixed') return spec.value;
+  if (spec.dist === 'triangular') return Samplers.triangular(rng, spec.lo, spec.mode, spec.hi);
+  if (spec.dist === 'uniform') return Samplers.uniform(rng, spec.lo, spec.hi);
+  if (spec.dist === 'normal') return Samplers.normal(rng, spec.mean, spec.std);
+  return 0;
+}
+
+// ============================================================
+// DEFAULTS — a "new product launch" case study
+// ============================================================
+const DEFAULTS = {
+  C0:   { dist: 'fixed', value: 100000 },
+  MARR: { dist: 'fixed', value: 10 },
+  A:    { dist: 'triangular', lo: 25000, mode: 35000, hi: 50000 },
+  O:    { dist: 'triangular', lo: 8000,  mode: 10000, hi: 14000 },
+  S:    { dist: 'uniform',    lo: 5000,  hi: 15000 },
+  N:    { dist: 'fixed', value: 6 }
+};
+
+const STATE = JSON.parse(JSON.stringify(DEFAULTS));
+
+// ============================================================
+// PARAM PANELS
+// ============================================================
+const PARAM_TEMPLATES = {
+  triangular: {
+    fields: [['lo', 'Min'], ['mode', 'Mode'], ['hi', 'Max']],
+    cols: 'three'
+  },
+  normal: {
+    fields: [['mean', 'Mean'], ['std', 'Std dev']],
+    cols: 'two'
+  },
+  uniform: {
+    fields: [['lo', 'Min'], ['hi', 'Max']],
+    cols: 'two'
+  },
+  fixed: {
+    fields: [['value', 'Value']],
+    cols: 'one'
+  }
+};
+
+function renderDistParams(blockEl, key) {
+  const spec = STATE[key];
+  const tabs = blockEl.querySelectorAll('.dist-tab');
+  tabs.forEach(t => t.classList.toggle('active', t.dataset.dist === spec.dist));
+
+  const paramsEl = blockEl.querySelector('.dist-params');
+  if (!paramsEl) return;
+  const tpl = PARAM_TEMPLATES[spec.dist];
+  const colClass = tpl.cols === 'three' ? '' : tpl.cols;
+  paramsEl.innerHTML = `<div class="param-row ${colClass}">
+    ${tpl.fields.map(([k, label]) => `
+      <div>
+        <label>${label}</label>
+        <input type="number" data-p="${k}" value="${spec[k] ?? ''}" step="${k === 'std' ? '100' : (key === 'N' ? '1' : '1000')}" />
+      </div>`).join('')}
+  </div>`;
+
+  paramsEl.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('change', () => {
+      const v = parseFloat(inp.value);
+      if (!isNaN(v)) {
+        STATE[key][inp.dataset.p] = v;
+        updateDetLabel(key);
+      }
+    });
+  });
+  updateDetLabel(key);
+}
+
+function updateDetLabel(key) {
+  const blockEl = document.querySelector(`[data-key="${key}"]`);
+  if (!blockEl) return;
+  const detEl = blockEl.querySelector('.det-val');
+  if (!detEl) return;
+  const spec = STATE[key];
+  const fmt = key === 'MARR' ? (v => v.toFixed(1) + '%')
+            : key === 'N'    ? (v => v.toFixed(1) + ' yr')
+            : (v => '$' + Math.round(v).toLocaleString());
+
+  if (key === 'C0' || key === 'MARR') {
+    detEl.textContent = '';
+    return;
+  }
+  if (spec.dist === 'fixed') detEl.textContent = `→ ${fmt(spec.value)}`;
+  else if (spec.dist === 'triangular') detEl.textContent = `Tri(${fmt(spec.lo)}, ${fmt(spec.mode)}, ${fmt(spec.hi)})`;
+  else if (spec.dist === 'uniform') detEl.textContent = `U(${fmt(spec.lo)}, ${fmt(spec.hi)})`;
+  else if (spec.dist === 'normal') detEl.textContent = `N(${fmt(spec.mean)}, σ=${fmt(spec.std)})`;
+}
+
+// Wire up tabs + inputs for each block
+function wireBlocks() {
+  document.querySelectorAll('.input-block').forEach(blockEl => {
+    const key = blockEl.dataset.key;
+    blockEl.querySelectorAll('.dist-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const newDist = tab.dataset.dist;
+        if (STATE[key].dist === newDist) return;
+        // migrate values sensibly
+        const old = { ...STATE[key] };
+        STATE[key] = makeDefaultSpec(key, newDist, old);
+        renderDistParams(blockEl, key);
+      });
+    });
+    // for fixed-only blocks (C0, MARR)
+    blockEl.querySelectorAll('input[data-p]').forEach(inp => {
+      inp.addEventListener('change', () => {
+        const v = parseFloat(inp.value);
+        if (!isNaN(v)) STATE[key][inp.dataset.p] = v;
+      });
+    });
+    renderDistParams(blockEl, key);
+  });
+}
+
+function makeDefaultSpec(key, dist, old) {
+  // Try to preserve the central tendency from old when switching distributions
+  const old_mean = old ? expectedValue(old) : null;
+  if (key === 'A') {
+    if (dist === 'triangular') return { dist, lo: 25000, mode: 35000, hi: 50000 };
+    if (dist === 'normal')     return { dist, mean: old_mean ?? 35000, std: 5000 };
+    if (dist === 'uniform')    return { dist, lo: 25000, hi: 50000 };
+    if (dist === 'fixed')      return { dist, value: old_mean ?? 35000 };
+  }
+  if (key === 'O') {
+    if (dist === 'triangular') return { dist, lo: 8000, mode: 10000, hi: 14000 };
+    if (dist === 'normal')     return { dist, mean: old_mean ?? 10000, std: 1500 };
+    if (dist === 'uniform')    return { dist, lo: 8000, hi: 14000 };
+    if (dist === 'fixed')      return { dist, value: old_mean ?? 10000 };
+  }
+  if (key === 'S') {
+    if (dist === 'triangular') return { dist, lo: 5000, mode: 10000, hi: 15000 };
+    if (dist === 'normal')     return { dist, mean: old_mean ?? 10000, std: 2000 };
+    if (dist === 'uniform')    return { dist, lo: 5000, hi: 15000 };
+    if (dist === 'fixed')      return { dist, value: old_mean ?? 10000 };
+  }
+  if (key === 'N') {
+    if (dist === 'triangular') return { dist, lo: 5, mode: 6, hi: 8 };
+    if (dist === 'uniform')    return { dist, lo: 5, hi: 8 };
+    if (dist === 'fixed')      return { dist, value: 6 };
+  }
+  return { dist: 'fixed', value: 0 };
+}
+
+// ============================================================
+// NPV CORE
+// ============================================================
+function trialNPV(s, rng) {
+  const A = sample(s.A, rng);
+  const O = sample(s.O, rng);
+  const Sv = sample(s.S, rng);
+  let N = sample(s.N, rng);
+  N = Math.max(1, Math.round(N));
+  const i = s.MARR.value / 100;
+  const C0 = s.C0.value;
+
+  // PW of net annual = (A - O) * P/A factor
+  const PA = i === 0 ? N : (1 - Math.pow(1 + i, -N)) / i;
+  const PF = i === 0 ? 1 : Math.pow(1 + i, -N);
+  return -C0 + (A - O) * PA + Sv * PF;
+}
+
+// ============================================================
+// STATS HELPERS
+// ============================================================
+function percentile(sorted, p) {
+  const idx = (sorted.length - 1) * p;
+  const lo = Math.floor(idx), hi = Math.ceil(idx);
+  if (lo === hi) return sorted[lo];
+  return sorted[lo] * (hi - idx) + sorted[hi] * (idx - lo);
+}
+function mean(xs) { let s = 0; for (const x of xs) s += x; return s / xs.length; }
+function stdDev(xs, m) {
+  let s = 0; for (const x of xs) s += (x - m) * (x - m);
+  return Math.sqrt(s / xs.length);
+}
+
+// ============================================================
+// MAIN RUN
+// ============================================================
+let lastNPVs = null;
+let lastTornado = null;
+
+function runSim() {
+  const K = parseInt(document.getElementById('trials').value, 10);
+  const seed = parseInt(document.getElementById('seed').value, 10) || 1;
+  const rng = mulberry32(seed);
+
+  // Main run
+  const npvs = new Float64Array(K);
+  for (let k = 0; k < K; k++) npvs[k] = trialNPV(STATE, rng);
+
+  // Stats
+  const arr = Array.from(npvs).sort((a, b) => a - b);
+  const m = mean(arr);
+  const sd = stdDev(arr, m);
+  const med = percentile(arr, 0.5);
+  const p5 = percentile(arr, 0.05);
+  const p95 = percentile(arr, 0.95);
+  const ploss = arr.filter(v => v < 0).length / K;
+
+  document.getElementById('s-mean').textContent = fmtM(m);
+  document.getElementById('s-mean').parentElement.classList.toggle('pos', m >= 0);
+  document.getElementById('s-mean').parentElement.classList.toggle('neg', m < 0);
+  document.getElementById('s-median').textContent = fmtM(med);
+  document.getElementById('s-median').parentElement.classList.toggle('pos', med >= 0);
+  document.getElementById('s-median').parentElement.classList.toggle('neg', med < 0);
+  document.getElementById('s-ploss').textContent = (ploss * 100).toFixed(1) + '%';
+  document.getElementById('s-std').textContent = fmtM(sd);
+  document.getElementById('s-p5').textContent = fmtM(p5);
+  document.getElementById('s-p95').textContent = fmtM(p95);
+  document.getElementById('s-min').textContent = fmtM(arr[0]);
+  document.getElementById('s-max').textContent = fmtM(arr[arr.length - 1]);
+
+  lastNPVs = arr;
+  drawHistogram(arr, m, p5, p95);
+
+  // Tornado
+  const tornadoData = computeTornado(seed);
+  lastTornado = tornadoData;
+  drawTornado(tornadoData);
+
+  showTakeaway(m, ploss, p5, p95, tornadoData);
+}
+
+function fmtM(v) {
+  const abs = Math.abs(v);
+  if (abs >= 1e6) return (v / 1e6).toFixed(2).replace(/\.00$/, '') + 'M';
+  if (abs >= 1e3) return '$' + Math.round(v / 100) / 10 + 'k';
+  return '$' + Math.round(v).toLocaleString();
+}
+
+// ============================================================
+// TORNADO — variance contribution per input
+// Strategy: hold all-but-one input fixed at expected value, run K small trials
+// varying only the one. Compare stdev of resulting NPV.
+// ============================================================
+function computeTornado(seed) {
+  const K = 2000;
+  const inputKeys = ['A', 'O', 'S', 'N'].filter(k => STATE[k].dist !== 'fixed');
+  if (inputKeys.length === 0) return [];
+
+  // Frozen baseline: all inputs at expected value
+  const baseline = {};
+  for (const k of Object.keys(STATE)) {
+    baseline[k] = { dist: 'fixed', value: expectedValue(STATE[k]) };
+  }
+
+  const results = [];
+  for (const key of inputKeys) {
+    const rng = mulberry32((seed + key.charCodeAt(0) * 7919) >>> 0);
+    const local = JSON.parse(JSON.stringify(baseline));
+    local[key] = STATE[key]; // unfreeze this one
+    const npvs = new Float64Array(K);
+    for (let k = 0; k < K; k++) npvs[k] = trialNPV(local, rng);
+    const arr = Array.from(npvs).sort((a, b) => a - b);
+    const m = mean(arr);
+    const sd = stdDev(arr, m);
+    const p5 = percentile(arr, 0.05);
+    const p95 = percentile(arr, 0.95);
+    results.push({ key, label: LABELS[key], sd, range: p95 - p5, p5, p95 });
+  }
+  results.sort((a, b) => b.range - a.range);
+  return results;
+}
+
+const LABELS = {
+  A: 'Annual benefit',
+  O: 'Operating cost',
+  S: 'Salvage value',
+  N: 'Project life'
+};
+
+// ============================================================
+// CHARTS
+// ============================================================
+function drawHistogram(sortedNPVs, m, p5, p95) {
+  const cv = document.getElementById('hist');
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const margin = { l: 50, r: 14, t: 16, b: 38 };
+  const cw = W - margin.l - margin.r;
+  const ch = H - margin.t - margin.b;
+
+  const lo = sortedNPVs[0], hi = sortedNPVs[sortedNPVs.length - 1];
+  const range = hi - lo;
+  if (range <= 0) return;
+
+  const nBins = 40;
+  const binWidth = range / nBins;
+  const bins = new Array(nBins).fill(0);
+  for (const v of sortedNPVs) {
+    let idx = Math.floor((v - lo) / binWidth);
+    if (idx >= nBins) idx = nBins - 1;
+    if (idx < 0) idx = 0;
+    bins[idx]++;
+  }
+  const maxCount = Math.max(...bins);
+
+  // bars
+  const x = v => margin.l + ((v - lo) / range) * cw;
+  bins.forEach((c, i) => {
+    const binStart = lo + i * binWidth;
+    const binEnd = binStart + binWidth;
+    const x0 = x(binStart) + 1;
+    const x1 = x(binEnd) - 1;
+    const h = (c / maxCount) * ch;
+    const y = margin.t + ch - h;
+    // color: red if bin midpoint < 0, else green-gold
+    const mid = (binStart + binEnd) / 2;
+    ctx.fillStyle = mid < 0 ? 'rgba(138, 40, 40, 0.7)' : 'rgba(92, 122, 74, 0.55)';
+    ctx.fillRect(x0, y, Math.max(1, x1 - x0), h);
+  });
+
+  // zero line
+  if (lo < 0 && hi > 0) {
+    const x0 = x(0);
+    ctx.strokeStyle = '#1a1a1a';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(x0, margin.t); ctx.lineTo(x0, margin.t + ch); ctx.stroke();
+    ctx.fillStyle = '#1a1a1a';
+    ctx.font = '11px -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('NPV = 0', x0, margin.t + ch + 28);
+  }
+
+  // mean line
+  const xm = x(m);
+  ctx.strokeStyle = '#b8860b';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath(); ctx.moveTo(xm, margin.t); ctx.lineTo(xm, margin.t + ch); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#b8860b';
+  ctx.font = 'italic 11px Georgia, serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('mean ' + fmtM(m), xm + 4, margin.t + 12);
+
+  // axis
+  ctx.strokeStyle = '#5a5247';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(margin.l, margin.t + ch);
+  ctx.lineTo(margin.l + cw, margin.t + ch);
+  ctx.stroke();
+
+  // x-axis labels — 5 ticks
+  ctx.fillStyle = '#5a5247';
+  ctx.font = '10.5px -apple-system, sans-serif';
+  ctx.textAlign = 'center';
+  for (let i = 0; i <= 5; i++) {
+    const v = lo + (i / 5) * range;
+    const xv = x(v);
+    ctx.fillText(fmtM(v), xv, margin.t + ch + 14);
+    ctx.beginPath(); ctx.moveTo(xv, margin.t + ch); ctx.lineTo(xv, margin.t + ch + 3); ctx.stroke();
+  }
+
+  // y-axis label
+  ctx.save();
+  ctx.translate(14, margin.t + ch / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#5a5247';
+  ctx.font = 'italic 12px Georgia, serif';
+  ctx.fillText('frequency', 0, 0);
+  ctx.restore();
+
+  document.getElementById('hist-legend').innerHTML =
+    `Red bars = trials where NPV &lt; 0. Gold dashed line = sample mean. The width of the spread is what deterministic NPV hides.`;
+}
+
+function drawTornado(data) {
+  const cv = document.getElementById('tornado');
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  ctx.clearRect(0, 0, W, H);
+
+  if (data.length === 0) {
+    ctx.fillStyle = '#8b7355';
+    ctx.font = 'italic 14px Georgia, serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('No uncertain inputs — switch at least one to a distribution.', W / 2, H / 2);
+    return;
+  }
+
+  const margin = { l: 130, r: 70, t: 16, b: 28 };
+  const cw = W - margin.l - margin.r;
+  const ch = H - margin.t - margin.b;
+
+  const maxRange = Math.max(...data.map(d => d.range));
+  const rowH = Math.min(46, ch / data.length);
+
+  data.forEach((d, i) => {
+    const y = margin.t + i * rowH + 6;
+    const barH = rowH - 12;
+    const w = (d.range / maxRange) * cw;
+
+    // label
+    ctx.fillStyle = '#1a1a1a';
+    ctx.font = 'italic 13px Georgia, serif';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(d.label, margin.l - 10, y + barH / 2);
+
+    // bar
+    ctx.fillStyle = i === 0 ? '#8a2828' : (i === 1 ? '#b8860b' : '#5c7a4a');
+    ctx.fillRect(margin.l, y, w, barH);
+
+    // range label on right
+    ctx.fillStyle = '#5a5247';
+    ctx.font = '11px -apple-system, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(fmtM(d.range), margin.l + w + 6, y + barH / 2);
+  });
+
+  // axis label
+  ctx.fillStyle = '#5a5247';
+  ctx.font = 'italic 12px Georgia, serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('NPV spread (95th – 5th percentile) when only this input varies', W / 2, H - 6);
+
+  document.getElementById('tornado-legend').innerHTML =
+    `Each bar holds every other input at its mean and lets only this one vary. The top bar is your biggest source of NPV risk &mdash; tighten that estimate first.`;
+}
+
+// ============================================================
+// TAKEAWAY
+// ============================================================
+function showTakeaway(m, ploss, p5, p95, tornadoData) {
+  const el = document.getElementById('takeaway');
+  el.style.display = 'block';
+  let recommendation;
+  if (ploss < 0.05) recommendation = `<strong>Accept.</strong> Less than 5% chance of losing money &mdash; the project is robust to the uncertainty you specified.`;
+  else if (ploss < 0.20) recommendation = `<strong>Accept with caution.</strong> 1 in 5 to 1 in 20 chance of loss. Worth a sensitivity check before committing.`;
+  else if (ploss < 0.40) recommendation = `<strong>Investigate further.</strong> Significant downside risk. Tighten your top tornado driver and re-run.`;
+  else recommendation = `<strong>Reject as currently specified.</strong> Loss is too likely &mdash; either find a way to reduce uncertainty or improve the central case.`;
+
+  const topDriver = tornadoData[0] ? tornadoData[0].label : 'no input';
+  el.innerHTML =
+    `<strong>What the simulation says.</strong> Mean NPV is ${fmtM(m)}, with a 90% chance of landing between ${fmtM(p5)} and ${fmtM(p95)}. Probability of loss: <strong>${(ploss * 100).toFixed(1)}%</strong>. The biggest driver of that uncertainty is <strong>${topDriver}</strong> &mdash; spending effort to narrow that estimate will shrink the spread more than any other change. ${recommendation}`;
+}
+
+// ============================================================
+// RESET + INIT
+// ============================================================
+function resetAll() {
+  Object.keys(DEFAULTS).forEach(k => STATE[k] = JSON.parse(JSON.stringify(DEFAULTS[k])));
+  document.querySelectorAll('.input-block').forEach(blockEl => {
+    const key = blockEl.dataset.key;
+    // re-set the fixed inputs C0/MARR
+    const inputs = blockEl.querySelectorAll('input[data-p]');
+    inputs.forEach(inp => {
+      const p = inp.dataset.p;
+      if (STATE[key][p] !== undefined) inp.value = STATE[key][p];
+    });
+    renderDistParams(blockEl, key);
+  });
+  document.getElementById('trials').value = '10000';
+  document.getElementById('seed').value = '42';
+}
+
+document.getElementById('btn-run').addEventListener('click', runSim);
+document.getElementById('btn-reset').addEventListener('click', () => {
+  resetAll();
+  // clear stats display
+  ['mean','median','ploss','std','p5','p95','min','max'].forEach(k => {
+    const el = document.getElementById('s-' + k);
+    el.textContent = '—';
+    el.parentElement.classList.remove('pos', 'neg');
+  });
+  document.getElementById('takeaway').style.display = 'none';
+  const cv1 = document.getElementById('hist'); cv1.getContext('2d').clearRect(0, 0, cv1.width, cv1.height);
+  const cv2 = document.getElementById('tornado'); cv2.getContext('2d').clearRect(0, 0, cv2.width, cv2.height);
+  document.getElementById('hist-legend').textContent = 'Run the simulation to see the histogram. Red area = trials that lost money.';
+  document.getElementById('tornado-legend').textContent = 'Which input contributes most to NPV uncertainty? Longer bars = bigger influence.';
+});
+
+wireBlocks();
+// auto-run on load
+runSim();
+</script>
+
+</body>
+</html>

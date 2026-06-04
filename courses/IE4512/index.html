@@ -313,6 +313,7 @@
   <symbol id="i-video" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="14" height="12" rx="2"/><polyline points="17 10 21 7 21 17 17 14"/></symbol>
   <symbol id="i-arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></symbol>
   <symbol id="i-sparkle" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8z"/><path d="M19 16l.7 2.3L22 19l-2.3.7L19 22l-.7-2.3L16 19l2.3-.7z" opacity="0.6"/></symbol>
+  <symbol id="i-dice" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.3" fill="currentColor"/><circle cx="16" cy="8" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><circle cx="8" cy="16" r="1.3" fill="currentColor"/><circle cx="16" cy="16" r="1.3" fill="currentColor"/></symbol>
 </svg>
 
 <div class="app">
@@ -339,7 +340,7 @@
 <script>
   // ============ CONFIG ============
   const ADMIN_PASSWORD = 'dehghani2026';
-  const DEFAULT_AVAILABLE = [1, 2, 3, 4, 5, 6, 7, 8];  // change later as the term progresses
+  const DEFAULT_AVAILABLE = [1, 2, 3, 4, 5, 6, 7, 8, 10, 11];  // change later as the term progresses
   const STORAGE_KEY = 'ie4512_unlocked_v2';
 
   const ICON = {
@@ -353,7 +354,10 @@
     sliders: '<svg><use href="#i-sliders"/></svg>',
     chart: '<svg><use href="#i-chart"/></svg>',
     home: '<svg><use href="#i-home"/></svg>',
-    video: '<svg><use href="#i-video"/></svg>'
+    video: '<svg><use href="#i-video"/></svg>',
+    sparkle: '<svg><use href="#i-sparkle"/></svg>',
+    sparkles: '<svg><use href="#i-sparkle"/></svg>',
+    dice: '<svg><use href="#i-dice"/></svg>'
   };
 
   const MODULES = [
@@ -441,12 +445,17 @@
       lede: 'Find break-even quantities. Rank the parameters that move NPV the most. Build intuition for which inputs matter and which don\'t.',
       meta: ['Ch. 13.1–13.3', '~3 hrs'],
       tools: [
-        { type: 'Lab', icon: 'sliders', title: 'Sensitivity <em>Slider Lab</em>', desc: 'Live NPV and IRR readouts as you drag five parameters. With break-even chart.', url: 'm7-sensitivity.html', time: '~15 min', color: 'olive' }
+        { type: 'Lab', icon: 'sliders', title: 'Sensitivity <em>Slider Lab</em>', desc: 'Live NPV and IRR readouts as you drag five parameters. With break-even chart.', url: 'm7-sensitivity.html', time: '~15 min', color: 'olive' },
+        { type: 'Workshop', icon: 'sparkle', title: 'GenAI <em>Break-Even Workshop</em>', desc: 'Six tab workshop: theory, worked examples, Claude prompt patterns, and an interactive break-even visualizer. Migrated from EMGT 6225.', url: 'm10-breakeven-workshop.html', time: '~45 min', color: 'gold' }
       ]
     },
     { n: 11, short: 'Probabilistic Risk', name: 'Probabilistic Risk Analysis', release: 'Week 6',
-      lede: 'Move beyond deterministic NPV. Use probability distributions, expected value, and decision trees for risk-aware engineering economic analysis.',
-      meta: ['Ch. 13.4', '~3 hrs'], tools: []
+      lede: 'Move beyond deterministic NPV. Use Monte Carlo simulation, probability distributions, and expected value for risk aware engineering economic analysis.',
+      meta: ['Ch. 13.4', '~3 hrs'],
+      tools: [
+        { type: 'Lab', icon: 'dice', title: 'Monte Carlo <em>NPV Simulator</em>', desc: 'Roll 10,000 futures. Triangular and normal distributions on cash flows. Histogram, P(loss), and tornado chart of variance drivers.', url: 'm11-monte-carlo.html', time: '~25 min', color: 'crimson' },
+        { type: 'Workshop', icon: 'sparkle', title: 'Build Your Own <em>Risk Tool</em>', desc: 'Five step prompt lab. Pick a case study, distributions, and outputs. Generate a Claude prompt that builds your own custom risk simulator.', url: 'm11-build-your-own-risk-tool.html', time: '~35 min', color: 'olive' }
+      ]
     }
   ];
 

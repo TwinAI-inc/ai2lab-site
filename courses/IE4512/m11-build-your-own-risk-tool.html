@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Module 11 · Build Your Own Risk Tool · Prompt Engineering Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;600;700&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf9f5; --paper: #ffffff; --ink: #1a1a1a; --muted: #5a5247; --soft: #8b7355;
+    --border: #e8e3d4; --line: #d4cfc0;
+    --crimson: #8a2828; --crimson-deep: #6b1e1e; --crimson-soft: #fdf2f3;
+    --gold: #b8860b; --gold-deep: #8a6608; --gold-soft: #faf3e0;
+    --olive: #5c7a4a; --olive-deep: #455d36; --olive-soft: #f0f4ea;
+    --blue: #1947d6; --blue-soft: #eef2ff;
+    --purple: #7c3aed; --purple-soft: #f3eeff;
+    --teal: #0e7c80; --teal-soft: #e6f4f4;
+    --code-bg: #1a1f2e; --code-ink: #e8e3d4;
+  }
+  html, body { min-height: 100%; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: 'Outfit', -apple-system, system-ui, sans-serif; font-size: 13px; line-height: 1.5;
+  }
+  .app { max-width: 1280px; margin: 0 auto; padding: 14px 22px 60px; }
+
+  /* HEAD */
+  .head {
+    display: flex; justify-content: space-between; align-items: center; gap: 14px;
+    padding: 9px 16px; background: var(--paper); border: 1px solid var(--border);
+    border-radius: 10px; border-top: 3px solid var(--crimson); flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .brand .code { font-size: 10px; color: var(--crimson); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; }
+  .brand h1 { font-family: 'Lora', Georgia, serif; font-size: 19px; font-weight: 700; line-height: 1; }
+  .brand h1 em { font-style: italic; color: var(--crimson); font-weight: 400; }
+  .brand .tag { font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted); }
+  .head .nav { display: flex; gap: 6px; }
+  .head .nav a {
+    font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft); text-decoration: none; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px;
+    transition: all 0.15s; background: var(--paper); font-family: 'Outfit', sans-serif;
+  }
+  .head .nav a:hover { color: var(--crimson); border-color: var(--crimson); background: var(--crimson-soft); }
+
+  /* TITLE strip */
+  .title-strip {
+    padding: 14px 4px 12px; border-bottom: 1px solid var(--border); margin-bottom: 18px;
+    display: flex; justify-content: space-between; align-items: flex-end; gap: 14px; flex-wrap: wrap;
+  }
+  .title-strip h2 { font-family: 'Lora', serif; font-size: 24px; font-weight: 700; line-height: 1.2; }
+  .title-strip h2 em { font-style: italic; color: var(--crimson); }
+  .title-strip .sub {
+    font-family: 'Lora', serif; font-style: italic; font-size: 13px; color: var(--muted); margin-top: 3px; max-width: 720px;
+  }
+
+  /* TIMELINE — 5 nodes */
+  .timeline-wrap {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
+    padding: 18px 26px 16px; margin-bottom: 22px; overflow-x: auto;
+  }
+  .timeline {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    position: relative; min-width: 720px;
+  }
+  .timeline::before {
+    content: ''; position: absolute; left: 10%; right: 10%; top: 18px;
+    transform: translateY(-50%); height: 1.5px;
+    background-image: repeating-linear-gradient(90deg, rgba(26,26,46,0.18) 0 5px, transparent 5px 10px);
+    z-index: 0;
+  }
+  .tl-node {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    cursor: pointer; padding: 0 4px; text-decoration: none; color: var(--text);
+    transition: transform 0.18s ease;
+  }
+  .tl-node:hover { transform: translateY(-2px); }
+  .tl-dot {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--paper); border: 2px solid var(--border); color: var(--soft);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700;
+    box-shadow: 0 0 0 4px var(--bg); transition: all 0.18s ease;
+  }
+  .tl-node.active .tl-dot {
+    background: var(--crimson); color: #fff; border-color: var(--crimson);
+    transform: scale(1.08);
+    box-shadow: 0 0 0 4px var(--bg), 0 4px 14px rgba(138,40,40,0.32);
+  }
+  .tl-node.done .tl-dot {
+    background: var(--olive); color: #fff; border-color: var(--olive);
+  }
+  .tl-node.done .tl-dot::before { content: '✓'; font-size: 16px; font-family: 'Outfit', sans-serif; }
+  .tl-node.done .tl-dot .n { display: none; }
+  .tl-label {
+    font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: 0.04em;
+    text-align: center; line-height: 1.25; max-width: 120px;
+  }
+  .tl-node.active .tl-label { color: var(--crimson); }
+  .tl-node.done .tl-label { color: var(--olive); }
+  .tl-sub {
+    font-size: 9.5px; color: var(--soft); letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; margin-top: -2px;
+  }
+
+  /* STEP container */
+  .stage { display: flex; flex-direction: column; gap: 18px; }
+  .step { display: none; }
+  .step.active { display: flex; flex-direction: column; gap: 16px; }
+
+  .step-card {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 14px;
+    padding: 16px 18px 18px; box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+    border-top: 3px solid var(--crimson);
+  }
+  .step.s2 .step-card { border-top-color: var(--gold); }
+  .step.s3 .step-card { border-top-color: var(--olive); }
+  .step.s4 .step-card { border-top-color: var(--blue); }
+  .step.s5 .step-card { border-top-color: var(--purple); }
+
+  .step-head {
+    display: flex; align-items: baseline; gap: 11px; padding-bottom: 9px;
+    border-bottom: 1px solid var(--border); margin-bottom: 14px; flex-wrap: wrap;
+  }
+  .step-head .num {
+    font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 700; color: var(--crimson);
+    letter-spacing: -0.02em; line-height: 1;
+  }
+  .step.s2 .step-head .num { color: var(--gold-deep); }
+  .step.s3 .step-head .num { color: var(--olive-deep); }
+  .step.s4 .step-head .num { color: var(--blue); }
+  .step.s5 .step-head .num { color: var(--purple); }
+
+  .step-head h3 { font-family: 'Lora', serif; font-size: 17px; font-weight: 700; line-height: 1.2; }
+  .step-head h3 em { font-style: italic; color: var(--crimson); }
+  .step.s2 .step-head h3 em { color: var(--gold-deep); }
+  .step.s3 .step-head h3 em { color: var(--olive-deep); }
+  .step.s4 .step-head h3 em { color: var(--blue); }
+  .step.s5 .step-head h3 em { color: var(--purple); }
+
+  .step-head .lede {
+    flex: 1 1 100%;
+    font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted); line-height: 1.45; margin-top: 1px;
+  }
+
+  /* QUESTION block */
+  .q {
+    margin-bottom: 12px;
+    background: var(--bg); border: 1px solid var(--border);
+    border-left: 3px solid var(--crimson); border-radius: 8px;
+    padding: 10px 12px 11px;
+  }
+  .q:last-child { margin-bottom: 0; }
+  .step.s2 .q { border-left-color: var(--gold); }
+  .step.s3 .q { border-left-color: var(--olive); }
+  .step.s4 .q { border-left-color: var(--blue); }
+  .step.s5 .q { border-left-color: var(--purple); }
+  .q-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+  .q-num {
+    font-size: 8.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+    color: #fff; background: var(--crimson);
+    padding: 3px 8px; border-radius: 999px; flex-shrink: 0;
+  }
+  .step.s2 .q-num { background: var(--gold); }
+  .step.s3 .q-num { background: var(--olive); }
+  .step.s4 .q-num { background: var(--blue); }
+  .step.s5 .q-num { background: var(--purple); }
+  .q-text { font-family: 'Lora', serif; font-size: 14px; font-weight: 700; color: var(--ink); line-height: 1.3; }
+  .q-hint {
+    flex: 1 1 100%; font-size: 11px; color: var(--muted); margin-top: 2px; font-style: italic;
+    font-family: 'Lora', serif;
+  }
+
+  .q-opts { display: grid; gap: 7px; }
+  .q-opts.cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .q-opts.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .q-opts.cols-4 { grid-template-columns: repeat(4, 1fr); }
+  @media (max-width: 920px) { .q-opts.cols-3, .q-opts.cols-4 { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .q-opts.cols-2, .q-opts.cols-3, .q-opts.cols-4 { grid-template-columns: 1fr; } }
+
+  .opt {
+    position: relative; cursor: pointer;
+    background: var(--paper); border: 1.5px solid var(--border); border-radius: 8px;
+    padding: 6px 8px 7px;
+    display: flex; flex-direction: column; gap: 5px;
+    transition: all 0.15s ease;
+  }
+  .opt:hover { border-color: var(--crimson); background: var(--crimson-soft); transform: translateY(-1px); }
+  .opt input[type="radio"] { position: absolute; opacity: 0; pointer-events: none; }
+  .opt.checked {
+    border-color: var(--crimson); background: var(--crimson-soft);
+    box-shadow: 0 0 0 3px rgba(138,40,40,0.14);
+  }
+  .step.s2 .opt:hover { border-color: var(--gold); background: var(--gold-soft); }
+  .step.s2 .opt.checked { border-color: var(--gold); background: var(--gold-soft); box-shadow: 0 0 0 3px rgba(184,134,11,0.18); }
+  .step.s3 .opt:hover { border-color: var(--olive); background: var(--olive-soft); }
+  .step.s3 .opt.checked { border-color: var(--olive); background: var(--olive-soft); box-shadow: 0 0 0 3px rgba(92,122,74,0.16); }
+  .step.s4 .opt:hover { border-color: var(--blue); background: var(--blue-soft); }
+  .step.s4 .opt.checked { border-color: var(--blue); background: var(--blue-soft); box-shadow: 0 0 0 3px rgba(25,71,214,0.16); }
+  .step.s5 .opt:hover { border-color: var(--purple); background: var(--purple-soft); }
+  .step.s5 .opt.checked { border-color: var(--purple); background: var(--purple-soft); box-shadow: 0 0 0 3px rgba(124,58,237,0.16); }
+
+  .opt .preview {
+    height: 50px;
+    background: #fff; border: 1px solid var(--border); border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; position: relative;
+  }
+  .opt .meta { display: flex; flex-direction: column; gap: 0; }
+  .opt .meta .name { font-size: 11.5px; font-weight: 700; color: var(--ink); line-height: 1.2; }
+  .opt .meta .hint { font-size: 10px; color: var(--muted); line-height: 1.3; }
+  .opt .check-mark {
+    position: absolute; top: 5px; right: 5px;
+    width: 15px; height: 15px; border-radius: 50%;
+    background: var(--crimson); color: #fff;
+    display: none; align-items: center; justify-content: center;
+    font-size: 9.5px; font-weight: 700;
+  }
+  .opt.checked .check-mark { display: flex; }
+  .step.s2 .opt.checked .check-mark { background: var(--gold); }
+  .step.s3 .opt.checked .check-mark { background: var(--olive); }
+  .step.s4 .opt.checked .check-mark { background: var(--blue); }
+  .step.s5 .opt.checked .check-mark { background: var(--purple); }
+
+  /* NAME input */
+  .name-input {
+    width: 100%; max-width: 380px; padding: 8px 12px;
+    border: 1.5px solid var(--border); border-radius: 8px;
+    font-family: 'Lora', serif; font-size: 14px; font-weight: 600; color: var(--ink);
+    background: #fff; outline: none; transition: all 0.15s;
+  }
+  .name-input:focus { border-color: var(--crimson); background: var(--crimson-soft); box-shadow: 0 0 0 3px rgba(138,40,40,0.12); }
+
+  /* PREVIEWS — color swatch strip */
+  .sw-strip { display: flex; height: 100%; width: 100%; }
+  .sw-strip > div { flex: 1; }
+
+  /* PREVIEW — typography */
+  .typo-prev {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    width: 100%; height: 100%; padding: 6px;
+  }
+  .typo-prev .big { font-size: 20px; font-weight: 700; line-height: 1; }
+  .typo-prev .small { font-size: 9px; color: var(--muted); margin-top: 2px; letter-spacing: 0.04em; }
+  .typo-editorial .big { font-family: 'Lora', serif; font-style: italic; color: var(--crimson); }
+  .typo-editorial .small { font-family: 'Outfit', sans-serif; }
+  .typo-modern .big { font-family: 'Inter', sans-serif; font-weight: 700; }
+  .typo-modern .small { font-family: 'Inter', sans-serif; }
+  .typo-playful .big { font-family: 'Nunito', sans-serif; font-weight: 800; color: var(--gold-deep); }
+  .typo-playful .small { font-family: 'Nunito', sans-serif; }
+  .typo-minimal .big { font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 17px; }
+  .typo-minimal .small { font-family: 'JetBrains Mono', monospace; }
+
+  /* PREVIEW — scenario icons */
+  .scn-prev {
+    width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+    padding: 4px;
+  }
+  .scn-prev svg { width: 38px; height: 38px; }
+
+  /* PREVIEW — distribution shape */
+  .dist-prev {
+    width: 100%; height: 100%; padding: 4px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .dist-prev svg { width: 90%; height: 100%; }
+
+  /* PREVIEW — input count rows */
+  .inputs-prev { width: 90%; display: flex; flex-direction: column; gap: 2px; padding: 4px; }
+  .inputs-prev .row { height: 7px; border-radius: 2px; background: var(--bg); border-left: 3px solid var(--crimson); }
+
+  /* PREVIEW — chart style */
+  .chart-prev { width: 100%; height: 100%; padding: 4px; }
+  .chart-prev svg { width: 100%; height: 100%; }
+
+  /* PREVIEW — threshold */
+  .thresh-prev {
+    width: 100%; height: 100%; padding: 4px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  }
+  .thresh-prev .pill {
+    font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 999px;
+    background: var(--crimson-soft); color: var(--crimson); border: 1px solid var(--crimson);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .thresh-prev .pill.ok { background: var(--olive-soft); color: var(--olive-deep); border-color: var(--olive); }
+  .thresh-prev .lbl { font-size: 8.5px; color: var(--muted); letter-spacing: 0.04em; }
+
+  /* PREVIEW — voice */
+  .voice-prev {
+    width: 100%; height: 100%; padding: 6px 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; line-height: 1.3; text-align: center;
+  }
+  .voice-professor { font-family: 'Lora', serif; color: var(--ink); }
+  .voice-coach { font-family: 'Outfit', sans-serif; font-weight: 600; color: var(--olive-deep); }
+  .voice-witty { font-family: 'Lora', serif; font-style: italic; color: var(--crimson); }
+  .voice-plain { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--ink); }
+
+  /* PREVIEW — closing feature */
+  .close-prev {
+    width: 90%; height: 100%; padding: 4px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .close-prev .torn {
+    width: 100%; display: flex; flex-direction: column; gap: 2px; align-items: stretch;
+  }
+  .close-prev .torn .bar { height: 6px; background: var(--gold); border-radius: 2px; }
+  .close-prev .torn .bar:nth-child(2) { width: 70%; background: var(--gold-deep); }
+  .close-prev .torn .bar:nth-child(3) { width: 45%; background: var(--olive); }
+  .close-prev .calibrate {
+    display: flex; gap: 3px; width: 100%;
+  }
+  .close-prev .co {
+    flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 4px;
+    text-align: center; padding: 3px;
+  }
+  .close-prev .co .nm { font-size: 8px; font-weight: 700; color: var(--ink); }
+  .close-prev .co .val { font-size: 10px; font-weight: 700; color: var(--crimson); font-family: 'JetBrains Mono', monospace; }
+  .close-prev .nothing { font-size: 12px; color: var(--soft); font-style: italic; font-family: 'Lora', serif; }
+
+  /* PREVIEW — export */
+  .ex-prev { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+  .ex-prev .btn {
+    background: var(--crimson); color: #fff; padding: 5px 12px; border-radius: 5px;
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .ex-prev .btn.csv { background: var(--olive); }
+  .ex-prev .nothing { color: var(--soft); font-style: italic; font-size: 11px; }
+
+  /* PROMPT panel */
+  .prompt-area {
+    margin-top: 4px;
+    background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px 16px;
+  }
+  .prompt-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    margin-bottom: 8px; flex-wrap: wrap;
+  }
+  .prompt-head .lbl {
+    font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; color: var(--soft);
+  }
+  .prompt-head .lbl b { color: var(--crimson); font-size: 12px; }
+  .step.s2 .prompt-head .lbl b { color: var(--gold-deep); }
+  .step.s3 .prompt-head .lbl b { color: var(--olive-deep); }
+  .step.s4 .prompt-head .lbl b { color: var(--blue); }
+  .step.s5 .prompt-head .lbl b { color: var(--purple); }
+
+  .copy-btn {
+    font-family: 'Outfit', sans-serif; font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700;
+    padding: 8px 16px; border: 1px solid var(--crimson); background: var(--crimson); color: #fff; border-radius: 6px;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .copy-btn:hover { background: var(--crimson-deep); border-color: var(--crimson-deep); }
+  .copy-btn.copied { background: var(--olive); border-color: var(--olive); }
+  .step.s2 .copy-btn { background: var(--gold); border-color: var(--gold); }
+  .step.s3 .copy-btn { background: var(--olive); border-color: var(--olive); }
+  .step.s4 .copy-btn { background: var(--blue); border-color: var(--blue); }
+  .step.s5 .copy-btn { background: var(--purple); border-color: var(--purple); }
+
+  .prompt-box {
+    width: 100%; min-height: 220px; max-height: 380px;
+    background: var(--code-bg); color: var(--code-ink); border: 1px solid var(--code-bg); border-radius: 8px;
+    padding: 12px 14px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11.5px; line-height: 1.55;
+    white-space: pre-wrap; word-wrap: break-word;
+    overflow-y: auto; resize: vertical; user-select: text;
+  }
+  .prompt-box::-webkit-scrollbar { width: 8px; }
+  .prompt-box::-webkit-scrollbar-thumb { background: #334155; border-radius: 999px; }
+
+  .step-tip {
+    display: flex; align-items: flex-start; gap: 8px;
+    margin-top: 12px; padding: 9px 12px;
+    background: var(--crimson-soft); border: 1px solid #f0d2d4; border-radius: 8px;
+    font-size: 12px; color: var(--crimson); line-height: 1.5;
+  }
+  .step.s2 .step-tip { background: var(--gold-soft); border-color: #ead9a3; color: var(--gold-deep); }
+  .step.s3 .step-tip { background: var(--olive-soft); border-color: #cbd9bb; color: var(--olive-deep); }
+  .step.s4 .step-tip { background: var(--blue-soft); border-color: #c8d5fe; color: var(--blue); }
+  .step.s5 .step-tip { background: var(--purple-soft); border-color: #d8cbf5; color: var(--purple); }
+  .step-tip .ico {
+    font-family: 'Lora', serif; font-style: italic; font-weight: 700;
+    flex-shrink: 0; width: 16px; height: 16px; line-height: 16px; text-align: center;
+    border-radius: 50%; background: rgba(255,255,255,0.5); font-size: 11px; margin-top: 1px;
+  }
+
+  /* NAV row */
+  .step-nav {
+    display: flex; justify-content: space-between; align-items: center; gap: 14px;
+    margin-top: 6px; flex-wrap: wrap;
+  }
+  .nav-btn {
+    font-family: 'Outfit', sans-serif; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700;
+    padding: 10px 18px; border-radius: 8px; cursor: pointer;
+    background: var(--paper); color: var(--ink); border: 1.5px solid var(--border);
+    transition: all 0.15s;
+  }
+  .nav-btn:hover:not(:disabled) { border-color: var(--crimson); color: var(--crimson); background: var(--crimson-soft); }
+  .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .nav-btn.primary { background: var(--crimson); color: #fff; border-color: var(--crimson); }
+  .nav-btn.primary:hover:not(:disabled) { background: var(--crimson-deep); border-color: var(--crimson-deep); color: #fff; }
+  .step.s2 .nav-btn.primary { background: var(--gold); border-color: var(--gold); }
+  .step.s3 .nav-btn.primary { background: var(--olive); border-color: var(--olive); }
+  .step.s4 .nav-btn.primary { background: var(--blue); border-color: var(--blue); }
+  .step.s5 .nav-btn.primary { background: var(--purple); border-color: var(--purple); }
+  .nav-progress {
+    font-family: 'Outfit', sans-serif; font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    color: var(--muted);
+  }
+  .nav-progress b { color: var(--crimson); font-size: 13px; }
+
+  /* FINISH card */
+  .finish {
+    display: none;
+    margin-top: 24px; padding: 24px 26px 22px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #2a2a4a 100%);
+    border-radius: 14px; color: #faf9f5;
+    grid-template-columns: 1fr auto; gap: 24px; align-items: center;
+  }
+  .finish.show { display: grid; }
+  @media (max-width: 720px) { .finish.show { grid-template-columns: 1fr; } }
+  .finish .kicker { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700; color: #b8860b; margin-bottom: 4px; }
+  .finish h3 { font-family: 'Lora', serif; font-size: 22px; font-weight: 700; line-height: 1.2; margin-bottom: 8px; }
+  .finish h3 em { font-style: italic; color: #f9a8a8; }
+  .finish p { font-size: 13px; color: #d4cfc0; line-height: 1.55; max-width: 620px; }
+  .finish p b { color: #fff; font-weight: 600; }
+  .finish .check {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px;
+    padding: 14px 18px; min-width: 240px;
+  }
+  .finish .check ul { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+  .finish .check li { font-size: 12px; color: #d4cfc0; display: flex; gap: 7px; align-items: flex-start; }
+  .finish .check li::before { content: '✓'; color: #5c7a4a; font-weight: 700; flex-shrink: 0; }
+
+  /* footer */
+  .foot {
+    text-align: center; margin-top: 28px; padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted);
+  }
+
+  /* toast */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--olive); color: #fff;
+    padding: 9px 18px; border-radius: 999px;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.06em;
+    box-shadow: 0 6px 22px rgba(0,0,0,0.18);
+    opacity: 0; pointer-events: none;
+    transition: all 0.28s ease; z-index: 1000;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    .app { padding: 10px 12px 30px; }
+    .brand h1 { font-size: 16px; }
+    .title-strip h2 { font-size: 20px; }
+    .step-card { padding: 12px 14px; }
+    .nav-btn { font-size: 11px; padding: 9px 12px; }
+    input, textarea { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- HEAD -->
+  <header class="head">
+    <div class="brand">
+      <span class="code">IE 4512 · Module 11</span>
+      <h1>Build Your Own <em>Risk Tool</em></h1>
+      <span class="tag">a prompt engineering lab</span>
+    </div>
+    <nav class="nav">
+      <a href="index.html">All Modules</a>
+      <a href="m11-monte-carlo.html">Reference Tool</a>
+    </nav>
+  </header>
+
+  <!-- TITLE -->
+  <div class="title-strip">
+    <div>
+      <h2>Five prompts, <em>one risk simulator</em>, your name on it.</h2>
+      <div class="sub">
+        Pick the case study you want to model, the distributions, the charts, the voice.
+        The prompt below updates live with every choice. Copy it into <b>claude.ai</b>, save Claude's reply as <code>my-risk-tool.html</code>, and come back for the next prompt.
+      </div>
+    </div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="timeline-wrap">
+    <div class="timeline" id="timeline">
+      <a class="tl-node" data-go="1"><div class="tl-dot"><span class="n">1</span></div><div class="tl-sub">Step 1</div><div class="tl-label">Scaffold &amp; personalize</div></a>
+      <a class="tl-node" data-go="2"><div class="tl-dot"><span class="n">2</span></div><div class="tl-sub">Step 2</div><div class="tl-label">Case study</div></a>
+      <a class="tl-node" data-go="3"><div class="tl-dot"><span class="n">3</span></div><div class="tl-sub">Step 3</div><div class="tl-label">Uncertain inputs</div></a>
+      <a class="tl-node" data-go="4"><div class="tl-dot"><span class="n">4</span></div><div class="tl-sub">Step 4</div><div class="tl-label">Simulation engine</div></a>
+      <a class="tl-node" data-go="5"><div class="tl-dot"><span class="n">5</span></div><div class="tl-sub">Step 5</div><div class="tl-label">Insights &amp; story wrap</div></a>
+    </div>
+  </div>
+
+  <!-- STAGE -->
+  <div class="stage" id="stage">
+
+    <!-- STEP 1 -->
+    <section class="step s1" data-step="1">
+      <div class="step-card">
+        <div class="step-head">
+          <div class="num">01</div>
+          <h3>Scaffold &amp; <em>personalize</em></h3>
+          <div class="lede">Start with a single page shell with your name in the header, your color palette, and your typography mood. Everything else gets layered on top.</div>
+        </div>
+
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q1 of 3</span>
+            <div class="q-text">What is your first name?</div>
+            <div class="q-hint">Goes in the page header and the footer.</div>
+          </div>
+          <input type="text" class="name-input" id="s1q1" placeholder="e.g., Mohammad" maxlength="40" />
+        </div>
+
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q2 of 3</span>
+            <div class="q-text">Pick your color theme.</div>
+            <div class="q-hint">Each swatch row is the palette your tool will actually use.</div>
+          </div>
+          <div class="q-opts cols-4">
+            <label class="opt"><input type="radio" name="s1q2" value="crimson">
+              <div class="preview"><div class="sw-strip"><div style="background:#8a2828"></div><div style="background:#b8860b"></div><div style="background:#fdf2f3"></div><div style="background:#5c7a4a"></div><div style="background:#faf9f5"></div></div></div>
+              <div class="meta"><div class="name">Crimson alert</div><div class="hint">Risk palette</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s1q2" value="quant">
+              <div class="preview"><div class="sw-strip"><div style="background:#0e7c80"></div><div style="background:#5c7a4a"></div><div style="background:#e6f4f4"></div><div style="background:#b8860b"></div><div style="background:#faf9f5"></div></div></div>
+              <div class="meta"><div class="name">Quant teal</div><div class="hint">Data analytic</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s1q2" value="royal">
+              <div class="preview"><div class="sw-strip"><div style="background:#7c3aed"></div><div style="background:#a78bfa"></div><div style="background:#f3eeff"></div><div style="background:#b8860b"></div><div style="background:#fafafe"></div></div></div>
+              <div class="meta"><div class="name">Royal purple</div><div class="hint">Bold rich</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s1q2" value="sunset">
+              <div class="preview"><div class="sw-strip"><div style="background:#d97706"></div><div style="background:#f59e0b"></div><div style="background:#fef3e6"></div><div style="background:#8a2828"></div><div style="background:#fffaf2"></div></div></div>
+              <div class="meta"><div class="name">Sunset heat</div><div class="hint">Warm risk</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q3 of 3</span>
+            <div class="q-text">Pick the typography mood.</div>
+            <div class="q-hint">Each preview is set in the actual font you will get.</div>
+          </div>
+          <div class="q-opts cols-4">
+            <label class="opt"><input type="radio" name="s1q3" value="editorial">
+              <div class="preview"><div class="typo-prev typo-editorial"><div class="big">P(loss)</div><div class="small">12.4% · editorial</div></div></div>
+              <div class="meta"><div class="name">Editorial</div><div class="hint">Lora + Outfit</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s1q3" value="modern">
+              <div class="preview"><div class="typo-prev typo-modern"><div class="big">P(loss)</div><div class="small">12.4% · modern</div></div></div>
+              <div class="meta"><div class="name">Modern</div><div class="hint">Inter clean sans</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s1q3" value="playful">
+              <div class="preview"><div class="typo-prev typo-playful"><div class="big">P(loss)</div><div class="small">12.4% · playful</div></div></div>
+              <div class="meta"><div class="name">Playful</div><div class="hint">Nunito rounded</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s1q3" value="minimal">
+              <div class="preview"><div class="typo-prev typo-minimal"><div class="big">P(loss)</div><div class="small">12.4% · minimal</div></div></div>
+              <div class="meta"><div class="name">Minimal</div><div class="hint">JetBrains Mono</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="prompt-area">
+        <div class="prompt-head">
+          <div class="lbl">Prompt <b>1 of 5</b> · paste this into a new claude.ai chat</div>
+          <button class="copy-btn" data-copy="p1">Copy prompt</button>
+        </div>
+        <textarea class="prompt-box" id="p1" readonly></textarea>
+        <div class="step-tip">
+          <span class="ico">i</span>
+          <span>Start a <b>new chat</b> in claude.ai. After Claude replies, save the code block as <code>my-risk-tool.html</code> and open it. You should see a header with your name. Then come back and click <b>Next</b>.</span>
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <button class="nav-btn" data-nav="prev" disabled>← Previous</button>
+        <div class="nav-progress"><b id="progress">0</b> / 5 steps configured</div>
+        <button class="nav-btn primary" data-nav="next">Next step →</button>
+      </div>
+    </section>
+
+    <!-- STEP 2 -->
+    <section class="step s2" data-step="2">
+      <div class="step-card">
+        <div class="step-head">
+          <div class="num">02</div>
+          <h3>Pick your <em>case study</em></h3>
+          <div class="lede">Choose a real engineering scenario for the simulator. The picker shapes the inputs, the units, the storyline.</div>
+        </div>
+
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q1 of 3</span>
+            <div class="q-text">Which scenario do you want to model?</div>
+            <div class="q-hint">Each one comes with realistic input ranges baked into the prompt.</div>
+          </div>
+          <div class="q-opts cols-4">
+            <label class="opt"><input type="radio" name="s2q1" value="product">
+              <div class="preview"><div class="scn-prev"><svg viewBox="0 0 40 40" fill="none" stroke="#8a2828" stroke-width="2"><path d="M8 32 L8 12 L20 6 L32 12 L32 32 Z"/><path d="M14 32 L14 22 L26 22 L26 32"/></svg></div></div>
+              <div class="meta"><div class="name">New product launch</div><div class="hint">Demand &amp; price uncertainty</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s2q1" value="solar">
+              <div class="preview"><div class="scn-prev"><svg viewBox="0 0 40 40" fill="none" stroke="#b8860b" stroke-width="2"><circle cx="20" cy="20" r="6"/><path d="M20 4 L20 9 M20 31 L20 36 M4 20 L9 20 M31 20 L36 20 M8.5 8.5 L12 12 M28 28 L31.5 31.5 M8.5 31.5 L12 28 M28 12 L31.5 8.5"/></svg></div></div>
+              <div class="meta"><div class="name">Solar farm invest</div><div class="hint">Output, tariff, weather risk</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s2q1" value="manufacturing">
+              <div class="preview"><div class="scn-prev"><svg viewBox="0 0 40 40" fill="none" stroke="#0e7c80" stroke-width="2"><rect x="6" y="14" width="28" height="20"/><path d="M6 14 L14 6 L22 14 M22 14 L30 6 L38 14"/><rect x="14" y="22" width="5" height="12"/><rect x="22" y="22" width="5" height="12"/></svg></div></div>
+              <div class="meta"><div class="name">Manufacturing line</div><div class="hint">Throughput, defect rate, cost</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s2q1" value="rnd">
+              <div class="preview"><div class="scn-prev"><svg viewBox="0 0 40 40" fill="none" stroke="#7c3aed" stroke-width="2"><path d="M14 6 L26 6 L26 18 L34 30 L6 30 Z"/><line x1="14" y1="6" x2="14" y2="18"/><line x1="26" y1="6" x2="26" y2="18"/><circle cx="20" cy="24" r="2"/></svg></div></div>
+              <div class="meta"><div class="name">R&amp;D bet</div><div class="hint">Success prob × jackpot</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q2 of 3</span>
+            <div class="q-text">What decision should the tool support?</div>
+          </div>
+          <div class="q-opts cols-3">
+            <label class="opt"><input type="radio" name="s2q2" value="accept">
+              <div class="preview"><div class="thresh-prev"><div class="pill ok">ACCEPT</div><div class="lbl">single project &middot; pass/fail</div></div></div>
+              <div class="meta"><div class="name">Accept or reject</div><div class="hint">One project &middot; one verdict</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s2q2" value="choose">
+              <div class="preview"><div class="thresh-prev"><div class="pill">A vs B</div><div class="lbl">pick the winner</div></div></div>
+              <div class="meta"><div class="name">Choose A vs B</div><div class="hint">Two alternatives, head to head</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s2q2" value="scale">
+              <div class="preview"><div class="thresh-prev"><div class="pill ok">SCALE = 1.4×</div><div class="lbl">size the bet</div></div></div>
+              <div class="meta"><div class="name">Optimal scale</div><div class="hint">Pick the size that maximizes E[NPV]</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q3 of 3</span>
+            <div class="q-text">Time horizon?</div>
+          </div>
+          <div class="q-opts cols-3">
+            <label class="opt"><input type="radio" name="s2q3" value="short">
+              <div class="preview"><div class="thresh-prev"><div class="pill">3 yrs</div><div class="lbl">fast payback</div></div></div>
+              <div class="meta"><div class="name">Short (3 years)</div><div class="hint">Quick projects</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s2q3" value="medium">
+              <div class="preview"><div class="thresh-prev"><div class="pill">5-7 yrs</div><div class="lbl">standard</div></div></div>
+              <div class="meta"><div class="name">Medium (5-7 years)</div><div class="hint">Most projects</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s2q3" value="long">
+              <div class="preview"><div class="thresh-prev"><div class="pill">10+ yrs</div><div class="lbl">long horizon</div></div></div>
+              <div class="meta"><div class="name">Long (10+ years)</div><div class="hint">Infrastructure scale</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="prompt-area">
+        <div class="prompt-head">
+          <div class="lbl">Prompt <b>2 of 5</b> · paste in the same chat</div>
+          <button class="copy-btn" data-copy="p2">Copy prompt</button>
+        </div>
+        <textarea class="prompt-box" id="p2" readonly></textarea>
+        <div class="step-tip">
+          <span class="ico">i</span>
+          <span>Stay in the <b>same chat</b>. Replace <code>my-risk-tool.html</code> with Claude's new code, refresh, and check that the input panel has the right fields for your scenario.</span>
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <button class="nav-btn" data-nav="prev">← Previous</button>
+        <div class="nav-progress"><b class="progress-live">0</b> / 5 steps configured</div>
+        <button class="nav-btn primary" data-nav="next">Next step →</button>
+      </div>
+    </section>
+
+    <!-- STEP 3 -->
+    <section class="step s3" data-step="3">
+      <div class="step-card">
+        <div class="step-head">
+          <div class="num">03</div>
+          <h3>Wire up the <em>uncertain inputs</em></h3>
+          <div class="lede">Each uncertain input needs a distribution. More distributions and tighter correlations make richer simulations &mdash; and more complex prompts.</div>
+        </div>
+
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q1 of 3</span>
+            <div class="q-text">How many of your inputs should be uncertain (drawn from a distribution)?</div>
+            <div class="q-hint">The rest stay deterministic.</div>
+          </div>
+          <div class="q-opts cols-3">
+            <label class="opt"><input type="radio" name="s3q1" value="2">
+              <div class="preview"><div class="inputs-prev"><div class="row"></div><div class="row"></div></div></div>
+              <div class="meta"><div class="name">2 uncertain inputs</div><div class="hint">Simple. Demo grade.</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s3q1" value="4">
+              <div class="preview"><div class="inputs-prev"><div class="row"></div><div class="row"></div><div class="row"></div><div class="row"></div></div></div>
+              <div class="meta"><div class="name">4 uncertain inputs</div><div class="hint">Textbook standard.</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s3q1" value="6">
+              <div class="preview"><div class="inputs-prev"><div class="row"></div><div class="row"></div><div class="row"></div><div class="row"></div><div class="row"></div><div class="row"></div></div></div>
+              <div class="meta"><div class="name">6 uncertain inputs</div><div class="hint">Industrial style. More tornado bars.</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q2 of 3</span>
+            <div class="q-text">Default distribution for each uncertain input.</div>
+            <div class="q-hint">User can override per row, but you set the default.</div>
+          </div>
+          <div class="q-opts cols-3">
+            <label class="opt"><input type="radio" name="s3q2" value="triangular">
+              <div class="preview"><div class="dist-prev"><svg viewBox="0 0 100 40" fill="none" stroke="#5c7a4a" stroke-width="2"><polyline points="6,36 40,8 90,36" /></svg></div></div>
+              <div class="meta"><div class="name">Triangular</div><div class="hint">Min · Mode · Max. Expert friendly.</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s3q2" value="normal">
+              <div class="preview"><div class="dist-prev"><svg viewBox="0 0 100 40" fill="none" stroke="#5c7a4a" stroke-width="2"><path d="M6 36 Q30 36 40 18 Q50 4 60 18 Q70 36 94 36"/></svg></div></div>
+              <div class="meta"><div class="name">Normal</div><div class="hint">Mean &amp; std dev. Symmetric.</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s3q2" value="uniform">
+              <div class="preview"><div class="dist-prev"><svg viewBox="0 0 100 40" fill="none" stroke="#5c7a4a" stroke-width="2"><polyline points="6,36 6,12 90,12 90,36"/></svg></div></div>
+              <div class="meta"><div class="name">Uniform</div><div class="hint">Min &amp; max. No central tendency.</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q3 of 3</span>
+            <div class="q-text">Correlation between inputs?</div>
+            <div class="q-hint">Real life rarely gives you independence.</div>
+          </div>
+          <div class="q-opts cols-2">
+            <label class="opt"><input type="radio" name="s3q3" value="indep">
+              <div class="preview"><div class="thresh-prev"><div class="pill ok">ρ = 0</div><div class="lbl">independent draws</div></div></div>
+              <div class="meta"><div class="name">All independent</div><div class="hint">Simpler. Slightly understates spread.</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s3q3" value="correlated">
+              <div class="preview"><div class="thresh-prev"><div class="pill">ρ = 0.6</div><div class="lbl">price &amp; volume linked</div></div></div>
+              <div class="meta"><div class="name">Pair correlated</div><div class="hint">Two inputs share a ρ slider</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="prompt-area">
+        <div class="prompt-head">
+          <div class="lbl">Prompt <b>3 of 5</b> · paste in the same chat</div>
+          <button class="copy-btn" data-copy="p3">Copy prompt</button>
+        </div>
+        <textarea class="prompt-box" id="p3" readonly></textarea>
+        <div class="step-tip">
+          <span class="ico">i</span>
+          <span>After Claude replies, each uncertain input should show a small distribution picker with the parameters you specified. Run one trial mentally to check the math.</span>
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <button class="nav-btn" data-nav="prev">← Previous</button>
+        <div class="nav-progress"><b class="progress-live">0</b> / 5 steps configured</div>
+        <button class="nav-btn primary" data-nav="next">Next step →</button>
+      </div>
+    </section>
+
+    <!-- STEP 4 -->
+    <section class="step s4" data-step="4">
+      <div class="step-card">
+        <div class="step-head">
+          <div class="num">04</div>
+          <h3>The <em>simulation engine</em></h3>
+          <div class="lede">Now the heart: a Run button that rolls the dice K times, computes NPV (or IRR), and visualizes the whole distribution.</div>
+        </div>
+
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q1 of 3</span>
+            <div class="q-text">Default trial count.</div>
+            <div class="q-hint">More trials = smoother histogram, slower run.</div>
+          </div>
+          <div class="q-opts cols-3">
+            <label class="opt"><input type="radio" name="s4q1" value="1000">
+              <div class="preview"><div class="thresh-prev"><div class="pill">1,000</div><div class="lbl">fast · noisy tails</div></div></div>
+              <div class="meta"><div class="name">1,000 trials</div><div class="hint">Instant. Demo grade.</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s4q1" value="10000">
+              <div class="preview"><div class="thresh-prev"><div class="pill ok">10,000</div><div class="lbl">standard</div></div></div>
+              <div class="meta"><div class="name">10,000 trials</div><div class="hint">Textbook default. ~1 second.</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s4q1" value="50000">
+              <div class="preview"><div class="thresh-prev"><div class="pill">50,000</div><div class="lbl">slow · stable tails</div></div></div>
+              <div class="meta"><div class="name">50,000 trials</div><div class="hint">Heavy. Use for P5/P95 stability.</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q2 of 3</span>
+            <div class="q-text">Output chart style.</div>
+          </div>
+          <div class="q-opts cols-3">
+            <label class="opt"><input type="radio" name="s4q2" value="histogram">
+              <div class="preview"><div class="chart-prev"><svg viewBox="0 0 100 40" fill="#8a2828" stroke="none"><rect x="6" y="32" width="6" height="6"/><rect x="14" y="26" width="6" height="12"/><rect x="22" y="18" width="6" height="20"/><rect x="30" y="10" width="6" height="28" fill="#b8860b"/><rect x="38" y="6" width="6" height="32" fill="#b8860b"/><rect x="46" y="12" width="6" height="26" fill="#b8860b"/><rect x="54" y="18" width="6" height="20" fill="#5c7a4a"/><rect x="62" y="22" width="6" height="16" fill="#5c7a4a"/><rect x="70" y="28" width="6" height="10" fill="#5c7a4a"/><rect x="78" y="32" width="6" height="6" fill="#5c7a4a"/></svg></div></div>
+              <div class="meta"><div class="name">Histogram</div><div class="hint">Bars per bin. Classic.</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s4q2" value="cdf">
+              <div class="preview"><div class="chart-prev"><svg viewBox="0 0 100 40" fill="none" stroke="#1947d6" stroke-width="2"><path d="M6 36 Q30 36 50 20 Q70 4 94 4"/></svg></div></div>
+              <div class="meta"><div class="name">CDF curve</div><div class="hint">S-curve. Read P(loss) directly.</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s4q2" value="both">
+              <div class="preview"><div class="chart-prev"><svg viewBox="0 0 100 40" fill="none"><rect x="6" y="32" width="6" height="6" fill="#8a2828"/><rect x="14" y="26" width="6" height="12" fill="#8a2828"/><rect x="22" y="18" width="6" height="20" fill="#b8860b"/><rect x="30" y="10" width="6" height="28" fill="#b8860b"/><rect x="38" y="14" width="6" height="24" fill="#5c7a4a"/><rect x="46" y="20" width="6" height="18" fill="#5c7a4a"/><path d="M6 36 Q30 28 50 18 Q70 8 94 4" stroke="#1947d6" stroke-width="1.5"/></svg></div></div>
+              <div class="meta"><div class="name">Both layered</div><div class="hint">Bars + overlaid CDF</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q3 of 3</span>
+            <div class="q-text">Decision threshold to highlight.</div>
+            <div class="q-hint">Where to draw the line in the sand.</div>
+          </div>
+          <div class="q-opts cols-3">
+            <label class="opt"><input type="radio" name="s4q3" value="ploss">
+              <div class="preview"><div class="thresh-prev"><div class="pill">P(NPV &lt; 0)</div><div class="lbl">prob of loss</div></div></div>
+              <div class="meta"><div class="name">P(NPV &lt; 0)</div><div class="hint">Most common. Easy to communicate.</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s4q3" value="irr">
+              <div class="preview"><div class="thresh-prev"><div class="pill">P(IRR &lt; MARR)</div><div class="lbl">prob of underperformance</div></div></div>
+              <div class="meta"><div class="name">P(IRR &lt; MARR)</div><div class="hint">For shops that think in IRR terms.</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s4q3" value="custom">
+              <div class="preview"><div class="thresh-prev"><div class="pill">P(NPV &lt; X)</div><div class="lbl">user sets X</div></div></div>
+              <div class="meta"><div class="name">Custom threshold</div><div class="hint">Slider for X. Most flexible.</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="prompt-area">
+        <div class="prompt-head">
+          <div class="lbl">Prompt <b>4 of 5</b> · paste in the same chat</div>
+          <button class="copy-btn" data-copy="p4">Copy prompt</button>
+        </div>
+        <textarea class="prompt-box" id="p4" readonly></textarea>
+        <div class="step-tip">
+          <span class="ico">i</span>
+          <span>Click <b>Run</b> in your tool. You should see a histogram (or CDF) and the threshold metric. If the chart looks blocky, raise trials. If it's slow, drop them.</span>
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <button class="nav-btn" data-nav="prev">← Previous</button>
+        <div class="nav-progress"><b class="progress-live">0</b> / 5 steps configured</div>
+        <button class="nav-btn primary" data-nav="next">Next step →</button>
+      </div>
+    </section>
+
+    <!-- STEP 5 -->
+    <section class="step s5" data-step="5">
+      <div class="step-card">
+        <div class="step-head">
+          <div class="num">05</div>
+          <h3>Insights &amp; <em>story wrap</em></h3>
+          <div class="lede">A simulation that doesn't tell a story is just a noisy chart. Add an interpretation voice, one closing feature, and (optionally) an export.</div>
+        </div>
+
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q1 of 3</span>
+            <div class="q-text">Interpretation voice.</div>
+            <div class="q-hint">A single sentence that reads the histogram for the user.</div>
+          </div>
+          <div class="q-opts cols-4">
+            <label class="opt"><input type="radio" name="s5q1" value="professor">
+              <div class="preview"><div class="voice-prev voice-professor">"Probability of loss is 18.3%. Reject unless the upside is strategic."</div></div>
+              <div class="meta"><div class="name">Professor</div><div class="hint">Precise &amp; formal</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s5q1" value="coach">
+              <div class="preview"><div class="voice-prev voice-coach">"1 in 5 trials lose money. Tighten the demand estimate first."</div></div>
+              <div class="meta"><div class="name">Coach</div><div class="hint">Action oriented</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s5q1" value="witty">
+              <div class="preview"><div class="voice-prev voice-witty">"18% chance the spreadsheet was lying. Worth thinking about."</div></div>
+              <div class="meta"><div class="name">Witty</div><div class="hint">Dry edge</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s5q1" value="plain">
+              <div class="preview"><div class="voice-prev voice-plain">P(NPV&lt;0) = 18.3%<br>μ = $42k · σ = $58k</div></div>
+              <div class="meta"><div class="name">Plain</div><div class="hint">Numbers only</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q2 of 3</span>
+            <div class="q-text">Closing feature below the chart.</div>
+          </div>
+          <div class="q-opts cols-3">
+            <label class="opt"><input type="radio" name="s5q2" value="tornado">
+              <div class="preview"><div class="close-prev"><div class="torn"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div></div></div>
+              <div class="meta"><div class="name">Tornado chart</div><div class="hint">Which input drives variance</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s5q2" value="calibrate">
+              <div class="preview"><div class="close-prev"><div class="calibrate"><div class="co"><div class="nm">Solar</div><div class="val">17%</div></div><div class="co"><div class="nm">Pharma</div><div class="val">42%</div></div><div class="co"><div class="nm">Power</div><div class="val">11%</div></div></div></div></div>
+              <div class="meta"><div class="name">Calibration cards</div><div class="hint">Industry P(loss) reference</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s5q2" value="none">
+              <div class="preview"><div class="close-prev"><div class="nothing">&mdash;</div></div></div>
+              <div class="meta"><div class="name">Nothing extra</div><div class="hint">Keep it minimal</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q3 of 3</span>
+            <div class="q-text">Export option.</div>
+          </div>
+          <div class="q-opts cols-3">
+            <label class="opt"><input type="radio" name="s5q3" value="png">
+              <div class="preview"><div class="ex-prev"><span class="btn">⤓ Save PNG</span></div></div>
+              <div class="meta"><div class="name">Save chart as PNG</div><div class="hint">Drop into a slide deck</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s5q3" value="csv">
+              <div class="preview"><div class="ex-prev"><span class="btn csv">⤓ Download CSV</span></div></div>
+              <div class="meta"><div class="name">CSV of all trials</div><div class="hint">Plot it in Excel later</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s5q3" value="none">
+              <div class="preview"><div class="ex-prev"><span class="nothing">&mdash;</span></div></div>
+              <div class="meta"><div class="name">No export</div><div class="hint">Skip both</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="prompt-area">
+        <div class="prompt-head">
+          <div class="lbl">Prompt <b>5 of 5</b> · final pass</div>
+          <button class="copy-btn" data-copy="p5">Copy prompt</button>
+        </div>
+        <textarea class="prompt-box" id="p5" readonly></textarea>
+        <div class="step-tip">
+          <span class="ico">i</span>
+          <span>Last paste. Refresh your tool, run the simulation, and the verdict sentence should appear under the chart. If your name is in the footer, you're done.</span>
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <button class="nav-btn" data-nav="prev">← Previous</button>
+        <div class="nav-progress"><b class="progress-live">0</b> / 5 steps configured</div>
+        <button class="nav-btn primary" data-nav="finish">Finish →</button>
+      </div>
+    </section>
+
+    <!-- FINISH -->
+    <div class="finish" id="finish">
+      <div>
+        <div class="kicker">Module 11 &middot; Risk Lab</div>
+        <h3>Your <em>risk simulator</em> is ready.</h3>
+        <p>You walked through 5 prompts and configured every choice. The five copy boxes above hold your full prompt sequence. Paste them in order into a single claude.ai chat, save each reply as <b>my-risk-tool.html</b>, and open it in your browser.</p>
+        <p style="margin-top:10px;">Submit two files: <b>my-risk-tool.html</b> and a short reflection naming the biggest variance driver in your tornado chart and why it surprised (or did not surprise) you.</p>
+      </div>
+      <div class="check">
+        <ul>
+          <li>5 prompts copy ready</li>
+          <li>Single self contained HTML</li>
+          <li>No external libraries used</li>
+          <li>Your name on the deliverable</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="foot">
+    Module 11 &middot; Probabilistic Risk Analysis &middot; Prof. Mohammad Dehghani &middot; IE 4512 / EMGT 6225
+  </div>
+
+</div>
+
+<div class="toast" id="toast">Prompt copied</div>
+
+<script>
+'use strict';
+
+// STATE
+const state = {
+  s1: { q1: '', q2: '', q3: '' },
+  s2: { q1: '', q2: '', q3: '' },
+  s3: { q1: '', q2: '', q3: '' },
+  s4: { q1: '', q2: '', q3: '' },
+  s5: { q1: '', q2: '', q3: '' }
+};
+let currentStep = 1;
+
+// ============================================================
+// PROMPT SNIPPET LIBRARY
+// ============================================================
+const themes = {
+  crimson: { describe: 'Crimson alert palette: primary #8a2828 (crimson), accent #b8860b (gold), background #faf9f5 (cream), olive #5c7a4a for positive states, soft tint #fdf2f3 for risk panels. Use crimson on the page top border and on the "Run" button.' },
+  quant:   { describe: 'Quant teal palette: primary #0e7c80 (deep teal), accent #5c7a4a (olive), background #faf9f5 (cream), gold #b8860b for highlights, soft tint #e6f4f4 for input cards. Use teal on the page top border and on the "Run" button.' },
+  royal:   { describe: 'Royal purple palette: primary #7c3aed (purple), accent #b8860b (gold), background #fafafe (near white), soft tint #f3eeff for cards, dark plum #4c1d95 for type. Use purple on the page top border and on the "Run" button.' },
+  sunset:  { describe: 'Sunset heat palette: primary #d97706 (burnt orange), secondary #f59e0b (amber), background #fffaf2, crimson #8a2828 for losses, soft tint #fef3e6 for input cards. Use burnt orange on the page top border and on the "Run" button.' }
+};
+const typography = {
+  editorial: 'Use Google Fonts: Lora for headlines (700, italic emphasis), Outfit for UI labels, JetBrains Mono for numbers and probabilities. Italic emphasis is the visual signal.',
+  modern:    'Use Inter for everything (400/600/700). Clean modernist. No serif. Numbers in tabular figures (font-variant-numeric: tabular-nums).',
+  playful:   'Use Nunito (400/700/800) for everything. Rounded, friendly. Slightly larger base font size (15px).',
+  minimal:   'Use JetBrains Mono for everything. Reads like a notebook or terminal. Tightens the whole tool visually.'
+};
+
+const scenarios = {
+  product: {
+    name: 'New product launch',
+    inputs: 'Unit price ($, mean $25 sd $5), units sold per year (mean 8000 sd 2000), variable cost per unit ($, mean $12 sd $2), fixed cost per year ($, deterministic $50,000), initial investment ($, deterministic $300,000), salvage at horizon ($, deterministic $0).',
+    units: 'Annual revenue = price × units. Annual cost = variable × units + fixed.',
+    extra: 'Storyline: "Should we launch this product? Demand and price are uncertain. Find the risk of losing money."'
+  },
+  solar: {
+    name: 'Solar farm investment',
+    inputs: 'Capacity factor (uniform 18% to 26%), installed capacity in MW (deterministic 10 MW), tariff $/MWh (triangular $40 / $55 / $70), O&M cost $/MW/yr (normal mean $40,000 sd $6,000), initial CAPEX ($, deterministic $14,000,000), salvage ($, deterministic 5% of CAPEX).',
+    units: 'Annual energy MWh = capacity_factor × MW × 8760. Revenue = MWh × tariff. Cost = O&M × MW.',
+    extra: 'Storyline: "We are buying a solar farm. Weather sets the capacity factor, the grid sets the tariff. What\'s our P(loss)?"'
+  },
+  manufacturing: {
+    name: 'Manufacturing line',
+    inputs: 'Throughput (parts/yr, normal mean 200000 sd 40000), defect rate (uniform 1.5% to 4%), unit margin on good parts ($, triangular $1.20 / $1.80 / $2.40), fixed overhead ($, deterministic $180,000), initial line cost ($, deterministic $1,800,000), salvage ($, deterministic $200,000).',
+    units: 'Net good parts = throughput × (1 − defect). Annual benefit = good × margin − fixed.',
+    extra: 'Storyline: "We are installing a new assembly line. Throughput and defect rate are noisy. Will it pay back?"'
+  },
+  rnd: {
+    name: 'R&D bet',
+    inputs: 'Probability of technical success (deterministic 35%), payoff if successful ($, triangular $3M / $8M / $20M), payoff if failure (deterministic $0), R&D spend per year ($, deterministic $400,000), years of R&D before launch (deterministic 3), commercial life after success (deterministic 8).',
+    units: 'Use a binary success draw each trial. On success: stream the payoff as an annuity over 8 years. On failure: NPV is just minus the R&D years.',
+    extra: 'Storyline: "A pharma style R&D bet. Most trials fail. The winners pay for everything. Should we run the program?"'
+  }
+};
+const decisions = {
+  accept: 'Single project, accept-or-reject. The output verdict is one of {Accept, Reject, Investigate} based on the threshold metric.',
+  choose: 'Two alternatives A and B, head to head. Run the same K trials on both (paired draws on the same random numbers when possible). Report ΔNPV = NPV_A − NPV_B distribution and the probability that A beats B.',
+  scale:  'Optimal scale. The user enters a base case, then the tool sweeps a "scale factor" from 0.5× to 2.0× in steps of 0.1 and plots E[NPV] vs. scale. The recommended scale is the one that maximizes E[NPV].'
+};
+const horizons = {
+  short:  'Project life N = 3 years (deterministic).',
+  medium: 'Project life N = 6 years (deterministic).',
+  long:   'Project life N = 12 years (deterministic).'
+};
+
+const inputCounts = {
+  '2': 'TWO inputs are uncertain. Hold the rest at their point estimates from the case study above. The simplest version &mdash; one distribution panel for each.',
+  '4': 'FOUR inputs are uncertain (the top 4 from the case study list). The rest stay deterministic. This is the textbook standard for a teaching demo.',
+  '6': 'SIX inputs are uncertain &mdash; treat every numeric input in the case study above as uncertain. The tornado chart will have six bars.'
+};
+const distros = {
+  triangular: 'Triangular(min, mode, max). For each uncertain input, render three input fields (min, mode, max) with sensible defaults from the case study. Sample with inverse CDF: u ~ U(0,1); F = (mode−min)/(max−min); if u < F → x = min + sqrt(u·(max−min)·(mode−min)); else → x = max − sqrt((1−u)·(max−min)·(max−mode)).',
+  normal:     'Normal(mean, std). For each uncertain input, render two input fields (mean, std dev) with sensible defaults from the case study. Sample with Box-Muller: z = sqrt(−2·ln(u1))·cos(2π·u2). Clip to a sensible non-negative range for inputs like volume.',
+  uniform:    'Uniform(min, max). For each uncertain input, render two input fields (min, max). Sample with x = min + u·(max−min). Quick and conservative.'
+};
+const correlations = {
+  indep:      'All uncertain inputs are sampled INDEPENDENTLY each trial. Simplest engine.',
+  correlated: 'Allow ONE pair of inputs (price and volume, or any two adjacent inputs the user picks) to be correlated with a slider ρ ∈ [−0.95, 0.95]. Implement Gaussian copula: draw two independent standard normals z1, z2, set z2 ← ρ·z1 + sqrt(1−ρ²)·z2, then transform each back through Φ() to U(0,1) and feed those uniforms into the inverse CDF of each input\'s distribution. Show a small "ρ = X" badge above the input.'
+};
+
+const trialCounts = {
+  '1000':  'Default trials = 1,000. Add a "Trials" select with options [1k, 5k, 10k, 50k] for the user. Trials run synchronously &mdash; on a click, no chunking required.',
+  '10000': 'Default trials = 10,000. Add a "Trials" select with options [1k, 5k, 10k, 50k] for the user. Run synchronously; ~1 second is fine.',
+  '50000': 'Default trials = 50,000. Add a "Trials" select with options [1k, 5k, 10k, 50k]. Above 10k, show a small "Running…" status while the loop runs (use setTimeout to yield once before the heavy loop so the UI updates).'
+};
+const charts = {
+  histogram: 'Output chart is a HISTOGRAM using inline SVG (no Chart.js, no D3, no libraries). 40 bins. Color bars red (#8a2828) when the bin midpoint is below the threshold, olive (#5c7a4a) otherwise. Draw a gold dashed vertical line at the mean.',
+  cdf:       'Output chart is an EMPIRICAL CDF using inline SVG (no libraries). Sort trials ascending and plot a step-line from 0 to 1. Mark the threshold value on the x-axis with a vertical red line, and read P(threshold) off the y-axis with a horizontal dotted line. This is the cleanest way to communicate "X% chance of loss".',
+  both:      'Output chart shows BOTH: histogram bars in the background, with an overlay line for the empirical CDF (re-scaled to the same y-axis as the histogram, plus a secondary 0-100% axis on the right). Use inline SVG only.'
+};
+const thresholds = {
+  ploss:  'Headline metric is P(NPV < 0). Show it as a giant percentage card next to the chart. Color it red (#8a2828) if > 20%, gold (#b8860b) if 5-20%, olive (#5c7a4a) if < 5%.',
+  irr:    'Headline metric is P(IRR < MARR). Add a MARR input field (default 10%). For each trial compute IRR via bisection on [-50%, 200%]. Show P(IRR < MARR) as the giant card. Color: red > 20%, gold 5-20%, olive < 5%.',
+  custom: 'Headline metric is P(NPV < X), with X set by a SLIDER below the chart (range: P5 to P95 of the current trials). Move the slider, the percentage updates live. Useful for stress tests like "what is the chance NPV is below the project floor of −$50k?".'
+};
+
+const voices = {
+  professor: 'Formal, second person, precise. Example: "The probability that net present value is negative is 18.3%. Reject this project unless strategic considerations justify the risk."',
+  coach:     'Encouraging and action oriented. Example: "1 in 5 trials lose money. The biggest driver of that spread is demand &mdash; tighten that estimate first."',
+  witty:     'Playful with a dry edge. Example: "18% chance the spreadsheet was being optimistic. Worth a second look at the numbers that flatter you."',
+  plain:     'Minimal and factual. Example: "P(NPV < 0) = 18.3%. μ = $42,000. σ = $58,000. Run K = 10,000."'
+};
+const closing = {
+  tornado:   'Below the main chart, add a TORNADO CHART. For each uncertain input, run a quick auxiliary simulation (2,000 trials) holding every other input at its expected value and letting only this one vary. Sort the inputs by the resulting (P95 − P5) of NPV. Draw a horizontal bar per input, longest at top. Use inline SVG. The top bar is the user\'s biggest source of risk.',
+  calibrate: 'Below the main chart, add three CALIBRATION CARDS showing typical industry P(loss) figures: "Mature solar: ~12%", "Industrial pharma: ~42%", "Utility scale power: ~11%". A small caption: "Industry context &mdash; your number above relative to typical." (Use static numbers, no live API.) Helps students sanity check whether their tool\'s output is in a realistic ballpark.',
+  none:      'No closing feature. Keep the page tight: only inputs, the main chart, and the headline metric.'
+};
+const exportOpts = {
+  png:  'Add a "Save chart as PNG" button below the chart. When clicked, serialize the SVG to a string, draw it onto a canvas at 2× scale, and trigger a download. Filename: "my-risk-tool-<timestamp>.png". Pure browser APIs, no libraries.',
+  csv:  'Add a "Download CSV" button. When clicked, build a CSV string with one row per trial (columns: trial_index, NPV, then one column per uncertain input value). Trigger a download of "my-risk-tool-trials-<timestamp>.csv". This lets the user plot the data in Excel or Python later.',
+  none: 'No export buttons. The tool is a viewer only.'
+};
+
+// ============================================================
+// PROMPT BUILDERS
+// ============================================================
+function buildPrompt1() {
+  const name = state.s1.q1 || '[YOUR NAME]';
+  const themeKey = state.s1.q2 || 'crimson';
+  const typoKey = state.s1.q3 || 'editorial';
+  return `You are helping me build a Monte Carlo risk simulator as a single self contained HTML file for my engineering economy class. I will send you 5 prompts in a row. After each one, reply with the FULL updated HTML file (not a diff). Use no external libraries except Google Fonts. All CSS goes in one <style> block. All JavaScript goes in one <script> block at the end of <body>.
+
+This is prompt 1 of 5. Build only the SHELL of the tool.
+
+PERSONALIZE:
+- Display "${name}'s Risk Tool" in the header.
+- Add a subtitle: "IE 4512 · Module 11 · Built with Claude".
+- Add a small footer with the same name and today's date.
+
+COLOR THEME (${themeKey}):
+${themes[themeKey].describe}
+
+TYPOGRAPHY:
+${typography[typoKey]}
+
+LAYOUT:
+- Single column, max width 1100px, centered, generous padding.
+- A header card at the top with the title, subtitle, and a tiny "v0.1" tag in the corner.
+- A placeholder card below the header that just says "Inputs panel will appear here".
+- A second placeholder card that says "Run button + chart will appear here".
+- A third placeholder card that says "Headline metric will appear here".
+- The footer at the bottom.
+
+REQUIREMENTS:
+- Mobile responsive (one column always, larger touch targets).
+- Buttons and inputs styled but not yet functional.
+- No JavaScript needed yet beyond an empty <script> block.
+
+Reply with the full HTML now. I will paste it into a file called my-risk-tool.html and open it.`;
+}
+
+function buildPrompt2() {
+  const sc = state.s2.q1 || 'product';
+  const dec = state.s2.q2 || 'accept';
+  const h = state.s2.q3 || 'medium';
+  return `Prompt 2 of 5. Keep everything from prompt 1. Now replace the first placeholder card with the INPUTS PANEL for the case study below.
+
+CASE STUDY: ${scenarios[sc].name}
+${scenarios[sc].extra}
+
+INPUTS (point estimates &mdash; in this prompt they are all DETERMINISTIC, we add distributions in prompt 3):
+${scenarios[sc].inputs}
+
+UNITS / ECONOMICS:
+${scenarios[sc].units}
+
+TIME HORIZON:
+${horizons[h]}
+
+DECISION TYPE:
+${decisions[dec]}
+
+ALSO ADD AT THE TOP OF THE PANEL:
+- A MARR input field (% per year, default 10%).
+- A small "Reset to defaults" button that snaps every input back to the case study defaults.
+
+Keep the chart card and the headline card as placeholders &mdash; we wire those up in prompts 3 and 4.
+
+Reply with the FULL updated HTML.`;
+}
+
+function buildPrompt3() {
+  const n = state.s3.q1 || '4';
+  const d = state.s3.q2 || 'triangular';
+  const c = state.s3.q3 || 'indep';
+  return `Prompt 3 of 5. Keep everything from prompts 1 and 2. Now make the inputs UNCERTAIN.
+
+UNCERTAIN INPUT COUNT:
+${inputCounts[n]}
+
+DEFAULT DISTRIBUTION:
+${distros[d]}
+
+CORRELATION:
+${correlations[c]}
+
+UI:
+- For each uncertain input, render the row as a small framed card with the input name, a tiny distribution-shape preview (SVG, 60×30 px), and the parameter fields (e.g., for triangular: three small number boxes labeled "min / mode / max").
+- Keep the deterministic inputs in the same panel above, unchanged.
+- Add a Mulberry32 seedable random number generator at the top of the script, and a "Seed" number input next to the (still placeholder) Run button so users can reproduce results.
+
+Keep the chart and headline as placeholders.
+
+Reply with the FULL updated HTML.`;
+}
+
+function buildPrompt4() {
+  const t = state.s4.q1 || '10000';
+  const ch = state.s4.q2 || 'histogram';
+  const th = state.s4.q3 || 'ploss';
+  return `Prompt 4 of 5. Keep everything from prompts 1, 2, and 3. Now WIRE UP THE SIMULATION ENGINE.
+
+ON CLICKING "RUN":
+1. Read all input fields. Build a STATE object holding each input's distribution spec.
+2. For trial k = 1..K, draw one sample from each uncertain input, hold deterministic inputs fixed, compute NPV (and IRR if needed) per the formula in prompt 2. Store the NPVs in a Float64Array.
+3. Sort and compute: mean, median, std dev, 5th percentile, 95th percentile, min, max, and the threshold metric.
+
+TRIAL COUNT:
+${trialCounts[t]}
+
+OUTPUT CHART:
+${charts[ch]}
+
+HEADLINE METRIC:
+${thresholds[th]}
+
+REQUIREMENTS:
+- Inline SVG only for the chart. No Chart.js, no D3, no canvas libraries.
+- The chart and the headline both update on each Run click.
+- Show min, max, mean, median, std dev, 5th and 95th percentile in a small stats strip above the chart.
+
+Reply with the FULL updated HTML.`;
+}
+
+function buildPrompt5() {
+  const v = state.s5.q1 || 'professor';
+  const cl = state.s5.q2 || 'tornado';
+  const ex = state.s5.q3 || 'none';
+  return `Prompt 5 of 5, the final pass. Keep everything from prompts 1 through 4. Now ADD THE INTERPRETATION VOICE AND ONE CLOSING FEATURE.
+
+INTERPRETATION VOICE (${v}):
+Just below the headline metric, add a single sentence in this voice that interprets the current simulation result:
+${voices[v]}
+The sentence must update live whenever the user clicks Run with new inputs.
+
+CLOSING FEATURE:
+${closing[cl]}
+
+EXPORT:
+${exportOpts[ex]}
+
+FINAL POLISH:
+- Mobile responsive end to end. On screens narrower than 720px, the chart still legible.
+- No JavaScript errors in the console.
+- Add "Built with Claude · prompt engineering lab" credit in the footer next to my name and the date.
+
+Reply with the FULL final HTML. This is my submission.`;
+}
+
+const builders = { p1: buildPrompt1, p2: buildPrompt2, p3: buildPrompt3, p4: buildPrompt4, p5: buildPrompt5 };
+
+function isStepDone(s) {
+  const v = state[s];
+  return !!(v.q1 && v.q2 && v.q3);
+}
+
+function refresh() {
+  Object.keys(builders).forEach(k => {
+    const el = document.getElementById(k);
+    if (el) el.value = builders[k]();
+  });
+  let done = 0;
+  ['s1','s2','s3','s4','s5'].forEach(s => { if (isStepDone(s)) done++; });
+  document.querySelectorAll('.progress-live, #progress').forEach(el => el.textContent = done);
+
+  document.querySelectorAll('.tl-node').forEach(node => {
+    const n = parseInt(node.dataset.go, 10);
+    node.classList.remove('active', 'done');
+    if (n === currentStep) node.classList.add('active');
+    if (isStepDone('s' + n) && n !== currentStep) node.classList.add('done');
+  });
+}
+
+function showStep(n) {
+  currentStep = Math.max(1, Math.min(5, n));
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  const target = document.querySelector(`.step[data-step="${currentStep}"]`);
+  if (target) target.classList.add('active');
+  const finish = document.getElementById('finish');
+  finish.classList.remove('show');
+  refresh();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showFinish() {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById('finish').classList.add('show');
+  document.getElementById('finish').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Wire radios + text input
+document.querySelectorAll('input[type="radio"]').forEach(r => {
+  r.addEventListener('change', () => {
+    const name = r.name;
+    const stepKey = name.slice(0, 2);
+    const qKey = name.slice(2);
+    if (state[stepKey]) {
+      state[stepKey][qKey] = r.value;
+      const step = r.closest('.step');
+      step.querySelectorAll(`input[name="${name}"]`).forEach(input => {
+        const opt = input.closest('.opt');
+        if (opt) opt.classList.toggle('checked', input.checked);
+      });
+      refresh();
+    }
+  });
+});
+
+const nameInput = document.getElementById('s1q1');
+if (nameInput) {
+  nameInput.addEventListener('input', () => {
+    state.s1.q1 = nameInput.value.trim();
+    refresh();
+  });
+}
+
+// Timeline nodes
+document.querySelectorAll('.tl-node').forEach(node => {
+  node.addEventListener('click', () => {
+    const n = parseInt(node.dataset.go, 10);
+    showStep(n);
+  });
+});
+
+// Nav buttons
+document.querySelectorAll('[data-nav]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const dir = btn.dataset.nav;
+    if (dir === 'next') {
+      if (currentStep >= 5) showFinish();
+      else showStep(currentStep + 1);
+    }
+    else if (dir === 'prev') showStep(currentStep - 1);
+    else if (dir === 'finish') showFinish();
+  });
+});
+
+// Copy buttons
+document.querySelectorAll('.copy-btn').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const id = btn.dataset.copy;
+    const el = document.getElementById(id);
+    if (!el) return;
+    try { await navigator.clipboard.writeText(el.value); }
+    catch (e) { el.select(); document.execCommand('copy'); }
+    btn.classList.add('copied');
+    const orig = btn.textContent;
+    btn.textContent = 'Copied ✓';
+    showToast();
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.textContent = orig;
+    }, 1800);
+  });
+});
+
+function showToast() {
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => t.classList.remove('show'), 1600);
+}
+
+// initial paint
+showStep(1);
+</script>
+
+</body>
+</html>
