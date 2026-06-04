@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Module 8 · A Marginal Dollar Through 130 Years of US Tax Law</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf9f5; --paper: #ffffff; --ink: #1a1a1a; --muted: #5a5247; --soft: #8b7355;
+    --border: #e8e3d4; --line: #d4cfc0;
+    --gold: #b8860b; --gold-deep: #8a6608; --gold-soft: #faf3e0;
+    --olive: #5c7a4a; --olive-deep: #455d36; --olive-soft: #f0f4ea;
+    --crimson: #8a2828; --crimson-deep: #6b1e1e; --crimson-soft: #fdf2f3;
+    --teal: #0e7c80; --teal-deep: #0a5e62; --teal-soft: #e6f4f4;
+    --purple: #7c3aed; --purple-soft: #f3eeff;
+    --blue: #1947d6;
+  }
+  html, body { min-height: 100%; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: 'Outfit', -apple-system, system-ui, sans-serif; font-size: 13px; line-height: 1.5;
+  }
+  .app {
+    min-height: 100vh; display: flex; flex-direction: column;
+    max-width: 1500px; margin: 0 auto; padding: 12px 22px 24px; gap: 12px;
+  }
+
+  /* HEAD */
+  .head {
+    display: flex; justify-content: space-between; align-items: center; gap: 14px;
+    padding: 8px 16px; background: var(--paper); border: 1px solid var(--border);
+    border-radius: 10px; border-top: 3px solid var(--gold); flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .brand .code { font-size: 10px; color: var(--gold); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; }
+  .brand h1 { font-family: 'Lora', Georgia, serif; font-size: 18px; font-weight: 700; line-height: 1; }
+  .brand h1 em { font-style: italic; color: var(--gold); font-weight: 400; }
+  .brand .tag { font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted); }
+  .head .nav { display: flex; gap: 6px; }
+  .head .nav a {
+    font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft); text-decoration: none; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px;
+  }
+  .head .nav a:hover { color: var(--gold); border-color: var(--gold); background: var(--gold-soft); }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--paper) 0%, var(--gold-soft) 100%);
+    border: 1px solid #efe1bd; border-radius: 14px;
+    padding: 22px 28px 22px;
+  }
+  .hero .crumb {
+    font-family: 'Outfit', sans-serif; font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; font-weight: 700;
+    color: var(--gold-deep);
+  }
+  .hero h2 {
+    font-family: 'Lora', serif; font-size: 28px; font-weight: 700; line-height: 1.1; letter-spacing: -0.01em;
+    margin-top: 4px;
+  }
+  .hero h2 em { font-style: italic; color: var(--gold-deep); }
+  .hero .lede {
+    font-family: 'Lora', serif; font-style: italic; font-size: 13.5px; color: var(--muted); line-height: 1.55;
+    max-width: 900px; margin-top: 8px;
+  }
+  .hero .lede b { color: var(--ink); font-style: normal; font-weight: 700; }
+
+  .punchline {
+    margin-top: 14px;
+    background: var(--paper); border: 1px solid #efe1bd; border-radius: 10px;
+    padding: 13px 18px;
+    display: grid; grid-template-columns: auto 1fr auto; gap: 16px; align-items: center;
+  }
+  .punchline .icon {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: var(--gold-soft); color: var(--gold-deep);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 700;
+  }
+  .punchline .q {
+    font-family: 'Lora', serif; font-style: italic; font-size: 14.5px; color: var(--ink); line-height: 1.4;
+  }
+  .punchline .q b { font-style: normal; color: var(--gold-deep); font-weight: 700; }
+  .punchline .reveal-btn {
+    font-family: 'Outfit', sans-serif; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    padding: 9px 16px; border-radius: 7px; cursor: pointer;
+    background: var(--gold-deep); color: #fff; border: 1px solid var(--gold-deep);
+    transition: all 0.15s ease;
+  }
+  .punchline .reveal-btn:hover { background: #6b4f08; transform: translateY(-1px); }
+  .punchline.revealed .q { font-style: normal; }
+  .punchline.revealed .reveal-btn { display: none; }
+  .punchline.revealed .icon { background: var(--olive); color: #fff; }
+
+  /* RATE CHART */
+  .rate-card {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 20px 14px;
+  }
+  .rate-head {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+    padding-bottom: 8px; border-bottom: 1px dotted var(--line); margin-bottom: 6px;
+  }
+  .rate-head h3 { font-family: 'Lora', serif; font-size: 15px; font-weight: 700; }
+  .rate-head h3 em { font-style: italic; color: var(--gold); }
+  .rate-head .meta {
+    font-family: 'Outfit', sans-serif; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft);
+  }
+  .rate-card svg { width: 100%; height: 230px; }
+
+  /* TIMELINE */
+  .timeline-card {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 18px;
+  }
+  .timeline-card .timeline-head {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+    padding-bottom: 8px; border-bottom: 1px dotted var(--line); margin-bottom: 12px;
+  }
+  .timeline-card .timeline-head h3 { font-family: 'Lora', serif; font-size: 15px; font-weight: 700; }
+  .timeline-card .timeline-head h3 em { font-style: italic; color: var(--gold); }
+  .timeline-card .timeline-head .meta {
+    font-family: 'Outfit', sans-serif; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft);
+  }
+
+  .timeline-scroll {
+    overflow-x: auto; padding-bottom: 8px;
+  }
+  .timeline-strip {
+    display: grid; grid-auto-flow: column; grid-auto-columns: minmax(220px, 1fr);
+    gap: 12px;
+    min-width: 1500px;
+  }
+  .event-card {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    cursor: pointer;
+    transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+    border-top: 3px solid var(--gold);
+  }
+  .event-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+    border-color: var(--gold);
+  }
+  .event-card .img {
+    height: 130px;
+    background-size: cover; background-position: center;
+    position: relative;
+    filter: sepia(0.18) contrast(1.04);
+  }
+  .event-card .img::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(60,40,12,0) 50%, rgba(40,28,8,0.72) 100%);
+  }
+  .event-card .img-placeholder {
+    height: 130px;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--gold-soft) 0%, #f0d488 100%);
+    color: var(--gold-deep);
+    position: relative;
+  }
+  .event-card .img-placeholder svg { width: 56px; height: 56px; opacity: 0.65; }
+  .event-card .body {
+    padding: 12px 14px 14px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .event-card .year {
+    font-family: 'Outfit', sans-serif; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700;
+    color: var(--gold-deep);
+  }
+  .event-card h4 {
+    font-family: 'Lora', serif; font-size: 15px; font-weight: 700; line-height: 1.2;
+  }
+  .event-card h4 em { font-style: italic; color: var(--gold-deep); }
+  .event-card .tease {
+    font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted); line-height: 1.45;
+    margin-top: 2px;
+  }
+  .event-card .open-hint {
+    margin-top: 6px;
+    font-family: 'Outfit', sans-serif; font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    color: var(--gold);
+  }
+
+  /* Theme variants per event */
+  .event-card.olive  { border-top-color: var(--olive); }
+  .event-card.olive .year, .event-card.olive h4 em, .event-card.olive .open-hint { color: var(--olive-deep); }
+  .event-card.olive:hover { border-color: var(--olive); }
+  .event-card.olive .img-placeholder { background: linear-gradient(135deg, var(--olive-soft) 0%, #c8d8b4 100%); color: var(--olive-deep); }
+  .event-card.crimson  { border-top-color: var(--crimson); }
+  .event-card.crimson .year, .event-card.crimson h4 em, .event-card.crimson .open-hint { color: var(--crimson); }
+  .event-card.crimson:hover { border-color: var(--crimson); }
+  .event-card.crimson .img-placeholder { background: linear-gradient(135deg, var(--crimson-soft) 0%, #efb6b8 100%); color: var(--crimson); }
+  .event-card.teal  { border-top-color: var(--teal); }
+  .event-card.teal .year, .event-card.teal h4 em, .event-card.teal .open-hint { color: var(--teal-deep); }
+  .event-card.teal:hover { border-color: var(--teal); }
+  .event-card.teal .img-placeholder { background: linear-gradient(135deg, var(--teal-soft) 0%, #9cd2d4 100%); color: var(--teal-deep); }
+  .event-card.purple  { border-top-color: var(--purple); }
+  .event-card.purple .year, .event-card.purple h4 em, .event-card.purple .open-hint { color: var(--purple); }
+  .event-card.purple:hover { border-color: var(--purple); }
+  .event-card.purple .img-placeholder { background: linear-gradient(135deg, var(--purple-soft) 0%, #c4a3f9 100%); color: var(--purple); }
+
+  /* MODAL */
+  .pop-back {
+    position: fixed; inset: 0; z-index: 800;
+    background: rgba(20, 12, 12, 0.55);
+    backdrop-filter: blur(5px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.26s ease;
+  }
+  .pop-back.show { opacity: 1; pointer-events: auto; }
+  .pop-card {
+    background: var(--paper); border-radius: 14px;
+    max-width: 760px; width: 100%; max-height: 92vh;
+    box-shadow: 0 18px 50px rgba(0,0,0,0.32);
+    transform: translateY(10px); transition: transform 0.26s ease;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .pop-back.show .pop-card { transform: translateY(0); }
+  .pop-card .ph {
+    padding: 14px 24px;
+    color: #fff;
+    display: flex; align-items: center; justify-content: space-between;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-deep) 100%);
+  }
+  .pop-card.olive .ph   { background: linear-gradient(135deg, var(--olive) 0%, var(--olive-deep) 100%); }
+  .pop-card.crimson .ph { background: linear-gradient(135deg, var(--crimson) 0%, var(--crimson-deep) 100%); }
+  .pop-card.teal .ph    { background: linear-gradient(135deg, var(--teal) 0%, var(--teal-deep) 100%); }
+  .pop-card.purple .ph  { background: linear-gradient(135deg, var(--purple) 0%, #5b21b6 100%); }
+  .pop-card .ph .year-h {
+    font-family: 'Outfit', sans-serif; font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; font-weight: 700;
+    opacity: 0.85;
+  }
+  .pop-card .ph h3 { font-family: 'Lora', serif; font-size: 22px; font-weight: 700; line-height: 1.1; }
+  .pop-card .ph h3 em { font-style: italic; color: #ffeec4; }
+  .pop-card.olive .ph h3 em   { color: #d8e6c0; }
+  .pop-card.crimson .ph h3 em { color: #f5cdcf; }
+  .pop-card.teal .ph h3 em    { color: #b0dfe1; }
+  .pop-card.purple .ph h3 em  { color: #d8c2fb; }
+  .pop-card .ph .close {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.32);
+    color: #fff; cursor: pointer; font-size: 18px; line-height: 1;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .pop-card .pb {
+    overflow-y: auto;
+  }
+  .pop-card .pb .hero-img {
+    height: 220px; background-size: cover; background-position: center;
+    filter: sepia(0.18) contrast(1.04);
+  }
+  .pop-card .pb .text {
+    padding: 18px 24px 22px;
+    font-family: 'Lora', serif; font-size: 13.5px; color: var(--ink); line-height: 1.6;
+  }
+  .pop-card .pb .text p + p { margin-top: 10px; }
+  .pop-card .pb .text b { color: var(--gold-deep); font-weight: 700; }
+  .pop-card.olive .pb .text b   { color: var(--olive-deep); }
+  .pop-card.crimson .pb .text b { color: var(--crimson); }
+  .pop-card.teal .pb .text b    { color: var(--teal-deep); }
+  .pop-card.purple .pb .text b  { color: var(--purple); }
+  .pop-card .pb .text em { font-style: italic; color: var(--muted); }
+  .pop-card .pb .stats {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    margin-top: 12px;
+  }
+  .pop-card .pb .stats .it {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+    padding: 9px 12px;
+  }
+  .pop-card .pb .stats .it .l {
+    font-family: 'Outfit', sans-serif; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+    color: var(--gold-deep);
+  }
+  .pop-card.olive .pb .stats .it .l   { color: var(--olive-deep); }
+  .pop-card.crimson .pb .stats .it .l { color: var(--crimson); }
+  .pop-card.teal .pb .stats .it .l    { color: var(--teal-deep); }
+  .pop-card.purple .pb .stats .it .l  { color: var(--purple); }
+  .pop-card .pb .stats .it .v {
+    font-family: 'Lora', serif; font-style: italic; font-weight: 700; font-size: 17px; color: var(--ink);
+    margin-top: 2px;
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <header class="head">
+    <div class="brand">
+      <span class="code">IE 4512 · Module 8</span>
+      <h1>A Marginal <em>Dollar</em></h1>
+      <span class="tag">130 years of US tax law on one screen</span>
+    </div>
+    <nav class="nav">
+      <a href="index.html#module-8">← Module 8</a>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="crumb">Story · the punchline first</div>
+    <h2>One dollar of corporate income, taxed across <em>nine eras</em></h2>
+    <div class="lede">In 1894 there was no federal income tax at all. Over the next 130 years, Congress wrote it into existence, pushed the top corporate rate to 94% during a world war, redesigned it twice from scratch (1954, 1986), and ended up at 21% in 2018. <b>Here is the question:</b></div>
+
+    <div class="punchline" id="punchline">
+      <div class="icon">?</div>
+      <div class="q">A corporation earning <b>$1</b> in 1944 kept how much? The same dollar in 2024 keeps how much?</div>
+      <button class="reveal-btn" id="reveal-punchline">Reveal</button>
+    </div>
+  </section>
+
+  <!-- CORPORATE RATE CHART -->
+  <section class="rate-card">
+    <div class="rate-head">
+      <h3>Top corporate <em>marginal rate</em>, 1913 → 2024</h3>
+      <span class="meta">us federal · top bracket</span>
+    </div>
+    <svg id="rate-svg" viewBox="0 0 1200 230" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"></svg>
+  </section>
+
+  <!-- TIMELINE -->
+  <section class="timeline-card">
+    <div class="timeline-head">
+      <h3>Nine <em>moments</em> that shaped depreciation and the corporate tax</h3>
+      <span class="meta">click any card</span>
+    </div>
+    <div class="timeline-scroll">
+      <div class="timeline-strip" id="timeline-strip"></div>
+    </div>
+  </section>
+
+</div>
+
+<!-- MODAL -->
+<div class="pop-back" id="pop-back">
+  <div class="pop-card" id="pop-card">
+    <div class="ph">
+      <div>
+        <div class="year-h" id="pop-year">YEAR</div>
+        <h3 id="pop-title">Title</h3>
+      </div>
+      <button class="close" id="pop-close">×</button>
+    </div>
+    <div class="pb">
+      <div class="hero-img" id="pop-hero"></div>
+      <div class="text" id="pop-text"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ===== Events =====
+  const EVENTS = [
+    {
+      id: 'pollock', year: '1894-95', theme: '',
+      title: 'The Court strikes <em>down</em> the income tax',
+      tease: 'Pollock v. Farmers\' Loan. The Supreme Court rules a federal income tax on rents and dividends is a "direct tax" that must be apportioned by state population — and effectively kills it.',
+      img: null,
+      iconSVG: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 4-9 4-9-4 9-4z"/><path d="M3 9v3l9 4 9-4V9"/><line x1="12" y1="13" x2="12" y2="21"/></svg>',
+      stats: [{l: 'Year decided', v: '1895'}, {l: 'Vote', v: '5–4'}],
+      body: `<p>For most of the 19th century, the federal government ran on tariffs. In 1894 Congress tried a different lever — the Wilson-Gorman Tariff Act, which slipped a <b>2% tax on incomes over $4,000</b> (about $140,000 today) into the legislation. Less than a year later, the Supreme Court took it apart.</p>
+        <p>The 5-4 decision in <b>Pollock v. Farmers' Loan &amp; Trust Co.</b> held that taxes on income from property (rents, dividends, interest) were "direct taxes" under the Constitution, and direct taxes had to be apportioned among the states by population — a logistical impossibility. The income tax was dead on arrival.</p>
+        <p>For the next <em>eighteen years</em>, the federal government had no legal way to tax corporate or personal income. To get one, the country would need a constitutional amendment.</p>`
+    },
+    {
+      id: '1913', year: '1913', theme: '',
+      title: '16th Amendment + <em>Revenue Act</em>',
+      tease: 'Three-quarters of the states ratify the amendment that lets Congress tax incomes. Within months, the Revenue Act of 1913 imposes the first lasting federal income tax — top rate 7%.',
+      img: 'images/m8/1913-amendment.jpg',
+      stats: [{l: 'Amendment ratified', v: 'Feb 3, 1913'}, {l: 'Initial top rate', v: '7%'}],
+      body: `<p>The 16th Amendment is one sentence: <em>"The Congress shall have power to lay and collect taxes on incomes, from whatever source derived, without apportionment among the several States, and without regard to any census or enumeration."</em> Eighteen years after Pollock, it overturned the entire constitutional objection.</p>
+        <p>The <b>Revenue Act of October 1913</b> followed within months. It set a personal income tax of 1% on incomes above $3,000, rising to 7% on incomes above $500,000 (today: roughly $15M). A separate <b>1% tax on net corporate income</b> over $5,000 was layered in. The IRS form was <em>four pages</em> long and the entire tax code fit in a pamphlet.</p>
+        <p>Nobody yet talked about depreciation schedules. They would soon enough.</p>`
+    },
+    {
+      id: '1944', year: '1944', theme: 'crimson',
+      title: 'The wartime <em>94%</em>',
+      tease: 'WWII pushes the top personal marginal rate to a peacetime-impossible 94%, and the corporate excess profits tax reaches similar effective rates on incremental income.',
+      img: 'images/m8/1944-wartime.jpg',
+      stats: [{l: 'Top personal rate', v: '94%'}, {l: 'Top corporate', v: '40% + excess'}],
+      body: `<p>By 1944 the federal government was spending almost <b>half of US GDP</b> on the war effort. To pay for it, Congress raised the top personal marginal rate to <b>94%</b> on income above $200,000 (roughly $3.5M today) and layered an <b>excess profits tax</b> on top of the corporate code that pushed marginal corporate rates close to 90% on incremental wartime earnings.</p>
+        <p>The lasting consequence had nothing to do with the rates themselves. To get them collected, the Revenue Act of 1943 introduced <b>withholding</b> — instead of writing one big check at the end of the year, employers were now required to pull taxes out of every paycheck. That change made the income tax administrable on a mass scale for the first time. After the war, the rates came down. <em>Withholding never went away.</em></p>`
+    },
+    {
+      id: '1954', year: '1954', theme: 'olive',
+      title: 'The Internal Revenue Code <em>reorganized</em>',
+      tease: 'The 1939 tax code is renumbered, restructured, and bound into the document that still anchors federal taxation today: Title 26 of the US Code.',
+      img: 'images/m8/1954-irs.jpg',
+      stats: [{l: 'Title', v: '26 USC'}, {l: 'Sections (1954)', v: '~1,000'}],
+      body: `<p>By the early 1950s, the patchwork of revenue acts going back to 1913 had become incomprehensible. The <b>Internal Revenue Code of 1954</b> was a complete reorganization of federal tax law into one coherent statute — what we still call <b>Title 26 of the US Code</b>.</p>
+        <p>The 1954 code also formalized the modern conception of <b>useful life</b> for depreciation. Before 1954, asset lives were essentially negotiated case-by-case between taxpayers and the IRS. The new code set out depreciation as an explicit deduction with prescribed methods (SLN, DDB, sum-of-years'-digits) and a framework of <b>Asset Depreciation Range (ADR)</b> class lives that would govern depreciation for the next quarter-century.</p>
+        <p>Today's IRC is still numbered from this 1954 reorganization. When you see "§ 167" or "§ 168" or "§ 179" in a tax textbook, those section numbers were assigned in this year.</p>`
+    },
+    {
+      id: '1981', year: '1981', theme: 'gold',
+      title: 'ACRS · the <em>accelerated</em> revolution',
+      tease: 'Reagan signs the Economic Recovery Tax Act. ADR class lives are replaced by aggressive Accelerated Cost Recovery System schedules — most equipment recovers in 3, 5, or 10 years.',
+      img: 'images/m8/1981-acrs.jpg',
+      stats: [{l: 'Equipment recovery', v: '3 / 5 / 10 yr'}, {l: 'Buildings', v: '15 yr'}],
+      body: `<p>The Economic Recovery Tax Act of 1981 (ERTA) was the largest tax cut in postwar US history. It dropped the top personal marginal rate from 70% to 50% and — for our purposes — replaced the old ADR depreciation framework with the <b>Accelerated Cost Recovery System (ACRS)</b>.</p>
+        <p>ACRS was deliberately aggressive. Real economic useful lives were ignored. Most equipment was assigned to <b>3-year, 5-year, or 10-year classes</b>. Buildings — both residential and commercial — were lumped into <b>15-year property</b>. Salvage value was set to zero by statute. The arithmetic of after-tax NPV suddenly looked very different for every firm in the country.</p>
+        <p>ACRS lasted five years before being replaced by MACRS. But the philosophical move it represented — <em>depreciation is a policy lever, not a description of physical wear</em> — has never been reversed.</p>`
+    },
+    {
+      id: '1986', year: '1986', theme: 'gold',
+      title: 'Tax Reform Act · <em>MACRS</em> is born',
+      tease: 'Top corporate rate slashed from 46% to 34%. ACRS is rewritten as MACRS. Half-year and mid-quarter conventions appear. The deductions you compute today still come from this law.',
+      img: 'images/m8/1986-reform.jpg',
+      stats: [{l: 'Top corporate', v: '46% → 34%'}, {l: 'Top personal', v: '50% → 28%'}],
+      body: `<p>The Tax Reform Act of 1986 was the last broad bipartisan rewrite of the US tax code. Top personal rates fell from 50% to 28% in just two brackets; the top corporate rate from 46% to 34%. To pay for the lower rates, the law eliminated dozens of deductions, broadened the income base, and — directly relevant for engineering economy — replaced ACRS with the <b>Modified Accelerated Cost Recovery System</b> we still use today.</p>
+        <p>MACRS introduced the property classes, percentages, and conventions you compute by hand in this course: <b>3 / 5 / 7 / 10 / 15 / 20 / 27.5 / 39-year</b> classes, the <b>half-year convention</b> for personal property, the <b>mid-month convention</b> for real estate, the switch from DB to SLN at the optimal year. Section 168 of the Internal Revenue Code, written in 1986, is the source of the percentages in the MACRS table students still memorize.</p>
+        <p>The 1986 reform was the single most important tax event of the 20th century for an engineering economy course. Every tool downstream of this one is computing MACRS deductions defined here.</p>`
+    },
+    {
+      id: '2003', year: '2003', theme: 'teal',
+      title: 'Bush · <em>dividend</em> and capital gains cuts',
+      tease: 'The Jobs and Growth Tax Relief Reconciliation Act cuts the top dividend and long-term capital gains rates to 15%, ending the historical penalty for income earned through corporations.',
+      img: null,
+      iconSVG: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 10h6M9 14h6"/></svg>',
+      stats: [{l: 'Dividends', v: '38.6% → 15%'}, {l: 'LTCG', v: '20% → 15%'}],
+      body: `<p>The Jobs and Growth Tax Relief Reconciliation Act of 2003 had a narrow but consequential aim: end the historical "double taxation" disadvantage of holding wealth through a corporation. Before 2003, a dollar of dividend income was taxed once at the corporate level (35%) and then again as ordinary personal income on receipt (top rate 38.6%).</p>
+        <p>The 2003 act dropped the top tax rate on qualified dividends and long-term capital gains to <b>15%</b>, where it largely remains today (with a top of 20% for very high earners after 2013). For an engineering economy course, the consequence is in the <b>cost of equity</b>: a dollar paid out as a dividend now keeps 85¢ in the shareholder's pocket instead of 61¢, which changes the discount rate the firm uses to evaluate projects.</p>`
+    },
+    {
+      id: '2017', year: '2017', theme: '',
+      title: 'TCJA · the <em>21%</em> moment',
+      tease: 'Tax Cuts and Jobs Act. Corporate rate cut from 35% to 21% overnight. Bonus depreciation jumps to 100% first-year expensing for most equipment. Pass-through deduction (§199A) appears.',
+      img: 'images/m8/2017-tcja.jpg',
+      stats: [{l: 'Top corporate', v: '35% → 21%'}, {l: 'Bonus depreciation', v: '50% → 100%'}],
+      body: `<p>The Tax Cuts and Jobs Act of December 2017 was the largest corporate tax cut in US history. The top corporate marginal rate dropped from <b>35% to 21%</b> in a single step, effective January 1, 2018. The cut was permanent. The personal cuts that came with it were not (they sunset at the end of 2025).</p>
+        <p>For an engineering economy class, the most important change after the rate cut was on the depreciation side. <b>Bonus depreciation</b> — first-year expensing of new capital equipment — was raised from 50% to 100% on qualifying property placed in service between September 27, 2017 and the end of 2022. Combined with the lower 21% corporate rate, the tax shield from a new piece of equipment in 2018 was structurally different from 2017.</p>
+        <p>The 100% bonus depreciation began phasing down in 2023: 80% in 2023, 60% in 2024, 40% in 2025, 20% in 2026, then 0% in 2027 unless Congress acts. If you compute after-tax NPV on a project in 2025, the year matters.</p>`
+    },
+    {
+      id: '2022', year: '2022', theme: 'olive',
+      title: 'Inflation Reduction Act · <em>15% corporate AMT</em>',
+      tease: 'A 15% alternative minimum tax on book income for corporations with over $1B in average annual income. Clean-energy investment credits. The first major upward move on corporate taxation since 1993.',
+      img: null,
+      iconSVG: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M5 12c0-4 3-7 7-7s7 3 7 7"/><path d="M5 12c0 4 3 7 7 7s7-3 7-7"/><path d="M8 8c2 0 3 1 4 2 1-1 2-2 4-2"/><path d="M8 16c2 0 3-1 4-2 1 1 2 2 4 2"/></svg>',
+      stats: [{l: 'New corporate AMT', v: '15%'}, {l: 'Applies if income >', v: '$1B / yr'}],
+      body: `<p>The Inflation Reduction Act of 2022 introduced the first <b>upward</b> revision of corporate taxation since 1993. Companies with average annual adjusted book income exceeding $1 billion are now subject to a <b>15% alternative minimum tax</b> on book income, on top of the regular 21% corporate income tax. The aim was to capture income for companies that — through aggressive use of credits, depreciation, and foreign-source income — were paying low effective rates despite high book earnings.</p>
+        <p>The IRA also expanded the <b>clean energy investment tax credits</b> (the ITC for solar and wind, the new 45X production credit for manufacturing) and tied them to the kind of after-tax economic analysis your class is built around. A renewable-energy project's after-tax NPV in 2024 turns critically on which ITC bucket it qualifies for.</p>
+        <p>The post-IRA US tax landscape is less generous to depreciation timing tricks than the 2018-2022 window, but more generous to specific kinds of capital investment that policymakers decided to favor. <em>The textbook answer of "use MACRS, multiply by the tax rate" still works — but the rate is no longer a single number.</em></p>`
+    }
+  ];
+
+  // ===== Render timeline cards =====
+  const strip = document.getElementById('timeline-strip');
+  EVENTS.forEach(e => {
+    const card = document.createElement('div');
+    card.className = 'event-card' + (e.theme ? ' ' + e.theme : '');
+    const visual = e.img
+      ? `<div class="img" style="background-image: url('${e.img}');"></div>`
+      : `<div class="img-placeholder">${e.iconSVG || ''}</div>`;
+    card.innerHTML = `
+      ${visual}
+      <div class="body">
+        <span class="year">${e.year}</span>
+        <h4>${e.title}</h4>
+        <span class="tease">${e.tease}</span>
+        <span class="open-hint">read the story →</span>
+      </div>
+    `;
+    card.addEventListener('click', () => openModal(e));
+    strip.appendChild(card);
+  });
+
+  // ===== Modal =====
+  const popBack = document.getElementById('pop-back');
+  const popCard = document.getElementById('pop-card');
+  const popYear = document.getElementById('pop-year');
+  const popTitle = document.getElementById('pop-title');
+  const popHero = document.getElementById('pop-hero');
+  const popText = document.getElementById('pop-text');
+  function openModal(e) {
+    popCard.className = 'pop-card' + (e.theme ? ' ' + e.theme : '');
+    popYear.textContent = e.year;
+    popTitle.innerHTML = e.title;
+    if (e.img) {
+      popHero.style.display = 'block';
+      popHero.style.backgroundImage = `url('${e.img}')`;
+    } else {
+      popHero.style.display = 'none';
+    }
+    const statsHTML = e.stats ? `<div class="stats">${e.stats.map(s => `<div class="it"><div class="l">${s.l}</div><div class="v">${s.v}</div></div>`).join('')}</div>` : '';
+    popText.innerHTML = e.body + statsHTML;
+    popBack.classList.add('show');
+  }
+  document.getElementById('pop-close').addEventListener('click', () => popBack.classList.remove('show'));
+  popBack.addEventListener('click', evt => { if (evt.target === popBack) popBack.classList.remove('show'); });
+  document.addEventListener('keydown', evt => { if (evt.key === 'Escape') popBack.classList.remove('show'); });
+
+  // ===== Punchline reveal =====
+  document.getElementById('reveal-punchline').addEventListener('click', () => {
+    const p = document.getElementById('punchline');
+    p.classList.add('revealed');
+    p.querySelector('.q').innerHTML = 'In <b>1944</b>, a corporation kept about <b>6¢</b> of every marginal dollar after federal tax and the excess profits tax. In <b>2024</b>, that same dollar keeps <b>79¢</b> after the 21% federal corporate rate.';
+    p.querySelector('.icon').textContent = '✓';
+  });
+
+  // ===== Corporate tax rate chart =====
+  // Top federal corporate marginal rate, approximate historical record
+  const RATE_HISTORY = [
+    [1909, 1], [1913, 1], [1916, 2], [1917, 6], [1918, 12], [1919, 10],
+    [1922, 12.5], [1925, 13], [1926, 13.5], [1929, 11], [1932, 13.75],
+    [1936, 19], [1938, 19], [1940, 24], [1941, 31], [1942, 40], [1944, 40],
+    [1946, 38], [1950, 42], [1951, 50.75], [1952, 52], [1964, 50], [1965, 48],
+    [1968, 52.8], [1970, 48], [1979, 46], [1981, 46], [1987, 40],
+    [1988, 34], [1993, 35], [2017, 35], [2018, 21], [2024, 21]
+  ];
+
+  function drawRateChart() {
+    const svg = document.getElementById('rate-svg');
+    const W = 1200, H = 230;
+    const padL = 56, padR = 28, padT = 18, padB = 36;
+    const x0 = padL, x1 = W - padR;
+    const y0 = padT, y1 = H - padB;
+    const minYr = 1900, maxYr = 2030;
+    const minR = 0, maxR = 60;
+    const xPos = yr => x0 + (yr - minYr) / (maxYr - minYr) * (x1 - x0);
+    const yPos = r  => y1 - (r - minR) / (maxR - minR) * (y1 - y0);
+
+    let html = '';
+    // Axes
+    html += `<line x1="${x0}" y1="${y0}" x2="${x0}" y2="${y1}" stroke="#5a5247" stroke-width="0.9"/>`;
+    html += `<line x1="${x0}" y1="${y1}" x2="${x1}" y2="${y1}" stroke="#5a5247" stroke-width="0.9"/>`;
+
+    // Y ticks
+    [0, 10, 20, 30, 40, 50, 60].forEach(r => {
+      const yy = yPos(r);
+      html += `<line x1="${x0 - 4}" y1="${yy}" x2="${x1}" y2="${yy}" stroke="#e8e3d4" stroke-width="0.6"/>`;
+      html += `<text x="${x0 - 8}" y="${yy + 3}" text-anchor="end" font-family="Outfit,sans-serif" font-size="10" fill="#5a5247">${r}%</text>`;
+    });
+
+    // X ticks (every 20 years)
+    for (let yr = 1900; yr <= 2020; yr += 20) {
+      const xx = xPos(yr);
+      html += `<line x1="${xx}" y1="${y1}" x2="${xx}" y2="${y1 + 4}" stroke="#5a5247" stroke-width="0.7"/>`;
+      html += `<text x="${xx}" y="${y1 + 16}" text-anchor="middle" font-family="Outfit,sans-serif" font-size="10" fill="#5a5247">${yr}</text>`;
+    }
+    // 2024 tick
+    const x24 = xPos(2024);
+    html += `<text x="${x24}" y="${y1 + 16}" text-anchor="middle" font-family="Outfit,sans-serif" font-size="10" fill="#5a5247">'24</text>`;
+
+    // Line (step-style approximating tax law years where the rate held flat)
+    let d = '';
+    for (let i = 0; i < RATE_HISTORY.length; i++) {
+      const [yr, r] = RATE_HISTORY[i];
+      const cmd = (i === 0) ? 'M' : 'L';
+      d += `${cmd} ${xPos(yr).toFixed(2)} ${yPos(r).toFixed(2)} `;
+    }
+    html += `<path d="${d}" stroke="#b8860b" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+
+    // Event markers (vertical guide lines)
+    const KEY = [
+      { yr: 1913, label: '16th Amend.', color: '#5a5247' },
+      { yr: 1944, label: 'WWII', color: '#8a2828' },
+      { yr: 1986, label: 'TCJA reform · MACRS', color: '#b8860b' },
+      { yr: 2018, label: 'TCJA cut', color: '#0e7c80' },
+    ];
+    KEY.forEach(k => {
+      const xx = xPos(k.yr);
+      html += `<line x1="${xx}" y1="${y0}" x2="${xx}" y2="${y1}" stroke="${k.color}" stroke-width="1" stroke-dasharray="3 3" opacity="0.55"/>`;
+      html += `<text x="${xx + 4}" y="${y0 + 12}" font-family="Outfit,sans-serif" font-size="10" font-weight="700" fill="${k.color}">${k.label}</text>`;
+    });
+
+    svg.innerHTML = html;
+  }
+  drawRateChart();
+</script>
+
+</body>
+</html>

@@ -339,7 +339,7 @@
 <script>
   // ============ CONFIG ============
   const ADMIN_PASSWORD = 'dehghani2026';
-  const DEFAULT_AVAILABLE = [1, 2, 3, 4, 5, 6, 7];  // change later as the term progresses
+  const DEFAULT_AVAILABLE = [1, 2, 3, 4, 5, 6, 7, 8];  // change later as the term progresses
   const STORAGE_KEY = 'ie4512_unlocked_v2';
 
   const ICON = {
@@ -421,7 +421,10 @@
     },
     { n: 8, short: 'After-Tax', name: 'After-Tax Economic Analysis', release: 'Week 5',
       lede: 'Bring corporate taxes and after-tax cash flows into the analysis. Combine with MACRS depreciation to find true after-tax NPV.',
-      meta: ['Ch. 10', '~3 hrs'], tools: []
+      meta: ['Ch. 10', '~3 hrs'],
+      tools: [
+        { type: 'Slides', icon: 'book', title: 'A Marginal <em>Dollar</em>', desc: 'Story-led timeline of 130 years of US tax law on one screen, anchored on nine moments: Pollock 1894, the 16th Amendment 1913, the wartime 94% rate 1944, the IRC of 1954, ACRS 1981, the Tax Reform Act 1986 (MACRS is born), Bush dividend cuts 2003, TCJA 2017 (35% → 21%), and the Inflation Reduction Act 2022. Live chart of the top corporate marginal rate over the same window, with each event marked. Click any card to read the full story.', url: 'm8-tax-timeline.html', time: '~12 min', color: 'gold' }
+      ]
     },
     { n: 9, short: 'Replacement & Inflation', name: 'Replacement Analysis and Inflation', release: 'Week 6 (optional)',
       lede: 'When to replace an aging asset? How does inflation distort engineering economic decisions? This module is <em>optional</em> &mdash; released alongside Module 10 for students who want the extra reading. Not part of any quiz, exam, or scheduled class meeting.',
