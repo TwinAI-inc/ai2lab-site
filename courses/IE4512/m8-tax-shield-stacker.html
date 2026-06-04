@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Module 8 · Tax Shield Stacker</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf9f5; --paper: #ffffff; --ink: #1a1a1a; --muted: #5a5247; --soft: #8b7355;
+    --border: #e8e3d4; --line: #d4cfc0;
+    --gold: #b8860b; --gold-deep: #8a6608; --gold-soft: #faf3e0;
+    --olive: #5c7a4a; --olive-deep: #455d36; --olive-soft: #f0f4ea;
+    --crimson: #8a2828; --crimson-deep: #6b1e1e; --crimson-soft: #fdf2f3;
+    --teal: #0e7c80; --teal-deep: #0a5e62; --teal-soft: #e6f4f4;
+    --purple: #7c3aed; --purple-soft: #f3eeff;
+  }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: 'Outfit', -apple-system, system-ui, sans-serif; font-size: 13px; line-height: 1.45;
+    overflow: hidden;
+  }
+  .app {
+    height: 100vh; display: flex; flex-direction: column;
+    max-width: 1500px; margin: 0 auto; padding: 10px 18px; gap: 8px;
+  }
+  .head {
+    flex-shrink: 0;
+    display: flex; justify-content: space-between; align-items: center; gap: 14px;
+    padding: 8px 16px; background: var(--paper); border: 1px solid var(--border);
+    border-radius: 10px; border-top: 3px solid var(--purple); flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .brand .code { font-size: 10px; color: var(--purple); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; }
+  .brand h1 { font-family: 'Lora', Georgia, serif; font-size: 18px; font-weight: 700; line-height: 1; }
+  .brand h1 em { font-style: italic; color: var(--purple); font-weight: 400; }
+  .brand .tag { font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted); }
+  .head .nav { display: flex; gap: 6px; }
+  .head .nav a {
+    font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft); text-decoration: none; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px;
+  }
+  .head .nav a:hover { color: var(--purple); border-color: var(--purple); background: var(--purple-soft); }
+
+  .controls {
+    flex-shrink: 0;
+    background: var(--paper); border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 16px;
+    display: grid; grid-template-columns: repeat(6, 1fr) auto; gap: 12px; align-items: end;
+  }
+  @media (max-width: 1200px) { .controls { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 700px) { .controls { grid-template-columns: 1fr 1fr; } }
+  .ctrl { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .ctrl .lbl {
+    font-family: 'Outfit', sans-serif; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+    color: var(--purple);
+  }
+  .ctrl input[type=number], .ctrl select {
+    width: 100%; padding: 5px 8px;
+    border: 1px solid var(--border); border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace; font-size: 13.5px; font-weight: 700; color: var(--ink);
+    background: var(--bg); outline: none; text-align: right;
+  }
+  .ctrl select { font-family: 'Outfit', sans-serif; text-align: left; }
+  .ctrl input[type=number]:focus, .ctrl select:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(124,58,237,0.12); }
+  .reset-btn {
+    font-family: 'Outfit', sans-serif; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700;
+    padding: 7px 13px; border-radius: 7px; cursor: pointer;
+    background: var(--purple-soft); color: var(--purple); border: 1px solid var(--purple);
+  }
+  .reset-btn:hover { background: var(--purple); color: #fff; }
+
+  /* MAIN */
+  .main {
+    flex: 1; min-height: 0;
+    display: grid; grid-template-rows: auto 1fr; gap: 10px;
+  }
+
+  /* Stack panel */
+  .stack-panel {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 18px;
+    display: grid; grid-template-columns: 1.2fr 1fr; gap: 14px;
+  }
+  @media (max-width: 1100px) { .stack-panel { grid-template-columns: 1fr; } }
+
+  /* First-year breakdown bar */
+  .bar-block {
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .bar-block .ttl {
+    font-family: 'Lora', serif; font-size: 14.5px; font-weight: 700;
+  }
+  .bar-block .ttl em { font-style: italic; color: var(--purple); }
+  .stacked-bar {
+    height: 60px; border: 1px solid var(--border); border-radius: 10px;
+    overflow: hidden; display: flex;
+  }
+  .stacked-bar > div {
+    height: 100%; display: flex; align-items: center; justify-content: center;
+    color: #fff; font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+    transition: flex-grow 0.32s ease;
+    min-width: 0;
+  }
+  .stacked-bar .s179  { background: var(--gold); }
+  .stacked-bar .bonus { background: var(--crimson); }
+  .stacked-bar .macrs { background: var(--olive); }
+  .stacked-bar .remaining { background: var(--bg); color: var(--muted); }
+  .stacked-bar div span.amt { display: block; font-family: 'Lora', serif; font-style: italic; font-size: 13px; }
+
+  .legend2 {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+  }
+  .legend2 .it {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 7px;
+    padding: 6px 9px;
+  }
+  .legend2 .it .l {
+    font-family: 'Outfit', sans-serif; font-size: 8.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .legend2 .it .l .sw { width: 10px; height: 10px; border-radius: 2px; }
+  .legend2 .it.gold    .l { color: var(--gold-deep); }
+  .legend2 .it.crimson .l { color: var(--crimson); }
+  .legend2 .it.olive   .l { color: var(--olive-deep); }
+  .legend2 .it.muted   .l { color: var(--soft); }
+  .legend2 .it.gold    .l .sw { background: var(--gold); }
+  .legend2 .it.crimson .l .sw { background: var(--crimson); }
+  .legend2 .it.olive   .l .sw { background: var(--olive); }
+  .legend2 .it.muted   .l .sw { background: var(--soft); }
+  .legend2 .it .v {
+    font-family: 'Lora', serif; font-style: italic; font-weight: 700; font-size: 14px; color: var(--ink); margin-top: 2px;
+  }
+
+  /* Shield summary */
+  .shield-block {
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .big-shield {
+    background: linear-gradient(135deg, var(--purple-soft) 0%, #d5c1f5 100%);
+    border: 1.5px solid var(--purple); border-radius: 10px;
+    padding: 14px 18px;
+    display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center;
+  }
+  .big-shield .l {
+    font-family: 'Outfit', sans-serif; font-size: 9.5px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700;
+    color: var(--purple);
+  }
+  .big-shield .v {
+    font-family: 'Lora', serif; font-style: italic; font-size: 28px; font-weight: 700; color: var(--purple);
+    line-height: 1;
+  }
+  .big-shield .sub {
+    font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted); line-height: 1.4;
+    margin-top: 4px;
+  }
+  .shield-row {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 12px;
+    display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center;
+  }
+  .shield-row .nm {
+    font-family: 'Lora', serif; font-size: 12px; color: var(--ink); line-height: 1.4;
+  }
+  .shield-row .nm b { font-weight: 700; }
+  .shield-row .v {
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: var(--purple);
+  }
+
+  /* Year-by-year table */
+  .table-panel {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 16px;
+    display: flex; flex-direction: column; min-height: 0;
+  }
+  .table-panel h3 {
+    font-family: 'Lora', serif; font-size: 15px; font-weight: 700;
+    padding-bottom: 7px; border-bottom: 1px solid var(--border); margin-bottom: 6px;
+  }
+  .table-panel h3 em { font-style: italic; color: var(--purple); }
+  .table-scroll { flex: 1; min-height: 0; overflow-y: auto; }
+
+  table.shield-tbl {
+    width: 100%; border-collapse: collapse;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  }
+  table.shield-tbl thead th {
+    position: sticky; top: 0; background: var(--bg);
+    font-family: 'Outfit', sans-serif; font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft); padding: 6px;
+    border-bottom: 1px solid var(--border);
+    text-align: right;
+  }
+  table.shield-tbl thead th:first-child { text-align: center; }
+  table.shield-tbl thead th.purple-col { color: var(--purple); }
+  table.shield-tbl tbody td {
+    padding: 4px 6px; border-bottom: 1px dotted var(--line);
+    text-align: right; color: var(--ink); font-weight: 600;
+  }
+  table.shield-tbl tbody td:first-child { text-align: center; font-weight: 700; color: var(--muted); }
+  table.shield-tbl tbody td.purple { color: var(--purple); font-weight: 700; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <header class="head">
+    <div class="brand">
+      <span class="code">IE 4512 · Module 8</span>
+      <h1>Tax Shield · <em>Stacker</em></h1>
+      <span class="tag">§179 + bonus + MACRS layered on one asset</span>
+    </div>
+    <nav class="nav">
+      <a href="index.html#module-8">← Module 8</a>
+      <a href="m8-tax-timeline.html">Tax Timeline</a>
+      <a href="m8-after-tax-npv.html">After-Tax NPV</a>
+    </nav>
+  </header>
+
+  <section class="controls">
+    <div class="ctrl">
+      <span class="lbl">Cost · B</span>
+      <input type="number" id="cost" value="500000" min="1000" step="1000">
+    </div>
+    <div class="ctrl">
+      <span class="lbl">MACRS class</span>
+      <select id="cls">
+        <option value="3">3-yr</option>
+        <option value="5" selected>5-yr</option>
+        <option value="7">7-yr</option>
+        <option value="10">10-yr</option>
+        <option value="15">15-yr</option>
+      </select>
+    </div>
+    <div class="ctrl">
+      <span class="lbl">Placed in service</span>
+      <select id="year">
+        <option value="2022">2022 · 100% bonus</option>
+        <option value="2023">2023 · 80%</option>
+        <option value="2024" selected>2024 · 60%</option>
+        <option value="2025">2025 · 40%</option>
+        <option value="2026">2026 · 20%</option>
+        <option value="2027">2027 · 0%</option>
+      </select>
+    </div>
+    <div class="ctrl">
+      <span class="lbl">§179 election ($)</span>
+      <input type="number" id="s179" value="100000" min="0" step="5000">
+    </div>
+    <div class="ctrl">
+      <span class="lbl">Tax rate · T</span>
+      <input type="number" id="tax" value="21" min="0" max="60" step="1">
+    </div>
+    <div class="ctrl">
+      <span class="lbl">MARR · i</span>
+      <input type="number" id="marr" value="10" min="1" max="40" step="0.5">
+    </div>
+    <button class="reset-btn" id="reset-btn">Reset</button>
+  </section>
+
+  <div class="main">
+
+    <div class="stack-panel">
+
+      <!-- First-year breakdown -->
+      <div class="bar-block">
+        <div class="ttl">First-year <em>deduction stack</em></div>
+        <div class="stacked-bar" id="bar"></div>
+
+        <div class="legend2">
+          <div class="it gold"><div class="l"><span class="sw"></span>§179 expense</div><div class="v" id="leg-179">$—</div></div>
+          <div class="it crimson"><div class="l"><span class="sw"></span>Bonus dep.</div><div class="v" id="leg-bonus">$—</div></div>
+          <div class="it olive"><div class="l"><span class="sw"></span>MACRS yr 1</div><div class="v" id="leg-macrs">$—</div></div>
+          <div class="it muted"><div class="l"><span class="sw"></span>To later yrs</div><div class="v" id="leg-rest">$—</div></div>
+        </div>
+      </div>
+
+      <!-- Shield summary -->
+      <div class="shield-block">
+        <div class="big-shield">
+          <div>
+            <div class="l">PW of tax shield</div>
+            <div class="v" id="shield-pv">$—</div>
+            <div class="sub">at <span id="t-marr-disp">21% tax · 10% MARR</span></div>
+          </div>
+          <div>
+            <div style="font-family:'Outfit',sans-serif;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;font-weight:700;color:var(--purple)">Year-1 total deduction</div>
+            <div style="font-family:'Lora',serif;font-style:italic;font-size:22px;font-weight:700;color:var(--ink);margin-top:3px" id="yr1-total">$—</div>
+            <div style="font-family:'Lora',serif;font-style:italic;font-size:11px;color:var(--muted);margin-top:2px"><span id="yr1-pct">—%</span> of cost expensed in year 1</div>
+          </div>
+        </div>
+
+        <div class="shield-row">
+          <div class="nm"><b>Without any acceleration</b> · pure MACRS, no §179, no bonus</div>
+          <div class="v" id="pv-macrs-only">$—</div>
+        </div>
+        <div class="shield-row">
+          <div class="nm"><b>With current stack</b> · §179 + bonus + MACRS combined</div>
+          <div class="v" id="pv-current">$—</div>
+        </div>
+        <div class="shield-row" style="border-color:var(--purple); background:var(--purple-soft)">
+          <div class="nm" style="color:var(--purple)"><b>Extra shield from stacking</b></div>
+          <div class="v" id="pv-delta" style="color:var(--purple-deep,var(--purple))">+ $—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Year-by-year -->
+    <div class="table-panel">
+      <h3>Year-by-year <em>deduction</em></h3>
+      <div class="table-scroll">
+        <table class="shield-tbl">
+          <thead>
+            <tr>
+              <th>yr</th>
+              <th class="purple-col">§179</th>
+              <th class="purple-col">Bonus</th>
+              <th class="purple-col">MACRS</th>
+              <th class="purple-col">Total</th>
+              <th>Tax shield</th>
+              <th>(P/F)</th>
+              <th class="purple-col">PV shield</th>
+            </tr>
+          </thead>
+          <tbody id="yr-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const MACRS = {
+    '3':  [33.33, 44.45, 14.81, 7.41],
+    '5':  [20.00, 32.00, 19.20, 11.52, 11.52, 5.76],
+    '7':  [14.29, 24.49, 17.49, 12.49, 8.93, 8.92, 8.93, 4.46],
+    '10': [10.00, 18.00, 14.40, 11.52, 9.22, 7.37, 6.55, 6.55, 6.56, 6.55, 3.28],
+    '15': [5.00, 9.50, 8.55, 7.70, 6.93, 6.23, 5.90, 5.90, 5.91, 5.90, 5.91, 5.90, 5.91, 5.90, 5.91, 2.95],
+  };
+  // Bonus depreciation phase-down by placed-in-service year (post-TCJA, 2017 onward)
+  const BONUS_PCT = { '2022': 100, '2023': 80, '2024': 60, '2025': 40, '2026': 20, '2027': 0 };
+
+  // 2024 IRS §179 expense cap is $1.16M; we use this as an upper bound on the input.
+  const S179_CAP = 1160000;
+
+  const DEFAULT = { cost: 500000, cls: '5', year: '2024', s179: 100000, tax: 21, marr: 10 };
+  const state = { ...DEFAULT };
+
+  function compute() {
+    const B = state.cost;
+    const T = state.tax / 100;
+    const i = state.marr / 100;
+    const pct = MACRS[state.cls];
+    const n = pct.length;
+    const bonusPct = (BONUS_PCT[state.year] || 0) / 100;
+    let s179 = Math.min(state.s179, B, S179_CAP);
+    if (s179 < 0) s179 = 0;
+
+    // After §179, remaining basis for bonus + MACRS
+    const remainingAfter179 = Math.max(0, B - s179);
+    const bonus = remainingAfter179 * bonusPct;
+    const remainingAfterBonus = remainingAfter179 - bonus;
+
+    // MACRS percentages applied to remainingAfterBonus
+    const macrsByYear = pct.map(p => (p / 100) * remainingAfterBonus);
+    const macrsYr1 = macrsByYear[0];
+
+    const yr1Total = s179 + bonus + macrsYr1;
+    const yr1Pct = B > 0 ? (yr1Total / B * 100) : 0;
+    const restToLaterYears = macrsByYear.slice(1).reduce((a, b) => a + b, 0);
+
+    // Year-by-year rows
+    const rows = [];
+    for (let t = 1; t <= n; t++) {
+      const m = macrsByYear[t-1];
+      const s = (t === 1) ? s179 : 0;
+      const b = (t === 1) ? bonus : 0;
+      const total = s + b + m;
+      const shield = total * T;
+      const pf = 1 / Math.pow(1 + i, t);
+      const pvShield = shield * pf;
+      rows.push({ yr: t, s179: s, bonus: b, macrs: m, total, shield, pf, pvShield });
+    }
+    const shieldPV = rows.reduce((a, r) => a + r.pvShield, 0);
+
+    // Compare with pure-MACRS scenario (no §179, no bonus)
+    let macrsOnlyPV = 0;
+    for (let t = 1; t <= n; t++) {
+      const m = (pct[t-1] / 100) * B;
+      macrsOnlyPV += (m * T) / Math.pow(1 + i, t);
+    }
+
+    return {
+      B, T, i, n, pct, bonusPct, s179, bonus, remainingAfterBonus,
+      macrsYr1, yr1Total, yr1Pct, restToLaterYears, rows, shieldPV, macrsOnlyPV
+    };
+  }
+
+  function fmt$(v) {
+    const sign = v < 0 ? '-' : '';
+    const a = Math.abs(v);
+    if (a >= 1e6) return sign + '$' + (a / 1e6).toFixed(2) + 'M';
+    if (a >= 1e3) return sign + '$' + Math.round(a / 1e3) + 'k';
+    return sign + '$' + a.toFixed(0);
+  }
+  function fmtPF(v) { return v.toFixed(4); }
+
+  function renderBar(c) {
+    // Bar proportional to fractions of total cost B
+    const bar = document.getElementById('bar');
+    const total = c.B;
+    function pct(x) { return total > 0 ? (x / total) * 100 : 0; }
+    const segments = [
+      { cls: 's179', amt: c.s179 },
+      { cls: 'bonus', amt: c.bonus },
+      { cls: 'macrs', amt: c.macrsYr1 },
+      { cls: 'remaining', amt: c.restToLaterYears },
+    ];
+    let html = '';
+    segments.forEach(s => {
+      const p = pct(s.amt);
+      if (p > 0) {
+        const label = { s179: '§179', bonus: 'Bonus', macrs: 'MACRS yr 1', remaining: 'later years' }[s.cls];
+        html += `<div class="${s.cls}" style="flex: ${p} 0 0; min-width:0">
+          <div style="text-align:center; line-height:1.1">${p > 6 ? label : ''}<br><span class="amt">${p > 4 ? fmt$(s.amt) : ''}</span></div>
+        </div>`;
+      }
+    });
+    bar.innerHTML = html;
+
+    document.getElementById('leg-179').textContent = fmt$(c.s179);
+    document.getElementById('leg-bonus').textContent = fmt$(c.bonus);
+    document.getElementById('leg-macrs').textContent = fmt$(c.macrsYr1);
+    document.getElementById('leg-rest').textContent = fmt$(c.restToLaterYears);
+  }
+
+  function renderSummary(c) {
+    document.getElementById('shield-pv').textContent = fmt$(c.shieldPV);
+    document.getElementById('t-marr-disp').textContent = `${state.tax}% tax · ${state.marr}% MARR`;
+    document.getElementById('yr1-total').textContent = fmt$(c.yr1Total);
+    document.getElementById('yr1-pct').textContent = c.yr1Pct.toFixed(1) + '%';
+    document.getElementById('pv-macrs-only').textContent = fmt$(c.macrsOnlyPV);
+    document.getElementById('pv-current').textContent = fmt$(c.shieldPV);
+    const delta = c.shieldPV - c.macrsOnlyPV;
+    document.getElementById('pv-delta').textContent = (delta >= 0 ? '+ ' : '- ') + fmt$(Math.abs(delta));
+  }
+
+  function renderTable(c) {
+    const tb = document.getElementById('yr-tbody');
+    let html = '';
+    c.rows.forEach(r => {
+      html += `<tr>
+        <td>${r.yr}</td>
+        <td class="purple">${r.s179 > 0 ? fmt$(r.s179) : '—'}</td>
+        <td class="purple">${r.bonus > 0 ? fmt$(r.bonus) : '—'}</td>
+        <td class="purple">${fmt$(r.macrs)}</td>
+        <td>${fmt$(r.total)}</td>
+        <td>${fmt$(r.shield)}</td>
+        <td>${fmtPF(r.pf)}</td>
+        <td class="purple">${fmt$(r.pvShield)}</td>
+      </tr>`;
+    });
+    tb.innerHTML = html;
+  }
+
+  function refresh() {
+    const c = compute();
+    renderBar(c);
+    renderSummary(c);
+    renderTable(c);
+  }
+
+  ['cost','s179','tax','marr'].forEach(id => {
+    document.getElementById(id).addEventListener('input', e => {
+      const v = parseFloat(e.target.value);
+      if (!isNaN(v)) { state[id === 'cost' ? 'cost' : id] = v; refresh(); }
+    });
+  });
+  document.getElementById('cls').addEventListener('change', e => { state.cls = e.target.value; refresh(); });
+  document.getElementById('year').addEventListener('change', e => { state.year = e.target.value; refresh(); });
+  document.getElementById('reset-btn').addEventListener('click', () => {
+    Object.assign(state, DEFAULT);
+    document.getElementById('cost').value = DEFAULT.cost;
+    document.getElementById('cls').value = DEFAULT.cls;
+    document.getElementById('year').value = DEFAULT.year;
+    document.getElementById('s179').value = DEFAULT.s179;
+    document.getElementById('tax').value = DEFAULT.tax;
+    document.getElementById('marr').value = DEFAULT.marr;
+    refresh();
+  });
+
+  refresh();
+</script>
+
+</body>
+</html>

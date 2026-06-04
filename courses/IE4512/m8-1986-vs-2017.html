@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Module 8 · 1986 vs 2017 — Tax Regime Showdown</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf9f5; --paper: #ffffff; --ink: #1a1a1a; --muted: #5a5247; --soft: #8b7355;
+    --border: #e8e3d4; --line: #d4cfc0;
+    --gold: #b8860b; --gold-deep: #8a6608; --gold-soft: #faf3e0;
+    --olive: #5c7a4a; --olive-deep: #455d36; --olive-soft: #f0f4ea;
+    --crimson: #8a2828; --crimson-deep: #6b1e1e; --crimson-soft: #fdf2f3;
+    --teal: #0e7c80; --teal-deep: #0a5e62; --teal-soft: #e6f4f4;
+    --purple: #7c3aed;
+  }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: 'Outfit', -apple-system, system-ui, sans-serif; font-size: 13px; line-height: 1.45;
+    overflow: hidden;
+  }
+  .app {
+    height: 100vh; display: flex; flex-direction: column;
+    max-width: 1500px; margin: 0 auto; padding: 10px 18px; gap: 8px;
+  }
+
+  .head {
+    flex-shrink: 0;
+    display: flex; justify-content: space-between; align-items: center; gap: 14px;
+    padding: 8px 16px; background: var(--paper); border: 1px solid var(--border);
+    border-radius: 10px; border-top: 3px solid var(--crimson); flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .brand .code { font-size: 10px; color: var(--crimson); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; }
+  .brand h1 { font-family: 'Lora', Georgia, serif; font-size: 18px; font-weight: 700; line-height: 1; }
+  .brand h1 em { font-style: italic; color: var(--crimson); font-weight: 400; }
+  .brand .tag { font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted); }
+  .head .nav { display: flex; gap: 6px; }
+  .head .nav a {
+    font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft); text-decoration: none; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px;
+  }
+  .head .nav a:hover { color: var(--crimson); border-color: var(--crimson); background: var(--crimson-soft); }
+
+  .controls {
+    flex-shrink: 0;
+    background: var(--paper); border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 16px;
+    display: grid; grid-template-columns: repeat(5, 1fr) auto; gap: 12px; align-items: end;
+  }
+  @media (max-width: 900px) { .controls { grid-template-columns: repeat(3, 1fr); } }
+  .ctrl { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .ctrl .lbl {
+    font-family: 'Outfit', sans-serif; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+    color: var(--crimson);
+  }
+  .ctrl input[type=number], .ctrl select {
+    width: 100%; padding: 5px 8px;
+    border: 1px solid var(--border); border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace; font-size: 13.5px; font-weight: 700; color: var(--ink);
+    background: var(--bg); outline: none; text-align: right;
+  }
+  .ctrl select { font-family: 'Outfit', sans-serif; text-align: left; }
+  .ctrl input:focus, .ctrl select:focus { border-color: var(--crimson); box-shadow: 0 0 0 3px rgba(138,40,40,0.12); }
+  .reset-btn {
+    font-family: 'Outfit', sans-serif; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700;
+    padding: 7px 13px; border-radius: 7px; cursor: pointer;
+    background: var(--crimson-soft); color: var(--crimson); border: 1px solid var(--crimson);
+  }
+  .reset-btn:hover { background: var(--crimson); color: #fff; }
+
+  /* MAIN — two columns + showdown row */
+  .main {
+    flex: 1; min-height: 0;
+    display: grid; grid-template-rows: 1fr auto; gap: 10px;
+  }
+  .compare-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    min-height: 0;
+  }
+  @media (max-width: 980px) { .compare-row { grid-template-columns: 1fr; } html, body { overflow:auto; } .app { height:auto; } }
+
+  /* Regime panels */
+  .regime {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
+    display: flex; flex-direction: column; min-height: 0;
+    overflow: hidden;
+  }
+  .regime .top {
+    padding: 12px 18px;
+    color: #fff;
+  }
+  .regime.old .top { background: linear-gradient(135deg, var(--gold) 0%, var(--gold-deep) 100%); }
+  .regime.new .top { background: linear-gradient(135deg, var(--teal) 0%, var(--teal-deep) 100%); }
+  .regime .badge {
+    font-family: 'Outfit', sans-serif; font-size: 9.5px; letter-spacing: 0.26em; text-transform: uppercase; font-weight: 700;
+    opacity: 0.85;
+  }
+  .regime h2 {
+    font-family: 'Lora', serif; font-size: 22px; font-weight: 700; line-height: 1.05;
+    margin-top: 3px;
+  }
+  .regime h2 em { font-style: italic; color: #fff; opacity: 0.92; }
+  .regime .sub {
+    font-family: 'Lora', serif; font-style: italic; font-size: 12px; margin-top: 3px; opacity: 0.92;
+  }
+  .regime .stats-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 7px;
+    padding: 10px 14px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+  .regime .stat {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 6px;
+    padding: 6px 9px;
+  }
+  .regime .stat .l {
+    font-family: 'Outfit', sans-serif; font-size: 8.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft);
+  }
+  .regime .stat .v {
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: var(--ink); margin-top: 1px;
+  }
+  .regime.old .stat .v { color: var(--gold-deep); }
+  .regime.new .stat .v { color: var(--teal-deep); }
+
+  .regime .body {
+    flex: 1; min-height: 0;
+    display: flex; flex-direction: column;
+    padding: 10px 14px;
+    gap: 8px;
+  }
+  .regime .npv-big {
+    background: linear-gradient(135deg, var(--paper) 0%, var(--bg) 100%);
+    border: 1.5px solid var(--border); border-radius: 9px;
+    padding: 10px 14px;
+    display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center;
+  }
+  .regime.old .npv-big { border-color: var(--gold); background: linear-gradient(135deg, var(--paper) 0%, var(--gold-soft) 100%); }
+  .regime.new .npv-big { border-color: var(--teal); background: linear-gradient(135deg, var(--paper) 0%, var(--teal-soft) 100%); }
+  .regime .npv-big .l {
+    font-family: 'Outfit', sans-serif; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700;
+  }
+  .regime.old .npv-big .l { color: var(--gold-deep); }
+  .regime.new .npv-big .l { color: var(--teal-deep); }
+  .regime .npv-big .v {
+    font-family: 'Lora', serif; font-style: italic; font-size: 26px; font-weight: 700;
+    line-height: 1; margin-top: 3px;
+  }
+  .regime.old .npv-big .v { color: var(--gold-deep); }
+  .regime.new .npv-big .v { color: var(--teal-deep); }
+  .regime .npv-big .verdict {
+    font-family: 'Outfit', sans-serif; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700;
+    padding: 4px 10px; border-radius: 999px;
+  }
+  .regime .npv-big .verdict.accept { background: var(--olive); color: #fff; }
+  .regime .npv-big .verdict.reject { background: var(--crimson); color: #fff; }
+
+  .table-wrap {
+    flex: 1; min-height: 0; overflow-y: auto;
+    background: var(--paper); border: 1px solid var(--border); border-radius: 8px;
+  }
+  table.dep {
+    width: 100%; border-collapse: collapse;
+    font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+  }
+  table.dep thead th {
+    position: sticky; top: 0;
+    background: var(--bg);
+    font-family: 'Outfit', sans-serif; font-size: 8.5px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft);
+    padding: 5px 5px;
+    border-bottom: 1px solid var(--border);
+    text-align: right;
+  }
+  table.dep thead th:first-child { text-align: center; }
+  table.dep tbody td {
+    padding: 3px 5px;
+    border-bottom: 1px dotted var(--line);
+    text-align: right;
+    color: var(--ink); font-weight: 600;
+  }
+  table.dep tbody td:first-child { text-align: center; font-weight: 700; color: var(--muted); }
+  .regime.old table.dep tbody td.atcf { color: var(--gold-deep); }
+  .regime.new table.dep tbody td.atcf { color: var(--teal-deep); }
+
+  /* Showdown row */
+  .showdown {
+    background: linear-gradient(135deg, #1a1a2e 0%, #3a2814 60%, #6b4818 100%);
+    border-radius: 12px;
+    padding: 14px 22px;
+    color: #fff;
+    display: grid; grid-template-columns: auto 1fr auto; gap: 18px; align-items: center;
+  }
+  .showdown .trophy {
+    width: 50px; height: 50px; border-radius: 12px;
+    background: linear-gradient(135deg, rgba(240,200,120,0.28) 0%, rgba(184,134,11,0.14) 100%);
+    border: 1.5px solid #f0c878;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .showdown .trophy svg { width: 30px; height: 30px; color: #f0c878; }
+  .showdown .verdict-block .crumb {
+    font-family: 'Outfit', sans-serif; font-size: 9.5px; letter-spacing: 0.26em; text-transform: uppercase; font-weight: 700;
+    color: #f0c878; opacity: 0.85;
+  }
+  .showdown .verdict-block .winner {
+    font-family: 'Lora', serif; font-size: 22px; font-weight: 700; line-height: 1.1;
+  }
+  .showdown .verdict-block .winner em { font-style: italic; color: #f0c878; }
+  .showdown .verdict-block .delta {
+    font-family: 'Lora', serif; font-style: italic; font-size: 13px; opacity: 0.85; margin-top: 4px;
+  }
+  .showdown .verdict-block .delta b { color: #f0c878; font-style: normal; font-weight: 700; }
+  .showdown .toggle {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(240,200,120,0.32); border-radius: 8px;
+    padding: 8px 14px;
+    text-align: right;
+  }
+  .showdown .toggle .l {
+    font-family: 'Outfit', sans-serif; font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700;
+    color: #f0c878;
+  }
+  .showdown .toggle .v {
+    font-family: 'Lora', serif; font-style: italic; font-size: 20px; font-weight: 700; color: #fff;
+    margin-top: 2px;
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <header class="head">
+    <div class="brand">
+      <span class="code">IE 4512 · Module 8</span>
+      <h1>1986 vs 2017 · <em>Showdown</em></h1>
+      <span class="tag">same project, two tax regimes</span>
+    </div>
+    <nav class="nav">
+      <a href="index.html#module-8">← Module 8</a>
+      <a href="m8-tax-timeline.html">Timeline</a>
+      <a href="m8-after-tax-npv.html">After-Tax NPV</a>
+    </nav>
+  </header>
+
+  <section class="controls">
+    <div class="ctrl">
+      <span class="lbl">Cost · B</span>
+      <input type="number" id="cost" value="1000000" min="1000" step="1000">
+    </div>
+    <div class="ctrl">
+      <span class="lbl">Annual benefit · A</span>
+      <input type="number" id="benefit" value="280000" min="0" step="1000">
+    </div>
+    <div class="ctrl">
+      <span class="lbl">Salvage · S</span>
+      <input type="number" id="salv" value="100000" min="0" step="1000">
+    </div>
+    <div class="ctrl">
+      <span class="lbl">MACRS class</span>
+      <select id="cls">
+        <option value="3">3-yr</option>
+        <option value="5" selected>5-yr</option>
+        <option value="7">7-yr</option>
+        <option value="10">10-yr</option>
+      </select>
+    </div>
+    <div class="ctrl">
+      <span class="lbl">MARR · i</span>
+      <input type="number" id="marr" value="12" min="1" max="40" step="0.5">
+    </div>
+    <button class="reset-btn" id="reset-btn">Reset</button>
+  </section>
+
+  <div class="main">
+
+    <div class="compare-row">
+      <!-- 1986 panel -->
+      <div class="regime old">
+        <div class="top">
+          <div class="badge">Tax Reform Act of 1986</div>
+          <h2>1986 · <em>34% rate, MACRS</em></h2>
+          <div class="sub">The post-reform baseline: rates fell from 46% to 34%, MACRS replaced ACRS, and bonus depreciation did not exist.</div>
+        </div>
+        <div class="stats-row">
+          <div class="stat"><div class="l">Top corporate</div><div class="v">34%</div></div>
+          <div class="stat"><div class="l">Depreciation</div><div class="v">MACRS</div></div>
+          <div class="stat"><div class="l">Bonus dep.</div><div class="v">none</div></div>
+          <div class="stat"><div class="l">§179 cap (1986)</div><div class="v">$10k</div></div>
+        </div>
+        <div class="body">
+          <div class="npv-big">
+            <div>
+              <div class="l">AT NPV at MARR</div>
+              <div class="v" id="old-npv">$—</div>
+            </div>
+            <span class="verdict" id="old-verdict">—</span>
+          </div>
+          <div class="table-wrap">
+            <table class="dep">
+              <thead>
+                <tr><th>yr</th><th>BT CF</th><th>Dep</th><th>Tax</th><th>AT CF</th><th>PV(AT)</th></tr>
+              </thead>
+              <tbody id="old-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2017 panel -->
+      <div class="regime new">
+        <div class="top">
+          <div class="badge">Tax Cuts and Jobs Act 2017</div>
+          <h2>2017 · <em>21% rate, MACRS + bonus</em></h2>
+          <div class="sub">The current regime: 21% corporate rate, full 100% bonus depreciation in 2018-2022, phasing down to 60% in 2024. §179 cap is now $1.16M.</div>
+        </div>
+        <div class="stats-row">
+          <div class="stat"><div class="l">Top corporate</div><div class="v">21%</div></div>
+          <div class="stat"><div class="l">Depreciation</div><div class="v">MACRS</div></div>
+          <div class="stat"><div class="l">Bonus dep. (2024)</div><div class="v">60%</div></div>
+          <div class="stat"><div class="l">§179 cap (2024)</div><div class="v">$1.16M</div></div>
+        </div>
+        <div class="body">
+          <div class="npv-big">
+            <div>
+              <div class="l">AT NPV at MARR</div>
+              <div class="v" id="new-npv">$—</div>
+            </div>
+            <span class="verdict" id="new-verdict">—</span>
+          </div>
+          <div class="table-wrap">
+            <table class="dep">
+              <thead>
+                <tr><th>yr</th><th>BT CF</th><th>Dep</th><th>Tax</th><th>AT CF</th><th>PV(AT)</th></tr>
+              </thead>
+              <tbody id="new-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Showdown row -->
+    <div class="showdown">
+      <div class="trophy">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 4h12v3a6 6 0 01-12 0V4z"/>
+          <path d="M6 4H3v2a3 3 0 003 3M18 4h3v2a3 3 0 01-3 3"/>
+          <path d="M9 14h6M10 18h4M8 21h8M12 14v4"/>
+        </svg>
+      </div>
+      <div class="verdict-block">
+        <div class="crumb">Which regime your project prefers</div>
+        <div class="winner" id="winner-text">—</div>
+        <div class="delta" id="delta-text">—</div>
+      </div>
+      <div class="toggle">
+        <div class="l">Δ AT NPV</div>
+        <div class="v" id="delta-v">—</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const MACRS = {
+    '3':  [33.33, 44.45, 14.81, 7.41],
+    '5':  [20.00, 32.00, 19.20, 11.52, 11.52, 5.76],
+    '7':  [14.29, 24.49, 17.49, 12.49, 8.93, 8.92, 8.93, 4.46],
+    '10': [10.00, 18.00, 14.40, 11.52, 9.22, 7.37, 6.55, 6.55, 6.56, 6.55, 3.28],
+  };
+
+  const DEFAULT = { cost: 1000000, benefit: 280000, salv: 100000, cls: '5', marr: 12 };
+  const state = { ...DEFAULT };
+
+  function computeRegime(p, taxRate, bonusPct) {
+    const B = state.cost;
+    const A = state.benefit;
+    const S = state.salv;
+    const T = taxRate / 100;
+    const i = state.marr / 100;
+    const pct = MACRS[state.cls];
+    const n = pct.length;
+
+    // Bonus depreciation taken in year 1 on full basis
+    const bonus = B * bonusPct;
+    const remainingBasis = B - bonus;
+
+    const rows = [];
+    let cumPV = -B;
+    rows.push({ yr: 0, btcf: -B, dep: 0, tax: 0, atcf: -B, pf: 1.0, pvAt: -B });
+
+    for (let t = 1; t <= n; t++) {
+      const macrsAmt = (pct[t-1] / 100) * remainingBasis;
+      const dep = (t === 1) ? (bonus + macrsAmt) : macrsAmt;
+      let btcf = A;
+      if (t === n) btcf += S;
+      const taxable = btcf - dep;
+      const taxAmt = Math.max(0, taxable) * T;
+      const atcf = btcf - taxAmt;
+      const pf = 1 / Math.pow(1 + i, t);
+      const pvAt = atcf * pf;
+      cumPV += pvAt;
+      rows.push({ yr: t, btcf, dep, tax: taxAmt, atcf, pf, pvAt });
+    }
+
+    const npv = rows.reduce((a, r) => a + r.pvAt, 0);
+    return { rows, npv };
+  }
+
+  function fmt$(v) {
+    const sign = v < 0 ? '-' : '';
+    const a = Math.abs(v);
+    if (a >= 1e6) return sign + '$' + (a / 1e6).toFixed(2) + 'M';
+    if (a >= 1e3) return sign + '$' + Math.round(a / 1e3) + 'k';
+    return sign + '$' + a.toFixed(0);
+  }
+
+  function renderRegime(c, prefix) {
+    const tb = document.getElementById(prefix + '-tbody');
+    let html = '';
+    c.rows.forEach(r => {
+      html += `<tr>
+        <td>${r.yr}</td>
+        <td>${fmt$(r.btcf)}</td>
+        <td>${r.dep > 0 ? fmt$(r.dep) : '—'}</td>
+        <td>${r.tax > 0 ? fmt$(r.tax) : '—'}</td>
+        <td class="atcf">${fmt$(r.atcf)}</td>
+        <td class="atcf">${fmt$(r.pvAt)}</td>
+      </tr>`;
+    });
+    tb.innerHTML = html;
+    document.getElementById(prefix + '-npv').textContent = fmt$(c.npv);
+    const verdict = document.getElementById(prefix + '-verdict');
+    if (c.npv >= 0) { verdict.textContent = '✓ accept'; verdict.className = 'verdict accept'; }
+    else { verdict.textContent = '✗ reject'; verdict.className = 'verdict reject'; }
+  }
+
+  function refresh() {
+    const old = computeRegime(state, 34, 0);      // 1986: 34% rate, no bonus
+    const fresh = computeRegime(state, 21, 0.60); // 2024 under TCJA: 21% rate, 60% bonus
+    renderRegime(old, 'old');
+    renderRegime(fresh, 'new');
+
+    const delta = fresh.npv - old.npv;
+    document.getElementById('delta-v').textContent = (delta >= 0 ? '+ ' : '- ') + fmt$(Math.abs(delta));
+    const winner = delta > 0 ? '2017' : (delta < 0 ? '1986' : 'tie');
+    if (winner === '2017') {
+      document.getElementById('winner-text').innerHTML = 'Your project prefers <em>the 2017 regime</em>';
+      document.getElementById('delta-text').innerHTML = `The 21% corporate rate and 60% bonus depreciation beat the 1986 alternative by <b>${fmt$(Math.abs(delta))}</b> in after-tax NPV. The lower tax rate dominates &mdash; less of each operating dollar leaves for the IRS.`;
+    } else if (winner === '1986') {
+      document.getElementById('winner-text').innerHTML = 'Your project prefers <em>the 1986 regime</em>';
+      document.getElementById('delta-text').innerHTML = `The 34% corporate rate produces a richer depreciation tax shield on this asset by <b>${fmt$(Math.abs(delta))}</b>. The shield dominates &mdash; with no operating profit to shield, the lower 2017 rate is worth less.`;
+    } else {
+      document.getElementById('winner-text').textContent = 'Tie';
+      document.getElementById('delta-text').textContent = 'The two regimes produce identical after-tax NPVs on this project.';
+    }
+  }
+
+  ['cost','benefit','salv','marr'].forEach(id => {
+    document.getElementById(id).addEventListener('input', e => {
+      const v = parseFloat(e.target.value);
+      if (!isNaN(v)) { state[id] = v; refresh(); }
+    });
+  });
+  document.getElementById('cls').addEventListener('change', e => { state.cls = e.target.value; refresh(); });
+  document.getElementById('reset-btn').addEventListener('click', () => {
+    Object.assign(state, DEFAULT);
+    document.getElementById('cost').value = DEFAULT.cost;
+    document.getElementById('benefit').value = DEFAULT.benefit;
+    document.getElementById('salv').value = DEFAULT.salv;
+    document.getElementById('cls').value = DEFAULT.cls;
+    document.getElementById('marr').value = DEFAULT.marr;
+    refresh();
+  });
+
+  refresh();
+</script>
+
+</body>
+</html>
