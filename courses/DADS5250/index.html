@@ -111,10 +111,101 @@
     padding: 8px 10px 2px;
   }
   .sidebar-foot {
-    margin-top: auto; padding: 10px 8px 0; border-top: 1px solid var(--border);
+    padding: 10px 8px 0; border-top: 1px solid var(--border);
     font-family: 'Outfit', sans-serif; font-size: 10px; color: var(--soft);
     text-align: center; letter-spacing: 0.04em;
   }
+  /* Mode toggle (sidebar) */
+  .mode-toggle {
+    margin-top: auto; margin-bottom: 6px; padding: 10px 8px;
+    display: flex; align-items: center; gap: 6px; justify-content: space-between;
+    background: var(--blue-soft); border: 1px solid var(--line); border-radius: 9px;
+  }
+  .mode-pill {
+    display: inline-flex; align-items: center; gap: 7px; min-width: 0;
+  }
+  .mode-pill .mode-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--blue); flex-shrink: 0;
+    box-shadow: 0 0 0 3px rgba(0,85,212,0.18);
+  }
+  .mode-pill[data-mode="instructor"] .mode-dot {
+    background: var(--gold); box-shadow: 0 0 0 3px rgba(212,160,23,0.22);
+  }
+  .mode-pill .mode-label {
+    font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.06em; color: var(--blue-deep); white-space: nowrap;
+  }
+  .mode-pill[data-mode="instructor"] .mode-label { color: #8a6a08; }
+  .mode-switch {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 5px 8px; border: 1px solid var(--line); background: #fff;
+    border-radius: 6px; font-family: 'Outfit', sans-serif; font-size: 10px;
+    font-weight: 600; color: var(--muted); cursor: pointer; letter-spacing: 0.04em;
+    transition: all .15s; flex-shrink: 0;
+  }
+  .mode-switch:hover { color: var(--blue); border-color: var(--blue); }
+  .mode-switch svg { color: currentColor; }
+  /* Mode modal */
+  .mode-modal {
+    position: fixed; inset: 0; background: rgba(15, 23, 42, 0.55);
+    display: none; align-items: center; justify-content: center;
+    z-index: 1000; backdrop-filter: blur(6px); padding: 20px;
+  }
+  .mode-modal.show { display: flex; }
+  .mode-modal-card {
+    background: #fff; border-radius: 18px; padding: 36px 32px 26px;
+    width: 100%; max-width: 380px; text-align: center;
+    box-shadow: 0 30px 80px rgba(15, 23, 42, 0.32);
+    border: 1px solid var(--border); border-top: 4px solid var(--blue);
+  }
+  .mode-modal-card .kicker {
+    font-family: 'JetBrains Mono', monospace; font-size: 10.5px; font-weight: 600;
+    letter-spacing: 0.22em; color: var(--blue); text-transform: uppercase; margin-bottom: 12px;
+  }
+  .mode-modal-card h3 {
+    font-family: 'Lora', Georgia, serif; font-size: 22px; font-weight: 700;
+    color: var(--blue-deep); margin-bottom: 8px; letter-spacing: -0.015em;
+  }
+  .mode-modal-card h3 em { font-style: italic; color: var(--blue); font-weight: 400; }
+  .mode-modal-card .tag {
+    font-family: 'Lora', serif; font-style: italic; font-size: 12.5px; color: var(--muted);
+    margin-bottom: 22px; line-height: 1.5;
+  }
+  .mode-modal-card input {
+    width: 100%; padding: 11px 14px; border: 1.5px solid var(--line); border-radius: 10px;
+    font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--ink);
+    background: var(--blue-soft); text-align: center; letter-spacing: 0.08em;
+    transition: border-color .15s, background .15s;
+  }
+  .mode-modal-card input:focus { outline: none; border-color: var(--blue); background: #fff; }
+  .mode-modal-card input.err { border-color: var(--crimson); animation: mm-shake .3s; }
+  @keyframes mm-shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+  .mode-modal-card .msg {
+    font-size: 11.5px; font-family: 'Lora', serif; font-style: italic; color: var(--soft);
+    margin: 9px 0 16px; min-height: 16px;
+  }
+  .mode-modal-card .msg.err { color: var(--crimson); font-style: normal; }
+  .mode-modal-card .actions { display: flex; gap: 8px; }
+  .mode-modal-card button {
+    flex: 1; padding: 11px 16px; border: none; border-radius: 10px;
+    font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 12px;
+    letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer;
+    transition: all .15s;
+  }
+  .mode-modal-card button.primary {
+    background: linear-gradient(135deg, var(--blue) 0%, var(--blue-deep) 100%);
+    color: #fff; box-shadow: 0 6px 16px rgba(0,85,212,0.28);
+  }
+  .mode-modal-card button.primary:hover { transform: translateY(-1px); box-shadow: 0 9px 22px rgba(0,85,212,0.42); }
+  .mode-modal-card button.ghost {
+    background: #fff; color: var(--muted); border: 1px solid var(--line);
+  }
+  .mode-modal-card button.ghost:hover { color: var(--ink); border-color: var(--ink); }
+  .mode-modal-card .leave {
+    margin-top: 14px; background: none; border: none; color: var(--soft); font-family: 'Lora', serif;
+    font-style: italic; font-size: 11.5px; cursor: pointer; padding: 4px 8px;
+  }
+  .mode-modal-card .leave:hover { color: var(--crimson); }
 
   /* ============ MAIN ============ */
   .main { min-width: 0; display: flex; flex-direction: column; gap: 16px; }
@@ -273,10 +364,12 @@
   }
   .lab-btn svg { width: 13px; height: 13px; }
   .lab-btn.colab {
-    background: linear-gradient(135deg, #F9AB00 0%, #F18C00 100%); color: #fff;
-    box-shadow: 0 4px 12px rgba(249,171,0,0.28);
+    background: #fff; color: var(--ink);
+    border: 1px solid #F9AB00;
   }
-  .lab-btn.colab:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(249,171,0,0.42); }
+  .lab-btn.colab:hover { background: #FFF8E7; box-shadow: 0 3px 9px rgba(249,171,0,0.18); transform: translateY(-1px); }
+  .lab-btn.colab svg { width: 16px; height: 16px; }
+  .lab-btn.colab .colab-text { color: var(--blue-deep); }
   .lab-btn.github {
     background: #fff; color: var(--ink); border: 1px solid var(--line);
   }
@@ -968,10 +1061,36 @@
     <nav class="nav-list" data-phase="adv"></nav>
     <div class="phase-divider">Production</div>
     <nav class="nav-list" data-phase="prod"></nav>
+    <div class="mode-toggle">
+      <div class="mode-pill" id="mode-pill" data-mode="student">
+        <span class="mode-dot"></span>
+        <span class="mode-label" id="mode-label">Student mode</span>
+      </div>
+      <button class="mode-switch" id="mode-switch" type="button" title="Switch mode">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0115-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 01-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg>
+        <span>Switch</span>
+      </button>
+    </div>
     <div class="sidebar-foot">&copy; Prof. Mohammad Dehghani</div>
   </aside>
 
   <main class="main" id="main"></main>
+
+  <!-- Mode modal (instructor unlock) -->
+  <div class="mode-modal" id="mode-modal">
+    <div class="mode-modal-card">
+      <div class="kicker">DADS 5250</div>
+      <h3 id="mm-title">Instructor <em>mode</em></h3>
+      <div class="tag" id="mm-tag">Enter the instructor access code to unlock production scripts, teleprompter HTML, and other faculty-only resources across every module.</div>
+      <input id="mm-input" type="password" placeholder="Access code" autocomplete="off" />
+      <div class="msg" id="mm-msg">&nbsp;</div>
+      <div class="actions">
+        <button class="ghost" id="mm-cancel" type="button">Cancel</button>
+        <button class="primary" id="mm-go" type="button">Unlock</button>
+      </div>
+      <button class="leave" id="mm-leave" type="button" style="display:none;">Return to Student mode</button>
+    </div>
+  </div>
 
 </div>
 
@@ -1365,6 +1484,69 @@ const MODULE_PLANS = {
   }
 };
 
+/* ============ MODE (student vs instructor) ============ */
+const MODE_KEY = 'dads5250_mode_v1';
+const INSTRUCTOR_PW = '2026';
+window.MODE = (function(){
+  try { return localStorage.getItem(MODE_KEY) === INSTRUCTOR_PW ? 'instructor' : 'student'; }
+  catch(e) { return 'student'; }
+})();
+function paintMode() {
+  const pill = document.getElementById('mode-pill');
+  const label = document.getElementById('mode-label');
+  if (!pill) return;
+  pill.dataset.mode = window.MODE;
+  label.textContent = window.MODE === 'instructor' ? 'Instructor mode' : 'Student mode';
+}
+function openModeModal() {
+  const m = document.getElementById('mode-modal');
+  const input = document.getElementById('mm-input');
+  const msg = document.getElementById('mm-msg');
+  const leave = document.getElementById('mm-leave');
+  msg.classList.remove('err'); msg.innerHTML = '&nbsp;';
+  input.value = ''; input.classList.remove('err');
+  leave.style.display = window.MODE === 'instructor' ? 'inline-block' : 'none';
+  document.getElementById('mm-title').innerHTML = window.MODE === 'instructor'
+    ? 'You are <em>already in</em> Instructor mode'
+    : 'Instructor <em>mode</em>';
+  document.getElementById('mm-tag').textContent = window.MODE === 'instructor'
+    ? 'You can switch back to Student mode at any time, or close this dialog.'
+    : 'Enter the instructor access code to unlock production scripts, teleprompter HTML, and other faculty-only resources across every module.';
+  m.classList.add('show');
+  setTimeout(() => input.focus(), 50);
+}
+function closeModeModal() { document.getElementById('mode-modal').classList.remove('show'); }
+function tryInstructor() {
+  const input = document.getElementById('mm-input');
+  const msg = document.getElementById('mm-msg');
+  const v = (input.value || '').trim();
+  if (v === INSTRUCTOR_PW) {
+    try { localStorage.setItem(MODE_KEY, INSTRUCTOR_PW); } catch(e) {}
+    window.MODE = 'instructor';
+    paintMode(); render();
+    msg.classList.remove('err'); msg.textContent = 'Unlocked.';
+    setTimeout(closeModeModal, 400);
+  } else {
+    input.classList.add('err'); msg.classList.add('err'); msg.textContent = 'Access code not recognised.';
+    setTimeout(() => input.classList.remove('err'), 400);
+  }
+}
+function leaveInstructor() {
+  try { localStorage.removeItem(MODE_KEY); } catch(e) {}
+  window.MODE = 'student';
+  paintMode(); render(); closeModeModal();
+}
+document.addEventListener('DOMContentLoaded', () => {
+  paintMode();
+  const sw = document.getElementById('mode-switch');
+  if (sw) sw.addEventListener('click', openModeModal);
+  document.getElementById('mm-go').addEventListener('click', tryInstructor);
+  document.getElementById('mm-cancel').addEventListener('click', closeModeModal);
+  document.getElementById('mm-leave').addEventListener('click', leaveInstructor);
+  document.getElementById('mm-input').addEventListener('keydown', e => { if (e.key === 'Enter') tryInstructor(); });
+  document.getElementById('mode-modal').addEventListener('click', e => { if (e.target.id === 'mode-modal') closeModeModal(); });
+});
+
 let view = { kind: 'module', n: 1, toolId: null };
 
 function findTool(id) {
@@ -1436,8 +1618,12 @@ function renderModule() {
               ${L.coming
                 ? `<span class="lab-btn disabled">Coming soon</span>`
                 : `<a href="${L.colab}" target="_blank" rel="noopener" class="lab-btn colab">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.6 11.4a4 4 0 0 1 7-2.7l1.2-1.2A6 6 0 1 0 14.5 14l-1.2-1.2a4 4 0 0 1-7-1.4zm14.8 1.2a4 4 0 0 1-7 2.7L11.2 16.5A6 6 0 1 0 9.5 10l1.2 1.2a4 4 0 0 1 7 1.4z"/></svg>
-                    Open in Colab
+                    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                      <path fill="#F9AB00" d="M4.54 9.46a6.23 6.23 0 0 0 0 8.83l1.92 1.92 2.6-2.6-1.92-1.92a2.55 2.55 0 0 1 0-3.61l1.92-1.92-2.6-2.6L4.54 9.46Z"/>
+                      <path fill="#F9AB00" d="M27.46 22.54a6.23 6.23 0 0 0 0-8.83l-1.92-1.92-2.6 2.6 1.92 1.92a2.55 2.55 0 0 1 0 3.61l-1.92 1.92 2.6 2.6 1.92-1.92Z"/>
+                      <path fill="#E8710A" d="M16 7.27a6.23 6.23 0 1 0 0 17.46 6.23 6.23 0 0 0 0-17.46Zm0 9.78a3.32 3.32 0 1 1 0-6.64 3.32 3.32 0 0 1 0 6.64Z"/>
+                    </svg>
+                    <span class="colab-text">Open in Colab</span>
                    </a>
                    <a href="${L.github}" target="_blank" rel="noopener" class="lab-btn github">
                     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.2.8-.5v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.6.1-3.2 0 0 1-.3 3.2 1.2.9-.3 1.9-.4 2.9-.4 1 0 2 .1 2.9.4 2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.1 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.5A11.5 11.5 0 0 0 12 .5z"/></svg>
@@ -1481,14 +1667,15 @@ function renderModule() {
       <span class="ac-tag">${m.special==='hackathon' ? 'Deliverable' : m.special==='final' ? 'Capstone' : 'Assignment M' + String(m.n).padStart(2,'0')}</span>
       <div class="ac-body">${plan.assignment}</div>
     </div>` : '';
-  const facultyBlock = (plan && plan.scripts && plan.scripts.length) ? `
+  const isInstructor = window.MODE === 'instructor';
+  const facultyBlock = (isInstructor && plan && plan.scripts && plan.scripts.length) ? `
     <div class="faculty-section">
       <div class="faculty-h">
         <span class="lab">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
           Faculty Library
         </span>
-        <span class="sub">Production scripts &amp; teleprompter HTML <span class="pw-pill">code: 2026</span></span>
+        <span class="sub">Production scripts &amp; teleprompter HTML &middot; instructor only</span>
       </div>
       <div class="faculty-list">
         ${plan.scripts.map(s => `
