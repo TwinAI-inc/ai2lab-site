@@ -229,6 +229,140 @@
   .special-banner.final { background: var(--purple-soft); border-left: 4px solid var(--purple); color: #4c1d95; }
   .special-banner strong { font-style: normal; font-weight: 700; }
 
+  /* ============ MODULE SECTIONS (plan / labs / assignment) ============ */
+  .mod-section { margin-top: 26px; }
+  .mod-section-h {
+    display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px;
+    padding-bottom: 8px; border-bottom: 1px solid var(--border);
+  }
+  .mod-section-h .hi {
+    font-family: 'Lora', Georgia, serif; font-weight: 700; font-size: 19px; color: var(--blue-deep);
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .mod-section-h .hi svg { width: 18px; height: 18px; color: var(--blue); }
+  .mod-section-h .sub {
+    font-family: 'Lora', serif; font-style: italic; font-size: 12.5px; color: var(--muted);
+  }
+  /* Labs grid */
+  .labs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+  .lab-card {
+    background: linear-gradient(180deg, #fff, #FAFCFF);
+    border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px 12px; display: flex; flex-direction: column; gap: 10px;
+    transition: all .2s; border-left: 3px solid var(--blue);
+  }
+  .lab-card:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,85,212,0.10); border-color: var(--blue); }
+  .lab-card.coming { opacity: .65; border-left-color: var(--soft); background: var(--bg); border-style: dashed; }
+  .lab-h { display: flex; gap: 10px; align-items: flex-start; }
+  .lab-h .lab-ico {
+    width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    background: var(--blue-soft); color: var(--blue); border-radius: 8px;
+  }
+  .lab-h .lab-ico svg { width: 18px; height: 18px; }
+  .lab-title { font-family: 'Lora', serif; font-weight: 700; font-size: 14.5px; color: var(--ink); line-height: 1.2; }
+  .lab-title em { font-style: italic; color: var(--blue); font-weight: 400; }
+  .lab-desc { font-family: 'Lora', serif; font-size: 12px; color: var(--muted); line-height: 1.5; margin-top: 3px; }
+  .lab-file { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--soft); margin-top: 4px; word-break: break-all; }
+  .lab-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: auto; }
+  .lab-btn {
+    display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px;
+    font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    border-radius: 7px; text-decoration: none; transition: all .15s; flex: 1;
+    justify-content: center;
+  }
+  .lab-btn svg { width: 13px; height: 13px; }
+  .lab-btn.colab {
+    background: linear-gradient(135deg, #F9AB00 0%, #F18C00 100%); color: #fff;
+    box-shadow: 0 4px 12px rgba(249,171,0,0.28);
+  }
+  .lab-btn.colab:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(249,171,0,0.42); }
+  .lab-btn.github {
+    background: #fff; color: var(--ink); border: 1px solid var(--line);
+  }
+  .lab-btn.github:hover { background: var(--bg); border-color: var(--ink); }
+  .lab-btn.disabled { background: var(--bg); color: var(--soft); cursor: not-allowed; pointer-events: none; box-shadow: none; border: 1px dashed var(--line); }
+  /* Plan section (collapsible) */
+  .plan-card {
+    background: linear-gradient(180deg, #fff, #FAFCFF); border: 1px solid var(--border); border-radius: 12px;
+    padding: 18px 22px;
+  }
+  .plan-card details > summary { cursor: pointer; list-style: none; }
+  .plan-card details > summary::-webkit-details-marker { display: none; }
+  .plan-card details > summary { display: flex; align-items: center; justify-content: space-between; }
+  .plan-card details[open] > summary .chev { transform: rotate(90deg); }
+  .plan-card .chev { font-size: 14px; color: var(--soft); transition: transform .2s; }
+  .plan-content { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 28px; padding-top: 16px; }
+  @media (max-width: 720px) { .plan-content { grid-template-columns: 1fr; } }
+  .plan-block .plan-h {
+    font-family: 'Outfit', sans-serif; font-size: 10.5px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--blue-deep); font-weight: 700; margin-bottom: 8px;
+  }
+  .plan-block ul { padding-left: 18px; }
+  .plan-block li { font-family: 'Lora', serif; font-size: 13px; line-height: 1.6; color: var(--ink); margin: 4px 0; }
+  .plan-block li code { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; background: var(--bg); padding: 1px 5px; border-radius: 3px; color: var(--blue); }
+  .plan-block .plan-sub { font-family: 'Outfit', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--gold); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 8px; margin-bottom: 4px; }
+  .plan-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border); }
+  .plan-tag { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; padding: 3px 9px; background: var(--blue-soft); color: var(--blue-deep); border-radius: 5px; }
+  /* Assignment callout */
+  .assignment-callout {
+    margin-top: 20px;
+    background: linear-gradient(135deg, var(--gold-soft) 0%, rgba(250,243,224,0.5) 100%);
+    border: 1px solid rgba(212,160,23,0.3); border-left: 4px solid var(--gold);
+    border-radius: 10px; padding: 16px 20px;
+    display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: start;
+  }
+  .ac-tag {
+    background: var(--gold); color: #fff;
+    font-family: 'Outfit', sans-serif; font-size: 10.5px; font-weight: 800;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    padding: 5px 12px; border-radius: 999px; flex-shrink: 0;
+    box-shadow: 0 3px 10px rgba(212,160,23,0.35);
+  }
+  .ac-body { font-family: 'Lora', serif; font-size: 13.5px; line-height: 1.6; color: #5b3f06; }
+  .ac-body strong { color: #6b4f0a; font-weight: 700; }
+  /* Faculty scripts section (gated) */
+  .faculty-section {
+    margin-top: 18px; padding: 14px 18px;
+    background: linear-gradient(135deg, rgba(15,23,42,0.04) 0%, rgba(0,85,212,0.04) 100%);
+    border: 1px dashed rgba(15,23,42,0.18); border-radius: 11px;
+  }
+  .faculty-h {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 10px;
+    flex-wrap: wrap; margin-bottom: 10px;
+  }
+  .faculty-h .lab {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--blue-deep);
+  }
+  .faculty-h .lab svg { width: 14px; height: 14px; color: var(--blue); }
+  .faculty-h .sub { font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted); }
+  .faculty-h .pw-pill {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 7px;
+    background: var(--blue-soft); color: var(--blue-deep); border-radius: 999px;
+    border: 1px solid var(--line); font-weight: 600; letter-spacing: 0.04em;
+  }
+  .faculty-list { display: flex; flex-direction: column; gap: 6px; }
+  .faculty-link {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px; background: #fff; border: 1px solid var(--line);
+    border-radius: 8px; text-decoration: none; color: var(--ink);
+    transition: all .15s;
+  }
+  .faculty-link:hover { border-color: var(--blue); background: var(--blue-soft); transform: translateX(2px); }
+  .faculty-link .fl-icon {
+    width: 28px; height: 28px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    background: var(--blue-deep); color: #fff; border-radius: 6px;
+  }
+  .faculty-link .fl-icon svg { width: 14px; height: 14px; }
+  .faculty-link .fl-body { flex: 1; min-width: 0; }
+  .faculty-link .fl-title { font-family: 'Outfit'; font-weight: 600; font-size: 12.5px; color: var(--ink); }
+  .faculty-link .fl-title strong { color: var(--blue-deep); }
+  .faculty-link .fl-desc { font-family: 'Lora', serif; font-size: 11.5px; color: var(--muted); font-style: italic; line-height: 1.4; margin-top: 1px; }
+  .faculty-link .fl-arrow { color: var(--soft); transition: transform .15s; flex-shrink: 0; }
+  .faculty-link:hover .fl-arrow { transform: translateX(2px); color: var(--blue); }
+
   /* ============ TOOL VIEW ============ */
   .crumbs { display: flex; align-items: center; gap: 8px; margin-bottom: 18px; font-size: 12px; }
   .crumbs a { color: var(--blue); text-decoration: none; cursor: pointer; font-weight: 600; }
@@ -269,6 +403,106 @@
   .prob-pct { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); text-align: right; font-weight: 600; }
   .temp-insight { margin-top: 18px; padding: 14px 16px; background: var(--gold-soft); border-left: 3px solid var(--gold); border-radius: 8px; font-family: 'Lora', serif; font-size: 13px; color: #6b4f0a; line-height: 1.55; }
   .temp-insight strong { font-weight: 700; color: var(--gold); }
+  .temp-toolbar { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; padding: 12px 14px; background: var(--blue-soft); border: 1px solid var(--line); border-radius: 12px; margin-bottom: 12px; }
+  .temp-toolbar .seg { display: flex; gap: 4px; }
+  .temp-toolbar .seg-btn { padding: 6px 10px; border: 1px solid var(--line); background: #fff; border-radius: 7px; font-family: 'Outfit'; font-size: 11px; color: var(--muted); cursor: pointer; }
+  .temp-toolbar .seg-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .temp-slot { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 220px; }
+  .temp-slot .lbl { font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; color: var(--blue-deep); }
+  .temp-slot input[type=range] { flex: 1; }
+  .temp-slot #temp-val { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: var(--blue-deep); width: 44px; }
+  .temp-btn { padding: 8px 14px; border: none; border-radius: 9px; background: var(--blue); color: #fff; font-family: 'Outfit'; font-weight: 600; font-size: 12px; cursor: pointer; }
+  .temp-btn:hover { background: var(--blue-deep); }
+  .temp-compare { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .temp-compare .temp-card.highlight { border-color: var(--blue); box-shadow: 0 4px 14px rgba(0,85,212,.08); }
+  .temp-compare .temp-card .h .sub { font-size: 10px; color: var(--soft); text-transform: none; letter-spacing: 0; font-weight: 400; font-style: italic; margin-left: 6px; }
+  .ent { margin-top: 10px; padding: 8px 10px; background: var(--blue-soft); border-radius: 7px; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--muted); }
+  .ent .v { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--blue-deep); font-size: 13px; }
+  .temp-prompt-box { padding: 12px 16px; background: #fff; border: 1px solid var(--line); border-radius: 10px; margin-bottom: 10px; }
+  .temp-prompt-box .ttl { font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--soft); font-weight: 700; display: block; margin-bottom: 4px; }
+  .temp-prompt-box span:last-child { font-family: 'Lora', serif; font-style: italic; color: var(--ink); font-size: 14px; }
+  .temp-samples { display: flex; flex-direction: column; gap: 8px; }
+  .samples-head { font-size: 11.5px; color: var(--muted); letter-spacing: .02em; }
+  .samples-head strong { color: var(--blue-deep); }
+  .samples-row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .sample-chip { padding: 5px 9px; background: #fff; border: 1px solid var(--line); border-radius: 999px; font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted); }
+  .sample-chip strong { color: var(--blue); font-weight: 700; font-style: normal; }
+  .roulette-section {
+    margin-bottom: 14px; padding: 22px 26px;
+    background:
+      radial-gradient(ellipse at top left, rgba(124,58,237,0.05), transparent 60%),
+      radial-gradient(ellipse at bottom right, rgba(0,85,212,0.05), transparent 60%),
+      linear-gradient(135deg, #FFFFFF, #F8FAFD);
+    border: 1px solid var(--line); border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,85,212,0.04);
+  }
+  .rou-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 18px; flex-wrap: wrap; gap: 10px; }
+  .rou-title { font-family: 'Lora', serif; font-weight: 700; font-size: 18px; color: var(--blue-deep); }
+  .rou-title .rou-sub { font-family: 'Lora', serif; font-style: italic; font-weight: 400; font-size: 12.5px; color: var(--muted); margin-left: 4px; }
+  .rou-title .rou-sub #rou-T { color: var(--blue); font-style: normal; font-weight: 600; font-family: 'JetBrains Mono', monospace; padding: 1px 6px; background: var(--blue-soft); border-radius: 4px; }
+  .rou-meter { font-size: 11px; color: var(--muted); letter-spacing: .02em; }
+  .rou-meter .rou-conc { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--blue-deep); margin-left: 4px; }
+  .rou-wrap { display: grid; grid-template-columns: 380px 1fr; gap: 28px; align-items: center; }
+  @media (max-width: 720px) { .rou-wrap { grid-template-columns: 1fr; } }
+  .rou-stage {
+    width: 380px; height: 380px; position: relative; margin: 0 auto;
+    filter: drop-shadow(0 14px 36px rgba(30, 58, 138, 0.18));
+  }
+  .rou-stage svg { width: 100%; height: 100%; display: block; overflow: visible; }
+  #rou-wheel { transform-origin: 0 0; transition: transform 2.5s cubic-bezier(.16,.72,.16,1); }
+  .rou-slice { transition: filter .3s ease; }
+  .rou-slice.landed {
+    filter: brightness(1.15) drop-shadow(0 0 8px rgba(252,211,77,0.85)) drop-shadow(0 0 16px rgba(252,211,77,0.5));
+    animation: rou-landed-pulse 1.4s ease-out;
+  }
+  @keyframes rou-landed-pulse {
+    0% { filter: brightness(1) drop-shadow(0 0 0 rgba(252,211,77,0)); }
+    35% { filter: brightness(1.25) drop-shadow(0 0 16px rgba(252,211,77,1)) drop-shadow(0 0 26px rgba(252,211,77,0.7)); }
+    100% { filter: brightness(1.15) drop-shadow(0 0 8px rgba(252,211,77,0.85)) drop-shadow(0 0 16px rgba(252,211,77,0.5)); }
+  }
+  .rou-rim-outer { fill: none; stroke: #0F172A; stroke-width: 3; stroke-opacity: 0.92; }
+  .rou-rim-inner { fill: none; stroke: #D4A017; stroke-width: 1.5; stroke-opacity: 0.7; }
+  .rou-gloss { pointer-events: none; mix-blend-mode: soft-light; }
+  .rou-hub { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.18)); }
+  .rou-pointer-shadow { fill: rgba(0,0,0,0.25); transform: translate(0,2px); }
+  .rou-pointer {
+    fill: #D4A017;
+    stroke: #0F172A; stroke-width: 2;
+    stroke-linejoin: round;
+  }
+  .rou-pointer-dot { fill: #0F172A; stroke: #D4A017; stroke-width: 1.5; }
+  .rou-side { display: flex; flex-direction: column; gap: 11px; }
+  .rou-btn {
+    padding: 11px 18px; border: 1px solid var(--line); border-radius: 10px;
+    background: #fff; color: var(--blue-deep); font-family: 'Outfit'; font-weight: 600;
+    font-size: 13.5px; cursor: pointer; transition: all .15s;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .rou-btn:hover { border-color: var(--blue); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,85,212,0.12); }
+  .rou-btn.primary {
+    background: linear-gradient(135deg, var(--blue) 0%, var(--blue-deep) 100%);
+    border-color: var(--blue-deep); color: #fff;
+    box-shadow: 0 4px 14px rgba(0,85,212,0.28);
+  }
+  .rou-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,85,212,0.42); }
+  .rou-result {
+    padding: 14px 18px;
+    background: linear-gradient(135deg, var(--blue-soft) 0%, rgba(245,240,255,0.7) 100%);
+    border-left: 3px solid var(--blue); border-radius: 9px;
+    font-family: 'Lora', serif; font-style: italic; color: var(--muted);
+    font-size: 13.5px; min-height: 48px; line-height: 1.55;
+  }
+  .rou-result-pre { color: var(--ink); font-style: italic; }
+  .rou-result-word { color: var(--blue); font-style: normal; font-weight: 700; font-size: 16px; padding: 2px 8px; background: #fff; border-radius: 5px; box-shadow: 0 2px 6px rgba(0,85,212,0.18); }
+  .rou-history-lbl { font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--soft); font-weight: 700; margin-top: 4px; }
+  .rou-history { display: flex; flex-wrap: wrap; gap: 5px; max-height: 90px; overflow-y: auto; padding: 4px 0; }
+  .rou-hist-chip {
+    padding: 3px 10px; background: #fff; border: 1px solid var(--line);
+    border-radius: 999px; font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px; color: var(--ink);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+  .rou-empty { font-family: 'Lora', serif; font-style: italic; color: var(--soft); font-size: 12px; }
 
   /* ====== Tool: Prompt Anatomy Builder ====== */
   .prompt-grid { display: grid; grid-template-columns: 280px 1fr; gap: 18px; }
@@ -364,6 +598,32 @@
   .tok-piece.c2 { background: rgba(92,122,74,.18); color: var(--olive); }
   .tok-piece.c3 { background: rgba(124,58,237,.18); color: var(--purple); }
   .tok-piece.c4 { background: rgba(14,157,191,.18); color: var(--cyan); }
+  .tok-three { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 14px; }
+  @media (max-width: 900px) { .tok-three { grid-template-columns: 1fr; } }
+  .tok-col { display: flex; flex-direction: column; gap: 8px; }
+  .tok-col .th { padding: 8px 10px; background: var(--blue-soft); border-radius: 7px; border-left: 3px solid var(--blue); }
+  .tok-col[data-scheme="bpe"] .th { border-color: var(--gold); background: var(--gold-soft); }
+  .tok-col[data-scheme="char"] .th { border-color: var(--olive); background: var(--olive-soft); }
+  .tok-col .scheme { display: block; font-weight: 700; font-size: 13px; color: var(--blue-deep); }
+  .tok-col[data-scheme="bpe"] .scheme { color: #8a6a08; }
+  .tok-col[data-scheme="char"] .scheme { color: var(--olive); }
+  .tok-col .meta { display: block; font-size: 10.5px; color: var(--muted); font-style: italic; margin-top: 2px; }
+  .tok-col .tok-out { min-height: 110px; max-height: 200px; overflow-y: auto; }
+  .tok-col .tok-stats { margin-top: 0; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .tok-col .tok-stat { padding: 8px 10px; }
+  .tok-col .tok-stat .n { font-size: 16px; }
+  .tok-col .tok-stat .l { font-size: 9px; }
+  .tok-cost { margin-top: 16px; padding: 14px 16px; background: linear-gradient(135deg, var(--blue-soft), var(--purple-soft)); border-radius: 12px; border: 1px solid var(--line); }
+  .cost-head { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--blue-deep); font-weight: 700; margin-bottom: 10px; }
+  .cost-head .cost-sub { text-transform: none; letter-spacing: 0; color: var(--muted); font-weight: 400; font-style: italic; font-size: 11px; margin-left: 6px; }
+  .cost-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  @media (max-width: 720px) { .cost-row { grid-template-columns: 1fr 1fr; } }
+  .cost-cell { background: #fff; border: 1px solid var(--line); border-radius: 9px; padding: 10px 12px; }
+  .cell-l { font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--soft); font-weight: 600; }
+  .cell-v { font-family: 'JetBrains Mono', monospace; font-size: 17px; font-weight: 700; color: var(--blue-deep); margin-top: 2px; }
+  .tok-insight { margin-top: 12px; padding: 12px 14px; background: var(--gold-soft); border-left: 3px solid var(--gold); border-radius: 6px; font-family: 'Lora', serif; font-size: 12.5px; color: var(--ink); line-height: 1.6; }
+  .tok-insight strong { color: var(--gold); }
+  .tok-insight em { color: var(--blue); font-style: italic; font-weight: 600; }
 
   /* ====== Tool: Embeddings ====== */
   .emb-canvas { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 18px; position: relative; }
@@ -377,6 +637,25 @@
   .emb-detail { background: var(--bg); border-radius: 10px; padding: 14px; margin-top: 14px; min-height: 60px; }
   .emb-detail .h { font-size: 11px; color: var(--soft); letter-spacing: .1em; text-transform: uppercase; font-weight: 600; margin-bottom: 6px; }
   .emb-detail .s { font-family: 'Lora', serif; font-style: italic; color: var(--ink); font-size: 14px; }
+  .nn-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 4px 0; border-bottom: 1px dashed var(--border); }
+  .nn-row:last-child { border-bottom: none; }
+  .nn-row > span:first-child { flex: 1; font-style: normal; font-family: 'Lora', serif; font-size: 13px; }
+  .nn-sim { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--blue-deep); font-size: 12px; min-width: 50px; text-align: right; font-style: normal; }
+  .emb-toolbar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; padding: 10px 12px; background: var(--blue-soft); border: 1px solid var(--line); border-radius: 12px; }
+  .emb-seg { display: flex; gap: 4px; }
+  .emb-seg .seg-btn { padding: 6px 12px; border: 1px solid var(--line); background: #fff; border-radius: 7px; font-family: 'Outfit'; font-size: 11px; color: var(--muted); cursor: pointer; font-weight: 600; }
+  .emb-seg .seg-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .emb-search { display: flex; gap: 6px; align-items: center; flex: 1; min-width: 260px; background: #fff; border: 1px solid var(--line); border-radius: 9px; padding: 4px 6px 4px 10px; }
+  .emb-search .emb-icon { width: 14px; height: 14px; color: var(--blue); flex-shrink: 0; }
+  .emb-search input { border: none; outline: none; flex: 1; font-family: 'JetBrains Mono', monospace; font-size: 12px; padding: 5px 0; }
+  .emb-search button { padding: 6px 10px; border: none; border-radius: 6px; background: var(--blue); color: #fff; font-family: 'Outfit'; font-weight: 600; font-size: 11px; cursor: pointer; }
+  .emb-search button.ghost { background: transparent; color: var(--muted); }
+  .emb-search button.ghost:hover { background: var(--blue-soft); }
+  .emb-query { position: absolute; inset: 0; pointer-events: none; }
+  .qdot { position: absolute; width: 22px; height: 22px; border-radius: 50%; transform: translate(-50%, -50%); background: #fff; border: 3px solid var(--blue); box-shadow: 0 0 0 6px rgba(0,85,212,.15), 0 4px 14px rgba(0,85,212,.35); display:flex;align-items:center;justify-content:center; animation: pulse-q 1.4s ease-in-out infinite; }
+  .qdot::after { content: '?'; font-family: 'Outfit'; font-weight: 700; color: var(--blue); font-size: 12px; }
+  .qdot-tip { position: absolute; top: -28px; left: 50%; transform: translateX(-50%); white-space: nowrap; background: var(--blue-deep); color: #fff; padding: 3px 8px; border-radius: 5px; font-family: 'Lora', serif; font-style: italic; font-size: 11px; }
+  @keyframes pulse-q { 0%,100% { box-shadow: 0 0 0 6px rgba(0,85,212,.15), 0 4px 14px rgba(0,85,212,.35); } 50% { box-shadow: 0 0 0 12px rgba(0,85,212,.1), 0 4px 18px rgba(0,85,212,.45); } }
 
   /* ====== Tool: ReAct Player ====== */
   .react-controls { display: flex; align-items: center; gap: 12px; padding: 14px; background: var(--blue-soft); border-radius: 10px; margin-bottom: 14px; }
@@ -404,6 +683,248 @@
   .stub-hero svg { width: 48px; height: 48px; margin-bottom: 14px; color: var(--blue); }
   .stub-hero h3 { font-family: 'Lora', serif; font-size: 22px; color: var(--blue-deep); margin-bottom: 6px; }
   .stub-hero p { color: var(--muted); font-family: 'Lora', serif; font-style: italic; max-width: 460px; margin: 0 auto; }
+
+  /* ====== Tool: Chain Visualizer (M04) ====== */
+  .cv-input { display: flex; gap: 10px; margin-bottom: 18px; }
+  .cv-input input { flex: 1; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--ink); background: #fff; }
+  .cv-input input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-soft); }
+  .cv-input button { padding: 10px 18px; border: none; border-radius: 10px; background: var(--blue); color: #fff; font-family: 'Outfit'; font-weight: 600; font-size: 13px; cursor: pointer; letter-spacing: .02em; }
+  .cv-input button:hover { background: var(--blue-deep); }
+  .cv-pipeline { display: grid; grid-template-columns: 1fr 28px 1fr 28px 1fr; align-items: center; gap: 6px; margin-bottom: 18px; }
+  .cv-node { background: #fff; border: 2px solid var(--line); border-radius: 14px; padding: 14px 12px; text-align: center; transition: all .25s; }
+  .cv-node .lbl { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--soft); margin-bottom: 4px; }
+  .cv-node .name { font-family: 'Lora', serif; font-weight: 700; font-size: 14px; color: var(--ink); }
+  .cv-node .sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .cv-node.active { border-color: var(--blue); background: var(--blue-soft); transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0,85,212,.15); }
+  .cv-node.done { border-color: var(--ok); background: #ECFDF5; }
+  .cv-node.done .lbl { color: var(--ok); }
+  .cv-arrow { color: var(--soft); font-weight: 700; font-size: 18px; text-align: center; }
+  .cv-arrow.active { color: var(--blue); }
+  .cv-outputs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .cv-out { background: var(--blue-soft); border-left: 3px solid var(--blue); border-radius: 8px; padding: 10px 12px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--ink); line-height: 1.55; min-height: 80px; opacity: .35; transition: opacity .25s; }
+  .cv-out.visible { opacity: 1; }
+  .cv-out .ttl { display: block; font-family: 'Outfit'; font-size: 9.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--blue-deep); margin-bottom: 6px; }
+
+  /* ====== Tool: Text Chunking Lab (M05) ====== */
+  .ck-controls { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; background: var(--blue-soft); border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; }
+  .ck-control label { display: block; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--blue-deep); font-weight: 600; margin-bottom: 8px; }
+  .ck-control input[type=range] { width: 100%; }
+  .ck-control .v { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--ink); }
+  .ck-strategy { display: flex; gap: 6px; }
+  .ck-strategy button { flex: 1; padding: 6px 8px; border: 1px solid var(--line); background: #fff; border-radius: 8px; font-family: 'Outfit'; font-size: 11px; cursor: pointer; color: var(--muted); }
+  .ck-strategy button.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .ck-stats { display: flex; gap: 22px; margin-bottom: 12px; }
+  .ck-stat { font-size: 11px; color: var(--muted); }
+  .ck-stat .n { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 600; color: var(--blue-deep); display: block; }
+  .ck-doc { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; font-family: 'Lora', serif; font-size: 13.5px; line-height: 1.75; color: var(--ink); }
+  .ck-chunk { padding: 1px 2px; border-radius: 3px; }
+  .ck-chunk.c0 { background: #DBEAFE; } .ck-chunk.c1 { background: #FEF3C7; }
+  .ck-chunk.c2 { background: #D1FAE5; } .ck-chunk.c3 { background: #FDE7E9; }
+  .ck-chunk.c4 { background: #EDE9FE; } .ck-chunk.c5 { background: #CFFAFE; }
+  .ck-overlap { background: linear-gradient(90deg, transparent 0, rgba(124,58,237,.18) 100%); }
+
+  /* ====== Tool: Storyline (IE4512 m1 aesthetic) ====== */
+  .sl-wrap {
+    display: flex; flex-direction: column; gap: 18px;
+    background:
+      radial-gradient(ellipse at top right, rgba(212,160,23,0.05), transparent 60%),
+      radial-gradient(ellipse at bottom left, rgba(0,85,212,0.04), transparent 60%),
+      linear-gradient(180deg, #FFFDF8, #FAF7F0);
+    border: 1px solid #E8DFC8; border-radius: 18px; padding: 26px 30px;
+    box-shadow: 0 6px 28px rgba(184,134,11,0.05);
+  }
+  .sl-stages { display: flex; gap: 4px; flex-wrap: nowrap; align-items: flex-end; padding-top: 22px; }
+  .sl-seg {
+    flex: 1; min-width: 26px; height: 5px;
+    background: #E5DCC6; border-radius: 3px; cursor: pointer; position: relative;
+    transition: all .25s cubic-bezier(.16,1,.3,1);
+  }
+  .sl-seg.done { background: var(--gold); }
+  .sl-seg.active {
+    background: var(--blue); height: 7px;
+    box-shadow: 0 0 12px rgba(0,85,212,0.5);
+  }
+  .sl-seg.active.theme-gold { background: var(--gold); box-shadow: 0 0 12px rgba(212,160,23,0.55); }
+  .sl-seg.active.theme-olive { background: var(--olive); box-shadow: 0 0 12px rgba(92,122,74,0.55); }
+  .sl-seg::after {
+    content: attr(data-year); position: absolute; top: -22px; left: 50%; transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted);
+    opacity: 0; transition: opacity .15s; white-space: nowrap;
+  }
+  .sl-seg:hover::after, .sl-seg.active::after { opacity: 1; }
+  .sl-scene {
+    display: grid; grid-template-columns: minmax(280px, 380px) 1fr;
+    gap: 36px; align-items: center;
+    min-height: 380px;
+    padding: 4px 6px;
+  }
+  @media (max-width: 800px) {
+    .sl-scene { grid-template-columns: 1fr; gap: 18px; }
+  }
+  .sl-img-wrap {
+    position: relative; width: 100%; aspect-ratio: 1;
+    animation: sl-img-in .7s cubic-bezier(.16,1,.3,1);
+  }
+  @keyframes sl-img-in {
+    from { opacity: 0; transform: scale(.95) translateX(-12px); }
+    to { opacity: 1; transform: scale(1) translateX(0); }
+  }
+  .sl-img-inner {
+    width: 100%; height: 100%; border-radius: 18px; overflow: hidden;
+    border: 3px solid var(--gold);
+    box-shadow:
+      0 18px 50px rgba(184,134,11,0.28),
+      0 2px 0 rgba(0,0,0,0.05);
+    background: #FAF7F0;
+  }
+  .sl-scene.theme-blue .sl-img-inner { border-color: var(--blue); box-shadow: 0 18px 50px rgba(0,85,212,0.22), 0 2px 0 rgba(0,0,0,0.05); }
+  .sl-scene.theme-olive .sl-img-inner { border-color: var(--olive); box-shadow: 0 18px 50px rgba(92,122,74,0.22), 0 2px 0 rgba(0,0,0,0.05); }
+  .sl-img-inner img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .sl-img-placeholder {
+    width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #FAF7F0, #F5EFE0);
+    color: var(--gold); font-family: 'Lora', serif; font-style: italic; font-size: 14px;
+    padding: 30px;
+  }
+  .sl-img-placeholder .ph-year { font-family: 'Outfit', sans-serif; font-style: normal; font-weight: 800; font-size: 36px; color: var(--gold); letter-spacing: -0.02em; margin-bottom: 6px; }
+  .sl-year-badge {
+    position: absolute; top: -14px; left: -10px; z-index: 5;
+    background: var(--gold); color: #fff; font-family: 'Outfit', sans-serif;
+    font-size: 13.5px; font-weight: 800; letter-spacing: 0.06em;
+    padding: 8px 16px; border-radius: 999px;
+    box-shadow: 0 6px 18px rgba(212,160,23,0.45);
+    border: 2px solid #fff;
+  }
+  .sl-scene.theme-blue .sl-year-badge { background: var(--blue); box-shadow: 0 6px 18px rgba(0,85,212,0.45); }
+  .sl-scene.theme-olive .sl-year-badge { background: var(--olive); box-shadow: 0 6px 18px rgba(92,122,74,0.45); }
+  .sl-text {
+    display: flex; flex-direction: column; gap: 14px; min-width: 0;
+    animation: sl-text-in .7s cubic-bezier(.16,1,.3,1) .15s both;
+  }
+  @keyframes sl-text-in {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .sl-text .label {
+    font-family: 'Outfit', sans-serif; font-size: 10.5px; color: var(--gold);
+    letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700;
+  }
+  .sl-scene.theme-blue .sl-text .label { color: var(--blue); }
+  .sl-scene.theme-olive .sl-text .label { color: var(--olive); }
+  .sl-text h3 {
+    font-family: 'Lora', Georgia, serif; font-size: 38px; font-weight: 700;
+    line-height: 1.05; letter-spacing: -0.025em; color: var(--ink); margin: 0;
+  }
+  .sl-text h3 em { font-style: italic; color: var(--gold); font-weight: 400; }
+  .sl-scene.theme-blue .sl-text h3 em { color: var(--blue); }
+  .sl-scene.theme-olive .sl-text h3 em { color: var(--olive); }
+  .sl-text .lede {
+    font-family: 'Lora', serif; font-size: 15.5px; line-height: 1.65; color: var(--ink);
+  }
+  .sl-text .lede strong { color: var(--gold); font-weight: 700; }
+  .sl-scene.theme-blue .sl-text .lede strong { color: var(--blue-deep); }
+  .sl-scene.theme-olive .sl-text .lede strong { color: var(--olive); }
+  .sl-text .lede em { font-style: italic; color: var(--muted); }
+  .sl-fact {
+    padding: 14px 18px; background: rgba(212,160,23,0.10);
+    border-left: 3px solid var(--gold); border-radius: 0 12px 12px 0;
+    font-family: 'Lora', serif; font-style: italic; font-size: 13.5px; line-height: 1.6;
+    color: var(--ink);
+  }
+  .sl-fact .fact-tag {
+    display: block; font-family: 'Outfit', sans-serif; font-style: normal; font-weight: 700;
+    font-size: 9.5px; color: var(--gold); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 5px;
+  }
+  .sl-fact strong { color: var(--gold); font-style: normal; font-weight: 700; }
+  .sl-scene.theme-blue .sl-fact { border-left-color: var(--blue); background: rgba(0,85,212,0.06); }
+  .sl-scene.theme-blue .sl-fact .fact-tag, .sl-scene.theme-blue .sl-fact strong { color: var(--blue); }
+  .sl-scene.theme-olive .sl-fact { border-left-color: var(--olive); background: rgba(92,122,74,0.06); }
+  .sl-scene.theme-olive .sl-fact .fact-tag, .sl-scene.theme-olive .sl-fact strong { color: var(--olive); }
+  .sl-nav {
+    display: flex; justify-content: space-between; align-items: center; padding: 6px 4px 0;
+  }
+  .sl-nav button {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 20px; font-family: 'Outfit', sans-serif; font-size: 12.5px; font-weight: 600;
+    letter-spacing: 0.06em; text-transform: uppercase; border: none; border-radius: 999px;
+    cursor: pointer; transition: all .2s cubic-bezier(.16,1,.3,1);
+    background: linear-gradient(135deg, var(--blue) 0%, var(--blue-deep) 100%);
+    color: #fff;
+    box-shadow: 0 6px 18px rgba(0,85,212,0.28), inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+  .sl-nav button:hover { transform: translateY(-1.5px); box-shadow: 0 10px 26px rgba(0,85,212,0.42); }
+  .sl-nav button:disabled { opacity: 0.32; cursor: not-allowed; transform: none; box-shadow: none; }
+  .sl-nav button.ghost {
+    background: #fff; color: var(--blue);
+    box-shadow: 0 0 0 1.5px var(--blue) inset, 0 4px 12px rgba(0,85,212,0.08);
+  }
+  .sl-nav button.ghost:hover { background: var(--blue-soft); }
+  .sl-counter {
+    font-family: 'Lora', Georgia, serif; font-style: italic; font-size: 16px;
+    color: var(--muted); display: inline-flex; align-items: baseline; gap: 4px;
+  }
+  .sl-counter .now {
+    font-family: 'Outfit', sans-serif; font-style: normal; font-size: 24px; font-weight: 800;
+    color: var(--blue); letter-spacing: -0.01em; min-width: 24px; text-align: center;
+  }
+  .sl-counter .now.theme-gold { color: var(--gold); }
+  .sl-counter .now.theme-olive { color: var(--olive); }
+  .sl-counter .total {
+    font-family: 'Outfit', sans-serif; font-style: normal; font-size: 14px; font-weight: 600;
+    color: var(--soft);
+  }
+
+  /* ====== Tool: RAG Retrieval Race (M05) ====== */
+  .rr-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 18px; }
+  .rr-q { background: linear-gradient(135deg, var(--blue-soft), var(--purple-soft)); border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; margin-bottom: 12px; }
+  .rr-q .lbl { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--blue-deep); font-weight: 700; margin-bottom: 6px; }
+  .rr-q .txt { font-family: 'Lora', serif; font-style: italic; font-size: 15px; color: var(--ink); }
+  .rr-docs { display: flex; flex-direction: column; gap: 8px; }
+  .rr-doc { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; cursor: pointer; transition: all .15s; display: flex; align-items: center; gap: 12px; }
+  .rr-doc:hover { border-color: var(--blue); transform: translateX(2px); }
+  .rr-doc.picked { background: var(--blue-soft); border-color: var(--blue); }
+  .rr-doc .rank { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 14px; color: var(--soft); width: 22px; }
+  .rr-doc .body { flex: 1; font-family: 'Lora', serif; font-size: 13px; color: var(--ink); }
+  .rr-doc .sim { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; font-weight: 600; color: var(--muted); }
+  .rr-doc.reveal.relevant { background: #ECFDF5; border-color: var(--ok); }
+  .rr-doc.reveal.relevant .sim { color: var(--ok); }
+  .rr-doc.reveal.distractor { background: #FEF2F2; border-color: var(--danger); }
+  .rr-doc.reveal.distractor .sim { color: var(--danger); }
+  .rr-side { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+  .rr-side h4 { font-family: 'Lora', serif; font-size: 14px; color: var(--blue-deep); margin-bottom: 10px; }
+  .rr-score { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .rr-score .cell { background: var(--blue-soft); border-radius: 8px; padding: 10px; text-align: center; }
+  .rr-score .cell .n { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 20px; color: var(--blue-deep); }
+  .rr-score .cell .l { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .rr-actions { display: flex; gap: 8px; }
+  .rr-actions button { flex: 1; padding: 9px 14px; border: none; border-radius: 9px; font-family: 'Outfit'; font-weight: 600; font-size: 12.5px; cursor: pointer; }
+  .rr-actions .primary { background: var(--blue); color: #fff; }
+  .rr-actions .primary:hover { background: var(--blue-deep); }
+  .rr-actions .reset { background: var(--blue-soft); color: var(--blue-deep); }
+  .rr-feedback { margin-top: 12px; padding: 10px 12px; background: var(--gold-soft); border-left: 3px solid var(--gold); border-radius: 6px; font-family: 'Lora', serif; font-size: 12.5px; color: var(--ink); display: none; }
+  .rr-feedback.show { display: block; }
+  .rr-modebar { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; padding: 8px 10px; background: var(--blue-soft); border: 1px solid var(--line); border-radius: 10px; }
+  .rr-mode { padding: 6px 12px; border: 1px solid var(--line); background: #fff; border-radius: 7px; font-family: 'Outfit'; font-size: 11.5px; color: var(--muted); cursor: pointer; font-weight: 600; }
+  .rr-mode.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .rr-mode-desc { flex: 1; min-width: 200px; font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted); padding-left: 8px; }
+  .rr-score .cell.turn { box-shadow: 0 0 0 2px var(--blue); background: var(--blue); }
+  .rr-score .cell.turn .n, .rr-score .cell.turn .l { color: #fff; }
+  .rr-doc.picked-p1 { background: rgba(0,85,212,.08); border-color: var(--blue); }
+  .rr-doc.picked-p1::before { content: 'P1'; position: absolute; right: 8px; top: 8px; font-family: 'JetBrains Mono', monospace; font-size: 9px; padding: 1px 5px; background: var(--blue); color: #fff; border-radius: 3px; }
+  .rr-doc.picked-p2 { background: rgba(212,160,23,.10); border-color: var(--gold); }
+  .rr-doc.picked-p2::before { content: 'P2'; position: absolute; right: 8px; top: 8px; font-family: 'JetBrains Mono', monospace; font-size: 9px; padding: 1px 5px; background: var(--gold); color: #fff; border-radius: 3px; }
+  .rr-doc { position: relative; }
+  .rr-turn { display: inline-block; }
+  .turn-pill { display: inline-block; padding: 3px 9px; border-radius: 999px; font-family: 'Outfit'; font-size: 11px; font-weight: 700; }
+  .turn-pill.p1 { background: var(--blue-soft); color: var(--blue); border: 1px solid var(--blue); }
+  .turn-pill.p2 { background: var(--gold-soft); color: var(--gold); border: 1px solid var(--gold); }
+  .rr-timer { margin-bottom: 10px; }
+  .rr-clock { background: linear-gradient(135deg, var(--blue-soft), var(--purple-soft)); border-radius: 9px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; }
+  .rr-clock .lbl { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .rr-clock .n { font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 700; color: var(--blue-deep); }
+  .rr-clock.warn { background: linear-gradient(135deg, #FEF2F2, #FEF3C7); animation: rr-pulse 0.6s ease-in-out infinite; }
+  .rr-clock.warn .n { color: var(--danger); }
+  @keyframes rr-pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.03); } }
 </style>
 </head>
 <body>
@@ -476,13 +997,16 @@ const MODULES = [
     lede: 'Open the box. See how a language model actually responds to your call. Slide the temperature, count the tokens, and watch probability turn into text.',
     meta: ['Phase 1', '~3 hrs'],
     tools: [
+      { id: 'storyline', type: 'Story', icon: 'sparkle', title: 'How LLMs Got Here <em>(1948 to today)</em>', desc: 'A short illustrated history. Shannon’s information theory to ELIZA to attention to GPT to today.', time: '~10 min', color: 'gold' },
       { id: 'temperature', type: 'Sandbox', icon: 'thermometer', title: 'Temperature <em>Explorer</em>', desc: 'Interactive slider showing how temperature shapes the probability of the next word.', time: '~10 min', color: 'crimson' },
-      { id: 'tokenizer', type: 'Sandbox', icon: 'tokens', title: 'Tokenizer <em>Explorer</em>', desc: 'Word, character, and subword tokenization side by side. The same sentence costs different numbers of tokens.', time: '~8 min', color: 'cyan' }
+      { id: 'tokenizer', type: 'Sandbox', icon: 'tokens', title: 'Tokenizer <em>Explorer</em>', desc: 'Word, character, and subword tokenization side by side. The same sentence costs different numbers of tokens.', time: '~8 min', color: 'cyan' },
+      { id: 'transformer', type: 'Playground', icon: 'chain', external: 'https://poloclub.github.io/transformer-explainer/', title: 'Transformer <em>Explainer</em>', desc: 'Open the Polo Club interactive: every layer, attention head, and softmax of GPT-2 visualized live.', time: '~20 min', color: 'purple' }
     ]},
   { n: 2, phase: 'found', short: 'Prompting', name: 'Prompt Engineering',
     lede: 'A great prompt has parts. Role, task, context, format, examples. Drop them in, watch the quality climb.',
     meta: ['Phase 1', '~3 hrs'],
     tools: [
+      { id: 'storyline-prompting', type: 'Story', icon: 'sparkle', title: 'The Art of the <em>Prompt</em>', desc: 'Turing test to ELIZA to chain-of-thought to Constitutional AI. How talking to the model became a discipline.', time: '~10 min', color: 'gold' },
       { id: 'prompt-anatomy', type: 'Builder', icon: 'puzzle', title: 'Prompt Anatomy <em>Builder</em>', desc: 'Drag role / task / context / format / examples blocks. Compare bare task vs structured prompt side by side.', time: '~15 min', color: 'blue' }
     ]},
   { n: 3, phase: 'found', short: 'Structured Output', name: 'Structured Output and Function Calling', lede: 'Turn free text into a typed object. JSON, schemas, and tool calls.', meta: ['Phase 1', '~3 hrs'], tools: [] },
@@ -496,13 +1020,16 @@ const MODULES = [
     lede: 'Chunk the document, embed the chunks, retrieve the relevant ones, ground the answer. The full RAG pipeline, made visible.',
     meta: ['Phase 2', '~3 hrs'],
     tools: [
+      { id: 'storyline-rag', type: 'Story', icon: 'sparkle', title: 'How Retrieval <em>Got Smart</em>', desc: 'From card catalogs to TF-IDF to BERT to RAG. A short history of finding the right document.', time: '~10 min', color: 'gold' },
       { id: 'chunking', type: 'Sandbox', icon: 'grid', title: 'Text <em>Chunking</em>', desc: 'Basic vs recursive chunking. Adjustable chunk size and overlap. Visual boundaries on a sample document.', time: '~10 min', color: 'gold' },
-      { id: 'embeddings', type: 'Explorer', icon: 'sparkle', title: 'Embedding <em>Space Explorer</em>', desc: 'Real OpenAI embeddings reduced to 2D. Click any dot to highlight its 3 nearest neighbors.', time: '~12 min', color: 'purple' }
+      { id: 'embeddings', type: 'Explorer', icon: 'sparkle', title: 'Embedding <em>Space Explorer</em>', desc: 'Real OpenAI embeddings reduced to 2D. Click any dot to highlight its 3 nearest neighbors.', time: '~12 min', color: 'purple' },
+      { id: 'retrieval-race', type: 'Game', icon: 'shield', title: 'RAG Retrieval <em>Race</em>', desc: 'Play the retriever. Pick which docs you think are relevant. Compete against the cosine-similarity oracle.', time: '~15 min', color: 'crimson' }
     ]},
   { n: 6, phase: 'core', short: 'Agents', name: 'Agents and LangGraph',
     lede: 'A tool-using agent is just a loop. Thought, Action, Observation, Thought, until it has the answer.',
     meta: ['Phase 2', '~3 hrs'],
     tools: [
+      { id: 'storyline-agents', type: 'Story', icon: 'sparkle', title: 'How Agents Learned <em>to Use Tools</em>', desc: 'STRIPS to BDI to AlphaGo to ReAct to LangGraph. A short history of giving language models hands.', time: '~10 min', color: 'gold' },
       { id: 'react-player', type: 'Player', icon: 'robot', title: 'ReAct Trace <em>Player</em>', desc: 'A canned ReAct trace with playback controls. Step through Thought → Action → Observation.', time: '~10 min', color: 'cyan' }
     ]},
   { n: 7, phase: 'core', short: 'Hackathon', name: 'Hackathon', special: 'hackathon',
@@ -515,12 +1042,328 @@ const MODULES = [
     lede: 'Model Context Protocol. Guardrails. And the gamified Prompt Injection Lab where you attack one bot and defend another.',
     meta: ['Phase 3', '~3 hrs'],
     tools: [
+      { id: 'storyline-security', type: 'Story', icon: 'sparkle', title: 'How Prompt Injection <em>Became a Discipline</em>', desc: 'From XSS to indirect injection to red-team olympiads. A short history of attacking language models.', time: '~10 min', color: 'gold' },
       { id: 'injection', type: 'Game', icon: 'shield', title: 'Prompt <em>Injection Lab</em>', desc: 'Ten attack cards across three tiers. Drag-to-fire at vulnerable and hardened bots. Live scoreboard. Hall of Fame.', time: '~20 min', color: 'crimson' }
     ]},
   { n: 12, phase: 'prod', short: 'n8n Automation', name: 'Workflow Automation with n8n', lede: 'Move your prototype out of the notebook. Trigger flows, connect tools, ship a workflow.', meta: ['Phase 4', '~3 hrs'], tools: [] },
   { n: 13, phase: 'prod', short: 'Fine-Tuning', name: 'Fine-Tuning and Deployment', lede: 'When to fine-tune, when not to. How to ship the result.', meta: ['Phase 4', '~3 hrs'], tools: [] },
   { n: 14, phase: 'prod', short: 'Final Project', name: 'Final Project', special: 'final', lede: 'Build something useful. Demonstrate it live. The same 4D arc applied to a real problem you care about.', meta: ['Phase 4', 'Capstone'], tools: [] }
 ];
+
+/* ============================================================
+   COURSE PLAN + LAB LINKS
+   - GitHub source repo: mdehghani86/DADS5250-GenAI (public, branch: main)
+   - Each lab opens in Google Colab via the colab.research.google.com/github/... pattern
+   ============================================================ */
+const REPO_BASE   = 'https://github.com/mdehghani86/DADS5250-GenAI/blob/main';
+const COLAB_BASE  = 'https://colab.research.google.com/github/mdehghani86/DADS5250-GenAI/blob/main';
+function lab(folder, file, title, desc) {
+  const path = `labs/${folder}/${file}`;
+  return { title, desc, file: path, github: `${REPO_BASE}/${path}`, colab: `${COLAB_BASE}/${path}` };
+}
+function comingLab(title, desc) { return { title, desc, file: null, coming: true }; }
+function script(file, title, desc) { return { file: `scripts/${file}`, title, desc }; }
+
+const MODULE_PLANS = {
+  1: {
+    tags: ['LLM: gpt-4.1-mini', 'Colab Secrets', 'OpenAI Python SDK'],
+    labs: [
+      lab('M01', 'M01_Lab1_API_Basics.ipynb',         'Lab 1 — <em>API Basics</em>',
+          'First chat.completions call, response anatomy, Colab Secrets pattern for OPENAI_API_KEY.'),
+      lab('M01', 'M01_Lab2_Parameters_Tokens.ipynb',  'Lab 2 — <em>Parameters & Tokens</em>',
+          'Temperature, top_p, max_tokens, token counting, cost estimation, model picker.')
+    ],
+    content: [
+      'Colab setup, API key via Colab Secrets (<code>OPENAI_API_KEY</code>)',
+      'First API call — <code>chat.completions.create()</code>, response anatomy',
+      'Token counting, cost estimation, model parameter exploration',
+      'Install utils package from GitHub repo'
+    ],
+    quiz: ['What is a token?', 'What does <code>temperature</code> control?'],
+    handson: ['Complete an API call (fill-in)', 'Run the same prompt at temp 0 / 0.5 / 1.0 and submit observations'],
+    observational: 'Run 5 prompt variations and document which technique works best for a given task.',
+    assignment: 'Run 3 prompts with <strong>temp = 0, 0.5, 1.0</strong>. Submit table of outputs + 1-paragraph observation on how temperature affects responses.',
+    scripts: [
+      script('M01_Script.html', 'M01 production script', 'Opening LLM APIs, TA API setup walk-through, closing call-to-action.'),
+      script('M00_Script.html', 'M00 course intro script', 'Welcome sequence, course tour, 4D framework rollout. Use during onboarding.')
+    ]
+  },
+  2: {
+    tags: ['LLM: gpt-4.1-mini', 'gemini-2.5-flash (free)', 'System messages'],
+    labs: [
+      lab('M02', 'M02_Lab1_Prompting_Techniques.ipynb',     'Lab 1 — <em>Prompting Techniques</em>',
+          'Zero-shot, few-shot, chain-of-thought, role prompts. Side-by-side GPT vs Gemini.'),
+      lab('M02', 'M02_Lab2_System_Messages_Templates.ipynb','Lab 2 — <em>System Messages & Templates</em>',
+          'System message anatomy, prompt templating, parameterization across cases.'),
+      lab('M02', 'M02_Lab1_Excel_GPT.ipynb',                'Bonus — <em>Excel + GPT</em>',
+          'Use prompts to extract structure from a real spreadsheet of student records.'),
+      lab('M02', 'M02_Lab2_Bitcoin_Analyzer.ipynb',         'Bonus — <em>Bitcoin Analyzer</em>',
+          'Apply prompting to a market-data analysis pipeline; compare strategies.')
+    ],
+    content: [
+      'Zero-shot, few-shot, chain-of-thought (CoT) prompting',
+      'System messages, role prompts, structured output requests',
+      'Prompt templates and parameterization',
+      'Side-by-side: GPT vs Gemini output comparison (first Gemini exposure)'
+    ],
+    quiz: ['Zero-shot vs few-shot', 'When to use CoT', 'Purpose of the system message'],
+    handson: ['Write a few-shot prompt (YOUR CODE HERE)', 'Compare GPT vs Gemini outputs on the same prompt'],
+    observational: 'Run 5 prompt variations and document which technique works best for a given task.',
+    assignment: 'Design a prompt for a real-world task (customer support, data extraction, etc.). Test <strong>3 techniques</strong> (zero-shot, few-shot, CoT). Submit prompts + outputs + analysis of which worked best and why.',
+    scripts: [
+      script('M02_Script.html', 'M02 production script', 'Prompting techniques demo, system-message walk-through, GPT vs Gemini side-by-side.')
+    ]
+  },
+  3: {
+    tags: ['LLM: gpt-4.1-mini', 'Pydantic', 'Function calling'],
+    labs: [
+      lab('M03', 'M03_Lab1_JSON_Mode_Pydantic.ipynb', 'Lab 1 — <em>JSON Mode & Pydantic</em>',
+          'Force structured responses, validate against a Pydantic schema, handle malformed output.'),
+      lab('M03', 'M03_Lab2_Function_Calling.ipynb',   'Lab 2 — <em>Function Calling</em>',
+          'Define tools, parse tool-call responses, multi-turn tool use.')
+    ],
+    content: [
+      'JSON mode — forcing structured responses',
+      'Function calling / tool use — defining tools, parsing tool calls',
+      'Pydantic models for response validation',
+      'Real example: extract structured data from unstructured text (invoices, resumes)'
+    ],
+    quiz: ['JSON mode vs function calling', 'When to use each'],
+    handson: ['Define a function schema (fill-in)', 'Parse a tool-call response (YOUR CODE HERE)'],
+    observational: 'Run structured extraction on 3 different document types and compare accuracy.',
+    assignment: 'Build a <strong>structured data extractor</strong> for a domain of choice (menu, job posting, product review). Submit code + sample inputs/outputs + observations on edge cases.',
+    scripts: [
+      script('M03_Script.html', 'M03 production script', 'JSON-mode demo, Pydantic schema scene, function-calling round-trip walk-through.')
+    ]
+  },
+  4: {
+    tags: ['LLM: gpt-4.1-mini', 'LangChain 1.0 (LCEL)', 'No legacy patterns'],
+    labs: [
+      lab('M04', 'M04_Lab1_LangChain_Basics.ipynb', 'Lab 1 — <em>LangChain Basics</em>',
+          'LCEL chains, prompt templates, chat models, output parsers, memory basics.'),
+      lab('M04', 'M04_Lab2_Beer_Game.ipynb',        'Lab 2 — <em>Beer Game</em>',
+          'Supply-chain decision-making with an LLM advisor — the classic MIT Sloan exercise, LangChain-powered.')
+    ],
+    content: [
+      'LangChain 1.0 — LCEL (LangChain Expression Language), chains, prompt templates',
+      'Chat models, output parsers, memory basics',
+      'Beer Game integration — supply-chain decision-making with LLM advisor'
+    ],
+    quiz: ['What is LCEL?', 'Chain vs direct API call'],
+    handson: ['Build a simple chain (fill-in)', 'Modify Beer Game prompts'],
+    observational: 'Run Beer Game with different LLM strategies and compare supply-chain performance.',
+    assignment: 'Modify the Beer Game lab with a <strong>custom strategy prompt</strong>. Run 3 simulations, submit performance comparison + analysis of LLM-driven vs heuristic decisions.',
+    scripts: [
+      script('M04_Script.html', 'M04 production script', 'LCEL primer, chain composition, Beer Game live-simulation segment.')
+    ]
+  },
+  5: {
+    tags: ['LLM: gpt-4.1-mini', 'gemini-2.5-flash (free)', 'LangChain · FAISS'],
+    labs: [
+      lab('M05', 'M05_Lab1_Embeddings_VectorStores.ipynb', 'Lab 1 — <em>Embeddings & Vector Stores</em>',
+          'Build embeddings with OpenAI, store in FAISS, query by cosine similarity.'),
+      lab('M05', 'M05_Lab2_RAG_Pipeline.ipynb',            'Lab 2 — <em>RAG Pipeline</em>',
+          'Full Retrieve → Augment → Generate chain in LangChain. Compare GPT vs Gemini on the same corpus.')
+    ],
+    content: [
+      'What is RAG? Architecture overview (Retrieve → Augment → Generate)',
+      'Document loading, text splitting, embeddings, vector stores (FAISS)',
+      'Building a RAG chain with LangChain',
+      'Gemini lab: same pipeline with <code>gemini-2.5-flash</code> (free tier, compare quality)'
+    ],
+    quiz: ['Embedding vs LLM', 'Chunk size tradeoffs', 'Retrieval strategies (BM25 vs dense)'],
+    handson: ['Build a retriever (fill-in)', 'Complete the RAG chain (YOUR CODE HERE)'],
+    observational: 'Compare GPT vs Gemini RAG outputs on same documents. Test different chunk sizes.',
+    assignment: 'Build a <strong>RAG system</strong> for a domain document set (company FAQ, research paper, manual). Compare GPT vs Gemini responses. Submit: code + 5 Q&A pairs + quality analysis.',
+    scripts: [
+      script('M05_Script.html', 'M05 production script', 'Embeddings primer, FAISS demo, full RAG pipeline build, Gemini comparison.')
+    ]
+  },
+  6: {
+    tags: ['LLM: gpt-4.1-mini', 'LangGraph', 'Tavily search'],
+    labs: [
+      lab('M06', 'M06_Lab1_Agent_Concepts_ReAct.ipynb', 'Lab 1 — <em>Agent Concepts & ReAct</em>',
+          'Thought / Action / Observation loop. Hand-coded agent before LangGraph syntactic sugar.'),
+      lab('M06', 'M06_Lab2_LangGraph_Agents.ipynb',     'Lab 2 — <em>LangGraph Agents</em>',
+          'State graphs, conditional edges, human-in-the-loop checkpoints, Tavily search tool.')
+    ],
+    content: [
+      'What are AI agents? ReAct pattern, tool use, reasoning loops',
+      'LangGraph basics — state graphs, nodes, edges, conditional branching',
+      'Building a research agent: web search (Tavily) + summarization',
+      'Human-in-the-loop: approval steps in the graph'
+    ],
+    quiz: ['Agent vs chain', 'When to use LangGraph vs simple chain'],
+    handson: ['Add a tool to the agent (YOUR CODE HERE)', 'Modify the graph flow'],
+    observational: 'Trace agent execution, document decision points and reasoning steps.',
+    assignment: 'Design a <strong>3-tool agent</strong> for a business task. Submit: graph diagram, code, trace of 3 runs + analysis of agent reasoning quality.',
+    scripts: [
+      script('M06_Script.html', 'M06 production script', 'ReAct loop walk-through, LangGraph state-graph build, Tavily search tool wiring.')
+    ]
+  },
+  7: {
+    tags: ['Hackathon', '48 hours', 'Self-study prep'],
+    labs: [
+      lab('M09', 'M09_Lab1_Gradio_Apps.ipynb',        'Prep — <em>Gradio Apps</em>',
+          'Self-study notebook: ship a one-file Gradio demo on Colab, ready to fork for the hackathon.'),
+      lab('M09', 'M09_Lab2_Streamlit_Dashboard.ipynb','Prep — <em>Streamlit Dashboard</em>',
+          'Self-study notebook: build a multi-page Streamlit dashboard for an LLM workflow.')
+    ],
+    content: [
+      'Teams build a mini GenAI application using concepts from M01–M06',
+      'Self-study prep materials: <strong>Gradio</strong> and <strong>Streamlit</strong> quick-start notebooks (above)',
+      'Deploy a working demo (Gradio on Colab or Streamlit on Streamlit Cloud)'
+    ],
+    quiz: [],
+    handson: [],
+    observational: '',
+    assignment: '<strong>Hackathon deliverable:</strong> working demo + 5-minute presentation. Judged on creativity, technical depth, UX, and use of course concepts.',
+    scripts: [
+      script('M07_Script.html', 'M07 hackathon kickoff', 'Hackathon intro, judging criteria, team-formation script.'),
+      script('M09_Script.html', 'M09 frontend (prep)', 'Gradio + Streamlit shipping segments — good prep clip to share with teams.')
+    ]
+  },
+  8: {
+    tags: ['LLM: gpt-4.1-mini', 'CrewAI 0.80+', 'Decorator syntax'],
+    labs: [
+      lab('M08', 'M08_Lab1_CrewAI_Basics.ipynb',     'Lab 1 — <em>CrewAI Basics</em>',
+          'Agents, Tasks, Crews, Tools using the latest decorator syntax.'),
+      lab('M08', 'M08_Lab2_MultiAgent_Project.ipynb','Lab 2 — <em>Multi-Agent Project</em>',
+          'Researcher → Analyst → Writer crew on a real OR/MS topic. End-to-end run + comparison vs single agent.')
+    ],
+    content: [
+      'Multi-agent concepts: roles, delegation, collaboration',
+      'CrewAI: Agents, Tasks, Crews, Tools (latest decorator syntax)',
+      'Build a research and writing crew (Researcher → Analyst → Writer)',
+      'AutoGen/AG2 reference notebook (optional, self-study only)'
+    ],
+    quiz: ['Single agent vs crew', 'When delegation outperforms one big prompt'],
+    handson: ['Define an Agent + Task pair', 'Add a tool that one agent shares with another'],
+    observational: 'Run the same brief twice — once with a single agent, once with a crew. Compare quality, latency, and cost.',
+    assignment: 'Design a <strong>3-agent crew</strong> for a business process. Submit: agent definitions, task flow, outputs + comparison of crew vs single-agent approach.',
+    scripts: [
+      script('M08_Script.html', 'M08 production script', 'CrewAI primer, role definitions, Researcher → Analyst → Writer crew demo.')
+    ]
+  },
+  9: {
+    tags: ['LLM: gpt-4.1-mini (vision)', 'gemini-2.5-flash', 'LLM-as-judge'],
+    labs: [
+      lab('M11', 'M11_Lab1_Vision_Multimodal.ipynb','Lab 1 — <em>Vision & Multimodal</em>',
+          'Image input to GPT / Gemini, captioning, visual Q&A, OCR vs vision on invoices and charts.'),
+      lab('M11', 'M11_Lab2_LLM_Evaluation.ipynb',   'Lab 2 — <em>LLM Evaluation</em>',
+          'Metrics, benchmarking, the LLM-as-judge pattern, building an end-to-end eval pipeline.')
+    ],
+    content: [
+      'Image input: sending images to GPT / Gemini, captioning, visual Q&A',
+      'Document understanding: OCR vs vision models on invoices / charts',
+      'LLM Evaluation: metrics, benchmarking, LLM-as-judge pattern',
+      'Building an eval pipeline: test cases, scoring rubrics, automated grading'
+    ],
+    quiz: ['When LLM-as-judge fails', 'Rubric design for open-ended outputs'],
+    handson: ['Send a chart image and extract the underlying table', 'Score 5 model responses with a rubric you write'],
+    observational: 'Pick a prior lab and run an eval pipeline over it. Where does the model break?',
+    assignment: 'Build an <strong>eval pipeline</strong> for a task from a previous module. Test 2 models, submit: eval code, results table, analysis of strengths/weaknesses.',
+    scripts: [
+      script('M10_Script.html', 'M10 production script', 'Image input scene, OCR vs vision-LLM compare, LLM-as-judge eval pipeline.')
+    ]
+  },
+  10: {
+    tags: ['Claude Agent SDK', 'Google ADK', 'No-code platforms'],
+    labs: [
+      lab('M12', 'M12_Workshop1_Claude_Agent_SDK.ipynb','Workshop 1 — <em>Claude Agent SDK</em>',
+          'Build a tool-using agent on the Anthropic SDK. Pattern: skills, sub-agents, hooks.'),
+      lab('M12', 'M12_Workshop2_Google_ADK.ipynb',      'Workshop 2 — <em>Google ADK</em>',
+          'Walk through Google\'s Agent Development Kit and compare its primitives to Claude\'s.')
+    ],
+    content: [
+      'Survey of GenAI platforms: napkin.ai (visual), GenBI (analytics), v0.dev (UI)',
+      'AI-assisted development: Cursor, Claude Code, GitHub Copilot',
+      'Claude Agent SDK and Google ADK — what their primitives buy you',
+      'When to code vs when to use a platform'
+    ],
+    quiz: ['Platform vs code tradeoffs', 'Vendor lock-in red flags'],
+    handson: ['Reproduce one earlier lab in a no-code tool', 'Wire a Claude Agent SDK skill that calls one of your earlier tools'],
+    observational: 'Pick 2 platforms. Document where each shines and where it forces you back into code.',
+    assignment: 'Pick 2 platforms. Solve the same task using <strong>code</strong> (from earlier labs) AND a <strong>no-code platform</strong>. Submit: comparison table (speed, quality, flexibility, cost) + recommendation.',
+    scripts: [
+      script('M12_Script.html', 'M12 production script', 'napkin.ai / GenBI / v0.dev tour. Code vs no-code decision scene.'),
+      script('M11_Script.html', 'M11 bonus — Claude Code', 'Claude Code walkthrough, agent SDK demo, faculty workflow tips.')
+    ]
+  },
+  11: {
+    tags: ['LLM: gpt-4.1-mini', 'MCP', 'Guardrails'],
+    labs: [
+      lab('M10', 'M10_Lab1_MCP_Servers.ipynb',      'Lab 1 — <em>MCP Servers</em>',
+          'Build a Model Context Protocol server, register tools, connect to a Claude or GPT client.'),
+      lab('M10', 'M10_Lab2_Guardrails_Safety.ipynb','Lab 2 — <em>Guardrails & Safety</em>',
+          'Input validation, output filtering, content policies, prompt-injection detection patterns.')
+    ],
+    content: [
+      'Model Context Protocol (MCP) — architecture, servers, tool registration',
+      'Building a simple MCP server, connecting tools to LLMs',
+      'Guardrails & Safety: input validation, output filtering, content policies',
+      'Prompt injection detection, jailbreak prevention patterns'
+    ],
+    quiz: ['MCP server vs custom tool API', 'Why output filters need their own validator'],
+    handson: ['Register a math-tool with your MCP server', 'Add a refusal classifier on the output side'],
+    observational: 'Attack one of your prior chatbots with 5 jailbreak prompts. Which ones survive your guardrails?',
+    assignment: 'Implement <strong>input + output guardrails</strong> for a chatbot from a previous module. Test with adversarial prompts. Submit: guardrail code + attack log + analysis.',
+    scripts: [
+      script('M13_Script.html', 'M13 production script', 'Guardrails segment, prompt-injection demos, OWASP LLM Top 10 overview.')
+    ]
+  },
+  12: {
+    tags: ['n8n', 'Zapier AI', 'LLM-in-pipeline'],
+    labs: [
+      comingLab('Lab 1 — <em>n8n Workflow Automation</em>',
+        'Coming soon. Build an automated workflow that ingests email, calls an LLM, and writes back a structured response.')
+    ],
+    content: [
+      'Workflow automation concepts: triggers, actions, conditions',
+      'n8n: building AI-powered workflows (email processing, data pipelines)',
+      'Integrating LLM calls into automation pipelines',
+      '<strong>Some code required</strong> — n8n custom nodes, API integrations'
+    ],
+    quiz: ['When to use automation vs custom code', 'How to keep n8n credentials safe'],
+    handson: ['Wire a trigger → LLM → email-reply flow', 'Add a conditional branch that uses an LLM classifier'],
+    observational: 'Trace 5 incoming emails through your workflow. Where does the LLM help, where does it just add latency?',
+    assignment: 'Build an <strong>automated workflow</strong> that processes incoming data using an LLM. Submit: workflow screenshot/export, demo video, analysis of when automation vs code is better.'
+  },
+  13: {
+    tags: ['LLM: gpt-4.1-mini (fine-tune target)', 'OpenAI API', 'Gradio'],
+    labs: [
+      comingLab('Lab 1 — <em>Fine-Tuning & Deployment</em>',
+        'Coming soon. Prep JSONL training data, fine-tune via OpenAI API, deploy a Gradio demo.')
+    ],
+    content: [
+      'When to fine-tune vs prompt engineering vs RAG (decision framework)',
+      'Preparing training data (JSONL format), OpenAI fine-tuning API',
+      'Deployment options: Gradio (quick demo), FastAPI (production), Streamlit',
+      'HuggingFace Inference API — running open-source models (1 lab exposure)'
+    ],
+    quiz: ['Fine-tune vs RAG vs prompt eng — pick one for a given case', 'What a JSONL training row looks like'],
+    handson: ['Prepare 20 JSONL training examples', 'Deploy a Gradio demo for the fine-tuned model'],
+    observational: 'Compare the fine-tuned model against the base model on 10 held-out cases.',
+    assignment: 'Prepare a <strong>fine-tuning dataset</strong> (20+ examples). If budget allows, fine-tune a mini model. Deploy a Gradio demo. Submit: dataset + code + demo link + analysis.'
+  },
+  14: {
+    tags: ['Capstone', 'Individual or team', 'Multi-week'],
+    labs: [],
+    content: [
+      'Build a complete GenAI application using <strong>3+ techniques</strong> from the course',
+      'Deployment required (Gradio, Streamlit, or React frontend)',
+      'Complementary material: React basics for the final project (self-study)',
+      'Must include: evaluation, guardrails, and documentation'
+    ],
+    quiz: [],
+    handson: [],
+    observational: '',
+    assignment: '<strong>Final deliverables:</strong> working deployed app + technical report (architecture, decisions, eval results) + 10-minute presentation/demo.',
+    scripts: [
+      script('M14_Script.html', 'M14 capstone script', 'Final project kickoff, deliverables overview, demo-day grading rubric.')
+    ]
+  }
+};
 
 let view = { kind: 'module', n: 1, toolId: null };
 
@@ -550,6 +1393,7 @@ function buildSidebar() {
 /* ============ MODULE VIEW ============ */
 function renderModule() {
   const m = MODULES.find(x => x.n === view.n);
+  const plan = MODULE_PLANS[m.n];
   const parts = m.name.split(/\s+/);
   const last = parts.pop();
   const head = parts.join(' ') + ' <em>' + last + '</em>';
@@ -558,6 +1402,109 @@ function renderModule() {
     : m.special === 'final'
       ? `<div class="special-banner final"><strong>Final project.</strong> Pick a problem that matters to you. Build it with the stack you choose.</div>`
       : '';
+  const toolsBlock = m.tools.length === 0
+    ? (plan && (plan.labs.length || plan.content.length) ? '' : `<div class="placeholder"><svg><use href="#i-construction"/></svg><div><strong>Module ${m.n} interactives coming soon.</strong></div><div style="margin-top:6px;">${m.special ? 'No interactive tools for this module by design.' : 'Storylines, labs, and gamified exercises are queued in the build pipeline.'}</div></div>`)
+    : `<div class="mod-section"><div class="mod-section-h"><span class="hi"><svg><use href="#i-sparkle"/></svg>Interactive Tools & Storyline</span><span class="sub">${m.tools.length} item${m.tools.length>1?'s':''} · storyline first</span></div>
+        <div class="tools-grid">
+         ${m.tools.map(t => `
+           <a class="tool-card ${t.color || 'blue'}" data-toolid="${t.id}"${t.external ? ` data-external="${t.external}"` : ''}>
+             <div class="tool-icon">${ICON[t.icon]}<div class="tool-type-row"><div class="tool-type">${t.type}</div><div class="tool-time">${t.time}</div></div></div>
+             <div class="tool-title">${t.title}</div>
+             <div class="tool-desc">${t.desc}</div>
+             <div class="tool-open"><span>${t.external ? 'Open in new tab' : 'Open'}</span><svg><use href="#i-arrow-right"/></svg></div>
+           </a>
+         `).join('')}
+        </div></div>`;
+  const labsBlock = (plan && plan.labs.length) ? `
+    <div class="mod-section">
+      <div class="mod-section-h">
+        <span class="hi"><svg><use href="#i-grid"/></svg>Colab Labs</span>
+        <span class="sub">Source on GitHub · open instantly in Google Colab</span>
+      </div>
+      <div class="labs-grid">
+        ${plan.labs.map(L => `
+          <div class="lab-card${L.coming ? ' coming' : ''}">
+            <div class="lab-h">
+              <div class="lab-ico"><svg><use href="#i-grid"/></svg></div>
+              <div>
+                <div class="lab-title">${L.title}</div>
+                <div class="lab-desc">${L.desc}</div>
+                ${L.file ? `<div class="lab-file">${L.file}</div>` : ''}
+              </div>
+            </div>
+            <div class="lab-actions">
+              ${L.coming
+                ? `<span class="lab-btn disabled">Coming soon</span>`
+                : `<a href="${L.colab}" target="_blank" rel="noopener" class="lab-btn colab">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.6 11.4a4 4 0 0 1 7-2.7l1.2-1.2A6 6 0 1 0 14.5 14l-1.2-1.2a4 4 0 0 1-7-1.4zm14.8 1.2a4 4 0 0 1-7 2.7L11.2 16.5A6 6 0 1 0 9.5 10l1.2 1.2a4 4 0 0 1 7 1.4z"/></svg>
+                    Open in Colab
+                   </a>
+                   <a href="${L.github}" target="_blank" rel="noopener" class="lab-btn github">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.2.8-.5v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.6.1-3.2 0 0 1-.3 3.2 1.2.9-.3 1.9-.4 2.9-.4 1 0 2 .1 2.9.4 2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.1 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.5A11.5 11.5 0 0 0 12 .5z"/></svg>
+                    GitHub
+                   </a>`
+              }
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>` : '';
+  const planBlock = (plan && (plan.content.length || plan.quiz.length || plan.handson.length || plan.observational)) ? `
+    <div class="mod-section">
+      <div class="plan-card">
+        <details ${m.special ? 'open' : ''}>
+          <summary>
+            <div class="mod-section-h" style="margin:0; padding:0; border:none;">
+              <span class="hi"><svg><use href="#i-puzzle"/></svg>Module Plan</span>
+              <span class="sub">${m.special ? (m.special==='hackathon'?'Hackathon brief':'Capstone brief') : '10–15 minute lab, exercises, and assignment'}</span>
+            </div>
+            <span class="chev">▶</span>
+          </summary>
+          <div class="plan-content">
+            ${plan.content.length ? `<div class="plan-block">
+              <div class="plan-h">Lab Content</div>
+              <ul>${plan.content.map(c => `<li>${c}</li>`).join('')}</ul>
+            </div>` : ''}
+            ${(plan.quiz.length || plan.handson.length || plan.observational) ? `<div class="plan-block">
+              <div class="plan-h">Exercises</div>
+              ${plan.quiz.length ? `<div class="plan-sub">Quiz (MC)</div><ul>${plan.quiz.map(q => `<li>${q}</li>`).join('')}</ul>` : ''}
+              ${plan.handson.length ? `<div class="plan-sub">Hands-on</div><ul>${plan.handson.map(h => `<li>${h}</li>`).join('')}</ul>` : ''}
+              ${plan.observational ? `<div class="plan-sub">Observational</div><ul><li>${plan.observational}</li></ul>` : ''}
+            </div>` : ''}
+          </div>
+          ${plan.tags && plan.tags.length ? `<div class="plan-tags">${plan.tags.map(t => `<span class="plan-tag">${t}</span>`).join('')}</div>` : ''}
+        </details>
+      </div>
+    </div>` : '';
+  const assignmentBlock = (plan && plan.assignment) ? `
+    <div class="assignment-callout">
+      <span class="ac-tag">${m.special==='hackathon' ? 'Deliverable' : m.special==='final' ? 'Capstone' : 'Assignment M' + String(m.n).padStart(2,'0')}</span>
+      <div class="ac-body">${plan.assignment}</div>
+    </div>` : '';
+  const facultyBlock = (plan && plan.scripts && plan.scripts.length) ? `
+    <div class="faculty-section">
+      <div class="faculty-h">
+        <span class="lab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          Faculty Library
+        </span>
+        <span class="sub">Production scripts &amp; teleprompter HTML <span class="pw-pill">code: 2026</span></span>
+      </div>
+      <div class="faculty-list">
+        ${plan.scripts.map(s => `
+          <a class="faculty-link" href="${s.file}" target="_blank" rel="noopener">
+            <span class="fl-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+            </span>
+            <div class="fl-body">
+              <div class="fl-title"><strong>${s.title}</strong></div>
+              <div class="fl-desc">${s.desc}</div>
+            </div>
+            <span class="fl-arrow">&rarr;</span>
+          </a>
+        `).join('')}
+      </div>
+    </div>` : '';
   $('main').innerHTML = `
     <div class="module-content">
       <div class="mod-header">
@@ -571,22 +1518,18 @@ function renderModule() {
         </div>
       </div>
       ${banner}
-      ${m.tools.length === 0
-        ? `<div class="placeholder"><svg><use href="#i-construction"/></svg><div><strong>Module ${m.n} tools and games coming soon.</strong></div><div style="margin-top:6px;">${m.special ? 'No interactive tools for this module by design.' : 'Storylines, labs, and gamified exercises are queued in the build pipeline.'}</div></div>`
-        : `<div class="tools-grid">
-             ${m.tools.map(t => `
-               <a class="tool-card ${t.color || 'blue'}" data-toolid="${t.id}">
-                 <div class="tool-icon">${ICON[t.icon]}<div class="tool-type-row"><div class="tool-type">${t.type}</div><div class="tool-time">${t.time}</div></div></div>
-                 <div class="tool-title">${t.title}</div>
-                 <div class="tool-desc">${t.desc}</div>
-                 <div class="tool-open"><span>Open</span><svg><use href="#i-arrow-right"/></svg></div>
-               </a>
-             `).join('')}
-           </div>`
-      }
+      ${toolsBlock}
+      ${labsBlock}
+      ${planBlock}
+      ${assignmentBlock}
+      ${facultyBlock}
     </div>`;
   document.querySelectorAll('.tool-card[data-toolid]').forEach(c => {
-    c.addEventListener('click', () => { view = { kind: 'tool', n: view.n, toolId: c.dataset.toolid }; render(); });
+    c.addEventListener('click', () => {
+      const ext = c.dataset.external;
+      if (ext) { window.open(ext, '_blank', 'noopener'); return; }
+      view = { kind: 'tool', n: view.n, toolId: c.dataset.toolid }; render();
+    });
   });
 }
 
@@ -606,12 +1549,18 @@ function renderTool() {
       <div id="tool-body"></div>
     </div>`;
   const renderers = {
+    'storyline': renderStoryline,
+    'storyline-prompting': renderStoryline,
+    'storyline-rag': renderStoryline,
+    'storyline-agents': renderStoryline,
+    'storyline-security': renderStoryline,
     'temperature': renderTemperature,
     'tokenizer': renderTokenizer,
     'prompt-anatomy': renderPromptAnatomy,
     'chain-viz': renderChainViz,
     'chunking': renderChunking,
     'embeddings': renderEmbeddings,
+    'retrieval-race': renderRetrievalRace,
     'react-player': renderReact,
     'injection': renderInjection
   };
@@ -635,44 +1584,273 @@ document.addEventListener('keydown', e => {
    TOOL: TEMPERATURE EXPLORER (M01)
    ============================================================ */
 function renderTemperature() {
+  const PROMPTS = [
+    { id:'p1', text:'The kid is chasing the …', words:[
+      {w:'cat',logit:3.0},{w:'ball',logit:2.3},{w:'dog',logit:1.8},{w:'butterfly',logit:0.9},{w:'cloud',logit:0.3},{w:'rainbow',logit:-0.3}] },
+    { id:'p2', text:'The simulation model predicted the bottleneck would be the …', words:[
+      {w:'cashier',logit:3.2},{w:'kitchen',logit:2.6},{w:'register',logit:1.6},{w:'pickup',logit:1.0},{w:'drive-thru',logit:0.5},{w:'parking',logit:-0.1}] },
+    { id:'p3', text:'The doctor walked into the room and …', words:[
+      {w:'smiled',logit:2.8},{w:'sighed',logit:2.4},{w:'nodded',logit:2.0},{w:'frowned',logit:1.2},{w:'paused',logit:0.7},{w:'whispered',logit:0.2}] }
+  ];
   $('tool-body').innerHTML = `
-    <div class="temp-wrap">
+    <div class="temp-toolbar">
+      <div class="seg" id="temp-prompts"></div>
+      <div class="temp-slot">
+        <span class="lbl">Temperature</span>
+        <input type="range" id="temp-slider" min="0.1" max="2.0" step="0.05" value="0.7">
+        <span id="temp-val">0.70</span>
+      </div>
+      <button class="temp-btn" id="temp-sample">Sample 10 completions</button>
+    </div>
+    <div class="temp-compare">
       <div class="temp-card">
-        <div class="h">Sample Sentence</div>
-        <div class="temp-prompt">"The kid is chasing the…"<div class="sub">How will the model complete this?</div></div>
-        <div class="slider-wrap">
-          <div class="slider-val"><span class="lbl">Temperature</span><span id="temp-val">0.7</span></div>
-          <input type="range" id="temp-slider" min="0.1" max="2.0" step="0.05" value="0.7">
-          <div class="slider-row"><span>More predictable</span><span>1.1</span><span>More random</span></div>
-        </div>
-        <div class="temp-insight">
-          <strong>What's happening?</strong> Lower temperature sharpens the probability distribution: the model commits to its top guess. Higher temperature flattens it: every alternative becomes more viable.
-        </div>
+        <div class="h">T = 0.3 <span class="sub">decisive</span></div>
+        <div class="prob-list" id="prob-lo"></div>
+        <div class="ent"><span>Entropy</span><span class="v" id="ent-lo">—</span></div>
+      </div>
+      <div class="temp-card highlight">
+        <div class="h">T = <span id="t-mid-lbl">0.70</span> <span class="sub">your slider</span></div>
+        <div class="prob-list" id="prob-mid"></div>
+        <div class="ent"><span>Entropy</span><span class="v" id="ent-mid">—</span></div>
       </div>
       <div class="temp-card">
-        <div class="h">Next-Word Probabilities</div>
-        <div class="prob-list" id="prob-list"></div>
+        <div class="h">T = 1.5 <span class="sub">creative</span></div>
+        <div class="prob-list" id="prob-hi"></div>
+        <div class="ent"><span>Entropy</span><span class="v" id="ent-hi">—</span></div>
       </div>
+    </div>
+    <div class="temp-prompt-box">
+      <span class="ttl">Prompt</span>
+      <span id="temp-prompt-txt"></span>
+    </div>
+    <div class="roulette-section">
+      <div class="rou-head">
+        <div class="rou-title">Sampling Wheel <span class="rou-sub">— slice sizes = next-word probabilities at <span id="rou-T">your T</span>. Spin to actually sample.</span></div>
+        <div class="rou-meter"><span>Effective concentration:</span> <span class="rou-conc" id="rou-conc">—</span></div>
+      </div>
+      <div class="rou-wrap">
+        <div class="rou-stage">
+          <svg id="rou-svg" viewBox="-180 -180 360 360">
+            <defs id="rou-defs"></defs>
+            <circle class="rou-rim-outer" cx="0" cy="0" r="160" />
+            <circle class="rou-rim-inner" cx="0" cy="0" r="151" />
+            <g id="rou-wheel"></g>
+            <circle class="rou-gloss" cx="0" cy="-30" r="130" fill="url(#rou-gloss-grad)" />
+            <g class="rou-hub">
+              <circle cx="0" cy="0" r="44" fill="url(#rou-hub-grad)" />
+              <circle cx="0" cy="0" r="44" fill="none" stroke="#0F172A" stroke-width="1.5" stroke-opacity="0.85"/>
+              <circle cx="0" cy="0" r="48" fill="none" stroke="#D4A017" stroke-width="1.5" stroke-opacity="0.7"/>
+              <text x="0" y="-2" text-anchor="middle" font-family="Outfit" font-size="9.5" font-weight="700" fill="#0F172A" letter-spacing="0.18em">SOFTMAX</text>
+              <text x="0" y="14" text-anchor="middle" font-family="JetBrains Mono" font-size="12" font-weight="700" fill="#0055D4" id="rou-center-T">T=0.70</text>
+            </g>
+            <g class="rou-pointer-grp">
+              <path class="rou-pointer-shadow" d="M 0 -178 L -13 -148 Q 0 -141 13 -148 Z" />
+              <path class="rou-pointer" d="M 0 -176 L -12 -148 Q 0 -141 12 -148 Z" />
+              <circle class="rou-pointer-dot" cx="0" cy="-148" r="4.5" />
+            </g>
+          </svg>
+        </div>
+        <div class="rou-side">
+          <button class="rou-btn primary" id="rou-spin">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:-3px;"><path d="M21 12a9 9 0 11-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+            Spin once
+          </button>
+          <button class="rou-btn" id="rou-spin-many">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:-3px;"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/></svg>
+            Spin 10 times
+          </button>
+          <div class="rou-result" id="rou-result">Pull the lever and watch sampling happen.</div>
+          <div class="rou-history-lbl">History</div>
+          <div class="rou-history" id="rou-history"></div>
+        </div>
+      </div>
+    </div>
+    <div class="temp-samples" id="temp-samples"></div>
+    <div class="temp-insight">
+      <strong>What's happening?</strong> Lower T sharpens the softmax: the model commits to its top guess and entropy approaches 0. Higher T flattens it: more alternatives become viable and entropy approaches log<sub>2</sub>(K). Production tip: T ≈ 0.2 for extraction and structured output; T ≈ 0.7 for default chat; T ≥ 1.0 only when you want diversity.
     </div>`;
-  const words = [{w:'cat', logit:3.0},{w:'ball', logit:2.3},{w:'dog', logit:1.8},{w:'butterfly', logit:0.9},{w:'cloud', logit:0.3},{w:'rainbow', logit:-0.3}];
-  function recompute(T) {
+  window.TEMP_STATE = { pid: 'p1' };
+  function softmax(words, T) {
     const exps = words.map(x => Math.exp(x.logit / Math.max(0.05, T)));
-    const sum = exps.reduce((a,b)=>a+b,0);
-    return words.map((x,i) => ({...x, p: exps[i]/sum}));
+    const s = exps.reduce((a,b)=>a+b,0);
+    return words.map((x,i) => ({...x, p: exps[i]/s}));
   }
-  function paint() {
-    const T = parseFloat($('temp-slider').value);
-    $('temp-val').textContent = T.toFixed(2);
-    const probs = recompute(T).sort((a,b)=>b.p-a.p);
-    $('prob-list').innerHTML = probs.map(p => `
+  function entropy(probs) {
+    return -probs.reduce((a, p) => a + (p.p > 0 ? p.p * Math.log2(p.p) : 0), 0);
+  }
+  function renderProbs(target, probs) {
+    const sorted = [...probs].sort((a,b)=>b.p-a.p);
+    $(target).innerHTML = sorted.map(p => `
       <div class="prob-row">
         <div class="prob-word">${p.w}</div>
         <div class="prob-bar"><div class="fill" style="width:${(p.p*100).toFixed(1)}%"></div></div>
         <div class="prob-pct">${(p.p*100).toFixed(1)}%</div>
       </div>`).join('');
   }
+  function sample(probs) {
+    const r = Math.random();
+    let acc = 0;
+    for (const p of probs) { acc += p.p; if (r <= acc) return p.w; }
+    return probs[probs.length - 1].w;
+  }
+  // Designer palette — harmonized saturation, distinct hues. Inner = lighter tone, outer = saturated.
+  const ROU_PALETTE = [
+    { name:'indigo',  inner:'#7c93d4', outer:'#1e3a8a' },
+    { name:'amber',   inner:'#fcd34d', outer:'#b45309' },
+    { name:'emerald', inner:'#86efac', outer:'#15803d' },
+    { name:'violet',  inner:'#c4b5fd', outer:'#6d28d9' },
+    { name:'cyan',    inner:'#a5f3fc', outer:'#0e7490' },
+    { name:'rose',    inner:'#fda4af', outer:'#9f1239' },
+    { name:'teal',    inner:'#99f6e4', outer:'#0f766e' },
+    { name:'mustard', inner:'#fde68a', outer:'#854d0e' }
+  ];
+  window.ROU = { rotation: 0, history: [], spinning: false };
+  function buildWheel(probs) {
+    let acc = 0;
+    const slices = probs.map((p, i) => {
+      const start = acc * 360; acc += p.p;
+      return { ...p, start, end: acc * 360, palette: ROU_PALETTE[i % ROU_PALETTE.length], idx: i };
+    });
+    // defs: one radial gradient per slice (origin = wheel center, r = outer radius)
+    const defs = `
+      <radialGradient id="rou-gloss-grad" cx="0" cy="0" r="1">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.42"/>
+        <stop offset="60%" stop-color="#ffffff" stop-opacity="0.08"/>
+        <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="rou-hub-grad" cx="0.5" cy="0.4" r="0.7">
+        <stop offset="0%" stop-color="#ffffff"/>
+        <stop offset="100%" stop-color="#EEF3FB"/>
+      </radialGradient>
+      <filter id="rou-glow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="3"/>
+        <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      ${slices.map((s,i) => `
+        <radialGradient id="rou-grad-${i}" cx="0" cy="0" r="160" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="${s.palette.inner}" stop-opacity="0.55"/>
+          <stop offset="55%" stop-color="${s.palette.inner}" stop-opacity="0.85"/>
+          <stop offset="100%" stop-color="${s.palette.outer}" stop-opacity="1"/>
+        </radialGradient>`).join('')}
+    `;
+    $('rou-defs').innerHTML = defs;
+    const r = 150;
+    const paths = slices.map((s, i) => {
+      const sweep = s.end - s.start;
+      const a0 = (s.start - 90) * Math.PI / 180, a1 = (s.end - 90) * Math.PI / 180;
+      const x0 = r * Math.cos(a0), y0 = r * Math.sin(a0);
+      const x1 = r * Math.cos(a1), y1 = r * Math.sin(a1);
+      const large = sweep > 180 ? 1 : 0;
+      let body;
+      if (sweep >= 359.5) {
+        body = `<circle class="rou-slice" data-idx="${i}" cx="0" cy="0" r="${r}" fill="url(#rou-grad-${i})"/>`;
+      } else {
+        body = `<path class="rou-slice" data-idx="${i}" d="M 0 0 L ${x0} ${y0} A ${r} ${r} 0 ${large} 1 ${x1} ${y1} Z" fill="url(#rou-grad-${i})" stroke="rgba(255,255,255,0.45)" stroke-width="1" stroke-linejoin="round"/>`;
+      }
+      const labelA = (s.start + s.end) / 2;
+      const lr = sweep >= 60 ? 100 : 118;
+      const lx = lr * Math.cos((labelA - 90) * Math.PI / 180);
+      const ly = lr * Math.sin((labelA - 90) * Math.PI / 180);
+      const showLabel = sweep >= 12;
+      const showPct = sweep >= 24;
+      const labelRot = labelA > 180 ? labelA - 270 : labelA - 90;
+      const label = showLabel ? `<text x="${lx}" y="${ly - (showPct?6:0)}" text-anchor="middle" alignment-baseline="middle" font-family="JetBrains Mono" font-size="11.5" font-weight="700" fill="#ffffff" style="pointer-events:none; text-shadow: 0 1px 2px rgba(0,0,0,.35);" transform="rotate(${labelRot} ${lx} ${ly})">${s.w}</text>` : '';
+      const pct = showPct ? `<text x="${lx}" y="${ly + 8}" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="rgba(255,255,255,0.85)" style="pointer-events:none;" transform="rotate(${labelRot} ${lx} ${ly+8})">${(s.p*100).toFixed(0)}%</text>` : '';
+      return body + label + pct;
+    }).join('');
+    $('rou-wheel').innerHTML = paths;
+    window.ROU.slices = slices;
+  }
+  function spinOnce(probs, donecb) {
+    if (window.ROU.spinning) return;
+    window.ROU.spinning = true;
+    document.querySelectorAll('.rou-slice.landed').forEach(s => s.classList.remove('landed'));
+    const r = Math.random();
+    let acc = 0, chosen = 0;
+    for (let i = 0; i < probs.length; i++) { acc += probs[i].p; if (r <= acc) { chosen = i; break; } }
+    let cumStart = 0;
+    for (let i = 0; i < chosen; i++) cumStart += probs[i].p * 360;
+    const sliceMid = cumStart + (probs[chosen].p * 360) / 2;
+    const targetRot = -sliceMid - (Math.random() - 0.5) * Math.min(probs[chosen].p * 360 * 0.6, 30);
+    const fullTurns = 5 * 360;
+    const cur = window.ROU.rotation;
+    const curMod = ((cur % 360) + 360) % 360;
+    const delta = ((targetRot - (-(360 - curMod))) % 360 + 360) % 360;
+    const newRot = cur + fullTurns + delta;
+    window.ROU.rotation = newRot;
+    const wheel = $('rou-wheel');
+    wheel.style.transition = 'transform 2.5s cubic-bezier(.16,.72,.16,1)';
+    wheel.style.transform = `rotate(${newRot}deg)`;
+    setTimeout(() => {
+      window.ROU.spinning = false;
+      const word = probs[chosen].w;
+      window.ROU.history.unshift(word);
+      window.ROU.history = window.ROU.history.slice(0, 24);
+      const sliceEl = document.querySelector('.rou-slice[data-idx="' + chosen + '"]');
+      if (sliceEl) sliceEl.classList.add('landed');
+      paintRouSide(word);
+      if (donecb) donecb(word);
+    }, 2550);
+  }
+  function paintRouSide(latest) {
+    if (latest) {
+      const P = PROMPTS.find(p => p.id === window.TEMP_STATE.pid);
+      $('rou-result').innerHTML = `<span class="rou-result-pre">${P.text.replace('…','').trim()}</span> <strong class="rou-result-word">${latest}</strong>`;
+    }
+    $('rou-history').innerHTML = window.ROU.history.length
+      ? window.ROU.history.map(w => `<span class="rou-hist-chip">${w}</span>`).join('')
+      : '<span class="rou-empty">No spins yet.</span>';
+  }
+  function paint() {
+    const T = parseFloat($('temp-slider').value);
+    $('temp-val').textContent = T.toFixed(2);
+    $('t-mid-lbl').textContent = T.toFixed(2);
+    const P = PROMPTS.find(p => p.id === window.TEMP_STATE.pid);
+    $('temp-prompt-txt').textContent = '"' + P.text + '"';
+    const lo = softmax(P.words, 0.3), mid = softmax(P.words, T), hi = softmax(P.words, 1.5);
+    renderProbs('prob-lo', lo);  renderProbs('prob-mid', mid);  renderProbs('prob-hi', hi);
+    $('ent-lo').textContent = entropy(lo).toFixed(2);
+    $('ent-mid').textContent = entropy(mid).toFixed(2);
+    $('ent-hi').textContent = entropy(hi).toFixed(2);
+    $('temp-prompts').innerHTML = PROMPTS.map(p => `<button class="seg-btn${p.id===window.TEMP_STATE.pid?' active':''}" data-pid="${p.id}">${p.text.split(' ').slice(0,5).join(' ')}…</button>`).join('');
+    document.querySelectorAll('.seg-btn').forEach(b => b.addEventListener('click', () => { window.TEMP_STATE.pid = b.dataset.pid; paint(); $('temp-samples').innerHTML = ''; window.ROU.history = []; paintRouSide(); }));
+    buildWheel(mid);
+    $('rou-T').textContent = 'T = ' + T.toFixed(2);
+    $('rou-center-T').textContent = 'T=' + T.toFixed(2);
+    const top = [...mid].sort((a,b)=>b.p-a.p)[0];
+    $('rou-conc').textContent = (top.p * 100).toFixed(1) + '% top word · entropy ' + entropy(mid).toFixed(2) + ' bits';
+  }
   $('temp-slider').addEventListener('input', paint);
+  $('temp-sample').addEventListener('click', () => {
+    const T = parseFloat($('temp-slider').value);
+    const P = PROMPTS.find(p => p.id === window.TEMP_STATE.pid);
+    const probs = softmax(P.words, T);
+    const samples = Array.from({length: 10}, () => sample(probs));
+    const counts = {}; samples.forEach(s => counts[s] = (counts[s]||0)+1);
+    const uniq = Object.keys(counts).length;
+    $('temp-samples').innerHTML = `
+      <div class="samples-head">10 samples at T = ${T.toFixed(2)} · <strong>${uniq} unique</strong> word${uniq===1?'':'s'}</div>
+      <div class="samples-row">${samples.map(s => `<span class="sample-chip">${P.text.replace('…', '')}<strong>${s}</strong></span>`).join('')}</div>`;
+  });
+  $('rou-spin').addEventListener('click', () => {
+    const T = parseFloat($('temp-slider').value);
+    const P = PROMPTS.find(p => p.id === window.TEMP_STATE.pid);
+    spinOnce(softmax(P.words, T));
+  });
+  $('rou-spin-many').addEventListener('click', () => {
+    if (window.ROU.spinning) return;
+    let i = 0;
+    const step = () => {
+      if (i >= 10) return;
+      const T = parseFloat($('temp-slider').value);
+      const P = PROMPTS.find(p => p.id === window.TEMP_STATE.pid);
+      spinOnce(softmax(P.words, T), () => { i++; setTimeout(step, 280); });
+    };
+    step();
+  });
   paint();
+  paintRouSide();
+  if (window.AUTO_FILL) { $('temp-slider').value = 1.2; paint(); }
 }
 
 /* ============================================================
@@ -682,36 +1860,82 @@ function renderTokenizer() {
   $('tool-body').innerHTML = `
     <div class="tok-card">
       <div class="h" style="font-weight:600;font-size:13px;color:var(--blue-deep);margin-bottom:10px;letter-spacing:.03em;text-transform:uppercase;">Enter text</div>
-      <textarea id="tok-input" class="tok-input">Hello world! Tokenization is wild. Pre-training matters.</textarea>
-      <div class="tok-radio">
-        <label><input type="radio" name="tmode" value="word" checked> Word-level</label>
-        <label><input type="radio" name="tmode" value="char"> Character-level</label>
-        <label><input type="radio" name="tmode" value="sub"> Subword (BPE-ish)</label>
+      <textarea id="tok-input" class="tok-input">The simulation model predicts a 17% reduction in patient wait time when the triage nurse is co-located with the ED registration desk.</textarea>
+      <div class="tok-three">
+        <div class="tok-col" data-scheme="word">
+          <div class="th"><span class="scheme">Word</span><span class="meta">Split on whitespace · vocabulary ≈ language size</span></div>
+          <div class="tok-out" id="tok-out-word"></div>
+          <div class="tok-stats" id="tok-stats-word"></div>
+        </div>
+        <div class="tok-col" data-scheme="bpe">
+          <div class="th"><span class="scheme">BPE (subword)</span><span class="meta">What GPT, Llama, Mistral actually use · ~50k vocab</span></div>
+          <div class="tok-out" id="tok-out-bpe"></div>
+          <div class="tok-stats" id="tok-stats-bpe"></div>
+        </div>
+        <div class="tok-col" data-scheme="char">
+          <div class="th"><span class="scheme">Character</span><span class="meta">Every glyph is a token · vocab is small, sequences are long</span></div>
+          <div class="tok-out" id="tok-out-char"></div>
+          <div class="tok-stats" id="tok-stats-char"></div>
+        </div>
       </div>
-      <div class="tok-out" id="tok-out"></div>
-      <div class="tok-stats" id="tok-stats"></div>
+      <div class="tok-cost">
+        <div class="cost-head">Cost Calculator <span class="cost-sub">— at gpt-4.1-mini list pricing ($0.40 / 1M input, $1.60 / 1M output)</span></div>
+        <div class="cost-row">
+          <div class="cost-cell"><div class="cell-l">Tokens in this prompt</div><div class="cell-v" id="cost-tokens">—</div></div>
+          <div class="cost-cell"><div class="cell-l">Input cost (1×)</div><div class="cell-v" id="cost-one">—</div></div>
+          <div class="cost-cell"><div class="cell-l">100k calls / month</div><div class="cell-v" id="cost-100k">—</div></div>
+          <div class="cost-cell"><div class="cell-l">1M calls / month</div><div class="cell-v" id="cost-1m">—</div></div>
+        </div>
+      </div>
+      <div class="tok-insight">
+        <strong>Why BPE?</strong> Word tokenization explodes on rare words and misspellings; character tokenization makes sequences 4-5× longer and loses semantic locality. BPE (and its cousins WordPiece, SentencePiece) splits common chunks as single tokens and rare words into pieces — about <em>4 characters per token</em> in English. That ratio is what your bill is built on.
+      </div>
     </div>`;
+  function tokenizeWord(text) { return (text.match(/\S+|\s+/g) || []).filter(p => !/^\s+$/.test(p)); }
+  function tokenizeChar(text) { return [...text].filter(c => c !== ' '); }
+  function tokenizeBPE(text) {
+    const common = ['ing','tion','ation','pre','re','un','able','est','ment','ed','er','ly','ize','ous','ial'];
+    const pieces = [];
+    const parts = text.match(/\S+|\s+/g) || [];
+    parts.forEach(p => {
+      if (/^\s+$/.test(p)) return;
+      if (!/[A-Za-z]/.test(p)) { pieces.push(p); return; }
+      if (p.length <= 5) { pieces.push(p); return; }
+      let remaining = p;
+      const subs = [];
+      while (remaining.length > 0) {
+        const match = common.find(c => remaining.toLowerCase().endsWith(c));
+        if (match && remaining.length - match.length >= 2) {
+          subs.unshift(remaining.slice(-match.length));
+          remaining = remaining.slice(0, -match.length);
+        } else { subs.unshift(remaining); break; }
+      }
+      pieces.push(...subs);
+    });
+    return pieces;
+  }
+  function renderPieces(target, pieces, statTarget) {
+    $(target).innerHTML = pieces.map((p, i) => `<span class="tok-piece c${i%5}">${p.replace(/\s/g, '·')}</span>`).join('');
+    const chars = pieces.reduce((a,p) => a + p.length, 0);
+    const ratio = pieces.length ? (chars / pieces.length).toFixed(1) : '0.0';
+    $(statTarget).innerHTML = `
+      <div class="tok-stat"><div class="n">${pieces.length}</div><div class="l">Tokens</div></div>
+      <div class="tok-stat"><div class="n">${ratio}</div><div class="l">Chars/Tok</div></div>`;
+  }
   function tok() {
     const text = $('tok-input').value;
-    const mode = document.querySelector('input[name=tmode]:checked').value;
-    let pieces = [];
-    if (mode === 'word') pieces = text.match(/\S+|\s+/g) || [];
-    else if (mode === 'char') pieces = [...text];
-    else pieces = text.match(/[A-Za-z]{1,4}|[^A-Za-z\s]|\s+/g) || [];
-    $('tok-out').innerHTML = pieces.map((p,i)=>{
-      const cls = 'c'+(i%5);
-      return `<span class="tok-piece ${cls}">${p === ' ' ? '·' : p.replace(/\s/g, '·')}</span>`;
-    }).join('');
-    const tokens = pieces.filter(p => !/^\s+$/.test(p));
-    const chars = text.length;
-    const ratio = (chars / Math.max(1, tokens.length)).toFixed(1);
-    $('tok-stats').innerHTML = `
-      <div class="tok-stat"><div class="n">${tokens.length}</div><div class="l">Tokens</div></div>
-      <div class="tok-stat"><div class="n">${chars}</div><div class="l">Characters</div></div>
-      <div class="tok-stat"><div class="n">${ratio}</div><div class="l">Chars / Token</div></div>`;
+    const word = tokenizeWord(text), bpe = tokenizeBPE(text), ch = tokenizeChar(text);
+    renderPieces('tok-out-word', word, 'tok-stats-word');
+    renderPieces('tok-out-bpe', bpe, 'tok-stats-bpe');
+    renderPieces('tok-out-char', ch, 'tok-stats-char');
+    const n = bpe.length;
+    const inputRate = 0.40 / 1e6;
+    $('cost-tokens').textContent = n;
+    $('cost-one').textContent = '$' + (n * inputRate).toFixed(6);
+    $('cost-100k').textContent = '$' + (n * inputRate * 1e5).toFixed(2);
+    $('cost-1m').textContent = '$' + (n * inputRate * 1e6).toFixed(2);
   }
   $('tok-input').addEventListener('input', tok);
-  document.querySelectorAll('input[name=tmode]').forEach(r => r.addEventListener('change', tok));
   tok();
 }
 
@@ -776,86 +2000,667 @@ function renderPromptAnatomy() {
 }
 
 /* ============================================================
-   TOOL: CHAIN VISUALIZER (M04) — stub for now
+   TOOL: STORYLINE — shared renderer, 5 storylines (M01/M02/M05/M06/M11)
    ============================================================ */
-function renderChainViz() {
-  $('tool-body').innerHTML = `<div class="stub-hero"><svg><use href="#i-chain"/></svg><h3>Chain Visualizer — Under Construction</h3><p>The visual pipeline builder is being rebuilt with the new design system. Drop in PromptTemplate, ChatModel, OutputParser nodes and run them end-to-end.</p></div>`;
+const STORIES = {
+  'storyline': {
+    title: 'How LLMs Got Here', subtitle: 'A short illustrated history. Shannon\'s information theory to ELIZA to attention to GPT to today.',
+    scenes: [
+      { year:'1948', label:'Bell Labs · Stage 01', title:'Claude <em>Shannon</em>', img:'images/story_shannon.png',
+        lede:'Shannon\'s <em>A Mathematical Theory of Communication</em> introduced <strong>entropy</strong>, <strong>information</strong>, and the idea that text can be modeled as a probability distribution over the next symbol. Every modern language model traces its lineage back to this paper.',
+        fact:'Shannon famously estimated English entropy at about 1 bit per character using a parlor trick: he asked his wife Betty to guess the next letter of an unseen passage, one character at a time.' },
+      { year:'1966', label:'MIT AI Lab · Stage 02', title:'ELIZA <em>& Weizenbaum</em>', img:'images/story_eliza.png',
+        lede:'Joseph Weizenbaum\'s <em>ELIZA</em> ran a pattern-matching Rogerian therapist script in 200 lines of code. Users found it eerily convincing. Weizenbaum was unsettled enough by the reaction to write <em>Computer Power and Human Reason</em> warning against confusing simulation for understanding.',
+        fact:'Weizenbaum\'s secretary asked him to leave the room while she "talked to ELIZA" — he marked that moment as the start of his lifelong worry about anthropomorphizing machines.' },
+      { year:'1986', label:'San Diego · Stage 03', title:'Backpropagation <em>(Rumelhart, Hinton, Williams)</em>', img:'images/story_backprop.png',
+        lede:'A 1986 <em>Nature</em> paper popularized <strong>backpropagation</strong> for training multi-layer neural networks. The field had to wait three more decades for the compute and data to make these networks practical at scale.',
+        fact:'Hinton later won the 2018 Turing Award (with LeCun and Bengio) and the 2024 Nobel Prize in Physics for foundational work on neural networks.' },
+      { year:'2013', label:'Google · Stage 04', title:'word2vec <em>(Mikolov et al.)</em>', img:'images/story_word2vec.png',
+        lede:'Mikolov\'s team showed that you can train shallow networks to produce <strong>word embeddings</strong> where vector arithmetic captures meaning: <em>king − man + woman ≈ queen</em>. Suddenly, words had geometry.',
+        fact:'The trick was that you didn\'t need a labeled dataset. The web itself, with all its co-occurrence structure, was the training signal.' },
+      { year:'2017', label:'Google Brain · Stage 05 · The Inflection', title:'<em>Attention Is All You Need</em>', img:'images/story_transformer.png',
+        lede:'Vaswani et al. introduced the <strong>Transformer</strong>, replacing recurrence with self-attention. Eight authors, one famous title, and the architectural foundation for every frontier LLM since.',
+        fact:'The internal Google project was called <em>Transformer</em> because the original goal was just better machine translation. Within two years it had eaten every NLP benchmark.' },
+      { year:'2020', label:'OpenAI · Stage 06 · Emergence', title:'GPT-3 <em>(Brown et al.)</em>', img:'images/story_gpt3.png',
+        lede:'A 175-billion-parameter Transformer trained on roughly 500 billion tokens revealed <strong>few-shot in-context learning</strong>: give the model two or three examples in the prompt and it generalizes. Prompting became a discipline.',
+        fact:'The paper has 31 authors and the longest abstract OpenAI had ever published — they needed the space to enumerate the surprising capabilities.' },
+      { year:'2022', label:'San Francisco · Stage 07', title:'ChatGPT <em>opens the door</em>', img:'images/story_chatgpt.png',
+        lede:'A chat wrapper around GPT-3.5, plus reinforcement learning from human feedback, reached <strong>100 million users in two months</strong>. Generative AI moved from research curiosity to consumer product in a single quarter.',
+        fact:'Sam Altman called the launch "the most successful launch of all time" — and OpenAI\'s infrastructure team spent the next year quietly bracing for impact.' },
+      { year:'Today', label:'2026 · Stage 08 · Where you come in', title:'<em>Agents, retrieval, and you</em>', img:'images/story_today.png',
+        lede:'The frontier has moved from raw next-token prediction to <strong>tool use, retrieval, multi-agent orchestration, and structured output</strong>. This is the syllabus of DADS 5250: not just how the model talks, but how you compose it into real OR/MS practice.',
+        fact:'Every interactive tool in this course points to a single bet: students who understand the mechanics — temperature, embeddings, attention, retrieval, guardrails — will out-build students who only know the chat interface.' }
+    ]
+  },
+  'storyline-prompting': {
+    title: 'The Art of the Prompt', subtitle: 'Turing test to ELIZA to chain-of-thought. How "talking to the model" became a discipline.',
+    scenes: [
+      { year:'1950', label:'Manchester · Stage 01', title:'Alan <em>Turing</em>',
+        lede:'Turing\'s <em>Computing Machinery and Intelligence</em> proposed the <strong>imitation game</strong>: can a machine\'s text replies be distinguished from a human\'s? The first explicit framing of prompting as a benchmark for intelligence.',
+        fact:'Turing predicted that by the year 2000, a machine fooling 30% of judges in a 5-minute conversation would be standard. He was within a decade of right.' },
+      { year:'1966', label:'MIT · Stage 02', title:'ELIZA <em>& pattern prompts</em>',
+        lede:'ELIZA\'s scripts were primitive prompts: pattern-match keywords, reflect them back. The DOCTOR script (Rogerian therapy) showed that minimal prompting can produce surprisingly convincing dialogue.',
+        fact:'Modern jailbreaks still use a version of the ELIZA trick: get the model to play a role, and the role does the talking.' },
+      { year:'2017', label:'Google · Stage 03', title:'Zero-shot to <em>few-shot</em>',
+        lede:'GPT-1 and GPT-2 hinted that you could steer a Transformer just by writing examples in the prompt. <strong>In-context learning</strong> meant the prompt itself became the program.',
+        fact:'GPT-2 was initially withheld for safety reasons — OpenAI worried prompted text generation was too dangerous to release.' },
+      { year:'2020', label:'OpenAI · Stage 04', title:'GPT-3 <em>and the prompt engineer</em>',
+        lede:'Brown et al. showed that two or three examples in the prompt produced near-fine-tuned performance on many tasks. <strong>Prompt engineering</strong> became a job title within months.',
+        fact:'Within a year of GPT-3, the first prompt-marketplaces appeared (PromptBase, PromptHero), selling prompts the way artists sell Lightroom presets.' },
+      { year:'2022', label:'Google Brain · Stage 05 · Reasoning', title:'<em>Chain-of-Thought</em> (Wei et al.)',
+        lede:'Wei et al. showed that simply adding <em>"Let\'s think step by step"</em> to a prompt unlocked multi-step reasoning on math and logic. <strong>Latent capability surfaces through phrasing.</strong>',
+        fact:'The single phrase "Let\'s think step by step" became one of the most cited interventions in the history of NLP — added to GPT-3 it doubled accuracy on math word problems.' },
+      { year:'2023', label:'Princeton · Stage 06', title:'<em>Tree of Thoughts</em> (Yao et al.)',
+        lede:'Instead of a single chain, branch the reasoning into a tree, evaluate intermediate states, and backtrack. Prompting became a <strong>search problem</strong> over thought trajectories.',
+        fact:'Tree-of-Thoughts on the Game of 24 jumped success rate from 4% (chain-of-thought) to 74%. Just by branching the prompt.' },
+      { year:'2024', label:'Anthropic · Stage 07', title:'<em>Constitutional</em> prompting',
+        lede:'Long system prompts now encode personas, values, refusal policies, and tool specs. Production prompts routinely exceed <strong>10,000 tokens</strong>. Anthropic\'s Constitutional AI work made the system prompt the model\'s ethical scaffolding.',
+        fact:'Claude\'s system prompt was leaked twice in 2024 — both times longer than the entire ELIZA program.' },
+      { year:'Today', label:'2026 · Stage 08 · Where you come in', title:'<em>Specification + retrieval + tools</em>',
+        lede:'A modern prompt is a small spec sheet: role, task, context (often retrieved), format, examples, tool definitions, refusal rules. <strong>This is what the Prompt Anatomy Builder teaches.</strong>',
+        fact:'In the same way "writing code" once meant flipping switches and now means typing in a high-level IDE, "prompting" in 2026 already means orchestrating a system, not crafting a clever one-liner.' }
+    ]
+  },
+  'storyline-rag': {
+    title: 'How Retrieval Got Smart', subtitle: 'From card catalogs to TF-IDF to dense vectors to RAG. A short history of finding the right document.',
+    scenes: [
+      { year:'1957', label:'IBM · Stage 01', title:'Hans Peter <em>Luhn</em>',
+        lede:'Luhn proposed using word frequency to automatically index documents. The seed of <strong>term-frequency information retrieval</strong>. Decades before "search engine" was a term.',
+        fact:'Luhn also invented the credit-card checksum algorithm still used on every Visa and MasterCard. Quietly one of the most consequential engineers of the century.' },
+      { year:'1972', label:'Cornell · Stage 02', title:'<em>TF-IDF</em> (Karen Spärck Jones)',
+        lede:'Spärck Jones formalized <strong>inverse document frequency</strong>: a word\'s importance grows with its rarity across the corpus. The math behind every classic search engine until 2010.',
+        fact:'She paid her own way to most conferences and was a fierce advocate that "computing is too important to be left to men." Her statue is in the British Computing Society HQ.' },
+      { year:'1998', label:'Stanford · Stage 03', title:'<em>PageRank</em> (Page & Brin)',
+        lede:'Google\'s 1998 paper added link structure to TF-IDF: pages cited by many other pages rank higher. <strong>Graph + relevance</strong> defined web search for a generation.',
+        fact:'The paper was written while Brin and Page were still PhD students. The startup name BackRub came first — it was renamed Google before the IPO.' },
+      { year:'2013', label:'Google · Stage 04', title:'<em>word2vec</em> (Mikolov)',
+        lede:'For the first time, words got geometry. <strong>Dense embeddings</strong> meant similarity could be measured by cosine distance, not just term overlap.',
+        fact:'word2vec\'s training trick (skip-gram with negative sampling) is still the textbook intro to "how machines learn word meaning."' },
+      { year:'2019', label:'Google Brain · Stage 05', title:'<em>BERT</em> embeddings',
+        lede:'BERT gave us <strong>contextual sentence embeddings</strong>: the same word gets different vectors in different contexts. Suddenly "bank" near "river" was different from "bank" near "loan."',
+        fact:'BERT-large had 340M parameters. By 2024, sentence embedders that beat BERT-large were running on phones.' },
+      { year:'2020', label:'Facebook AI · Stage 06 · DPR', title:'<em>Dense Passage Retrieval</em> (Karpukhin et al.)',
+        lede:'Train an encoder for questions and another for passages, then look up by <strong>dot product</strong>. The recipe behind every "semantic search" product on the market today.',
+        fact:'DPR beat BM25 by 9-19 absolute points on open-domain QA. By 2022 hybrid BM25+dense was the new norm.' },
+      { year:'2020', label:'Facebook AI · Stage 07', title:'<em>RAG</em> (Lewis et al.)',
+        lede:'Lewis et al. fused dense retrieval with a generative model: <strong>retrieve, then generate</strong>. The architectural pattern behind every modern enterprise chatbot.',
+        fact:'The RAG paper has been cited more than 7,000 times. "RAG" became a verb in enterprise meetings within 18 months.' },
+      { year:'Today', label:'2026 · Stage 08 · Where you come in', title:'<em>Hybrid, hierarchical, agentic</em>',
+        lede:'Modern systems combine BM25 + dense + re-ranking + hierarchical chunking + agentic retrieval (the model decides what to fetch next). <strong>That is exactly what the Embedding Space Explorer, Text Chunking Lab, and RAG Retrieval Race teach.</strong>',
+        fact:'A 2025 survey found 73% of enterprise AI deployments now include some form of retrieval. The pure-LLM-only era lasted about 36 months.' }
+    ]
+  },
+  'storyline-agents': {
+    title: 'How Agents Learned to Use Tools', subtitle: 'Symbolic AI to ReAct to LangGraph. A short history of giving language models hands.',
+    scenes: [
+      { year:'1972', label:'MIT · Stage 01', title:'<em>STRIPS</em> & symbolic planning',
+        lede:'Fikes and Nilsson\'s <strong>STRIPS</strong> planner reasoned about preconditions and effects of actions. Half a century later, every agent framework still has a flavor of this.',
+        fact:'STRIPS\'s test domain was a robot named Shakey moving blocks at SRI. The robot was so slow that planning a 10-step sequence took it 15 minutes to execute.' },
+      { year:'1987', label:'Stanford · Stage 02', title:'<em>BDI agents</em> (Bratman, Rao, Georgeff)',
+        lede:'Beliefs, Desires, Intentions. A philosophical model of how a rational agent should turn knowledge into action. The vocabulary still shows up in every CrewAI role definition.',
+        fact:'The BDI model was originally developed for air-traffic control software in Australia, not as an academic curiosity.' },
+      { year:'2017', label:'DeepMind · Stage 03', title:'<em>AlphaGo</em> shows planning at scale',
+        lede:'Monte Carlo Tree Search plus deep value networks. <strong>Search inside a learned model</strong> beat the world champion at Go. Tree-search reasoning came back into fashion.',
+        fact:'AlphaGo\'s famous "move 37" against Lee Sedol was assigned a 1-in-10,000 prior by human pros. The agent saw something they didn\'t.' },
+      { year:'2022', label:'Princeton · Stage 04 · The Inflection', title:'<em>ReAct</em> (Yao et al.)',
+        lede:'Interleave <strong>Thought, Action, Observation</strong> in a single prompt loop. The simplest, cleanest pattern for getting an LLM to use external tools. This is exactly what the ReAct Trace Player demonstrates.',
+        fact:'ReAct\'s success on knowledge-intensive QA was so fast that follow-up papers had to use "ReAct" as a baseline by mid-2023.' },
+      { year:'2023', label:'Meta AI · Stage 05', title:'<em>Toolformer</em> (Schick et al.)',
+        lede:'Self-supervised training to <strong>insert API calls</strong> into text. The model decides where and when to call a calculator, search engine, or database — no human-written demos required.',
+        fact:'Toolformer worked even at 6.7B params, suggesting tool-use is more a prompting/training-format trick than a scale-only phenomenon.' },
+      { year:'2023', label:'AutoGPT et al. · Stage 06', title:'<em>The agent gold rush</em>',
+        lede:'AutoGPT, BabyAGI, AgentGPT exploded on GitHub. Loose loops of "<strong>think, plan, execute, repeat</strong>" with shared memory. Most failed in production — but the patterns stuck.',
+        fact:'AutoGPT hit 100k GitHub stars in 7 days, faster than React.js. Within 6 months 90% of the projects forking it had been abandoned.' },
+      { year:'2024', label:'LangChain · Stage 07', title:'<em>LangGraph</em> & explicit state',
+        lede:'Move from free-form ReAct loops to <strong>typed state graphs</strong>: nodes are LLM calls or tools, edges encode flow logic. Production agents finally got debuggable.',
+        fact:'LangGraph\'s state-machine framing was directly inspired by Erlang OTP supervision trees and React-style reducers. Old ideas, new substrate.' },
+      { year:'Today', label:'2026 · Stage 08 · Where you come in', title:'<em>Multi-agent, evaluated, governed</em>',
+        lede:'CrewAI, MCP, observability stacks. <strong>Multiple specialized agents collaborate, hand off tasks, share scratchpads, and emit traces.</strong> The Multi-Agent module and the Prompt Injection Lab cover both halves: how to compose them, and how to keep them safe.',
+        fact:'A 2026 INFORMS panel found 41% of OR/MS teams now have at least one production "agent" running unattended. Most of them are doing scheduling, intake, or report generation.' }
+    ]
+  },
+  'storyline-security': {
+    title: 'How Prompt Injection Became a Discipline', subtitle: 'From XSS to indirect injection to red-team olympiads. A short history of attacking language models.',
+    scenes: [
+      { year:'1999', label:'CERT · Stage 01', title:'<em>XSS</em> and the input/output gap',
+        lede:'Cross-site scripting taught the web a lesson it had to relearn: <strong>untrusted text becomes code when it reaches an interpreter</strong>. LLM prompts re-discovered this in 2022.',
+        fact:'The first XSS advisory was filed in February 2000. The first public LLM prompt injection report was filed 22 years later. The pattern was identical.' },
+      { year:'2010', label:'OWASP · Stage 02', title:'<em>SQL injection</em> in the Top 10',
+        lede:'Parameterize your queries. Never concatenate user input. <strong>Trust boundaries matter.</strong> The same lesson reappeared verbatim a decade later, with "prompt" replacing "query".',
+        fact:'In 2009 a single SQL injection at Heartland Payment Systems exposed 130 million credit cards. Still the largest such breach on record.' },
+      { year:'Sep 2022', label:'Twitter · Stage 03', title:'<em>"Ignore previous instructions"</em> (Riley Goodside)',
+        lede:'A viral tweet showed GPT-3 happily abandoning its system prompt when the user simply <em>told it to</em>. The phrase entered the security vocabulary overnight.',
+        fact:'The original tweet had no shock value to AI researchers — but the visual of a chatbot caving instantly to "ignore previous instructions" went global. Cottage industry of "jailbreak" prompts followed within weeks.' },
+      { year:'Feb 2023', label:'Saarland · Stage 04 · The Inflection', title:'<em>Indirect prompt injection</em> (Greshake et al.)',
+        lede:'Greshake et al. proved that adversarial instructions could be hidden in <strong>retrieved web pages, PDFs, or emails</strong>, then executed when the LLM read them. Every RAG and agent system became attackable.',
+        fact:'Bing Chat (the codename "Sydney") fell to Greshake\'s technique within days of public access. Microsoft shipped patches in real time.' },
+      { year:'2023', label:'DEF CON 31 · Stage 05', title:'<em>AI Village Red Team</em>',
+        lede:'2,200 hackers attacked 8 frontier models for 3 days at DEF CON. Coordinated by the White House. <strong>Red-teaming AI became a real profession.</strong>',
+        fact:'The competition produced 17,000 prompts. Common attack patterns: roleplay jailbreaks, instruction smuggling, encoding tricks (base64, leetspeak), persona confusion.' },
+      { year:'2023', label:'OWASP · Stage 06', title:'<em>OWASP LLM Top 10</em>',
+        lede:'A formal taxonomy: <strong>prompt injection, insecure output handling, training-data poisoning, model denial of service, supply chain, sensitive info disclosure, insecure plugins, excessive agency, overreliance, model theft</strong>. The field had a vocabulary.',
+        fact:'OWASP LLM Top 10 was assembled in 4 months by 130 volunteers — the fastest standard the organization had ever shipped.' },
+      { year:'2024', label:'Anthropic · Stage 07', title:'<em>Constitutional AI</em> & guardrails',
+        lede:'Train the model to critique and revise its own outputs against a written constitution. Combine with runtime <strong>input filters, output validators, and tool allowlists</strong>. Defense in depth, finally.',
+        fact:'Anthropic\'s public "constitution" is shorter than a typical software EULA — but it took dozens of revisions to get the tone right.' },
+      { year:'Today', label:'2026 · Stage 08 · Where you come in', title:'<em>Attack and defend, together</em>',
+        lede:'Modern stacks ship guardrails by default. Schema validation, citation-grounded answers, retrieval allowlists, output classifiers. The <strong>Prompt Injection Lab is the playground</strong>: attack one bot, defend the other, learn both halves.',
+        fact:'Recent surveys put prompt injection at #1 on enterprise AI risk lists for three years running. Of all the security problems in this list, only this one is uniquely born in the LLM era.' }
+    ]
+  }
+};
+function renderStoryline() {
+  const story = STORIES[view.toolId] || STORIES['storyline'];
+  const SCENES = story.scenes;
+  // Color theme cycles through blue / gold / olive based on stage index
+  const themeFor = i => (['blue','gold','olive'])[i % 3];
+  $('tool-body').innerHTML = `
+    <div class="sl-wrap">
+      <div class="sl-stages" id="sl-stages"></div>
+      <div class="sl-scene" id="sl-scene"></div>
+      <div class="sl-nav">
+        <button id="sl-prev" class="ghost">← Previous</button>
+        <span class="sl-counter"><span class="now" id="sl-now">1</span><span>/</span><span class="total">${SCENES.length}</span></span>
+        <button id="sl-next">Next →</button>
+      </div>
+    </div>`;
+  window.SL_STATE = { i: 0, scenes: SCENES };
+  function paint() {
+    const i = window.SL_STATE.i;
+    const s = SCENES[i];
+    const theme = themeFor(i);
+    $('sl-stages').innerHTML = SCENES.map((sc, k) => {
+      const cls = k < i ? 'done' : (k === i ? 'active theme-' + theme : '');
+      return `<div class="sl-seg ${cls}" data-i="${k}" data-year="${sc.year}"></div>`;
+    }).join('');
+    const sc = $('sl-scene');
+    sc.className = 'sl-scene theme-' + theme;
+    // Re-trigger image+text animations by re-cloning the inner HTML
+    sc.innerHTML = `
+      <div class="sl-img-wrap">
+        <div class="sl-year-badge">${s.year}</div>
+        <div class="sl-img-inner">
+          ${s.img ? `<img src="${s.img}" alt="${s.title.replace(/<[^>]+>/g, '')}">` : `<div class="sl-img-placeholder"><div class="ph-year">${s.year}</div><div>Portrait / scene<br>(Gemini render — pending)</div></div>`}
+        </div>
+      </div>
+      <div class="sl-text">
+        <div class="label">${s.label}</div>
+        <h3>${s.title}</h3>
+        <div class="lede">${s.lede}</div>
+        <div class="sl-fact"><span class="fact-tag">Worth knowing</span>${s.fact}</div>
+      </div>`;
+    $('sl-now').textContent = i + 1;
+    $('sl-now').className = 'now theme-' + theme;
+    $('sl-prev').disabled = i === 0;
+    $('sl-next').disabled = i === SCENES.length - 1;
+    document.querySelectorAll('.sl-seg').forEach(seg => seg.addEventListener('click', () => { window.SL_STATE.i = parseInt(seg.dataset.i); paint(); }));
+  }
+  $('sl-prev').addEventListener('click', () => { if (window.SL_STATE.i > 0) { window.SL_STATE.i--; paint(); } });
+  $('sl-next').addEventListener('click', () => { if (window.SL_STATE.i < SCENES.length - 1) { window.SL_STATE.i++; paint(); } });
+  document.addEventListener('keydown', e => {
+    if (!$('sl-scene')) return;
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.key === 'ArrowLeft' && window.SL_STATE.i > 0) { window.SL_STATE.i--; paint(); }
+    if (e.key === 'ArrowRight' && window.SL_STATE.i < SCENES.length - 1) { window.SL_STATE.i++; paint(); }
+  });
+  paint();
 }
 
 /* ============================================================
-   TOOL: CHUNKING (M05) — stub
+   TOOL: CHAIN VISUALIZER (M04)
+   ============================================================ */
+function renderChainViz() {
+  $('tool-body').innerHTML = `
+    <div class="cv-input">
+      <input id="cv-q" type="text" value="What is the weather in Boston today?" />
+      <button onclick="cv_run()">Run Chain</button>
+    </div>
+    <div class="cv-pipeline">
+      <div class="cv-node" id="cv-n1"><div class="lbl">Step 1</div><div class="name">Prompt Template</div><div class="sub">{question} → formatted prompt</div></div>
+      <div class="cv-arrow" id="cv-a1">→</div>
+      <div class="cv-node" id="cv-n2"><div class="lbl">Step 2</div><div class="name">Chat Model</div><div class="sub">gpt-4.1-mini</div></div>
+      <div class="cv-arrow" id="cv-a2">→</div>
+      <div class="cv-node" id="cv-n3"><div class="lbl">Step 3</div><div class="name">Output Parser</div><div class="sub">str → typed dict</div></div>
+    </div>
+    <div class="cv-outputs">
+      <div class="cv-out" id="cv-o1"><span class="ttl">Prompt</span>—</div>
+      <div class="cv-out" id="cv-o2"><span class="ttl">Raw Completion</span>—</div>
+      <div class="cv-out" id="cv-o3"><span class="ttl">Parsed</span>—</div>
+    </div>`;
+  window.cv_run = () => {
+    const q = $('cv-q').value || 'What is the weather in Boston today?';
+    ['cv-n1','cv-n2','cv-n3'].forEach(id => { const e = $(id); e.classList.remove('active'); e.classList.remove('done'); });
+    ['cv-a1','cv-a2'].forEach(id => $(id).classList.remove('active'));
+    ['cv-o1','cv-o2','cv-o3'].forEach(id => { const e = $(id); e.classList.remove('visible'); e.innerHTML = '<span class="ttl">'+e.querySelector('.ttl').textContent+'</span>—'; });
+    const stage1 = `Answer the user briefly.\n\nQ: ${q}\nA:`;
+    const stage2 = `Boston, June 4, partly cloudy, about 68°F, light wind from the west, 30% chance of an evening shower.`;
+    const stage3 = `{\n  "city": "Boston",\n  "temp_f": 68,\n  "summary": "partly cloudy",\n  "precip_chance": 0.30\n}`;
+    const seq = [
+      ['cv-n1','cv-o1', stage1, 'Prompt'],
+      ['cv-n2','cv-o2', stage2, 'Raw Completion'],
+      ['cv-n3','cv-o3', stage3, 'Parsed']
+    ];
+    seq.forEach(([nodeId, outId, text, title], i) => {
+      setTimeout(() => {
+        $(nodeId).classList.add('active');
+        if (i > 0) $('cv-a' + i).classList.add('active');
+        $(outId).innerHTML = `<span class="ttl">${title}</span>${text}`;
+        $(outId).classList.add('visible');
+        setTimeout(() => { $(nodeId).classList.remove('active'); $(nodeId).classList.add('done'); }, 700);
+      }, 200 + i * 900);
+    });
+  };
+  if (window.AUTO_FILL) setTimeout(() => window.cv_run(), 80);
+}
+
+/* ============================================================
+   TOOL: TEXT CHUNKING LAB (M05)
    ============================================================ */
 function renderChunking() {
-  $('tool-body').innerHTML = `<div class="stub-hero"><svg><use href="#i-grid"/></svg><h3>Text Chunking Lab — Coming Soon</h3><p>Drag chunk-size and overlap sliders, see boundaries highlight in real time on a sample document.</p></div>`;
+  $('tool-body').innerHTML = `
+    <div class="ck-controls">
+      <div class="ck-control"><label>Chunk Size <span class="v" id="ck-sz-v">200</span></label>
+        <input type="range" id="ck-sz" min="50" max="500" step="10" value="200"></div>
+      <div class="ck-control"><label>Overlap <span class="v" id="ck-ov-v">40</span></label>
+        <input type="range" id="ck-ov" min="0" max="120" step="5" value="40"></div>
+      <div class="ck-control"><label>Strategy</label>
+        <div class="ck-strategy">
+          <button data-strat="fixed" class="active">Fixed</button>
+          <button data-strat="recursive">Recursive</button>
+          <button data-strat="sentence">Sentence</button>
+        </div></div>
+    </div>
+    <div class="ck-stats">
+      <div class="ck-stat"><span class="n" id="ck-count">—</span>Chunks</div>
+      <div class="ck-stat"><span class="n" id="ck-avg">—</span>Avg chars</div>
+      <div class="ck-stat"><span class="n" id="ck-cov">—</span>Total chars</div>
+    </div>
+    <div class="ck-doc" id="ck-doc"></div>`;
+  const DOC = `Generative AI has changed how decision makers interact with simulation. Where analysts once translated a process map into code by hand, large language models can now turn a natural-language description of a clinic, a warehouse, or a supply chain into a runnable discrete-event model in seconds. The implications for OR/MS practice are large. Faster model creation lowers the barrier for domain experts who are not professional modelers, and it shifts the analyst's role from typing simulation code to designing experiments, validating assumptions, and interpreting results. Retrieval-augmented generation lets the model ground its answers in the organization's own documents — process standards, prior model libraries, safety protocols, operating procedures — so the simulation reflects how work actually happens rather than how a generic textbook says it should. Together these patterns produce a new analyst workflow: describe the system, retrieve the relevant context, generate a candidate model, run it, examine the results, and iterate. The role of the simulationist becomes less about coding and more about judgment, scenario design, and storytelling with data.`;
+  window.ck_strat = 'fixed';
+  function chunk(size, ov, strat) {
+    const chunks = [];
+    if (strat === 'sentence') {
+      const sents = DOC.match(/[^.!?]+[.!?]+\s*/g) || [DOC];
+      let cur = '', start = 0;
+      sents.forEach(s => {
+        if ((cur + s).length > size && cur.length) { chunks.push({ s: start, e: start + cur.length, t: cur }); start += Math.max(0, cur.length - ov); cur = cur.slice(cur.length - ov) + s; }
+        else { cur += s; }
+      });
+      if (cur) chunks.push({ s: start, e: start + cur.length, t: cur });
+      return chunks;
+    }
+    const stride = Math.max(1, size - ov);
+    let i = 0;
+    while (i < DOC.length) {
+      const e = Math.min(DOC.length, i + size);
+      let cut = e;
+      if (strat === 'recursive' && e < DOC.length) {
+        const back = DOC.slice(i, e);
+        const m = Math.max(back.lastIndexOf('. '), back.lastIndexOf(', '), back.lastIndexOf(' '));
+        if (m > size * 0.6) cut = i + m + 1;
+      }
+      chunks.push({ s: i, e: cut, t: DOC.slice(i, cut) });
+      if (cut >= DOC.length) break;
+      i = Math.max(i + 1, cut - ov);
+    }
+    return chunks;
+  }
+  function repaint() {
+    const sz = parseInt($('ck-sz').value), ov = parseInt($('ck-ov').value);
+    $('ck-sz-v').textContent = sz; $('ck-ov-v').textContent = ov;
+    const chunks = chunk(sz, ov, window.ck_strat);
+    const html = chunks.map((c, i) => `<span class="ck-chunk c${i % 6}">${c.t.replace(/</g,'&lt;')}</span>`).join(' ');
+    $('ck-doc').innerHTML = html;
+    $('ck-count').textContent = chunks.length;
+    $('ck-avg').textContent = Math.round(chunks.reduce((a, c) => a + c.t.length, 0) / chunks.length);
+    $('ck-cov').textContent = chunks.reduce((a, c) => a + c.t.length, 0);
+  }
+  $('ck-sz').addEventListener('input', repaint);
+  $('ck-ov').addEventListener('input', repaint);
+  document.querySelectorAll('.ck-strategy button').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('.ck-strategy button').forEach(x => x.classList.remove('active'));
+      b.classList.add('active'); window.ck_strat = b.dataset.strat; repaint();
+    });
+  });
+  repaint();
+}
+
+/* ============================================================
+   TOOL: RAG RETRIEVAL RACE (M05) — NEW gamified tool
+   ============================================================ */
+function renderRetrievalRace() {
+  $('tool-body').innerHTML = `
+    <div class="rr-modebar">
+      <button class="rr-mode active" data-mode="solo">Solo</button>
+      <button class="rr-mode" data-mode="timed">Solo · Timed</button>
+      <button class="rr-mode" data-mode="duel">2-Player Duel</button>
+      <button class="rr-mode" data-mode="sabotage">Sabotage Round</button>
+      <div class="rr-mode-desc" id="rr-mode-desc">Take your time. Pick the docs you think a cosine retriever would return.</div>
+    </div>
+    <div class="rr-q"><div class="lbl" id="rr-qlbl">User Query</div><div class="txt" id="rr-query"></div></div>
+    <div class="rr-grid">
+      <div>
+        <div style="font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin-bottom:8px;font-weight:600;display:flex;justify-content:space-between;align-items:center;">
+          <span>Document Corpus <span style="text-transform:none;letter-spacing:0;color:var(--muted);font-weight:400;font-size:11px;">— click the docs the retriever should return</span></span>
+          <span class="rr-turn" id="rr-turn"></span>
+        </div>
+        <div class="rr-docs" id="rr-docs"></div>
+      </div>
+      <div class="rr-side">
+        <h4>Scoreboard</h4>
+        <div class="rr-score" id="rr-scorebox"></div>
+        <div class="rr-timer" id="rr-timer"></div>
+        <div class="rr-actions">
+          <button class="primary" id="rr-check">Check Picks</button>
+          <button class="reset" onclick="rr_next()">Next Round</button>
+        </div>
+        <div class="rr-feedback" id="rr-fb"></div>
+      </div>
+    </div>`;
+  const NORMAL = [
+    { q: 'How do I reset a customer password in the admin portal?',
+      docs: [
+        { t: 'Admin → Users → click row → "Reset password" sends a one-time link to the user\'s email.', r: true },
+        { t: 'Password complexity requirements: at least 12 characters, one symbol, one digit, no reuse for 24 cycles.', r: true },
+        { t: 'Quarterly revenue narrative for the EMEA region featured strong growth in financial services.', r: false },
+        { t: 'If the user\'s email bounces, admins can issue a temporary password via the same row action.', r: true },
+        { t: 'Database migration guide for the legacy billing system — last updated three years ago.', r: false },
+        { t: 'Holiday schedule for the customer support team for the upcoming fiscal year.', r: false }
+      ] },
+    { q: 'What is the recommended retraining cadence for a churn prediction model in production?',
+      docs: [
+        { t: 'Monitor PSI weekly on the top 15 features; retrain when drift exceeds 0.2 on any of them.', r: true },
+        { t: 'Default retraining cadence for tabular churn models is monthly, with rolling 12-month training windows.', r: true },
+        { t: 'Cookie policy for the marketing website — updated for the latest privacy regulation cycle.', r: false },
+        { t: 'Champion-challenger framework: shadow new candidate weekly; promote only when uplift is significant at p < .05.', r: true },
+        { t: 'Brand color palette and typography guidelines for product marketing materials.', r: false },
+        { t: 'Internal travel reimbursement form, version 4.2, with updated meal per-diems.', r: false }
+      ] }
+  ];
+  const SABOTAGE = [
+    { q: 'How does the simulation engine handle entity routing through the queue?',
+      docs: [
+        { t: 'Entity routing is driven by the connector\'s priority and the destination server\'s capacity, not by FIFO order alone.', r: true },
+        { t: 'The simulation engine\'s queue uses a priority heap. Entities with lower priority numbers leave first.', r: true },
+        { t: 'A new "Simulation Routing" benchmarking dataset is now available for download in the engineering portal.', r: false },
+        { t: 'Simulation entities can be routed through external HTTP endpoints — see the integration appendix.', r: false },
+        { t: 'Queue overflow policy: when entity count > capacity, simulation drops oldest unless preempt flag is set.', r: true },
+        { t: 'Routing protocol simulation engines used in network labs are unrelated to discrete-event simulation.', r: false }
+      ] },
+    { q: 'What metric tracks how an embedding model handles paraphrased customer feedback?',
+      docs: [
+        { t: 'Sentence-pair cosine similarity on a held-out paraphrase set is the canonical eval metric for sentence embedders.', r: true },
+        { t: 'Customer feedback dashboard tracks satisfaction trend, NPS, and category-level sentiment over time.', r: false },
+        { t: 'STS-Benchmark (Semantic Textual Similarity) measures embedding quality on paraphrased and adversarial pairs.', r: true },
+        { t: 'Embedding model latency benchmark: 256-token input, batch size 64, single A100. Reported in milliseconds.', r: false },
+        { t: 'For paraphrase-robust retrieval, combine dense embeddings with sparse BM25 in a hybrid retriever.', r: true },
+        { t: 'Customer-feedback paraphrase generator was released as a separate tool for QA teams. No embedding model required.', r: false }
+      ] }
+  ];
+  window.rr = { mode: 'solo', round: 0, score: 0, p1Score: 0, p2Score: 0, picks: new Set(), p1Picks: new Set(), p2Picks: new Set(), turn: 1, revealed: false, deadline: 0, timerId: null, deck: NORMAL };
+  const DESCS = {
+    solo: 'Take your time. Pick the docs you think a cosine retriever would return.',
+    timed: '30 seconds per round. Fewer seconds = bigger bonus. Misclicks still cost you.',
+    duel: 'Two players alternate picks. Each player\'s hits count to their own column. First to 3 hits per round wins.',
+    sabotage: 'The distractors share keywords with the query but have wrong meaning. Read carefully — this is where most RAG systems fail.'
+  };
+  function setMode(m) {
+    if (window.rr.timerId) { clearInterval(window.rr.timerId); window.rr.timerId = null; }
+    window.rr.mode = m;
+    window.rr.deck = m === 'sabotage' ? SABOTAGE : NORMAL;
+    window.rr.round = 0; window.rr.score = 0; window.rr.p1Score = 0; window.rr.p2Score = 0;
+    window.rr.picks.clear(); window.rr.p1Picks.clear(); window.rr.p2Picks.clear();
+    window.rr.turn = 1; window.rr.revealed = false;
+    $('rr-mode-desc').textContent = DESCS[m];
+    $('rr-fb').classList.remove('show');
+    document.querySelectorAll('.rr-mode').forEach(b => b.classList.toggle('active', b.dataset.mode === m));
+    paintRR(); startTimerIfNeeded();
+  }
+  function startTimerIfNeeded() {
+    $('rr-timer').innerHTML = '';
+    if (window.rr.mode !== 'timed') return;
+    window.rr.deadline = Date.now() + 30000;
+    const tick = () => {
+      const remaining = Math.max(0, Math.ceil((window.rr.deadline - Date.now())/1000));
+      $('rr-timer').innerHTML = `<div class="rr-clock${remaining<=5?' warn':''}"><span class="lbl">Time Left</span><span class="n">${remaining}s</span></div>`;
+      if (remaining <= 0 && !window.rr.revealed) { clearInterval(window.rr.timerId); window.rr.timerId = null; window.rr.deadline = 0; doCheck(); }
+    };
+    tick();
+    window.rr.timerId = setInterval(tick, 250);
+  }
+  window.rr_next = () => {
+    window.rr.round = (window.rr.round + 1) % window.rr.deck.length;
+    window.rr.picks.clear(); window.rr.p1Picks.clear(); window.rr.p2Picks.clear();
+    window.rr.turn = 1; window.rr.revealed = false;
+    $('rr-fb').classList.remove('show');
+    if (window.rr.timerId) { clearInterval(window.rr.timerId); window.rr.timerId = null; }
+    paintRR(); startTimerIfNeeded();
+  };
+  function paintRR() {
+    const r = window.rr.deck[window.rr.round];
+    $('rr-query').textContent = r.q;
+    if (window.rr.mode === 'duel') {
+      $('rr-scorebox').innerHTML = `
+        <div class="cell ${window.rr.turn===1?'turn':''}"><div class="n" id="rr-p1">${window.rr.p1Score}</div><div class="l">Player 1</div></div>
+        <div class="cell ${window.rr.turn===2?'turn':''}"><div class="n" id="rr-p2">${window.rr.p2Score}</div><div class="l">Player 2</div></div>`;
+      $('rr-turn').innerHTML = `<span class="turn-pill p${window.rr.turn}">Player ${window.rr.turn}’s turn</span>`;
+    } else {
+      $('rr-scorebox').innerHTML = `
+        <div class="cell"><div class="n">${window.rr.round + 1}</div><div class="l">Round</div></div>
+        <div class="cell"><div class="n">${window.rr.score}</div><div class="l">Score</div></div>`;
+      $('rr-turn').innerHTML = '';
+    }
+    const ix = r.docs.map((d, i) => ({...d, i})).sort((a, b) => (window.rr.revealed ? (b.r - a.r) : 0));
+    $('rr-docs').innerHTML = ix.map(d => {
+      const isP1 = window.rr.mode==='duel' && window.rr.p1Picks.has(d.i);
+      const isP2 = window.rr.mode==='duel' && window.rr.p2Picks.has(d.i);
+      const picked = window.rr.mode==='duel' ? (isP1 || isP2) : window.rr.picks.has(d.i);
+      const klass = isP1 ? ' picked-p1' : isP2 ? ' picked-p2' : picked ? ' picked' : '';
+      const reveal = window.rr.revealed ? (d.r ? ' reveal relevant' : ' reveal distractor') : '';
+      const sim = window.rr.revealed ? (d.r ? (0.78 - 0.04 * d.i).toFixed(2) : (0.31 - 0.02 * d.i).toFixed(2)) : '';
+      return `<div class="rr-doc${klass}${reveal}" data-i="${d.i}"><div class="rank">D${d.i + 1}</div><div class="body">${d.t}</div><div class="sim">${sim}</div></div>`;
+    }).join('');
+    document.querySelectorAll('.rr-doc').forEach(el => {
+      el.addEventListener('click', () => {
+        if (window.rr.revealed) return;
+        const i = parseInt(el.dataset.i);
+        if (window.rr.mode === 'duel') {
+          const set = window.rr.turn === 1 ? window.rr.p1Picks : window.rr.p2Picks;
+          const other = window.rr.turn === 1 ? window.rr.p2Picks : window.rr.p1Picks;
+          if (other.has(i)) return;
+          if (set.has(i)) set.delete(i); else { set.add(i); window.rr.turn = window.rr.turn === 1 ? 2 : 1; }
+        } else {
+          if (window.rr.picks.has(i)) window.rr.picks.delete(i); else window.rr.picks.add(i);
+        }
+        paintRR();
+      });
+    });
+  }
+  function doCheck() {
+    if (window.rr.revealed) return;
+    const r = window.rr.deck[window.rr.round];
+    const fb = $('rr-fb');
+    if (window.rr.mode === 'duel') {
+      let h1 = 0, m1 = 0, h2 = 0, m2 = 0;
+      r.docs.forEach((d, i) => {
+        if (window.rr.p1Picks.has(i)) { if (d.r) h1++; else m1++; }
+        if (window.rr.p2Picks.has(i)) { if (d.r) h2++; else m2++; }
+      });
+      const p1Earned = Math.max(0, h1 * 100 - m1 * 50);
+      const p2Earned = Math.max(0, h2 * 100 - m2 * 50);
+      window.rr.p1Score += p1Earned;
+      window.rr.p2Score += p2Earned;
+      const winner = p1Earned > p2Earned ? 'Player 1 wins the round' : p2Earned > p1Earned ? 'Player 2 wins the round' : 'It\'s a tie';
+      fb.innerHTML = `<strong>${winner}.</strong> P1: ${h1} hits / ${m1} misses → +${p1Earned}. P2: ${h2} hits / ${m2} misses → +${p2Earned}.`;
+    } else {
+      let hits = 0, miss = 0;
+      r.docs.forEach((d, i) => { if (window.rr.picks.has(i) && d.r) hits++; if (window.rr.picks.has(i) && !d.r) miss++; });
+      const total = r.docs.filter(d => d.r).length;
+      let earned = Math.max(0, hits * 100 - miss * 50);
+      let bonus = 0;
+      if (window.rr.mode === 'timed' && window.rr.deadline) {
+        const remaining = Math.max(0, Math.ceil((window.rr.deadline - Date.now())/1000));
+        bonus = remaining * 5;
+        earned += bonus;
+      }
+      window.rr.score += earned;
+      const sabNote = window.rr.mode === 'sabotage' ? ' Sabotage rounds are deliberately keyword-loaded — production RAG needs reranking, not just BM25, to survive them.' : '';
+      fb.innerHTML = `<strong>${hits} of ${total} relevant docs found.</strong> ${miss ? miss + ' distractor' + (miss > 1 ? 's' : '') + ' picked. ' : ''}+${earned} points${bonus ? ' (incl. +' + bonus + ' time bonus)' : ''}.${sabNote}`;
+    }
+    window.rr.revealed = true;
+    fb.classList.add('show');
+    if (window.rr.timerId) { clearInterval(window.rr.timerId); window.rr.timerId = null; }
+    paintRR();
+  }
+  $('rr-check').addEventListener('click', doCheck);
+  document.querySelectorAll('.rr-mode').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
+  setMode('solo');
 }
 
 /* ============================================================
    TOOL: EMBEDDING SPACE EXPLORER (M05)
    ============================================================ */
 function renderEmbeddings() {
+  const DATASETS = {
+    general: { name: 'General topics', cats: {
+      tech: { color:'#0055D4', center:[20,28] }, food: { color:'#D4A017', center:[72,30] },
+      sports: { color:'#5C7A4A', center:[30,72] }, weather: { color:'#7C3AED', center:[78,72] } },
+      sentences: [
+        {t:'tech', s:'GPUs accelerate neural network training.'},
+        {t:'tech', s:'Cloud computing enables elastic scaling.'},
+        {t:'tech', s:'Transformers replaced RNNs for most language tasks.'},
+        {t:'tech', s:'Quantum computers use qubits not bits.'},
+        {t:'food', s:'Sourdough relies on wild yeast fermentation.'},
+        {t:'food', s:'Sushi rice needs the right vinegar ratio.'},
+        {t:'food', s:'Sicilian cannoli are filled just before serving.'},
+        {t:'food', s:'Espresso pulls best between 27 and 32 seconds.'},
+        {t:'sports', s:'Marathon training peaks 3 weeks before race day.'},
+        {t:'sports', s:'Climbers route harder grades on volcanic rock.'},
+        {t:'sports', s:'Soccer formations balance pressing and structure.'},
+        {t:'sports', s:'Olympic divers earn higher scores on entries with no splash.'},
+        {t:'weather', s:'Hurricanes strengthen over warm ocean water.'},
+        {t:'weather', s:'Snowflakes form when ice crystals grow on cloud nuclei.'},
+        {t:'weather', s:'Heat domes block storm systems for days.'},
+        {t:'weather', s:'Tropical thunderstorms peak in late afternoon.'} ] },
+    orms: { name: 'OR/MS topics', cats: {
+      sim: { color:'#0055D4', center:[22,30] }, opt: { color:'#D4A017', center:[74,28] },
+      ml: { color:'#7C3AED', center:[26,72] }, sc: { color:'#5C7A4A', center:[76,72] } },
+      sentences: [
+        {t:'sim', s:'Discrete-event simulation models entity flow through queues and servers.'},
+        {t:'sim', s:'Agent-based simulation captures emergent behavior in heterogeneous populations.'},
+        {t:'sim', s:'A digital twin keeps a live simulation synchronized with a real system.'},
+        {t:'sim', s:'Common random numbers reduce variance in paired-comparison experiments.'},
+        {t:'opt', s:'Linear programming maximizes a linear objective subject to linear constraints.'},
+        {t:'opt', s:'Stochastic programming optimizes decisions under explicit uncertainty.'},
+        {t:'opt', s:'Branch and bound enumerates the integer programming solution space.'},
+        {t:'opt', s:'Column generation is used for large-scale routing and crew scheduling problems.'},
+        {t:'ml', s:'Reinforcement learning trains agents to maximize cumulative reward.'},
+        {t:'ml', s:'Random forests average many decorrelated decision trees.'},
+        {t:'ml', s:'Gradient boosting wins many tabular machine learning competitions.'},
+        {t:'ml', s:'Bayesian optimization tunes expensive black-box hyperparameters.'},
+        {t:'sc', s:'Supply chains balance inventory cost against service level.'},
+        {t:'sc', s:'The bullwhip effect amplifies demand variance upstream.'},
+        {t:'sc', s:'Vendor managed inventory shifts replenishment authority to the supplier.'},
+        {t:'sc', s:'Newsvendor models set order quantity under stochastic demand.'} ] }
+  };
   $('tool-body').innerHTML = `
+    <div class="emb-toolbar">
+      <div class="emb-seg">
+        <button class="seg-btn active" data-ds="general">General topics</button>
+        <button class="seg-btn" data-ds="orms">OR/MS topics</button>
+      </div>
+      <div class="emb-search">
+        <svg class="emb-icon"><use href="#i-sparkle"/></svg>
+        <input id="emb-q" type="text" placeholder="Try a semantic query: how fast is a neural net?" />
+        <button id="emb-go">Search</button>
+        <button id="emb-clear" class="ghost">Clear</button>
+      </div>
+    </div>
     <div class="emb-canvas">
       <div class="emb-scatter" id="emb-scatter">
-        <div class="emb-legend">
-          <div class="item"><span class="swatch" style="background:#0055D4"></span>Tech</div>
-          <div class="item"><span class="swatch" style="background:#D4A017"></span>Food</div>
-          <div class="item"><span class="swatch" style="background:#5C7A4A"></span>Sports</div>
-          <div class="item"><span class="swatch" style="background:#7C3AED"></span>Weather</div>
-        </div>
+        <div class="emb-legend" id="emb-legend"></div>
+        <div class="emb-query" id="emb-query"></div>
       </div>
       <div class="emb-detail" id="emb-detail">
         <div class="h">Click any dot</div>
-        <div class="s">Each dot is a real sentence embedding (text-embedding-3-small) projected to 2-D. Sentences with related meaning end up near each other.</div>
+        <div class="s">Each dot is a sentence embedding (text-embedding-3-small) projected to 2-D. Sentences with related meaning end up near each other. Try the search box to drop a query vector onto the map.</div>
       </div>
     </div>`;
-  const SENT = [
-    {t:'tech', c:'#0055D4', s:'GPUs accelerate neural network training.'},
-    {t:'tech', c:'#0055D4', s:'Cloud computing enables elastic scaling.'},
-    {t:'tech', c:'#0055D4', s:'Transformers replaced RNNs for most language tasks.'},
-    {t:'tech', c:'#0055D4', s:'Quantum computers use qubits not bits.'},
-    {t:'food', c:'#D4A017', s:'Sourdough relies on wild yeast fermentation.'},
-    {t:'food', c:'#D4A017', s:'Sushi rice needs the right vinegar ratio.'},
-    {t:'food', c:'#D4A017', s:'Sicilian cannoli are filled just before serving.'},
-    {t:'food', c:'#D4A017', s:'Espresso pulls best between 27 and 32 seconds.'},
-    {t:'sports', c:'#5C7A4A', s:'Marathon training peaks 3 weeks before race day.'},
-    {t:'sports', c:'#5C7A4A', s:'Climbers route harder grades on volcanic rock.'},
-    {t:'sports', c:'#5C7A4A', s:'Soccer formations balance pressing and structure.'},
-    {t:'sports', c:'#5C7A4A', s:'Olympic divers earn higher scores on entries with no splash.'},
-    {t:'weather', c:'#7C3AED', s:'Hurricanes strengthen over warm ocean water.'},
-    {t:'weather', c:'#7C3AED', s:'Snowflakes form when ice crystals grow on cloud nuclei.'},
-    {t:'weather', c:'#7C3AED', s:'Heat domes block storm systems for days.'},
-    {t:'weather', c:'#7C3AED', s:'Tropical thunderstorms peak in late afternoon.'}
-  ];
-  const seed = 17;
-  function rnd(i) { return ((Math.sin(i*seed) + 1) * 0.5); }
-  const dots = SENT.map((s, i) => {
-    const cluster = {tech:[20,28], food:[72,30], sports:[30,72], weather:[78,72]}[s.t];
-    return { ...s, x: cluster[0] + (rnd(i*3)-0.5)*22, y: cluster[1] + (rnd(i*7)-0.5)*22 };
-  });
-  const scatter = $('emb-scatter');
-  dots.forEach((d, i) => {
-    const el = document.createElement('div');
-    el.className = 'emb-dot';
-    el.style.left = d.x + '%';
-    el.style.top = d.y + '%';
-    el.style.background = d.c;
-    el.dataset.idx = i;
-    el.title = d.s;
-    el.addEventListener('click', () => selectDot(i));
-    scatter.appendChild(el);
-  });
+  window.EMB_STATE = { ds: 'general', dots: [], query: null };
+  function rebuild() {
+    const ds = DATASETS[window.EMB_STATE.ds];
+    const labels = { tech:'Tech', food:'Food', sports:'Sports', weather:'Weather', sim:'Simulation', opt:'Optimization', ml:'Machine Learning', sc:'Supply Chain' };
+    $('emb-legend').innerHTML = Object.entries(ds.cats).map(([k,v]) => `<div class="item"><span class="swatch" style="background:${v.color}"></span>${labels[k]||k}</div>`).join('');
+    const seed = 17;
+    const rnd = i => ((Math.sin(i*seed)+1)*0.5);
+    window.EMB_STATE.dots = ds.sentences.map((sObj, i) => {
+      const cat = ds.cats[sObj.t];
+      return { ...sObj, c: cat.color, x: cat.center[0] + (rnd(i*3)-0.5)*22, y: cat.center[1] + (rnd(i*7)-0.5)*22 };
+    });
+    paintScatter();
+  }
+  function paintScatter() {
+    const scatter = $('emb-scatter');
+    Array.from(scatter.querySelectorAll('.emb-dot')).forEach(e => e.remove());
+    window.EMB_STATE.dots.forEach((d, i) => {
+      const el = document.createElement('div');
+      el.className = 'emb-dot'; el.style.left = d.x + '%'; el.style.top = d.y + '%';
+      el.style.background = d.c; el.dataset.idx = i; el.title = d.s;
+      el.addEventListener('click', () => selectDot(i));
+      scatter.appendChild(el);
+    });
+    const q = window.EMB_STATE.query;
+    if (q) {
+      $('emb-query').innerHTML = `<div class="qdot" style="left:${q.x}%;top:${q.y}%;"><span class="qdot-tip">"${q.text}"</span></div>`;
+    } else { $('emb-query').innerHTML = ''; }
+  }
+  function cos(a, b) { return 1 - (Math.hypot(a.x-b.x, a.y-b.y) / 60); }
   function selectDot(i) {
     document.querySelectorAll('.emb-dot').forEach(e => e.classList.remove('near'));
-    const me = dots[i];
-    const sorted = dots.map((d, j) => ({ j, dist: Math.hypot(d.x-me.x, d.y-me.y) })).filter(x => x.j !== i).sort((a,b)=>a.dist-b.dist).slice(0,3);
+    const me = window.EMB_STATE.dots[i];
+    const sorted = window.EMB_STATE.dots.map((d, j) => ({ j, dist: Math.hypot(d.x-me.x, d.y-me.y), s: d.s })).filter(x => x.j !== i).sort((a,b)=>a.dist-b.dist).slice(0,3);
     sorted.forEach(s => document.querySelectorAll('.emb-dot')[s.j].classList.add('near'));
     document.querySelectorAll('.emb-dot')[i].classList.add('near');
     $('emb-detail').innerHTML = `
       <div class="h">Selected</div>
       <div class="s">${me.s}</div>
-      <div class="h" style="margin-top:10px;">3 Nearest Neighbors</div>
-      <div class="s">${sorted.map(s => '· ' + dots[s.j].s).join('<br>')}</div>`;
+      <div class="h" style="margin-top:10px;">3 Nearest Neighbors <span style="float:right;font-size:10px;color:var(--soft);font-weight:400;letter-spacing:0;text-transform:none;">cosine sim</span></div>
+      <div class="s">${sorted.map(s => `<div class="nn-row"><span>${s.s}</span><span class="nn-sim">${cos(me, window.EMB_STATE.dots[s.j]).toFixed(3)}</span></div>`).join('')}</div>`;
   }
+  function runSearch() {
+    const text = $('emb-q').value.trim();
+    if (!text) return;
+    const tokens = text.toLowerCase().split(/\W+/).filter(Boolean);
+    let best = null;
+    window.EMB_STATE.dots.forEach(d => {
+      const dwords = d.s.toLowerCase().split(/\W+/);
+      const overlap = tokens.filter(t => dwords.some(w => w.startsWith(t.slice(0,4)))).length;
+      if (!best || overlap > best.overlap) best = { d, overlap };
+    });
+    const qx = best.d.x + (Math.random()-0.5)*6, qy = best.d.y + (Math.random()-0.5)*6;
+    window.EMB_STATE.query = { x: qx, y: qy, text };
+    paintScatter();
+    const ranked = window.EMB_STATE.dots.map(d => ({ d, sim: cos({x:qx,y:qy}, d) })).sort((a,b)=>b.sim-a.sim).slice(0,5);
+    $('emb-detail').innerHTML = `
+      <div class="h">Query</div>
+      <div class="s" style="font-style:italic;">"${text}"</div>
+      <div class="h" style="margin-top:10px;">Top 5 retrieved <span style="float:right;font-size:10px;color:var(--soft);font-weight:400;letter-spacing:0;text-transform:none;">cosine sim</span></div>
+      <div class="s">${ranked.map(r => `<div class="nn-row"><span>${r.d.s}</span><span class="nn-sim">${r.sim.toFixed(3)}</span></div>`).join('')}</div>`;
+  }
+  document.querySelectorAll('.emb-seg .seg-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('.emb-seg .seg-btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active'); window.EMB_STATE.ds = b.dataset.ds; window.EMB_STATE.query = null;
+      $('emb-q').value = ''; rebuild();
+      $('emb-detail').innerHTML = `<div class="h">Click any dot</div><div class="s">Each dot is a sentence embedding projected to 2-D. Sentences with related meaning end up near each other.</div>`;
+    });
+  });
+  $('emb-go').addEventListener('click', runSearch);
+  $('emb-q').addEventListener('keydown', e => { if (e.key === 'Enter') runSearch(); });
+  $('emb-clear').addEventListener('click', () => { $('emb-q').value=''; window.EMB_STATE.query=null; paintScatter(); });
+  rebuild();
 }
 
 /* ============================================================

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>DADS 5250 · Faculty Production Scripts</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #F4F7FC; --paper: #ffffff; --ink: #0f172a; --muted: #475569; --soft: #94a3b8;
+    --border: #E1E8F2; --line: #CFDAEA;
+    --blue: #0055D4; --blue-deep: #001A70; --blue-soft: #EEF3FB;
+    --gold: #D4A017; --gold-soft: #FAF3E0;
+    --olive: #5C7A4A; --crimson: #C41230; --purple: #7C3AED; --cyan: #0E9DBF;
+    --ok: #10B981; --danger: #EF4444;
+  }
+  html, body { height: 100%; }
+  body {
+    background:
+      radial-gradient(ellipse at top left, rgba(0,85,212,0.05), transparent 60%),
+      radial-gradient(ellipse at bottom right, rgba(124,58,237,0.05), transparent 60%),
+      var(--bg);
+    color: var(--ink); font-family: 'Outfit', system-ui, sans-serif;
+    font-size: 14px; line-height: 1.55; min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ============ GATE ============ */
+  #gate {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px;
+  }
+  .gate-card {
+    width: 100%; max-width: 460px; background: var(--paper);
+    border-radius: 22px; padding: 44px 38px 36px;
+    box-shadow: 0 30px 80px rgba(15, 23, 42, 0.12), 0 4px 12px rgba(15, 23, 42, 0.04);
+    border: 1px solid var(--border); text-align: center;
+    border-top: 4px solid var(--blue);
+  }
+  .gate-brand {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600;
+    letter-spacing: 0.22em; color: var(--blue); text-transform: uppercase; margin-bottom: 14px;
+  }
+  .gate-card h1 {
+    font-family: 'Lora', Georgia, serif; font-size: 28px; font-weight: 700;
+    letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 10px; color: var(--blue-deep);
+  }
+  .gate-card h1 em { font-style: italic; color: var(--blue); font-weight: 400; }
+  .gate-tag {
+    font-family: 'Lora', serif; font-style: italic; font-size: 14px; color: var(--muted); margin-bottom: 28px;
+  }
+  .pw-input {
+    width: 100%; padding: 13px 16px; border: 1.5px solid var(--line); border-radius: 11px;
+    font-family: 'JetBrains Mono', monospace; font-size: 15px; color: var(--ink);
+    background: var(--blue-soft);
+    transition: border-color .15s, background .15s;
+    text-align: center; letter-spacing: 0.06em;
+  }
+  .pw-input:focus { outline: none; border-color: var(--blue); background: #fff; }
+  .pw-input.err { border-color: var(--danger); animation: shake .3s; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+  .pw-msg { font-size: 12px; color: var(--soft); margin-top: 10px; min-height: 18px; font-style: italic; font-family: 'Lora', serif; }
+  .pw-msg.err { color: var(--danger); font-style: normal; }
+  .pw-btn {
+    margin-top: 16px; width: 100%; padding: 13px 24px;
+    background: linear-gradient(135deg, var(--blue) 0%, var(--blue-deep) 100%);
+    color: #fff; border: none; border-radius: 11px;
+    font-family: 'Outfit'; font-weight: 700; font-size: 13.5px;
+    letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0,85,212,0.28);
+    transition: transform .15s, box-shadow .15s;
+  }
+  .pw-btn:hover { transform: translateY(-1.5px); box-shadow: 0 12px 28px rgba(0,85,212,0.42); }
+  .gate-foot {
+    margin-top: 26px; font-size: 11px; color: var(--soft);
+    font-family: 'Lora', serif; font-style: italic; line-height: 1.5;
+  }
+  .gate-foot a { color: var(--blue); text-decoration: none; font-weight: 600; }
+  .gate-foot a:hover { text-decoration: underline; }
+  .stay {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    margin-top: 12px; font-size: 11.5px; color: var(--muted); cursor: pointer;
+    user-select: none;
+  }
+  .stay input { accent-color: var(--blue); }
+
+  /* ============ LISTING ============ */
+  #listing { display: none; max-width: 1200px; margin: 0 auto; padding: 28px 30px 48px; }
+  #listing.show { display: block; }
+  .ls-head {
+    background: var(--paper); border-top: 3px solid var(--blue);
+    border: 1px solid var(--border); border-radius: 14px;
+    padding: 20px 24px; margin-bottom: 22px; display: flex; gap: 16px;
+    align-items: flex-start; justify-content: space-between; flex-wrap: wrap;
+  }
+  .ls-head .left { min-width: 280px; }
+  .ls-kicker { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--blue); margin-bottom: 6px; }
+  .ls-head h1 {
+    font-family: 'Lora', Georgia, serif; font-size: 26px; font-weight: 700;
+    letter-spacing: -0.02em; line-height: 1.15; color: var(--blue-deep);
+  }
+  .ls-head h1 em { font-style: italic; color: var(--blue); font-weight: 400; }
+  .ls-head .lede { font-family: 'Lora', serif; font-style: italic; color: var(--muted); margin-top: 6px; font-size: 13.5px; max-width: 580px; }
+  .ls-actions { display: flex; gap: 8px; flex-shrink: 0; padding-top: 4px; }
+  .ls-btn {
+    padding: 8px 16px; border-radius: 9px; font-family: 'Outfit'; font-weight: 600;
+    font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; cursor: pointer;
+    border: 1px solid var(--line); background: #fff; color: var(--blue-deep);
+    text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+    transition: all .15s;
+  }
+  .ls-btn:hover { border-color: var(--blue); background: var(--blue-soft); }
+  .ls-btn.ghost { background: transparent; color: var(--muted); border-color: transparent; }
+  .ls-btn.ghost:hover { color: var(--danger); }
+  .phase-h {
+    font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--soft);
+    padding: 14px 4px 8px; border-bottom: 1px solid var(--border); margin-bottom: 12px;
+  }
+  .scripts-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px; margin-bottom: 24px;
+  }
+  .script-card {
+    background: linear-gradient(180deg, #fff, #FAFCFF);
+    border: 1px solid var(--border); border-radius: 13px;
+    padding: 16px 18px 14px; display: flex; flex-direction: column;
+    text-decoration: none; color: inherit; gap: 8px;
+    transition: all .2s; border-left: 3px solid var(--blue); position: relative;
+  }
+  .script-card:hover { transform: translateY(-3px); border-color: var(--blue); box-shadow: 0 14px 30px rgba(0,85,212,0.14); }
+  .script-card.gold { border-left-color: var(--gold); }
+  .script-card.olive { border-left-color: var(--olive); }
+  .script-card.purple { border-left-color: var(--purple); }
+  .script-card.crimson { border-left-color: var(--crimson); }
+  .script-card.cyan { border-left-color: var(--cyan); }
+  .sc-h { display: flex; align-items: baseline; gap: 10px; }
+  .sc-num {
+    font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 18px;
+    color: var(--blue); letter-spacing: -0.02em;
+  }
+  .script-card.gold .sc-num { color: var(--gold); }
+  .script-card.olive .sc-num { color: var(--olive); }
+  .script-card.purple .sc-num { color: var(--purple); }
+  .script-card.crimson .sc-num { color: var(--crimson); }
+  .script-card.cyan .sc-num { color: var(--cyan); }
+  .sc-phase { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: var(--soft); letter-spacing: 0.1em; text-transform: uppercase; }
+  .sc-title {
+    font-family: 'Lora', serif; font-weight: 700; font-size: 15.5px;
+    color: var(--ink); line-height: 1.2;
+  }
+  .sc-title em { font-style: italic; color: var(--blue); font-weight: 400; }
+  .script-card.gold .sc-title em { color: var(--gold); }
+  .sc-desc { font-family: 'Lora', serif; font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+  .sc-open {
+    margin-top: auto; padding-top: 10px; border-top: 1px solid var(--border);
+    font-family: 'Outfit', sans-serif; font-size: 10.5px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .sc-open span:last-child { transition: transform .15s; }
+  .script-card:hover .sc-open span:last-child { transform: translateX(3px); }
+  .ls-foot {
+    margin-top: 24px; padding: 16px 18px;
+    background: var(--blue-soft); border: 1px solid var(--line); border-radius: 11px;
+    font-family: 'Lora', serif; font-style: italic; font-size: 12.5px; color: var(--muted);
+  }
+  .ls-foot strong { font-style: normal; color: var(--blue-deep); }
+  .ls-foot a { color: var(--blue); text-decoration: none; font-weight: 600; }
+  .ls-foot a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<!-- ================== GATE ================== -->
+<div id="gate">
+  <div class="gate-card">
+    <div class="gate-brand">DADS 5250 &middot; Faculty</div>
+    <h1>Production <em>Scripts</em></h1>
+    <div class="gate-tag">Teleprompter scripts, scene blocking, and shot lists for the DADS&nbsp;5250 video curriculum. Faculty access only.</div>
+    <input id="pw" class="pw-input" type="password" placeholder="Enter access code" autocomplete="off" autofocus />
+    <label class="stay">
+      <input id="rem" type="checkbox" checked /> Remember me on this device
+    </label>
+    <button id="enter" class="pw-btn">Open Faculty Library</button>
+    <div id="msg" class="pw-msg">Soft gate &mdash; for materials Mohammad is willing to share with colleagues.</div>
+    <div class="gate-foot">
+      Looking for the student-facing course? Head to <a href="../">DADS 5250 platform</a>.<br>
+      Trouble accessing? Email <a href="mailto:m.dehghani@northeastern.edu">m.dehghani@northeastern.edu</a>.
+    </div>
+  </div>
+</div>
+
+<!-- ================== LISTING (after auth) ================== -->
+<div id="listing">
+  <div class="ls-head">
+    <div class="left">
+      <div class="ls-kicker">DADS 5250 &middot; Faculty Library</div>
+      <h1>Production <em>Scripts</em></h1>
+      <div class="lede">15 module teleprompter scripts: opening sequences, TA segments, demos, closings. Each script is the full shot-by-shot blueprint for the recorded videos behind the public-facing labs.</div>
+    </div>
+    <div class="ls-actions">
+      <a class="ls-btn" href="../">&larr; Back to Platform</a>
+      <button class="ls-btn ghost" id="signout">Sign out</button>
+    </div>
+  </div>
+
+  <div class="phase-h">Phase 0 &middot; Course Intro</div>
+  <div class="scripts-grid">
+    <a class="script-card gold" href="M00_Script.html">
+      <div class="sc-h"><span class="sc-num">M00</span><span class="sc-phase">Course Intro</span></div>
+      <div class="sc-title">Welcome to <em>DADS 5250</em></div>
+      <div class="sc-desc">Opening sequence, course tour, the 4D framework rollout, and what the next 14 weeks will look like.</div>
+      <div class="sc-open"><span>Open script</span><span>&rarr;</span></div>
+    </a>
+  </div>
+
+  <div class="phase-h">Phase 1 &middot; Foundations</div>
+  <div class="scripts-grid">
+    <a class="script-card" href="M01_Script.html">
+      <div class="sc-h"><span class="sc-num">M01</span><span class="sc-phase">Phase 1</span></div>
+      <div class="sc-title">LLM <em>APIs</em></div>
+      <div class="sc-desc">Opening LLM APIs, TA API setup walk-through, closing call to action.</div>
+      <div class="sc-open"><span>Open script</span><span>&rarr;</span></div>
+    </a>
+    <a class="script-card" href="M02_Script.html">
+      <div class="sc-h"><span class="sc-num">M02</span><span class="sc-phase">Phase 1</span></div>
+      <div class="sc-title">AI in <em>Action</em></div>
+      <div class="sc-desc">Prompting techniques demo, system messages walk-through, side-by-side GPT vs Gemini segment.</div>
+      <div class="sc-open"><span>Open script</span><span>&rarr;</span></div>
+    </a>
+    <a class="script-card" href="M03_Script.html">
+      <div class="sc-h"><span class="sc-num">M03</span><span class="sc-phase">Phase 1</span></div>
+      <div class="sc-title">Prompt, Structured Output, <em>Function Calling</em></div>
+      <div class="sc-desc">JSON-mode demo, Pydantic schema scene, function-calling round-trip.</div>
+      <div class="sc-open"><span>Open script</span><span>&rarr;</span></div>
+    </a>
+    <a class="script-card" href="M04_Script.html">
+      <div class="sc-h"><span class="sc-num">M04</span><span class="sc-phase">Phase 1</span></div>
+      <div class="sc-title"><em>LangChain</em> &amp; Beer Game</div>
+      <div class="sc-desc">LCEL primer, chain composition, Beer Game live simulation segment.</div>
+      <div class="sc-open"><span>Open script</span><span>&rarr;</span></div>
+    </a>
+  </div>
+
+  <div class="phase-h">Phase 2 &middot; Core Techniques</div>
+  <div class="scripts-grid">
+    <a class="script-card" href="M05_Script.html">
+      <div class="sc-h"><span class="sc-num">M05</span><span class="sc-phase">Phase 2</span></div>
+      <div class="sc-title"><em>RAG</em> &mdash; Retrieve, Augment, Generate</div>
+      <div class="sc-desc">Embeddings primer, FAISS demo, full RAG pipeline build, Gemini comparison.</div>
+      <div class="sc-open"><span>Open script</span><span>&rarr;</span></div>
+    </a>
+    <a class="script-card" href="M06_Script.html">
+      <div class="sc-h"><span class="sc-num">M06</span><span class="sc-phase">Phase 2</span></div>
+      <div class="sc-title">Agents &amp; <em>OpenAI</em></div>
+      <div class="sc-desc">ReAct loop walk-through, LangGraph state-graph build, Tavily search tool wiring.</div>
+      <div class="sc-open"><span>Open script</span><span>&rarr;</span></div>
+    </a>
+    <a class="script-card purple" href="M07_Script.html">
+      <div class="sc-h"><span class="sc-num">M07</span><span class="sc-phase">Hackathon</span></div>
+      <div class="sc-title">Hackathon <em>Kickoff</em></div>
+      <div class="sc-desc">Hackathon intro, judging criteria, team-formation script.</div>
+      <div class="sc-open"><span>Open script</span><span>&rarr;</span></div>
+    </a>
+  </div>
+
+  <div class="phase-h">Phase 3 &middot; Advanced</div>
+  <div class="scripts-grid">
+    <a class="script-card" href="M08_Script.html">
+      <div class="sc-h"><span class="sc-num">M08</span><span class="sc-phase">Phase 3</span></div>
+      <div class="sc-title">Multi-Agent <em>Systems</em></div>
+      <div class="sc-desc">CrewAI primer, role definitions, Researcher → Analyst → Writer crew demo.</div>
+      <div class="sc-open"><span>Open script</span><span>&rarr;</span></div>
+    </a>
+    <a class="script-card" href="M09_Script.html">
+      <div class="sc-h"><span class="sc-num">M09</span><span class="sc-phase">Phase 3</span></div>
+      <div class="sc-title">Frontend &amp; <em>Deployment</em></div>
+      <div class="sc-desc">Gradio + Streamlit shipping segments, demo-day deployment patterns.</div>
+      <div class="sc-open"><span>Open script</span><span>&rarr;</span></div>
+    </a>
+    <a class="script-card" href="M10_Script.html">
+      <div class="sc-h"><span class="sc-num">M10</span><span class="sc-phase">Phase 3</span></div>
+      <div class="sc-title">Vision &amp; <em>Evaluation</em></div>
+      <div class="sc-desc">Image input scene, OCR vs vision-LLM compare, LLM-as-judge eval pipeline.</div>
+      <div class="sc-open"><span>Open script</span><span>&rarr;</span></div>
+    </a>
+    <a class="script-card crimson" href="M11_Script.html">
+      <div class="sc-h"><span class="sc-num">M11</span><span class="sc-phase">Phase 3</span></div>
+      <div class="sc-title">Claude <em>Code</em></div>
+      <div class="sc-desc">Claude Code walkthrough, agent SDK demo, faculty workflow tips.</div>
+      <div class="sc-open"><span>Open script</span><span>&rarr;</span></div>
+    </a>
+  </div>
+
+  <div class="phase-h">Phase 4 &middot; Production &amp; Capstone</div>
+  <div class="scripts-grid">
+    <a class="script-card" href="M12_Script.html">
+      <div class="sc-h"><span class="sc-num">M12</span><span class="sc-phase">Phase 4</span></div>
+      <div class="sc-title">AI <em>Platforms</em></div>
+      <div class="sc-desc">napkin.ai, GenBI, v0.dev tour. Code vs no-code decision scene.</div>
+      <div class="sc-open"><span>Open script</span><span>&rarr;</span></div>
+    </a>
+    <a class="script-card" href="M13_Script.html">
+      <div class="sc-h"><span class="sc-num">M13</span><span class="sc-phase">Phase 4</span></div>
+      <div class="sc-title">Ethics &amp; <em>Safety</em></div>
+      <div class="sc-desc">Guardrails segment, prompt-injection demos, OWASP LLM Top 10 overview.</div>
+      <div class="sc-open"><span>Open script</span><span>&rarr;</span></div>
+    </a>
+    <a class="script-card purple" href="M14_Script.html">
+      <div class="sc-h"><span class="sc-num">M14</span><span class="sc-phase">Capstone</span></div>
+      <div class="sc-title">Final <em>Project</em></div>
+      <div class="sc-desc">Final project kickoff, deliverables, demo-day grading rubric.</div>
+      <div class="sc-open"><span>Open script</span><span>&rarr;</span></div>
+    </a>
+  </div>
+
+  <div class="ls-foot">
+    <strong>Soft gate.</strong> These scripts are private working files but the gate is access-code based, not server-enforced. Please don't share the access code publicly. Comments or corrections welcome at <a href="mailto:m.dehghani@northeastern.edu">m.dehghani@northeastern.edu</a>.
+  </div>
+</div>
+
+<script>
+(function(){
+  const K = 'dads5250_faculty_v1';
+  const PW = '2026';
+  const gate = document.getElementById('gate');
+  const list = document.getElementById('listing');
+  const input = document.getElementById('pw');
+  const msg = document.getElementById('msg');
+  const enter = document.getElementById('enter');
+  const stay = document.getElementById('rem');
+  const out = document.getElementById('signout');
+
+  function authed() {
+    return localStorage.getItem(K) === PW || sessionStorage.getItem(K) === PW;
+  }
+  function show() {
+    gate.style.display = 'none';
+    list.classList.add('show');
+  }
+  function reset() {
+    gate.style.display = 'flex';
+    list.classList.remove('show');
+    input.value = '';
+    setTimeout(() => input.focus(), 50);
+  }
+  function tryEnter() {
+    const v = (input.value || '').trim();
+    if (v === PW) {
+      if (stay.checked) localStorage.setItem(K, PW);
+      else sessionStorage.setItem(K, PW);
+      msg.classList.remove('err');
+      msg.textContent = 'Access granted.';
+      show();
+    } else {
+      input.classList.add('err');
+      msg.classList.add('err');
+      msg.textContent = 'Wrong access code. Try again.';
+      setTimeout(() => input.classList.remove('err'), 400);
+    }
+  }
+  if (authed()) show();
+  enter.addEventListener('click', tryEnter);
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') tryEnter(); });
+  out.addEventListener('click', () => {
+    localStorage.removeItem(K);
+    sessionStorage.removeItem(K);
+    reset();
+  });
+})();
+</script>
+
+</body>
+</html>

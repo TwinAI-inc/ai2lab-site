@@ -1,0 +1,1860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>/* dads5250-faculty-gate */
+(function(){try{var k="dads5250_faculty_v1";var v=localStorage.getItem(k)||sessionStorage.getItem(k);if(v==="2026")return;location.replace("./");}catch(e){location.replace("./");}})();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M06 Production Script -- DADS 5250</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #F0F4FA;
+  --accent: #2563EB;
+  --accent-light: #dbeafe;
+  --accent-dark: #1d4ed8;
+  --text: #1e293b;
+  --text-muted: #64748b;
+  --card-bg: rgba(255,255,255,0.72);
+  --card-border: rgba(255,255,255,0.5);
+  --card-shadow: 0 4px 24px rgba(37,99,235,0.08);
+  --radius: 14px;
+  --green: #10b981;
+  --amber: #f59e0b;
+  --muted: #94a3b8;
+  --col-left: 60%;
+  --col-right: 40%;
+}
+
+body { font-family: 'Outfit', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; min-height: 100vh; position: relative; overflow-x: hidden; }
+body::before { content: ''; position: fixed; top: -120px; right: -120px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(37,99,235,0.09) 0%, transparent 70%); border-radius: 50%; pointer-events: none; z-index: 0; }
+
+.topbar { position: sticky; top: 0; z-index: 100; background: rgba(240,244,250,0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgba(37,99,235,0.08); padding: 8px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.topbar-left { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.topbar-title { font-size: 0.92rem; font-weight: 600; color: var(--text); white-space: nowrap; }
+.topbar-subtitle { font-size: 0.8rem; color: var(--text-muted); font-weight: 400; }
+.video-tabs {
+  display: flex;
+  gap: 4px;
+  flex-basis: 100%;
+  width: 100%;
+  order: 10;
+  flex-wrap: wrap;
+  margin-top: 6px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(37,99,235,0.08);
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(37,99,235,0.3) transparent;
+  padding-bottom: 2px;
+}
+.video-tabs::-webkit-scrollbar { height: 4px; }
+.video-tabs::-webkit-scrollbar-thumb { background: rgba(37,99,235,0.25); border-radius: 2px; }
+.video-tabs::-webkit-scrollbar-track { background: transparent; }
+.video-tab { padding: 5px 14px; border-radius: 999px; border: 1px solid rgba(37,99,235,0.15); background: transparent; color: var(--text-muted); font-family: 'Outfit', sans-serif; font-size: 0.82rem; font-weight: 500; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+.video-tab:hover { background: var(--accent-light); color: var(--accent); }
+.video-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* Video type distinction: scripted (professor, narrated) vs TA walkthrough (recorded later) */
+.video-tab.scripted { border-color: rgba(37,99,235,0.25); }
+.video-tab.scripted::before,
+.video-tab.ta-recorded::before,
+.video-tab.voiceover-only::before {
+  content: ""; display: inline-block; width: 14px; height: 14px; margin-right: 7px; vertical-align: -2px;
+  background-repeat: no-repeat; background-position: center; background-size: contain;
+}
+.video-tab.scripted::before { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'/><polyline points='14 2 14 8 20 8'/><line x1='8' y1='13' x2='16' y2='13'/><line x1='8' y1='17' x2='16' y2='17'/><line x1='8' y1='9' x2='10' y2='9'/></svg>"); }
+.video-tab.scripted.active::before { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'/><polyline points='14 2 14 8 20 8'/><line x1='8' y1='13' x2='16' y2='13'/><line x1='8' y1='17' x2='16' y2='17'/><line x1='8' y1='9' x2='10' y2='9'/></svg>"); }
+.video-tab.ta-recorded { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.45); color: #92400e; }
+.video-tab.ta-recorded:hover { background: rgba(245,158,11,0.18); color: #78350f; }
+.video-tab.ta-recorded::before { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b45309' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='2' y='3' width='20' height='14' rx='2' ry='2'/><line x1='8' y1='21' x2='16' y2='21'/><line x1='12' y1='17' x2='12' y2='21'/><polygon points='10 8 15 10 10 12 10 8' fill='%23b45309'/></svg>"); }
+.video-tab.ta-recorded.active { background: #f59e0b; color: #fff; border-color: #f59e0b; }
+.video-tab.ta-recorded.active::before { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='2' y='3' width='20' height='14' rx='2' ry='2'/><line x1='8' y1='21' x2='16' y2='21'/><line x1='12' y1='17' x2='12' y2='21'/><polygon points='10 8 15 10 10 12 10 8' fill='white'/></svg>"); }
+
+
+/* Voiceover-only tab chip (teal mic icon) — matches M03 V2 */
+.video-tab.voiceover-only { background: rgba(20,184,166,0.08); border-color: rgba(20,184,166,0.45); color: #0f766e; }
+.video-tab.voiceover-only:hover { background: rgba(20,184,166,0.18); color: #134e4a; }
+.video-tab.voiceover-only::before { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230f766e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z'/><path d='M19 10v2a7 7 0 0 1-14 0v-2'/><line x1='12' y1='19' x2='12' y2='23'/><line x1='8' y1='23' x2='16' y2='23'/></svg>"); }
+.video-tab.voiceover-only.active { background: #14b8a6; color: #fff; border-color: #14b8a6; }
+.video-tab.voiceover-only.active::before { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z'/><path d='M19 10v2a7 7 0 0 1-14 0v-2'/><line x1='12' y1='19' x2='12' y2='23'/><line x1='8' y1='23' x2='16' y2='23'/></svg>"); }
+
+/* ── Audio Player v4 · All parts on one page · Liquid Glass ── */
+
+/* Step nav — scroll-to index, not hide/show */
+.audio-nav {
+  display: flex; justify-content: center; gap: 8px;
+  padding: 12px 0 20px; flex-wrap: wrap;
+}
+.audio-nav-step {
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  cursor: pointer; padding: 8px 12px; border-radius: 14px;
+  background: rgba(255,255,255,0.4);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.5);
+  transition: all 0.25s; min-width: 72px;
+  text-decoration: none;
+}
+.audio-nav-step:hover {
+  background: rgba(37,99,235,0.06);
+  border-color: rgba(37,99,235,0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(37,99,235,0.08);
+}
+.audio-nav-num {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #fff; font-family: 'Outfit', sans-serif; font-size: 0.78rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 6px rgba(37,99,235,0.25);
+}
+.audio-nav-label {
+  font-family: 'Outfit', sans-serif; font-size: 0.64rem; font-weight: 500;
+  color: var(--text-muted); text-align: center; line-height: 1.2;
+  max-width: 80px;
+}
+
+/* All segments always visible */
+.audio-segment {
+  display: flex; flex-direction: column;
+  max-width: 720px; margin: 0 auto 24px;
+  scroll-margin-top: 80px;
+}
+
+/* Glass card */
+.audio-card {
+  background: rgba(255,255,255,0.5);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: 18px;
+  box-shadow: 0 4px 20px rgba(37,99,235,0.05), 0 1px 4px rgba(0,0,0,0.03),
+              inset 0 1px 0 rgba(255,255,255,0.6);
+  overflow: hidden;
+  transition: box-shadow 0.3s;
+}
+.audio-card:hover {
+  box-shadow: 0 6px 28px rgba(37,99,235,0.08), 0 2px 6px rgba(0,0,0,0.04),
+              inset 0 1px 0 rgba(255,255,255,0.7);
+}
+
+/* Header row: number + play + title */
+.audio-segment .audio-header {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 22px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.2) 100%);
+  border-bottom: 1px solid rgba(255,255,255,0.35);
+}
+
+/* Number badge */
+.audio-segment .audio-part-label {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #fff; font-family: 'Outfit', sans-serif; font-size: 0.85rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(37,99,235,0.25);
+}
+
+.audio-segment .audio-part-title {
+  font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 600;
+  color: #1e293b; flex: 1;
+}
+
+/* Play button */
+.audio-play-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 3px 10px rgba(37,99,235,0.3);
+  transition: all 0.2s;
+}
+.audio-play-btn::after {
+  content: ""; display: block;
+  width: 0; height: 0;
+  border-style: solid;
+  border-width: 8px 0 8px 13px;
+  border-color: transparent transparent transparent #fff;
+  margin-left: 2px;
+}
+.audio-play-btn svg { display: none; }
+.audio-play-btn:hover { transform: scale(1.08); box-shadow: 0 5px 16px rgba(37,99,235,0.4); }
+.audio-play-btn.playing {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  box-shadow: 0 3px 10px rgba(239,68,68,0.3);
+}
+.audio-play-btn.playing::after {
+  border-width: 0; width: 12px; height: 12px; margin-left: 0;
+  border-radius: 2px; background: #fff;
+}
+
+/* Progress bar */
+.audio-progress { height: 3px; background: rgba(37,99,235,0.06); }
+.audio-progress-bar {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  border-radius: 3px; transition: width 0.3s linear;
+}
+
+/* Script text */
+.audio-segment .audio-script {
+  padding: 18px 24px;
+  background: rgba(255,255,255,0.3);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+}
+.audio-segment .audio-script p {
+  font-size: 0.94rem; line-height: 1.8; color: #334155; margin-bottom: 11px;
+}
+.audio-segment .audio-script p:last-child { margin-bottom: 0; }
+.audio-segment .audio-script .code-block { margin: 12px 0; }
+.audio-segment .audio-script strong { color: #1e293b; }
+.audio-segment .audio-script em { color: #2563eb; }
+.audio-segment .audio-script code {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.85em;
+  background: rgba(37,99,235,0.06); color: #2563eb;
+  padding: 2px 6px; border-radius: 4px;
+}
+
+/* Visual / SVG — light mode override for dark SVGs */
+.audio-segment .audio-visual {
+  padding: 16px; display: flex; justify-content: center;
+  background: rgba(248,250,252,0.5);
+  border-top: 1px solid rgba(255,255,255,0.3);
+}
+.audio-segment .audio-visual svg {
+  max-width: 520px; width: 100%; height: auto;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+/* SVGs keep their original theme — no forced override */
+
+.audio-not-recorded {
+  font-size: 0.8rem; color: #94a3b8; font-style: italic;
+  text-align: center; padding: 8px 0;
+}
+
+/* Hide nav arrows from v3 */
+.audio-nav-arrows { display: none !important; }
+
+@keyframes pulse-mic { 0%,100% { box-shadow: 0 0 0 0 rgba(37,99,235,0.3); } 50% { box-shadow: 0 0 0 8px rgba(37,99,235,0); } } } } }
+
+.audio-progress { height: 3px; background: rgba(37,99,235,0.06); overflow: hidden; }
+.audio-progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #14b8a6, #2563EB); border-radius: 3px; transition: width 0.3s linear; }
+
+.audio-segment .audio-script {
+  padding: 16px 22px;
+  background: rgba(255,255,255,0.4); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+}
+.audio-segment .audio-script p { font-size: 0.93rem; line-height: 1.78; color: var(--text); margin-bottom: 10px; }
+.audio-segment .audio-script p:last-child { margin-bottom: 0; }
+.audio-segment .audio-script .code-block { margin: 10px 0; }
+
+.audio-segment .audio-visual {
+  padding: 16px; display: flex; justify-content: center;
+  background: rgba(248,250,252,0.5);
+  border-top: 1px solid rgba(37,99,235,0.04);
+}
+.audio-segment .audio-visual svg { max-width: 500px; width: 100%; height: auto; border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+
+.audio-not-recorded {
+  font-size: 0.78rem; color: #94a3b8; font-style: italic; text-align: center; padding: 8px 0;
+  background: rgba(255,255,255,0.3);
+}
+
+.topbar-actions { display: flex; gap: 8px; }
+.btn-action { padding: 6px 16px; border-radius: 999px; border: 1px solid rgba(37,99,235,0.18); background: var(--card-bg); color: var(--text); font-family: 'Outfit', sans-serif; font-size: 0.8rem; font-weight: 500; cursor: pointer; transition: all 0.2s; backdrop-filter: blur(8px); }
+.btn-action:hover { background: var(--accent-light); color: var(--accent); }
+.btn-action.teleprompter-active { background: #0f172a; color: #fff; border-color: #0f172a; }
+
+.container { max-width: 1440px; margin: 0 auto; padding: 28px 32px 80px; position: relative; z-index: 1; }
+.video-section { display: none; }
+.video-section.active { display: block; }
+.video-header { margin-bottom: 28px; }
+.video-header h2 { font-size: 1.5rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.video-header .video-meta { font-size: 0.88rem; color: var(--text-muted); font-weight: 400; }
+
+.segment { display: grid; grid-template-columns: var(--col-left) var(--col-right); gap: 24px; margin-bottom: 28px; min-height: 120px; }
+.segment-header { grid-column: 1 / -1; display: flex; align-items: center; gap: 12px; padding-bottom: 8px; border-bottom: 1px solid rgba(37,99,235,0.08); margin-bottom: 4px; }
+/* ── Inline Edit ── */
+.edit-btn {
+  margin-left: 8px;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 4px 7px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  transition: all 0.2s;
+  opacity: 0;
+}
+.segment:hover .edit-btn,
+.segment.editing .edit-btn { opacity: 1; }
+.edit-btn:hover { color: var(--accent); background: var(--accent-light); border-color: rgba(37,99,235,0.15); }
+
+.segment.editing .script-col,
+.segment.editing .media-col {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  border-radius: var(--radius);
+}
+.segment.editing .script-col [contenteditable],
+.segment.editing .media-col [contenteditable] {
+  min-height: 40px;
+}
+
+.edit-actions {
+  display: none;
+  gap: 6px;
+  margin-left: auto;
+}
+.segment.editing .edit-actions { display: flex; }
+.segment.editing .segment-badges { display: none; }
+
+.edit-actions button {
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 1px solid;
+}
+.btn-save {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.btn-save:hover { background: var(--accent-dark); }
+.btn-cancel {
+  background: transparent;
+  color: var(--text-muted);
+  border-color: rgba(37,99,235,0.15);
+}
+.btn-cancel:hover { background: #f1f5f9; color: var(--text); }
+
+.segment-edited-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  display: none;
+  flex-shrink: 0;
+}
+.segment.was-edited .segment-edited-dot { display: block; }
+/* ── Review Status ── */
+.review-toggle {
+  display: inline-flex;
+  gap: 2px;
+  margin-left: 4px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.segment:hover .review-toggle,
+.segment[data-review] .review-toggle { opacity: 1; }
+
+.review-toggle button {
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 2px 5px;
+  font-size: 0.7rem;
+  line-height: 1;
+  transition: all 0.15s;
+  color: var(--text-muted);
+}
+.review-toggle button:hover { background: #f1f5f9; }
+.review-toggle button.active { border-color: currentColor; }
+
+.review-toggle .rv-approve { color: #10b981; }
+.review-toggle .rv-approve.active { background: #ecfdf5; }
+.review-toggle .rv-maybe  { color: #f59e0b; }
+.review-toggle .rv-maybe.active  { background: #fffbeb; }
+.review-toggle .rv-reject { color: #ef4444; }
+.review-toggle .rv-reject.active { background: #fef2f2; }
+
+/* Subtle left-border tint on reviewed segments */
+.segment[data-review="approved"] { border-left: 3px solid #10b981; padding-left: 12px; }
+.segment[data-review="maybe"]    { border-left: 3px solid #f59e0b; padding-left: 12px; }
+.segment[data-review="rejected"] { border-left: 3px solid #ef4444; padding-left: 12px; }
+
+
+.segment-number { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 500; color: var(--accent); background: var(--accent-light); padding: 3px 10px; border-radius: 999px; }
+.segment-title { font-size: 1.05rem; font-weight: 600; color: var(--text); }
+.segment-badges { display: flex; gap: 6px; margin-left: auto; }
+.badge { font-size: 0.7rem; font-weight: 500; padding: 2px 10px; border-radius: 999px; white-space: nowrap; }
+.badge-type { background: rgba(37,99,235,0.1); color: var(--accent); }
+.badge-duration { background: rgba(16,185,129,0.1); color: var(--green); }
+.badge-shot { background: rgba(245,158,11,0.1); color: #b45309; }
+.badge-ta { background: rgba(245,158,11,0.12); color: #b45309; font-weight: 600; letter-spacing: 0.04em; }
+.badge-expert { background: rgba(120,113,108,0.1); color: #78716c; font-weight: 600; letter-spacing: 0.04em; }
+
+.script-col { background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--card-border); border-radius: var(--radius); box-shadow: var(--card-shadow); padding: 28px 32px; }
+.script-col p { font-size: 1.05rem; line-height: 1.85; color: var(--text); margin-bottom: 16px; }
+.script-col p:last-child { margin-bottom: 0; }
+
+.media-col { background: rgba(255,255,255,0.55); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(37,99,235,0.06); border-radius: var(--radius); padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+.media-col .media-label { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); margin-bottom: 4px; }
+.media-col .media-note { font-size: 0.82rem; color: var(--text-muted); line-height: 1.55; background: rgba(37,99,235,0.04); border-left: 2px solid var(--accent); padding: 10px 14px; border-radius: 0 8px 8px 0; }
+.media-col .shot-note { font-size: 0.85rem; color: var(--text-muted); line-height: 1.55; font-style: italic; }
+
+.media-placeholder { background: #f8fafc; border: 1px dashed rgba(37,99,235,0.2); border-radius: 10px; padding: 20px; text-align: center; min-height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+.media-placeholder .placeholder-type { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; font-weight: 500; color: var(--accent); background: var(--accent-light); padding: 2px 10px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.04em; }
+.media-placeholder .placeholder-desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; max-width: 280px; }
+.media-placeholder .placeholder-duration { font-size: 0.72rem; color: var(--muted); }
+
+.code-block { background: #1e293b; border-radius: 10px; padding: 20px 24px; overflow-x: auto; margin: 12px 0; }
+.code-block pre { font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; line-height: 1.7; color: #e2e8f0; margin: 0; white-space: pre; }
+.code-block .kw { color: #93c5fd; } .code-block .str { color: #86efac; } .code-block .fn { color: #fde68a; } .code-block .cm { color: #64748b; }
+
+.key-message-bar { background: rgba(37,99,235,0.06); border: 1px solid rgba(37,99,235,0.15); border-radius: 10px; padding: 14px 24px; margin-bottom: 28px; display: flex; align-items: center; gap: 12px; }
+.key-message-bar .km-label { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; font-weight: 600; color: var(--accent); background: var(--accent-light); padding: 2px 10px; border-radius: 999px; white-space: nowrap; letter-spacing: 0.04em; }
+.key-message-bar .km-text { font-size: 0.95rem; font-weight: 500; color: var(--text); line-height: 1.5; }
+
+/* Expert conversation card */
+.expert-guidelines { background: rgba(120,113,108,0.03); border: 1px solid rgba(120,113,108,0.2); border-radius: 10px; padding: 24px; }
+.expert-guidelines h4 { font-size: 0.82rem; font-weight: 700; color: #78716c; letter-spacing: 0.06em; margin-bottom: 12px; }
+.expert-guidelines .expert-intro { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px; font-style: italic; }
+.expert-guidelines .expert-section { margin-bottom: 14px; }
+.expert-guidelines .expert-section h5 { font-size: 0.85rem; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+.expert-guidelines .expert-section ol { padding-left: 18px; }
+.expert-guidelines .expert-section li { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 4px; }
+
+.references-section { margin-top: 32px; padding-top: 20px; border-top: 1px solid rgba(37,99,235,0.06); max-width: 600px; margin-left: auto; margin-right: auto; }
+.references-section h3 { font-size: 0.68rem; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+.ref-table { width: 100%; border-collapse: collapse; font-size: 0.62rem; }
+.ref-table th { text-align: left; font-weight: 600; color: var(--text-muted); padding: 3px 6px; border-bottom: 1px solid rgba(37,99,235,0.08); font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.ref-table td { padding: 3px 6px; border-bottom: 1px solid rgba(37,99,235,0.03); color: var(--text-muted); vertical-align: top; line-height: 1.4; }
+.ref-table a { color: var(--accent); text-decoration: none; font-size: 0.62rem; }
+.ref-table a:hover { text-decoration: underline; }
+
+/* Teleprompter mode */
+body.teleprompter { background: #0a0a0a; }
+body.teleprompter::before { display: none; }
+body.teleprompter .topbar { background: rgba(10,10,10,0.92); border-bottom-color: rgba(255,255,255,0.06); }
+body.teleprompter .topbar-title, body.teleprompter .topbar-subtitle { color: rgba(255,255,255,0.5); }
+body.teleprompter .video-tab { color: rgba(255,255,255,0.4); border-color: rgba(255,255,255,0.1); }
+body.teleprompter .video-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+body.teleprompter .btn-action { color: rgba(255,255,255,0.5); border-color: rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); }
+body.teleprompter .video-header h2 { color: rgba(255,255,255,0.3); }
+body.teleprompter .video-header .video-meta { color: rgba(255,255,255,0.15); }
+body.teleprompter .media-col { display: none; }
+body.teleprompter .key-message-bar { background: rgba(37,99,235,0.08); border-color: rgba(37,99,235,0.2); max-width: 800px; margin-left: auto; margin-right: auto; }
+body.teleprompter .key-message-bar .km-text { color: rgba(255,255,255,0.85); }
+body.teleprompter .segment { grid-template-columns: 1fr; max-width: 800px; margin-left: auto; margin-right: auto; }
+body.teleprompter .segment-header { border-bottom-color: rgba(255,255,255,0.06); }
+body.teleprompter .segment-number { background: rgba(37,99,235,0.15); color: var(--accent); }
+body.teleprompter .segment-title { color: rgba(255,255,255,0.4); }
+body.teleprompter .badge { opacity: 0.5; }
+body.teleprompter .script-col { background: transparent; border: none; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; padding: 20px 0; }
+body.teleprompter .script-col p { font-size: 1.55rem; line-height: 2; color: rgba(255,255,255,0.92); font-weight: 400; }
+body.teleprompter .references-section { display: none; }
+
+.scroll-controls { display: none; position: fixed; bottom: 24px; right: 24px; z-index: 200; background: rgba(30,30,30,0.9); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 10px 16px; gap: 10px; align-items: center; }
+body.teleprompter .scroll-controls { display: flex; }
+.scroll-controls label { font-size: 0.78rem; color: rgba(255,255,255,0.5); font-weight: 500; }
+.scroll-controls input[type="range"] { width: 100px; accent-color: var(--accent); }
+.scroll-controls button { padding: 4px 14px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.15); background: transparent; color: rgba(255,255,255,0.7); font-family: 'Outfit', sans-serif; font-size: 0.78rem; cursor: pointer; transition: all 0.2s; }
+.scroll-controls button:hover { background: rgba(255,255,255,0.1); }
+.scroll-controls button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+@media print { .topbar, .scroll-controls { display: none !important; } body { background: #fff; } body::before { display: none; } .container { max-width: 100%; padding: 16px; } .video-section { display: block !important; page-break-before: always; } .video-section:first-of-type { page-break-before: avoid; } .segment { page-break-inside: avoid; } .script-col { background: #fff; box-shadow: none; border: 1px solid #e2e8f0; } .media-col { background: #f8fafc; border: 1px solid #e2e8f0; } }
+@media (max-width: 900px) { .segment { grid-template-columns: 1fr; } .topbar { flex-direction: column; align-items: flex-start; gap: 8px; } .video-tabs { flex-wrap: wrap; } }
+</style>
+</head>
+<body>
+<a href="../../planning/course-outline.html" style="position:fixed;top:8px;left:8px;z-index:900;font-size:0.7rem;font-weight:600;color:#2563EB;text-decoration:none;background:rgba(255,255,255,0.9);backdrop-filter:blur(8px);padding:4px 10px;border-radius:6px;border:1px solid rgba(37,99,235,0.15);">&#8592; Course Outline</a>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <span class="topbar-title">M06 Production Script</span>
+    <span class="topbar-subtitle">DADS 5250 -- Generative AI in Practice</span>
+  </div>
+  <div class="video-tabs">
+    <button class="video-tab active scripted" onclick="switchVideo(1)">V1: The Spark</button>
+    <!-- HIDDEN (non-studio): <button class="video-tab scripted" onclick="switchVideo(2)">V2: What Is an Agent</button> -->
+    <!-- HIDDEN (non-studio): <button class="video-tab voiceover-only" onclick="switchVideo(3)" title="Interactive audio — click mic to listen">V3: Tools</button> -->
+    <button class="video-tab scripted" onclick="switchVideo(4)">V4: LangGraph</button>
+    <!-- HIDDEN (non-studio): <button class="video-tab ta-recorded" onclick="switchVideo(5)" title="TA lab walkthrough -- no script">V5: Agent Concepts (ReAct) Lab</button> -->
+    <!-- HIDDEN (non-studio): <button class="video-tab ta-recorded" onclick="switchVideo(6)" title="TA lab walkthrough -- no script">V6: LangGraph Agents Lab</button> -->
+    <!-- HIDDEN (non-studio): <button class="video-tab scripted" onclick="switchVideo(7)">V7: Wrap-Up</button> -->
+  </div>
+  <div class="topbar-actions">
+    <button class="btn-action" onclick="toggleTeleprompter()" id="teleBtn">Teleprompter</button>
+    <button class="btn-action" onclick="window.print()">Print</button>
+    <button class="btn-action" onclick="exportScript()">Export Script</button>
+  </div>
+</div>
+
+<div class="container">
+
+
+<!-- ================================================================ -->
+<!-- VIDEO 1: "The Spark" -- The Support Call                        -->
+<!-- ================================================================ -->
+<div class="video-section active" id="video-1">
+
+  <div class="video-header">
+    <h2>Video 1: "The Spark" -- The Support Call</h2>
+    <div class="video-meta">Prof on camera -- ~90 sec -- 2 segments</div>
+  </div>
+
+  <div class="key-message-bar">
+    <span class="km-label">KEY MESSAGE</span>
+    <span class="km-text">Real tasks are not pipelines. They are graphs. LangGraph lets you build them.</span>
+  </div>
+
+  <!-- PART 01 -->
+  <div class="segment">
+    <div class="segment-header">
+      <span class="segment-number">PART 01</span>
+      <span class="segment-title">The Support Call</span>
+      <div class="segment-badges">
+        <span class="badge badge-type">On Camera</span>
+        <span class="badge badge-duration">~60 sec</span>
+        <span class="badge badge-shot">Medium close-up</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <p>Think about what happens when you call customer support. The first thing they ask is -- what is your issue? And depending on your answer, everything changes. Billing goes one direction. Technical goes another. Returns goes somewhere else. And if the first fix does not work, they loop back and try something different.</p>
+      <p>That is not a pipeline. That is a graph -- with branches, conditions, and loops.</p>
+    </div>
+    <div class="media-col">
+      <span class="media-label">Shot Setup</span>
+      <p class="shot-note">Medium close-up, warm lighting, direct to camera. Conversational delivery. Pause after "everything changes" -- let the branching idea land.</p>
+      <div class="media-note">
+        MEDIA TEAM: No overlays. Clean shot, shallow depth-of-field. The support call analogy is verbal only -- let the words do the work.
+      </div>
+    </div>
+  </div>
+
+  <!-- PART 02 -->
+  <div class="segment">
+    <div class="segment-header">
+      <span class="segment-number">PART 02</span>
+      <span class="segment-title">Key Message -- LangGraph</span>
+      <div class="segment-badges">
+        <span class="badge badge-type">On Camera</span>
+        <span class="badge badge-duration">~30 sec</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <p>Most AI systems you have built so far run in a straight line. Input goes in, output comes out. But real tasks do not work that way. They branch. They loop. They depend on what just happened. And the tool that lets you design these kinds of workflows in Python is called LangGraph.</p>
+      <p>Before we get to LangGraph, though, we need to understand what powers it -- agents and tools. That is where we start.</p>
+    </div>
+    <div class="media-col">
+      <span class="media-label">Lower-Third Quote Card</span>
+      <svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" style="background: #0f172a; border: 1px solid #1e293b;">
+        <rect x="0" y="0" width="6" height="160" fill="#2563EB"/>
+        <text x="32" y="48" font-family="Outfit" font-size="10" fill="#60a5fa" font-weight="500" letter-spacing="0.1em">M06 · KEY MESSAGE</text>
+        <text x="32" y="84" font-family="Outfit" font-size="14" fill="#ffffff" font-weight="600">Real tasks are not pipelines.</text>
+        <text x="32" y="106" font-family="Outfit" font-size="14" fill="#ffffff" font-weight="600">They are graphs.</text>
+        <text x="32" y="132" font-family="Outfit" font-size="20" fill="#60a5fa" font-weight="700" font-style="italic">LangGraph lets you build them.</text>
+      </svg>
+    </div>
+  </div>
+
+</div><!-- end video-1 -->
+
+
+<!-- ================================================================ -->
+<!-- VIDEO 2: What Is an Agent?                                      -->
+<!-- ================================================================ -->
+<div class="video-section" id="video-2" data-script-export="false">
+
+  <div class="video-header">
+    <h2>Video 2: "What Is an Agent?"</h2>
+    <div class="video-meta">Voiceover + animation -- 8-9 minutes -- 4 segments</div>
+  </div>
+
+  <!-- PART A — Chains vs Agents intro -->
+  <div class="segment">
+    <div class="segment-header">
+      <span class="segment-number">PART A</span>
+      <span class="segment-title">Chains vs Agents</span>
+      <div class="segment-badges">
+        <span class="badge badge-type">Voiceover + Animation</span>
+        <span class="badge badge-duration">~2 min</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <p>Before we build with LangGraph, it is worth understanding what makes it different from everything you have built so far.</p>
+      <p>Until now, you have built chains. Step one feeds into step two feeds into step three. Same path every time. That is powerful -- and for many tasks, it is all you need.</p>
+      <p>But some tasks are open-ended. Research a topic. Debug a problem. Plan a trip. You do not know the steps in advance. You need something that can look at the situation, decide what to do next, and change direction if the first attempt does not work. That is an agent.</p>
+    </div>
+    <div class="media-col">
+      <span class="media-label">Storyboard -- Train vs Self-Driving Car</span>
+      <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" style="background: #0f172a; border: 1px solid #1e293b;">
+        <text x="200" y="22" text-anchor="middle" font-family="Outfit" font-size="11" fill="#e2e8f0" font-weight="600">Same Destination · Two Very Different Vehicles</text>
+        <rect x="14" y="38" width="180" height="148" rx="8" fill="rgba(148,163,184,0.06)" stroke="#94a3b8"/>
+        <text x="104" y="56" text-anchor="middle" font-family="Outfit" font-size="9" fill="#94a3b8" font-weight="600" letter-spacing="0.08em">CHAIN · TRAIN</text>
+        <rect x="22" y="84" width="164" height="14" fill="#475569"/>
+        <line x1="22" y1="88" x2="186" y2="88" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="6,4"/>
+        <line x1="22" y1="94" x2="186" y2="94" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="6,4"/>
+        <rect x="40" y="74" width="40" height="20" rx="3" fill="rgba(148,163,184,0.5)" stroke="#94a3b8"/>
+        <circle cx="48" cy="98" r="3" fill="#94a3b8"/>
+        <circle cx="74" cy="98" r="3" fill="#94a3b8"/>
+        <text x="104" y="124" text-anchor="middle" font-family="Outfit" font-size="9" fill="#cbd5e1">fixed track</text>
+        <text x="104" y="138" text-anchor="middle" font-family="Outfit" font-size="9" fill="#cbd5e1">predictable</text>
+        <text x="104" y="152" text-anchor="middle" font-family="Outfit" font-size="9" fill="#cbd5e1">cannot deviate</text>
+        <text x="104" y="174" text-anchor="middle" font-family="Outfit" font-size="8" fill="#94a3b8" font-style="italic">A → B → C, same every time</text>
+        <rect x="206" y="38" width="180" height="148" rx="8" fill="rgba(37,99,235,0.06)" stroke="#2563EB" stroke-width="1.5"/>
+        <text x="296" y="56" text-anchor="middle" font-family="Outfit" font-size="9" fill="#60a5fa" font-weight="600" letter-spacing="0.08em">AGENT · SELF-DRIVING CAR</text>
+        <path d="M 222 100 Q 260 76 296 100 T 376 100" stroke="#60a5fa" stroke-width="1" stroke-dasharray="3,3" fill="none"/>
+        <path d="M 222 100 Q 260 124 296 100" stroke="#60a5fa" stroke-width="1" stroke-dasharray="3,3" fill="none"/>
+        <rect x="262" y="80" width="40" height="20" rx="6" fill="rgba(96,165,250,0.4)" stroke="#60a5fa"/>
+        <rect x="268" y="74" width="28" height="8" rx="2" fill="rgba(37,99,235,0.6)"/>
+        <circle cx="270" cy="104" r="3" fill="#bfdbfe"/>
+        <circle cx="294" cy="104" r="3" fill="#bfdbfe"/>
+        <text x="296" y="124" text-anchor="middle" font-family="Outfit" font-size="9" fill="#bfdbfe">decides at runtime</text>
+        <text x="296" y="138" text-anchor="middle" font-family="Outfit" font-size="9" fill="#bfdbfe">adapts to obstacles</text>
+        <text x="296" y="152" text-anchor="middle" font-family="Outfit" font-size="9" fill="#bfdbfe">picks the route</text>
+        <text x="296" y="174" text-anchor="middle" font-family="Outfit" font-size="8" fill="#60a5fa" font-style="italic">reasons · acts · observes · repeats</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- PART B — 3 Ingredients -->
+  <div class="segment">
+    <div class="segment-header">
+      <span class="segment-number">PART B</span>
+      <span class="segment-title">Three Ingredients of an Agent</span>
+      <div class="segment-badges">
+        <span class="badge badge-type">Voiceover + Animation</span>
+        <span class="badge badge-duration">~3 min</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <p>So what actually makes something an agent? Three ingredients. An LLM that can reason. Tools it can reach for. And a loop that lets it keep going until the job is done.</p>
+      <p>At each step, the agent looks at the current situation, decides what information it needs, picks a tool to get it, reads the result, and then decides what to do next. It is not following a script -- it is making decisions.</p>
+    </div>
+    <div class="media-col">
+      <span class="media-label">Storyboard -- Chain (Linear) vs Agent (Decision Tree)</span>
+      <svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg" style="background: #0f172a; border: 1px solid #1e293b;">
+        <text x="200" y="22" text-anchor="middle" font-family="Outfit" font-size="11" fill="#e2e8f0" font-weight="600">Chain · Decision-Maker</text>
+        <text x="14" y="50" font-family="Outfit" font-size="9" fill="#94a3b8" letter-spacing="0.06em">CHAIN — fixed path</text>
+        <rect x="20" y="62" width="40" height="22" rx="4" fill="rgba(148,163,184,0.18)" stroke="#94a3b8"/>
+        <text x="40" y="76" text-anchor="middle" font-family="Outfit" font-size="8" fill="#cbd5e1">A</text>
+        <line x1="62" y1="73" x2="80" y2="73" stroke="#94a3b8" marker-end="url(#m06chArrow)"/>
+        <rect x="82" y="62" width="40" height="22" rx="4" fill="rgba(148,163,184,0.18)" stroke="#94a3b8"/>
+        <text x="102" y="76" text-anchor="middle" font-family="Outfit" font-size="8" fill="#cbd5e1">B</text>
+        <line x1="124" y1="73" x2="142" y2="73" stroke="#94a3b8" marker-end="url(#m06chArrow)"/>
+        <rect x="144" y="62" width="40" height="22" rx="4" fill="rgba(148,163,184,0.18)" stroke="#94a3b8"/>
+        <text x="164" y="76" text-anchor="middle" font-family="Outfit" font-size="8" fill="#cbd5e1">C</text>
+        <line x1="186" y1="73" x2="204" y2="73" stroke="#94a3b8" marker-end="url(#m06chArrow)"/>
+        <rect x="206" y="62" width="40" height="22" rx="4" fill="rgba(148,163,184,0.18)" stroke="#94a3b8"/>
+        <text x="226" y="76" text-anchor="middle" font-family="Outfit" font-size="8" fill="#cbd5e1">D</text>
+        <text x="266" y="76" font-family="Outfit" font-size="8" fill="#94a3b8" font-style="italic">same every run</text>
+        <line x1="14" y1="100" x2="386" y2="100" stroke="#1e293b"/>
+        <text x="14" y="118" font-family="Outfit" font-size="9" fill="#60a5fa" letter-spacing="0.06em">AGENT — branches at each step</text>
+        <rect x="20" y="130" width="40" height="22" rx="4" fill="rgba(37,99,235,0.18)" stroke="#2563EB"/>
+        <text x="40" y="144" text-anchor="middle" font-family="Outfit" font-size="8" fill="#bfdbfe">A</text>
+        <line x1="62" y1="141" x2="78" y2="124" stroke="#60a5fa" marker-end="url(#m06agArrow)"/>
+        <line x1="62" y1="141" x2="78" y2="158" stroke="#60a5fa" marker-end="url(#m06agArrow)"/>
+        <line x1="62" y1="141" x2="78" y2="190" stroke="#60a5fa" marker-end="url(#m06agArrow)"/>
+        <rect x="80" y="116" width="40" height="18" rx="4" fill="rgba(37,99,235,0.18)" stroke="#2563EB"/>
+        <text x="100" y="128" text-anchor="middle" font-family="Outfit" font-size="7" fill="#bfdbfe">search</text>
+        <rect x="80" y="150" width="40" height="18" rx="4" fill="rgba(37,99,235,0.28)" stroke="#60a5fa" stroke-width="1.5"/>
+        <text x="100" y="162" text-anchor="middle" font-family="Outfit" font-size="7" fill="#dbeafe" font-weight="600">tool</text>
+        <rect x="80" y="184" width="40" height="18" rx="4" fill="rgba(37,99,235,0.18)" stroke="#2563EB"/>
+        <text x="100" y="196" text-anchor="middle" font-family="Outfit" font-size="7" fill="#bfdbfe">end</text>
+        <line x1="122" y1="159" x2="138" y2="142" stroke="#60a5fa" marker-end="url(#m06agArrow)"/>
+        <line x1="122" y1="159" x2="138" y2="176" stroke="#60a5fa" marker-end="url(#m06agArrow)"/>
+        <rect x="140" y="132" width="40" height="20" rx="4" fill="rgba(37,99,235,0.18)" stroke="#2563EB"/>
+        <text x="160" y="146" text-anchor="middle" font-family="Outfit" font-size="7" fill="#bfdbfe">step ?</text>
+        <rect x="140" y="166" width="40" height="20" rx="4" fill="rgba(37,99,235,0.28)" stroke="#60a5fa" stroke-width="1.5"/>
+        <text x="160" y="180" text-anchor="middle" font-family="Outfit" font-size="7" fill="#dbeafe" font-weight="600">step ✓</text>
+        <line x1="182" y1="176" x2="204" y2="170" stroke="#60a5fa" stroke-width="1.5" marker-end="url(#m06agArrow)"/>
+        <rect x="206" y="158" width="50" height="22" rx="4" fill="rgba(34,197,94,0.2)" stroke="#22c55e"/>
+        <text x="231" y="172" text-anchor="middle" font-family="Outfit" font-size="8" fill="#86efac" font-weight="600">DONE</text>
+        <text x="266" y="170" font-family="Outfit" font-size="8" fill="#60a5fa" font-style="italic">picks path at runtime</text>
+        <defs>
+          <marker id="m06chArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8"/></marker>
+          <marker id="m06agArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#60a5fa"/></marker>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- PART C -->
+  <div class="segment">
+    <div class="segment-header">
+      <span class="segment-number">PART C</span>
+      <span class="segment-title">The ReAct Loop</span>
+      <div class="segment-badges">
+        <span class="badge badge-type">Voiceover + Animation</span>
+        <span class="badge badge-duration">~3 min</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <p>Under the hood, every agent runs on a pattern called ReAct -- Reason, Act, Observe. Here is what that actually looks like.</p>
+      <p>Say a user asks: "What is the weather in Boston, and should I bring an umbrella?" The agent looks at the question and thinks -- I do not have weather data, but I have a weather tool. So it calls the weather API. The result comes back: 62 degrees, 40 percent chance of rain. Now the agent has what it needs. It puts the pieces together -- 40 percent rain, probably bring an umbrella -- and responds.</p>
+      <p>That whole thing was one loop. Reason about what is missing, go get it, look at what came back, and decide if you are done. If you are not done, go again. That is ReAct. Simple idea, but it is the engine behind every agent you will build in this course.</p>
+    </div>
+    <div class="media-col">
+      <span class="media-label">Storyboard -- The ReAct Loop</span>
+      <svg viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg" style="background: #0f172a; border: 1px solid #1e293b;">
+        <text x="200" y="22" text-anchor="middle" font-family="Outfit" font-size="11" fill="#e2e8f0" font-weight="600">Reason · Act · Observe · Repeat</text>
+        <!-- Three nodes in a circle -->
+        <circle cx="120" cy="100" r="36" fill="rgba(37,99,235,0.12)" stroke="#2563EB" stroke-width="1.5"/>
+        <text x="120" y="98" text-anchor="middle" font-family="Outfit" font-size="9" fill="#60a5fa" font-weight="600">REASON</text>
+        <text x="120" y="116" text-anchor="middle" font-family="Outfit" font-size="20">🧠</text>
+        <circle cx="280" cy="100" r="36" fill="rgba(16,185,129,0.12)" stroke="#10b981" stroke-width="1.5"/>
+        <text x="280" y="98" text-anchor="middle" font-family="Outfit" font-size="9" fill="#34d399" font-weight="600">ACT</text>
+        <text x="280" y="116" text-anchor="middle" font-family="Outfit" font-size="20">✋</text>
+        <circle cx="200" cy="200" r="36" fill="rgba(245,158,11,0.12)" stroke="#f59e0b" stroke-width="1.5"/>
+        <text x="200" y="198" text-anchor="middle" font-family="Outfit" font-size="9" fill="#fbbf24" font-weight="600">OBSERVE</text>
+        <text x="200" y="216" text-anchor="middle" font-family="Outfit" font-size="20">👁</text>
+        <!-- Arrows -->
+        <path d="M 156 100 Q 200 60 244 100" stroke="#94a3b8" stroke-width="1.5" fill="none" marker-end="url(#m06rArrow)"/>
+        <path d="M 264 132 Q 240 168 220 180" stroke="#94a3b8" stroke-width="1.5" fill="none" marker-end="url(#m06rArrow)"/>
+        <path d="M 180 180 Q 140 160 130 132" stroke="#94a3b8" stroke-width="1.5" fill="none" marker-end="url(#m06rArrow)"/>
+        <!-- Concrete example labels -->
+        <text x="200" y="50" text-anchor="middle" font-family="Outfit" font-size="7" fill="#bfdbfe">"need weather data"</text>
+        <text x="320" y="158" font-family="Outfit" font-size="7" fill="#a7f3d0">call weather API</text>
+        <text x="80" y="158" text-anchor="end" font-family="Outfit" font-size="7" fill="#fde68a">"is 40% rain enough?"</text>
+        <text x="200" y="248" text-anchor="middle" font-family="Outfit" font-size="7" fill="#fde68a">62°F · 40% rain</text>
+        <!-- Loop until done -->
+        <text x="200" y="266" text-anchor="middle" font-family="Outfit" font-size="9" fill="#94a3b8" font-style="italic">Loop until reasoning says: "I have enough — done."</text>
+        <defs>
+          <marker id="m06rArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8"/></marker>
+        </defs>
+      </svg>
+      <div class="media-note">
+        MEDIA TEAM: Use blue for Reason, green for Act, amber for Observe. The loop should feel like a thinking process. Show the concrete example playing out step by step inside the loop, not just abstract icons.
+      </div>
+    </div>
+  </div>
+
+  <!-- PART D -->
+  <div class="segment">
+    <div class="segment-header">
+      <span class="segment-number">PART D</span>
+      <span class="segment-title">When to Use Agents</span>
+      <div class="segment-badges">
+        <span class="badge badge-type">Voiceover + Animation</span>
+        <span class="badge badge-duration">~2 min</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <p>Not every task needs an agent. If the workflow is predictable and the steps are always the same, a chain is the right choice. Summarize a document. Translate text. Extract data from a form. Same path every time.</p>
+      <p>Agents are for open-ended tasks. Research a topic where you do not know how many searches it will take. Debug a problem where you do not know which files to check. Answer a question that might need multiple tools in an order you cannot predict. The agent figures out the path at runtime.</p>
+      <p>Chains are efficient and predictable. Agents are flexible and smart. You want both in your toolkit.</p>
+    </div>
+    <div class="media-col">
+      <span class="media-label">Storyboard -- Chain or Agent? Use Both.</span>
+      <svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+        <text x="200" y="22" text-anchor="middle" font-family="Outfit" font-size="11" fill="#1e293b" font-weight="600">When Predictable → Chain · When Open-Ended → Agent</text>
+        <rect x="14" y="38" width="180" height="166" rx="10" fill="rgba(148,163,184,0.06)" stroke="#94a3b8" stroke-width="1.5"/>
+        <text x="104" y="58" text-anchor="middle" font-family="Outfit" font-size="9" fill="#475569" font-weight="600" letter-spacing="0.08em">USE A CHAIN</text>
+        <text x="104" y="74" text-anchor="middle" font-family="Outfit" font-size="8" fill="#94a3b8" font-style="italic">predictable · efficient</text>
+        <line x1="22" y1="86" x2="186" y2="86" stroke="#cbd5e1"/>
+        <text x="26" y="106" font-family="Outfit" font-size="9" fill="#1e293b">▪ Summarize a document</text>
+        <text x="26" y="124" font-family="Outfit" font-size="9" fill="#1e293b">▪ Translate text</text>
+        <text x="26" y="142" font-family="Outfit" font-size="9" fill="#1e293b">▪ Extract data from a form</text>
+        <text x="26" y="160" font-family="Outfit" font-size="9" fill="#1e293b">▪ Sentiment classify</text>
+        <text x="104" y="190" text-anchor="middle" font-family="Outfit" font-size="8" fill="#475569" font-style="italic">path always the same</text>
+        <rect x="206" y="38" width="180" height="166" rx="10" fill="rgba(37,99,235,0.06)" stroke="#2563EB" stroke-width="1.5"/>
+        <text x="296" y="58" text-anchor="middle" font-family="Outfit" font-size="9" fill="#2563EB" font-weight="600" letter-spacing="0.08em">USE AN AGENT</text>
+        <text x="296" y="74" text-anchor="middle" font-family="Outfit" font-size="8" fill="#94a3b8" font-style="italic">flexible · smart</text>
+        <line x1="214" y1="86" x2="378" y2="86" stroke="#bfdbfe"/>
+        <text x="218" y="106" font-family="Outfit" font-size="9" fill="#1e293b">▪ Research a topic</text>
+        <text x="218" y="124" font-family="Outfit" font-size="9" fill="#1e293b">▪ Debug a problem</text>
+        <text x="218" y="142" font-family="Outfit" font-size="9" fill="#1e293b">▪ Plan a multi-step task</text>
+        <text x="218" y="160" font-family="Outfit" font-size="9" fill="#1e293b">▪ Multi-tool Q&amp;A</text>
+        <text x="296" y="190" text-anchor="middle" font-family="Outfit" font-size="8" fill="#2563EB" font-style="italic">path discovered at runtime</text>
+      </svg>
+    </div>
+  </div>
+
+</div><!-- end video-2 -->
+
+
+<!-- ================================================================ -->
+<!-- VIDEO 3: Tools                                                  -->
+<!-- ================================================================ -->
+<div class="video-section" id="video-3" data-script-export="false" style="display:none">
+
+  <div class="video-header">
+    <h2>Video 3: "Tools: Teaching AI to Use Functions" &mdash; <span style="color:#0f766e;">Voiceover + Animation</span></h2>
+    <div class="video-meta">TA voiceover + animation -- 5-6 minutes -- 2 parts (click mic to listen)</div>
+  </div>
+
+  <!-- ══════ PART 1: What Is a Tool ══════ -->
+
+  <div class="audio-nav" data-video="video-3">
+      <div class="audio-nav-step" onclick="document.querySelectorAll('.audio-segment')[0]?.scrollIntoView({behavior:'smooth',block:'center'})">
+        <div class="audio-nav-num">1</div>
+        <div class="audio-nav-label">What Is a Tool</div>
+      </div>
+      <div class="audio-nav-step" onclick="document.querySelectorAll('.audio-segment')[1]?.scrollIntoView({behavior:'smooth',block:'center'})">
+        <div class="audio-nav-num">2</div>
+        <div class="audio-nav-label">Tool Schema and Se...</div>
+      </div>
+  </div>
+  <div class="audio-segment" id="audio-part-v3-1">
+    <div class="audio-card">
+    <div class="audio-header">
+      <button class="audio-play-btn" onclick="playPart('v3-1')" title="Play voiceover">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      </button>
+      <span class="audio-part-label">1</span>
+      <span class="audio-part-title">What Is a Tool</span>
+    </div>
+    <div class="audio-progress"><div class="audio-progress-bar" id="progress-v3-1"></div></div>
+    <audio id="audio-v3-1" src="audio/M06_V3_Part1.mp3" preload="none"></audio>
+    <div class="audio-script">
+      <p>A tool is a function the agent can call. That is it. A Python function with a name, a description, and parameters.</p>
+      <p>The agent sees a list of available tools with their descriptions. When it decides it needs information, it picks a tool, fills in the arguments, and calls it. The result comes back, and the agent uses it to continue reasoning.</p>
+      <p>You already learned function calling in Module 3. One call, one response. Agents use function calling in a loop -- chaining multiple tool calls until the task is complete. That is the difference. Same mechanism, repeated intelligently.</p>
+    </div>
+    <div class="audio-visual">
+      <svg viewBox="0 0 440 230" xmlns="http://www.w3.org/2000/svg" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px;">
+        <text x="220" y="24" text-anchor="middle" font-family="Outfit" font-size="12" fill="#1e293b" font-weight="600">Tools = Functions the Agent Can Call</text>
+        <text x="220" y="44" text-anchor="middle" font-family="Outfit" font-size="9" fill="#64748b" letter-spacing="0.06em">REGISTERED TOOLS</text>
+        <!-- search -->
+        <rect x="14" y="60" width="96" height="84" rx="12" fill="#fff" stroke="#dbeafe" stroke-width="1.5"/>
+        <circle cx="62" cy="84" r="14" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+        <line x1="62" y1="84" x2="62" y2="84" stroke="none"/>
+        <circle cx="59" cy="81" r="6" fill="none" stroke="#3b82f6" stroke-width="1.8"/>
+        <line x1="63" y1="85" x2="68" y2="90" stroke="#3b82f6" stroke-width="1.8" stroke-linecap="round"/>
+        <text x="62" y="112" text-anchor="middle" font-family="Outfit" font-size="10" fill="#1e40af" font-weight="600">search</text>
+        <text x="62" y="126" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#64748b">"query" &rarr; list</text>
+        <!-- calculate -->
+        <rect x="118" y="60" width="96" height="84" rx="12" fill="#fff" stroke="#d1fae5" stroke-width="1.5"/>
+        <circle cx="166" cy="84" r="14" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5"/>
+        <text x="166" y="89" text-anchor="middle" font-family="JetBrains Mono" font-size="12" fill="#10b981" font-weight="700">fx</text>
+        <text x="166" y="112" text-anchor="middle" font-family="Outfit" font-size="10" fill="#065f46" font-weight="600">calculate</text>
+        <text x="166" y="126" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#64748b">"expr" &rarr; float</text>
+        <!-- read_file -->
+        <rect x="222" y="60" width="96" height="84" rx="12" fill="#fff" stroke="#fef3c7" stroke-width="1.5"/>
+        <circle cx="270" cy="84" r="14" fill="#fffbeb" stroke="#f59e0b" stroke-width="1.5"/>
+        <rect x="264" y="76" width="12" height="16" rx="2" fill="none" stroke="#f59e0b" stroke-width="1.5"/>
+        <line x1="267" y1="82" x2="273" y2="82" stroke="#f59e0b" stroke-width="1"/>
+        <line x1="267" y1="85" x2="273" y2="85" stroke="#f59e0b" stroke-width="1"/>
+        <line x1="267" y1="88" x2="271" y2="88" stroke="#f59e0b" stroke-width="1"/>
+        <text x="270" y="112" text-anchor="middle" font-family="Outfit" font-size="10" fill="#92400e" font-weight="600">read_file</text>
+        <text x="270" y="126" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#64748b">"path" &rarr; str</text>
+        <!-- run_code -->
+        <rect x="326" y="60" width="96" height="84" rx="12" fill="#fff" stroke="#ede9fe" stroke-width="1.5"/>
+        <circle cx="374" cy="84" r="14" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="374" y="89" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#8b5cf6" font-weight="700">&gt;_</text>
+        <text x="374" y="112" text-anchor="middle" font-family="Outfit" font-size="10" fill="#5b21b6" font-weight="600">run_code</text>
+        <text x="374" y="126" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#64748b">"py" &rarr; output</text>
+        <!-- Divider -->
+        <line x1="14" y1="158" x2="426" y2="158" stroke="#e2e8f0"/>
+        <!-- Footer -->
+        <text x="220" y="178" text-anchor="middle" font-family="Outfit" font-size="10" fill="#2563eb">Agent reads each tool's docstring &middot; picks the right one &middot; fills the args</text>
+        <text x="220" y="198" text-anchor="middle" font-family="Outfit" font-size="9" fill="#94a3b8" font-style="italic">Same function-calling mechanism from Module 3 &mdash; but now in a loop.</text>
+        <!-- Connecting lines from center to tools -->
+        <circle cx="220" cy="216" r="6" fill="#eff6ff" stroke="#3b82f6" stroke-width="1"/>
+        <text x="220" y="220" text-anchor="middle" font-family="Outfit" font-size="6" fill="#3b82f6" font-weight="700">AI</text>
+      </svg>
+    </div>
+  
+    </div></div>
+  <!-- ══════ PART 2: Tool Schema and Selection ══════ -->
+  <div class="audio-segment" id="audio-part-v3-2">
+    <div class="audio-card">
+    <div class="audio-header">
+      <button class="audio-play-btn" onclick="playPart('v3-2')" title="Play voiceover">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      </button>
+      <span class="audio-part-label">2</span>
+      <span class="audio-part-title">Tool Schema and Selection</span>
+    </div>
+    <div class="audio-progress"><div class="audio-progress-bar" id="progress-v3-2"></div></div>
+    <audio id="audio-v3-2" src="audio/M06_V3_Part2.mp3" preload="none"></audio>
+    <div class="audio-script">
+      <p>Here is what a tool definition looks like.</p>
+      <div class="code-block"><pre><span class="kw">def</span> <span class="fn">get_weather</span>(city: <span class="fn">str</span>) -> <span class="fn">str</span>:
+    <span class="str">"""Get the current weather for a city.
+
+    Args:
+        city: The city name, e.g. 'Boston, MA'
+    Returns:
+        Current weather conditions as a string.
+    """</span>
+    <span class="cm"># ... actual API call ...</span>
+    <span class="kw">return</span> weather_data</pre></div>
+      <p>The agent reads the docstring to understand what the tool does and when to use it. Good descriptions are critical -- if the agent does not understand the tool, it will not use it correctly. Think of it as writing a manual for a coworker.</p>
+    </div>
+    <div class="audio-visual">
+      <svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+        <text x="200" y="20" text-anchor="middle" font-family="Outfit" font-size="11" fill="#1e293b" font-weight="600">The Docstring Is the Tool's Manual</text>
+        <rect x="14" y="32" width="372" height="166" rx="8" fill="#0f172a" stroke="#1e293b"/>
+        <text x="22" y="52" font-family="JetBrains Mono" font-size="9" fill="#c084fc">def</text>
+        <text x="42" y="52" font-family="JetBrains Mono" font-size="9" fill="#60a5fa">get_weather</text>
+        <text x="108" y="52" font-family="JetBrains Mono" font-size="9" fill="#e2e8f0">(city: </text>
+        <text x="148" y="52" font-family="JetBrains Mono" font-size="9" fill="#fbbf24">str</text>
+        <text x="160" y="52" font-family="JetBrains Mono" font-size="9" fill="#e2e8f0">) -&gt; </text>
+        <text x="190" y="52" font-family="JetBrains Mono" font-size="9" fill="#fbbf24">str</text>
+        <text x="200" y="52" font-family="JetBrains Mono" font-size="9" fill="#e2e8f0">:</text>
+        <!-- Highlighted docstring -->
+        <rect x="22" y="62" width="356" height="100" rx="4" fill="rgba(96,165,250,0.06)" stroke="rgba(96,165,250,0.4)"/>
+        <text x="30" y="78" font-family="JetBrains Mono" font-size="9" fill="#34d399">"""Get the current weather for a city.</text>
+        <text x="30" y="102" font-family="JetBrains Mono" font-size="9" fill="#34d399">    Args:</text>
+        <text x="30" y="116" font-family="JetBrains Mono" font-size="9" fill="#34d399">        city: The city name, e.g. 'Boston, MA'</text>
+        <text x="30" y="138" font-family="JetBrains Mono" font-size="9" fill="#34d399">    Returns:</text>
+        <text x="30" y="152" font-family="JetBrains Mono" font-size="9" fill="#34d399">        Current weather as a string."""</text>
+        <text x="22" y="180" font-family="JetBrains Mono" font-size="9" fill="#94a3b8"># ... actual API call ...</text>
+        <text x="22" y="192" font-family="JetBrains Mono" font-size="9" fill="#c084fc">return</text>
+        <text x="60" y="192" font-family="JetBrains Mono" font-size="9" fill="#e2e8f0">weather_data</text>
+        <text x="200" y="220" text-anchor="middle" font-family="Outfit" font-size="9" fill="#94a3b8" font-style="italic">The agent reads the docstring to decide if and how to call this tool.</text>
+        <text x="200" y="234" text-anchor="middle" font-family="Outfit" font-size="9" fill="#60a5fa">Write it like a manual for a coworker, not for yourself.</text>
+      </svg>
+    </div>
+  
+    </div></div>
+
+
+  <div class="audio-nav-arrows">
+    <button class="audio-arrow-btn audio-arrow-prev" onclick="prevAudioPart('video-3')">&#8592; Previous</button>
+    <button class="audio-arrow-btn audio-arrow-next" onclick="nextAudioPart('video-3')">Next &#8594;</button>
+  </div>
+
+</div><!-- end video-3 -->
+
+
+<!-- ================================================================ -->
+<!-- VIDEO 4: Introduction to LangGraph                              -->
+<!-- ================================================================ -->
+<div class="video-section" id="video-4">
+
+  <div class="video-header">
+    <h2>Video 4: "Introduction to LangGraph"</h2>
+    <div class="video-meta">Voiceover + animation + code -- 10-12 minutes -- 5 segments</div>
+  </div>
+
+  <!-- PART A -->
+  <div class="segment">
+    <div class="segment-header">
+      <span class="segment-number">PART A</span>
+      <span class="segment-title">Why LangGraph</span>
+      <div class="segment-badges">
+        <span class="badge badge-type">Voiceover + Animation</span>
+        <span class="badge badge-duration">~2 min</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <p>Remember the customer support call from the opening? Billing goes one way, technical goes another, and if the first fix fails, you loop back and try something different. That was a graph. LangGraph lets you lay out your entire agent workflow exactly like that. You decide the steps, the connections, and the branches. The AI navigates that graph at runtime, choosing its own path based on what it finds.</p>
+      <p>To build one, you need three pieces. Nodes, edges, and state.</p>
+    </div>
+    <div class="media-col">
+      <span class="media-label">Storyboard -- LangGraph as a Flowchart</span>
+      <svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg" style="background: #0f172a; border: 1px solid #1e293b;">
+        <text x="200" y="22" text-anchor="middle" font-family="Outfit" font-size="11" fill="#e2e8f0" font-weight="600">A Flowchart the AI Navigates at Runtime</text>
+        <!-- START -->
+        <rect x="170" y="40" width="60" height="22" rx="11" fill="#1e293b" stroke="#475569"/>
+        <text x="200" y="55" text-anchor="middle" font-family="Outfit" font-size="9" fill="#94a3b8">START</text>
+        <line x1="200" y1="62" x2="200" y2="78" stroke="#475569" marker-end="url(#m06lgArrow)"/>
+        <!-- Agent node -->
+        <rect x="160" y="80" width="80" height="36" rx="6" fill="rgba(37,99,235,0.18)" stroke="#2563EB" stroke-width="1.5"/>
+        <text x="200" y="96" text-anchor="middle" font-family="Outfit" font-size="9" fill="#bfdbfe" font-weight="600">agent</text>
+        <text x="200" y="108" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8">call LLM</text>
+        <line x1="200" y1="116" x2="200" y2="132" stroke="#475569" marker-end="url(#m06lgArrow)"/>
+        <!-- Decision diamond -->
+        <polygon points="200,138 232,158 200,178 168,158" fill="rgba(245,158,11,0.18)" stroke="#f59e0b" stroke-width="1.5"/>
+        <text x="200" y="158" text-anchor="middle" font-family="Outfit" font-size="8" fill="#fbbf24">tool?</text>
+        <!-- Branch yes -->
+        <line x1="232" y1="158" x2="298" y2="158" stroke="#10b981" stroke-width="1.5" marker-end="url(#m06lgArrowG)"/>
+        <text x="265" y="152" text-anchor="middle" font-family="Outfit" font-size="7" fill="#34d399">yes</text>
+        <rect x="298" y="142" width="74" height="32" rx="6" fill="rgba(16,185,129,0.18)" stroke="#10b981"/>
+        <text x="335" y="158" text-anchor="middle" font-family="Outfit" font-size="9" fill="#a7f3d0" font-weight="600">tools</text>
+        <text x="335" y="170" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8">execute</text>
+        <!-- Loop back -->
+        <path d="M 298 158 Q 280 200 240 200 Q 200 200 200 178" stroke="#10b981" stroke-width="1.2" stroke-dasharray="3,3" fill="none" marker-end="url(#m06lgArrowG)"/>
+        <!-- Branch no → END -->
+        <line x1="168" y1="158" x2="100" y2="158" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#m06lgArrow)"/>
+        <text x="135" y="152" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8">no</text>
+        <rect x="40" y="142" width="60" height="32" rx="11" fill="#1e293b" stroke="#475569"/>
+        <text x="70" y="162" text-anchor="middle" font-family="Outfit" font-size="9" fill="#94a3b8">END</text>
+        <text x="200" y="220" text-anchor="middle" font-family="Outfit" font-size="9" fill="#94a3b8">Nodes = functions · Edges = transitions · State flows through both</text>
+        <defs>
+          <marker id="m06lgArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8"/></marker>
+          <marker id="m06lgArrowG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#10b981"/></marker>
+        </defs>
+      </svg>
+      <div class="media-note">
+        MEDIA TEAM: This is the key visual for LangGraph. Nodes should be clean boxes with labels. Conditional edges should show a diamond decision point. Use the blue accent color for active nodes, gray for inactive. Data flow should be animated as a glowing line traveling along edges.
+      </div>
+    </div>
+  </div>
+
+  <!-- PART B -->
+  <div class="segment">
+    <div class="segment-header">
+      <span class="segment-number">PART B</span>
+      <span class="segment-title">Nodes, Edges, State</span>
+      <div class="segment-badges">
+        <span class="badge badge-type">Voiceover + Animation</span>
+        <span class="badge badge-duration">~2 min</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <p>A node is a Python function -- it receives state, does one thing, and passes updated state forward. An edge connects nodes. Conditional edges branch: "If the LLM wants a tool, go to the tool node. If done, go to the end."</p>
+      <p>State is the shared memory. Every node reads from it and writes to it. By the time you reach the end, state contains the full record of everything that happened.</p>
+    </div>
+    <div class="media-col">
+      <span class="media-label">Storyboard -- Nodes · Edges · State</span>
+      <svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+        <text x="200" y="22" text-anchor="middle" font-family="Outfit" font-size="11" fill="#1e293b" font-weight="600">The Three Building Blocks of LangGraph</text>
+        <!-- NODE -->
+        <rect x="14" y="42" width="120" height="180" rx="10" fill="rgba(37,99,235,0.06)" stroke="#2563EB" stroke-width="1.5"/>
+        <text x="74" y="62" text-anchor="middle" font-family="Outfit" font-size="9" fill="#2563EB" font-weight="600" letter-spacing="0.06em">NODE</text>
+        <text x="74" y="78" text-anchor="middle" font-family="Outfit" font-size="8" fill="#94a3b8">a function</text>
+        <line x1="22" y1="92" x2="126" y2="92" stroke="#dbeafe"/>
+        <text x="74" y="116" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#1e293b">state in</text>
+        <text x="74" y="128" text-anchor="middle" font-family="JetBrains Mono" font-size="14" fill="#2563EB">↓</text>
+        <rect x="34" y="134" width="80" height="22" rx="3" fill="rgba(37,99,235,0.18)"/>
+        <text x="74" y="148" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#1e293b">do_thing()</text>
+        <text x="74" y="170" text-anchor="middle" font-family="JetBrains Mono" font-size="14" fill="#2563EB">↓</text>
+        <text x="74" y="186" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#1e293b">new state</text>
+        <text x="74" y="208" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8" font-style="italic">in → action → out</text>
+        <!-- EDGE -->
+        <rect x="140" y="42" width="120" height="180" rx="10" fill="rgba(16,185,129,0.06)" stroke="#10b981" stroke-width="1.5"/>
+        <text x="200" y="62" text-anchor="middle" font-family="Outfit" font-size="9" fill="#10b981" font-weight="600" letter-spacing="0.06em">EDGE</text>
+        <text x="200" y="78" text-anchor="middle" font-family="Outfit" font-size="8" fill="#94a3b8">connects nodes</text>
+        <line x1="148" y1="92" x2="252" y2="92" stroke="#dcfce7"/>
+        <text x="200" y="114" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8">normal: A → B</text>
+        <line x1="160" y1="120" x2="240" y2="120" stroke="#10b981" stroke-width="1.2" marker-end="url(#m06neArrowG)"/>
+        <text x="200" y="146" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8">conditional: branches</text>
+        <polygon points="200,154 216,166 200,178 184,166" fill="rgba(16,185,129,0.18)" stroke="#10b981"/>
+        <text x="200" y="170" text-anchor="middle" font-family="Outfit" font-size="6" fill="#10b981">if?</text>
+        <line x1="216" y1="166" x2="232" y2="160" stroke="#10b981" stroke-width="1" marker-end="url(#m06neArrowG)"/>
+        <line x1="184" y1="166" x2="168" y2="160" stroke="#10b981" stroke-width="1" marker-end="url(#m06neArrowG)"/>
+        <text x="200" y="208" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8" font-style="italic">decisions live here</text>
+        <!-- STATE -->
+        <rect x="266" y="42" width="120" height="180" rx="10" fill="rgba(245,158,11,0.06)" stroke="#f59e0b" stroke-width="1.5"/>
+        <text x="326" y="62" text-anchor="middle" font-family="Outfit" font-size="9" fill="#f59e0b" font-weight="600" letter-spacing="0.06em">STATE</text>
+        <text x="326" y="78" text-anchor="middle" font-family="Outfit" font-size="8" fill="#94a3b8">shared dict</text>
+        <line x1="274" y1="92" x2="378" y2="92" stroke="#fef3c7"/>
+        <rect x="278" y="106" width="96" height="86" rx="4" fill="#0f172a" stroke="#1e293b"/>
+        <text x="284" y="120" font-family="JetBrains Mono" font-size="7" fill="#fde68a">{</text>
+        <text x="290" y="132" font-family="JetBrains Mono" font-size="7" fill="#fde68a">"messages": [...],</text>
+        <text x="290" y="144" font-family="JetBrains Mono" font-size="7" fill="#fde68a">"tool_calls": [],</text>
+        <text x="290" y="156" font-family="JetBrains Mono" font-size="7" fill="#fde68a">"step": 3,</text>
+        <text x="290" y="168" font-family="JetBrains Mono" font-size="7" fill="#fde68a">"done": false</text>
+        <text x="284" y="180" font-family="JetBrains Mono" font-size="7" fill="#fde68a">}</text>
+        <text x="326" y="208" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8" font-style="italic">how nodes communicate</text>
+        <defs>
+          <marker id="m06neArrowG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#10b981"/></marker>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- PART C -->
+  <div class="segment">
+    <div class="segment-header">
+      <span class="segment-number">PART C</span>
+      <span class="segment-title">LangGraph in Context</span>
+      <div class="segment-badges">
+        <span class="badge badge-type">Voiceover + Animation</span>
+        <span class="badge badge-duration">~2 min</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <p>You may ask -- why learn LangGraph when model providers now ship their own agent SDKs? OpenAI has one, Anthropic has one, Google has one. For simple tasks, they work out of the box. But the moment your workflow gets complex -- multiple branches, conditional loops, human approval steps -- those SDKs are not enough. LangGraph gives you full control over every decision point.</p>
+      <p>Think of it this way. The SDKs are like a ride-sharing app. LangGraph is like having the keys to the car. When the road gets complicated, you want the keys. We cover the newer SDKs in Module 12.</p>
+    </div>
+    <div class="media-col">
+      <span class="media-label">Storyboard -- 2024 → 2026 Framework Landscape</span>
+      <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+        <text x="200" y="22" text-anchor="middle" font-family="Outfit" font-size="11" fill="#1e293b" font-weight="600">Why LangGraph Still Matters in 2026</text>
+        <!-- Timeline -->
+        <line x1="40" y1="100" x2="360" y2="100" stroke="#cbd5e1" stroke-width="2"/>
+        <circle cx="100" cy="100" r="6" fill="#94a3b8"/>
+        <text x="100" y="80" text-anchor="middle" font-family="Outfit" font-size="9" fill="#475569" font-weight="600">2024</text>
+        <text x="100" y="124" text-anchor="middle" font-family="Outfit" font-size="8" fill="#94a3b8">framework era</text>
+        <text x="100" y="138" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8">LangChain agents</text>
+        <text x="100" y="148" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8">AutoGen</text>
+        <text x="100" y="158" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8">custom ReAct loops</text>
+        <text x="100" y="172" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8" font-style="italic">"lots of boilerplate"</text>
+        <circle cx="300" cy="100" r="8" fill="#2563EB"/>
+        <text x="300" y="80" text-anchor="middle" font-family="Outfit" font-size="9" fill="#2563EB" font-weight="600">2026</text>
+        <text x="300" y="124" text-anchor="middle" font-family="Outfit" font-size="8" fill="#1e293b">SDK era</text>
+        <text x="300" y="138" text-anchor="middle" font-family="Outfit" font-size="7" fill="#1e293b">Claude Agent SDK</text>
+        <text x="300" y="148" text-anchor="middle" font-family="Outfit" font-size="7" fill="#1e293b">OpenAI Agents SDK</text>
+        <text x="300" y="158" text-anchor="middle" font-family="Outfit" font-size="7" fill="#1e293b">Google ADK</text>
+        <text x="300" y="172" text-anchor="middle" font-family="Outfit" font-size="7" fill="#2563EB" font-style="italic">"out of the box"</text>
+        <text x="200" y="194" text-anchor="middle" font-family="Outfit" font-size="9" fill="#475569" font-weight="500">LangGraph still wins for: complex multi-step orchestration · multi-LLM workflows · fine control</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- PART D — Building: The 5-Step Pattern (merged from old V5) -->
+  <div class="segment" data-script-export="false">
+    <div class="segment-header">
+      <span class="segment-number">PART D</span>
+      <span class="segment-title">The 5-Step Pattern</span>
+      <div class="segment-badges">
+        <span class="badge badge-type">Voiceover + Code</span>
+        <span class="badge badge-duration">~3 min</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <p>Building a LangGraph agent follows five steps. Every time.</p>
+      <p>Step one: define the state. What information flows through the graph? Messages, tool results, decisions -- all stored in a typed dictionary.</p>
+      <p>Step two: create nodes. Each node is a Python function that takes state and returns updated state.</p>
+      <p>Step three: add edges. Connect your nodes. "After classify, go to respond."</p>
+      <p>Step four: add conditional edges. "After the LLM responds, check: did it want to call a tool? If yes, go to the tool node. If no, go to the end." This is the decision-making.</p>
+      <p>Step five: compile and run. Call <code>graph.compile()</code> to get a runnable object. Invoke it with your initial state.</p>
+    </div>
+    <div class="media-col">
+      <span class="media-label">Storyboard -- Build a LangGraph Agent in 5 Steps</span>
+      <svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+        <text x="200" y="22" text-anchor="middle" font-family="Outfit" font-size="11" fill="#1e293b" font-weight="600">5 Steps · Same Pattern Every Time</text>
+        <circle cx="40" cy="56" r="10" fill="#2563EB"/>
+        <text x="40" y="60" text-anchor="middle" font-family="Outfit" font-size="9" fill="#ffffff" font-weight="700">1</text>
+        <text x="60" y="54" font-family="Outfit" font-size="10" fill="#1e293b" font-weight="600">Define state</text>
+        <text x="60" y="68" font-family="JetBrains Mono" font-size="8" fill="#64748b">class State(TypedDict): ...</text>
+        <circle cx="40" cy="92" r="10" fill="#2563EB"/>
+        <text x="40" y="96" text-anchor="middle" font-family="Outfit" font-size="9" fill="#ffffff" font-weight="700">2</text>
+        <text x="60" y="90" font-family="Outfit" font-size="10" fill="#1e293b" font-weight="600">Create nodes</text>
+        <text x="60" y="104" font-family="JetBrains Mono" font-size="8" fill="#64748b">graph.add_node("agent", call_model)</text>
+        <circle cx="40" cy="128" r="10" fill="#2563EB"/>
+        <text x="40" y="132" text-anchor="middle" font-family="Outfit" font-size="9" fill="#ffffff" font-weight="700">3</text>
+        <text x="60" y="126" font-family="Outfit" font-size="10" fill="#1e293b" font-weight="600">Add edges</text>
+        <text x="60" y="140" font-family="JetBrains Mono" font-size="8" fill="#64748b">graph.add_edge(START, "agent")</text>
+        <circle cx="40" cy="164" r="10" fill="#f59e0b"/>
+        <text x="40" y="168" text-anchor="middle" font-family="Outfit" font-size="9" fill="#ffffff" font-weight="700">4</text>
+        <text x="60" y="162" font-family="Outfit" font-size="10" fill="#1e293b" font-weight="600">Conditional edges <tspan fill="#f59e0b">← intelligence</tspan></text>
+        <text x="60" y="176" font-family="JetBrains Mono" font-size="8" fill="#64748b">add_conditional_edges("agent", should_use_tool, ...)</text>
+        <circle cx="40" cy="202" r="10" fill="#10b981"/>
+        <text x="40" y="206" text-anchor="middle" font-family="Outfit" font-size="9" fill="#ffffff" font-weight="700">5</text>
+        <text x="60" y="200" font-family="Outfit" font-size="10" fill="#1e293b" font-weight="600">Compile + run</text>
+        <text x="60" y="214" font-family="JetBrains Mono" font-size="8" fill="#64748b">app = graph.compile(); app.invoke(initial_state)</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- PART E — The Code (merged from old V5) -->
+  <div class="segment" data-script-export="false">
+    <div class="segment-header">
+      <span class="segment-number">PART E</span>
+      <span class="segment-title">The Code</span>
+      <div class="segment-badges">
+        <span class="badge badge-type">Voiceover + Code</span>
+        <span class="badge badge-duration">~2 min</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <p>Here is a minimal LangGraph agent.</p>
+      <div class="code-block"><pre><span class="kw">from</span> langgraph.graph <span class="kw">import</span> StateGraph, START, END
+<span class="kw">from</span> typing <span class="kw">import</span> TypedDict, Annotated
+
+<span class="kw">class</span> <span class="fn">State</span>(TypedDict):
+    messages: Annotated[<span class="fn">list</span>, <span class="str">"append"</span>]
+
+graph = StateGraph(State)
+graph.<span class="fn">add_node</span>(<span class="str">"agent"</span>, call_model)
+graph.<span class="fn">add_node</span>(<span class="str">"tools"</span>, call_tools)
+
+graph.<span class="fn">add_edge</span>(START, <span class="str">"agent"</span>)
+graph.<span class="fn">add_conditional_edges</span>(<span class="str">"agent"</span>, should_use_tool,
+    {<span class="str">"yes"</span>: <span class="str">"tools"</span>, <span class="str">"no"</span>: END})
+graph.<span class="fn">add_edge</span>(<span class="str">"tools"</span>, <span class="str">"agent"</span>)
+
+app = graph.<span class="fn">compile</span>()</pre></div>
+      <p>Look at the conditional edge. That is where the intelligence lives. After the agent responds, we ask one question: did the LLM request a tool call? If yes, we route to the tools node. The tools node runs the function, gets the result, and routes back to the agent. The agent sees the new information, thinks again, and decides whether to call another tool or finish.</p>
+      <p>That loop can run once, or it can run ten times. The agent keeps going until it decides it has enough to answer. And that is the ReAct pattern you learned earlier, except now it is not a concept. It is a graph you can see, debug, and control.</p>
+    </div>
+    <div class="media-col">
+      <span class="media-label">Storyboard -- Code → Graph (Live)</span>
+      <svg viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg" style="background: #0f172a; border: 1px solid #1e293b;">
+        <text x="200" y="20" text-anchor="middle" font-family="Outfit" font-size="11" fill="#e2e8f0" font-weight="600">Each Line of Code · One Piece of the Graph</text>
+        <!-- Code panel left -->
+        <rect x="14" y="34" width="216" height="232" rx="6" fill="#0a1428" stroke="#1e293b"/>
+        <text x="22" y="50" font-family="JetBrains Mono" font-size="7.5" fill="#c084fc">from</text>
+        <text x="48" y="50" font-family="JetBrains Mono" font-size="7.5" fill="#e2e8f0">langgraph.graph</text>
+        <text x="124" y="50" font-family="JetBrains Mono" font-size="7.5" fill="#c084fc">import</text>
+        <text x="156" y="50" font-family="JetBrains Mono" font-size="7.5" fill="#60a5fa">StateGraph</text>
+        <text x="22" y="70" font-family="JetBrains Mono" font-size="7.5" fill="#e2e8f0">graph = StateGraph(State)</text>
+        <text x="22" y="92" font-family="JetBrains Mono" font-size="7.5" fill="#94a3b8">graph.add_node(</text>
+        <text x="106" y="92" font-family="JetBrains Mono" font-size="7.5" fill="#fb923c">"agent"</text>
+        <text x="140" y="92" font-family="JetBrains Mono" font-size="7.5" fill="#94a3b8">, call_model)</text>
+        <text x="22" y="106" font-family="JetBrains Mono" font-size="7.5" fill="#94a3b8">graph.add_node(</text>
+        <text x="106" y="106" font-family="JetBrains Mono" font-size="7.5" fill="#fb923c">"tools"</text>
+        <text x="140" y="106" font-family="JetBrains Mono" font-size="7.5" fill="#94a3b8">, call_tools)</text>
+        <text x="22" y="130" font-family="JetBrains Mono" font-size="7.5" fill="#94a3b8">graph.add_edge(START,</text>
+        <text x="142" y="130" font-family="JetBrains Mono" font-size="7.5" fill="#fb923c">"agent"</text>
+        <text x="172" y="130" font-family="JetBrains Mono" font-size="7.5" fill="#94a3b8">)</text>
+        <text x="22" y="152" font-family="JetBrains Mono" font-size="7.5" fill="#94a3b8">graph.add_conditional_</text>
+        <text x="22" y="164" font-family="JetBrains Mono" font-size="7.5" fill="#94a3b8">edges(</text>
+        <text x="58" y="164" font-family="JetBrains Mono" font-size="7.5" fill="#fb923c">"agent"</text>
+        <text x="92" y="164" font-family="JetBrains Mono" font-size="7.5" fill="#94a3b8">, should_use_tool,</text>
+        <text x="32" y="178" font-family="JetBrains Mono" font-size="7.5" fill="#94a3b8">{</text>
+        <text x="38" y="178" font-family="JetBrains Mono" font-size="7.5" fill="#fb923c">"yes"</text>
+        <text x="60" y="178" font-family="JetBrains Mono" font-size="7.5" fill="#94a3b8">:</text>
+        <text x="68" y="178" font-family="JetBrains Mono" font-size="7.5" fill="#fb923c">"tools"</text>
+        <text x="100" y="178" font-family="JetBrains Mono" font-size="7.5" fill="#94a3b8">,</text>
+        <text x="108" y="178" font-family="JetBrains Mono" font-size="7.5" fill="#fb923c">"no"</text>
+        <text x="124" y="178" font-family="JetBrains Mono" font-size="7.5" fill="#94a3b8">: END})</text>
+        <text x="22" y="200" font-family="JetBrains Mono" font-size="7.5" fill="#94a3b8">graph.add_edge(</text>
+        <text x="98" y="200" font-family="JetBrains Mono" font-size="7.5" fill="#fb923c">"tools"</text>
+        <text x="130" y="200" font-family="JetBrains Mono" font-size="7.5" fill="#94a3b8">,</text>
+        <text x="138" y="200" font-family="JetBrains Mono" font-size="7.5" fill="#fb923c">"agent"</text>
+        <text x="170" y="200" font-family="JetBrains Mono" font-size="7.5" fill="#94a3b8">)</text>
+        <text x="22" y="222" font-family="JetBrains Mono" font-size="7.5" fill="#e2e8f0">app = graph.compile()</text>
+        <text x="22" y="248" font-family="JetBrains Mono" font-size="7.5" fill="#34d399">app.invoke(initial_state)</text>
+        <!-- Graph panel right -->
+        <rect x="240" y="34" width="146" height="232" rx="6" fill="#0a1428" stroke="#1e293b"/>
+        <text x="313" y="56" text-anchor="middle" font-family="Outfit" font-size="8" fill="#94a3b8" letter-spacing="0.06em">RUNTIME GRAPH</text>
+        <rect x="288" y="68" width="50" height="20" rx="10" fill="#1e293b" stroke="#475569"/>
+        <text x="313" y="82" text-anchor="middle" font-family="Outfit" font-size="8" fill="#94a3b8">START</text>
+        <line x1="313" y1="88" x2="313" y2="100" stroke="#475569" marker-end="url(#m06cgArrow)"/>
+        <rect x="288" y="102" width="50" height="22" rx="4" fill="rgba(37,99,235,0.18)" stroke="#2563EB"/>
+        <text x="313" y="116" text-anchor="middle" font-family="Outfit" font-size="8" fill="#bfdbfe">agent</text>
+        <line x1="313" y1="124" x2="313" y2="136" stroke="#475569" marker-end="url(#m06cgArrow)"/>
+        <polygon points="313,140 333,156 313,172 293,156" fill="rgba(245,158,11,0.18)" stroke="#f59e0b"/>
+        <text x="313" y="160" text-anchor="middle" font-family="Outfit" font-size="7" fill="#fbbf24">tool?</text>
+        <line x1="333" y1="156" x2="358" y2="156" stroke="#10b981" marker-end="url(#m06cgArrowG)"/>
+        <text x="345" y="148" text-anchor="middle" font-family="Outfit" font-size="6" fill="#34d399">y</text>
+        <rect x="356" y="146" width="26" height="20" rx="4" fill="rgba(16,185,129,0.18)" stroke="#10b981"/>
+        <text x="369" y="160" text-anchor="middle" font-family="Outfit" font-size="7" fill="#a7f3d0">tools</text>
+        <line x1="293" y1="156" x2="270" y2="156" stroke="#94a3b8" marker-end="url(#m06cgArrow)"/>
+        <text x="282" y="148" text-anchor="middle" font-family="Outfit" font-size="6" fill="#94a3b8">n</text>
+        <rect x="246" y="146" width="24" height="20" rx="10" fill="#1e293b" stroke="#475569"/>
+        <text x="258" y="160" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8">END</text>
+        <path d="M 369 166 Q 369 200 313 200 Q 313 200 313 124" stroke="#10b981" stroke-width="0.8" stroke-dasharray="2,2" fill="none"/>
+        <text x="313" y="240" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8" font-style="italic">ReAct loop = graph cycle</text>
+        <defs>
+          <marker id="m06cgArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8"/></marker>
+          <marker id="m06cgArrowG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#10b981"/></marker>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+</div><!-- end video-4 -->
+
+
+<!-- ================================================================ -->
+<!-- VIDEO 5: Wrap-Up                                                -->
+<!-- ================================================================ -->
+
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- VIDEO 5: TA — Agent Concepts (ReAct) Lab                                 -->
+<!-- ════════════════════════════════════════════════════════ -->
+<div class="video-section" id="video-5" data-script-export="false" data-ta-only="true" style="display:none">
+
+  <div class="video-header">
+    <h2>Video 5: "Agent Concepts (ReAct) Lab Walkthrough" (TA) &mdash; <span style="color:#b45309;">Not Part of Script Export</span></h2>
+    <div class="video-meta">TA screen recording -- 8-12 minutes -- no script, walkthrough only</div>
+    <div style="background:#fff3cd;border-left:4px solid #f59e0b;padding:10px 14px;border-radius:6px;margin-top:10px;font-size:0.95em;">
+      <strong>Note:</strong> This video has <em>no narration script</em>. The TA records a live screen walkthrough of <code>M06_Lab1_Agent_Concepts_ReAct.ipynb</code> in Colab, talking naturally through each cell. The items below are <strong>guidelines for the TA</strong> on how to record the video &mdash; they are <strong>not part of the script export</strong>.
+    </div>
+  </div>
+
+  <div class="segment">
+    <div class="segment-header">
+      <span class="segment-number">TA</span>
+      <span class="segment-title">Agent Concepts (ReAct) Lab Walkthrough</span>
+      <div class="segment-badges">
+        <span class="badge badge-ta">TA GUIDELINES</span>
+        <span class="badge badge-duration">8-12 min</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <div class="ta-guidelines">
+        <h4>GUIDELINES FOR TA</h4>
+        <p class="ta-intro">Open <code>M06_Lab1_Agent_Concepts_ReAct.ipynb</code> in Google Colab and record a live screen walkthrough. Run every cell from top to bottom. Talk naturally &mdash; no script. Friendly, patient, at a pace a first-time student can follow.</p>
+
+        <div class="ta-section">
+          <h5>1. Open the Notebook</h5>
+          <ul>
+            <li>Open <code>M06_Lab1_Agent_Concepts_ReAct.ipynb</code> in Google Colab</li>
+            <li>Show the table of contents and explain the flow of the lab</li>
+            <li>Confirm any required API keys are loaded from Colab Secrets</li>
+          </ul>
+        </div>
+
+        <div class="ta-section">
+          <h5>2. Walk Through the Code Cells</h5>
+          <ul>
+            <li>Cell by cell, explain what each line does in plain English</li>
+            <li>Run each cell live and show the output</li>
+            <li>If a cell fails, fix it on camera &mdash; students learn from seeing errors resolved</li>
+          </ul>
+        </div>
+
+        <div class="ta-section">
+          <h5>3. Highlight the Key Concept</h5>
+          <ul>
+            <li>Pause on the most important idea in this lab and explain <em>why</em> it matters</li>
+            <li>Connect it back to what the instructor covered in the scripted video right before this one</li>
+            <li>Show a second mini-example if there is time</li>
+          </ul>
+        </div>
+
+        <div class="ta-section">
+          <h5>4. Common Gotchas</h5>
+          <ul>
+            <li>Point out 2&ndash;3 places where students typically get stuck in this lab</li>
+            <li>Show the fix for each one</li>
+            <li>Remind students to read error messages carefully</li>
+          </ul>
+        </div>
+
+        <div class="ta-section">
+          <h5>5. Assignment Handoff</h5>
+          <ul>
+            <li>Point to the exercise at the bottom of the notebook</li>
+            <li>Tell students what to submit and where</li>
+            <li>Sign off warmly: "Good luck &mdash; and have fun with it."</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="media-col">
+      <span class="media-label">Recording Setup</span>
+      <p class="shot-note">TA screen recording at 1920x1080, 30fps. Colab notebook at comfortable zoom (students should be able to read every line). TA voiceover recorded with a decent mic &mdash; clean, warm, conversational.</p>
+      <div class="media-note">
+        MEDIA TEAM: Walkthrough, not a scripted lecture. Record the screen, capture the audio, edit only for length. No B-roll, no overlays. Keep it raw and authentic &mdash; students trust walkthrough videos more than polished ones.
+      </div>
+    </div>
+  </div>
+
+</div><!-- end video-5 (TA Agent Concepts (ReAct) Lab) -->
+
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- VIDEO 6: TA — LangGraph Agents Lab                                 -->
+<!-- ════════════════════════════════════════════════════════ -->
+<div class="video-section" id="video-6" data-script-export="false" data-ta-only="true" style="display:none">
+
+  <div class="video-header">
+    <h2>Video 6: "LangGraph Agents Lab Walkthrough" (TA) &mdash; <span style="color:#b45309;">Not Part of Script Export</span></h2>
+    <div class="video-meta">TA screen recording -- 8-12 minutes -- no script, walkthrough only</div>
+    <div style="background:#fff3cd;border-left:4px solid #f59e0b;padding:10px 14px;border-radius:6px;margin-top:10px;font-size:0.95em;">
+      <strong>Note:</strong> This video has <em>no narration script</em>. The TA records a live screen walkthrough of <code>M06_Lab2_LangGraph_Agents.ipynb</code> in Colab, talking naturally through each cell. The items below are <strong>guidelines for the TA</strong> on how to record the video &mdash; they are <strong>not part of the script export</strong>.
+    </div>
+  </div>
+
+  <div class="segment">
+    <div class="segment-header">
+      <span class="segment-number">TA</span>
+      <span class="segment-title">LangGraph Agents Lab Walkthrough</span>
+      <div class="segment-badges">
+        <span class="badge badge-ta">TA GUIDELINES</span>
+        <span class="badge badge-duration">8-12 min</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <div class="ta-guidelines">
+        <h4>GUIDELINES FOR TA</h4>
+        <p class="ta-intro">Open <code>M06_Lab2_LangGraph_Agents.ipynb</code> in Google Colab and record a live screen walkthrough. Run every cell from top to bottom. Talk naturally &mdash; no script. Friendly, patient, at a pace a first-time student can follow.</p>
+
+        <div class="ta-section">
+          <h5>1. Open the Notebook</h5>
+          <ul>
+            <li>Open <code>M06_Lab2_LangGraph_Agents.ipynb</code> in Google Colab</li>
+            <li>Show the table of contents and explain the flow of the lab</li>
+            <li>Confirm any required API keys are loaded from Colab Secrets</li>
+          </ul>
+        </div>
+
+        <div class="ta-section">
+          <h5>2. Walk Through the Code Cells</h5>
+          <ul>
+            <li>Cell by cell, explain what each line does in plain English</li>
+            <li>Run each cell live and show the output</li>
+            <li>If a cell fails, fix it on camera &mdash; students learn from seeing errors resolved</li>
+          </ul>
+        </div>
+
+        <div class="ta-section">
+          <h5>3. Highlight the Key Concept</h5>
+          <ul>
+            <li>Pause on the most important idea in this lab and explain <em>why</em> it matters</li>
+            <li>Connect it back to what the instructor covered in the scripted video right before this one</li>
+            <li>Show a second mini-example if there is time</li>
+          </ul>
+        </div>
+
+        <div class="ta-section">
+          <h5>4. Common Gotchas</h5>
+          <ul>
+            <li>Point out 2&ndash;3 places where students typically get stuck in this lab</li>
+            <li>Show the fix for each one</li>
+            <li>Remind students to read error messages carefully</li>
+          </ul>
+        </div>
+
+        <div class="ta-section">
+          <h5>5. Assignment Handoff</h5>
+          <ul>
+            <li>Point to the exercise at the bottom of the notebook</li>
+            <li>Tell students what to submit and where</li>
+            <li>Sign off warmly: "Good luck &mdash; and have fun with it."</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="media-col">
+      <span class="media-label">Recording Setup</span>
+      <p class="shot-note">TA screen recording at 1920x1080, 30fps. Colab notebook at comfortable zoom (students should be able to read every line). TA voiceover recorded with a decent mic &mdash; clean, warm, conversational.</p>
+      <div class="media-note">
+        MEDIA TEAM: Walkthrough, not a scripted lecture. Record the screen, capture the audio, edit only for length. No B-roll, no overlays. Keep it raw and authentic &mdash; students trust walkthrough videos more than polished ones.
+      </div>
+    </div>
+  </div>
+
+</div><!-- end video-6 (TA LangGraph Agents Lab) -->
+
+
+<div class="video-section" id="video-7" data-script-export="false" style="display:none">
+
+  <div class="video-header">
+    <h2>Video 7: "Module 6 Wrap-Up"</h2>
+    <div class="video-meta">Prof on camera -- 2-3 minutes -- 2 segments</div>
+  </div>
+
+  <!-- PART 01 -->
+  <div class="segment">
+    <div class="segment-header">
+      <span class="segment-number">PART 01</span>
+      <span class="segment-title">What You Accomplished</span>
+      <div class="segment-badges">
+        <span class="badge badge-type">On Camera</span>
+        <span class="badge badge-duration">~90 sec</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <p>Let us look at what you built.</p>
+      <p>You learned the difference between chains and agents -- scripts versus intelligence. You learned the ReAct loop -- reason, act, observe, repeat. You learned how tools give agents the ability to interact with the real world. And you built LangGraph agents with nodes, edges, conditional routing, and state management.</p>
+      <p>That is a massive leap. You went from fixed pipelines to dynamic AI systems that make their own decisions.</p>
+    </div>
+    <div class="media-col">
+      <span class="media-label">Shot Setup</span>
+      <p class="shot-note">Same studio setup as opening. Reflective delivery. Let the accomplishment land.</p>
+    </div>
+  </div>
+
+  <!-- PART 02 -->
+  <div class="segment">
+    <div class="segment-header">
+      <span class="segment-number">PART 02</span>
+      <span class="segment-title">Next: The Hackathon</span>
+      <div class="segment-badges">
+        <span class="badge badge-type">On Camera</span>
+        <span class="badge badge-duration">~30 sec</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <p>Next week is different. No new concepts. No new frameworks. Just building.</p>
+      <p>You have LLM APIs, prompt engineering, structured output, LangChain, RAG, and agents in your toolkit. Next week, you put them all together in the hackathon. Forty-eight hours. Build something real. Break something. Ship it. </p>
+    </div>
+    <div class="media-col">
+      <span class="media-label">End Card</span>
+      <svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg" style="background: #0f172a; border: 1px solid #1e293b;">
+        <rect x="0" y="0" width="400" height="32" fill="#1e293b"/>
+        <text x="20" y="20" font-family="Outfit" font-size="9" fill="#60a5fa" font-weight="600" letter-spacing="0.14em">DADS 5250</text>
+        <text x="380" y="20" text-anchor="end" font-family="Outfit" font-size="9" fill="#475569" letter-spacing="0.1em">MODULE 06 / 14</text>
+        <text x="200" y="68" text-anchor="middle" font-family="Outfit" font-size="18" fill="#ffffff" font-weight="600">Module 6 Complete</text>
+        <text x="200" y="86" text-anchor="middle" font-family="Outfit" font-size="10" fill="#94a3b8">Agents · ReAct Loop · LangGraph</text>
+        <line x1="120" y1="106" x2="280" y2="106" stroke="#1e293b" stroke-width="1"/>
+        <text x="200" y="132" text-anchor="middle" font-family="Outfit" font-size="9" fill="#475569" letter-spacing="0.12em">NEXT WEEK</text>
+        <text x="200" y="156" text-anchor="middle" font-family="Outfit" font-size="14" fill="#fbbf24" font-weight="600">Module 7 — HACKATHON</text>
+        <text x="200" y="172" text-anchor="middle" font-family="Outfit" font-size="9" fill="#94a3b8">48 hours · Build something real · Break it · Ship it</text>
+        <text x="200" y="202" text-anchor="middle" font-family="Outfit" font-size="8" fill="#475569">Prof. Mohammad Dehghani — Northeastern University</text>
+      </svg>
+    </div>
+  </div>
+
+</div><!-- end video-7 -->
+
+
+<!-- Expert Conversation Guide (separate from video tabs) -->
+<div style="margin-top:48px; padding-top:24px; border-top:1px solid rgba(37,99,235,0.08);">
+  <div class="segment">
+    <div class="segment-header">
+      <span class="segment-number" style="background:rgba(120,113,108,0.1);color:#78716c;">EXPERT</span>
+      <span class="segment-title">Expert Conversation Guide -- Agents in Industry</span>
+      <div class="segment-badges">
+        <span class="badge badge-expert">EXPERT CONVERSATION</span>
+        <span class="badge badge-duration">15-20 min</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <div class="expert-guidelines">
+        <h4>EXPERT CONVERSATION GUIDE</h4>
+        <p class="expert-intro">Prof. Dehghani hosts an industry expert. Semi-structured conversation about agents in production.</p>
+        <div class="expert-section">
+          <h5>Discussion Prompts</h5>
+          <ol>
+            <li>"What real agent systems are you seeing in production?"</li>
+            <li>"What are the biggest challenges in deploying agents?"</li>
+            <li>"How do you handle agent failures and errors?"</li>
+            <li>"What skills should students focus on for agent development?"</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+    <div class="media-col">
+      <span class="media-label">Recording Note</span>
+      <div class="media-note">
+        MEDIA TEAM: Two-camera setup -- Prof. and guest. Relaxed conversation format. No slides needed. Capture both speakers clearly. 15-20 minutes, can be edited down to 12-15 for final cut.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- References -->
+<div class="references-section">
+  <h3>References &amp; Resources</h3>
+  <table class="ref-table">
+    <thead><tr><th>Resource</th><th>Link</th></tr></thead>
+    <tbody>
+      <tr><td>ReAct Paper (Yao et al., 2023)</td><td><a href="https://arxiv.org/abs/2210.03629" target="_blank">arxiv.org/abs/2210.03629</a></td></tr>
+      <tr><td>LangGraph Documentation</td><td><a href="https://langchain-ai.github.io/langgraph/" target="_blank">langchain-ai.github.io/langgraph</a></td></tr>
+      <tr><td>OpenAI Function Calling</td><td><a href="https://platform.openai.com/docs/guides/function-calling" target="_blank">platform.openai.com/docs</a></td></tr>
+      <tr><td>LangChain Agents Guide</td><td><a href="https://python.langchain.com/docs/how_to/#agents" target="_blank">python.langchain.com</a></td></tr>
+    </tbody>
+  </table>
+</div>
+
+</div><!-- end container -->
+
+<div class="scroll-controls" id="scrollControls">
+  <label>Speed</label>
+  <input type="range" min="0" max="5" step="0.25" value="1" id="scrollSpeed">
+  <button id="scrollToggle" onclick="toggleAutoScroll()">Start</button>
+</div>
+
+<script>
+function switchVideo(num) {
+  document.querySelectorAll('.video-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.video-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('video-' + num).classList.add('active');
+  document.querySelectorAll('.video-tab')[num - 1].classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+let teleMode = false;
+function toggleTeleprompter() {
+  teleMode = !teleMode;
+  document.body.classList.toggle('teleprompter', teleMode);
+  const btn = document.getElementById('teleBtn');
+  btn.classList.toggle('teleprompter-active', teleMode);
+  btn.textContent = teleMode ? 'Exit Teleprompter' : 'Teleprompter';
+  if (!teleMode) { stopAutoScroll(); }
+}
+
+let scrollInterval = null;
+let isScrolling = false;
+function toggleAutoScroll() { if (isScrolling) { stopAutoScroll(); } else { startAutoScroll(); } }
+function startAutoScroll() { isScrolling = true; const btn = document.getElementById('scrollToggle'); btn.textContent = 'Stop'; btn.classList.add('active'); scrollInterval = setInterval(() => { window.scrollBy(0, parseFloat(document.getElementById('scrollSpeed').value)); }, 16); }
+function stopAutoScroll() { isScrolling = false; const btn = document.getElementById('scrollToggle'); btn.textContent = 'Start'; btn.classList.remove('active'); if (scrollInterval) { clearInterval(scrollInterval); scrollInterval = null; } }
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 't' && !e.ctrlKey && !e.metaKey && e.target.tagName !== 'INPUT') { toggleTeleprompter(); }
+  if (e.key === ' ' && teleMode && e.target.tagName !== 'INPUT') { e.preventDefault(); toggleAutoScroll(); }
+  if (['1','2','3','4','5','6'].includes(e.key) && !e.ctrlKey && !e.metaKey && e.target.tagName !== 'INPUT') { switchVideo(parseInt(e.key)); }
+});
+
+// ── Inline Segment Editing ──
+(function() {
+  const PAGE_KEY = document.title.replace(/[^a-zA-Z0-9]/g, '_');
+
+  function getStore() {
+    return JSON.parse(localStorage.getItem('dads_script_edits') || '{}');
+  }
+
+  function segId(seg) {
+    const num = seg.querySelector('.segment-number')?.textContent.trim() || '';
+    const title = seg.querySelector('.segment-title')?.textContent.trim() || '';
+    return PAGE_KEY + '__' + num + '__' + title;
+  }
+
+  document.querySelectorAll('.segment').forEach(seg => {
+    const header = seg.querySelector('.segment-header');
+    if (!header) return;
+
+    const dot = document.createElement('span');
+    dot.className = 'segment-edited-dot';
+    dot.title = 'Edited';
+    header.insertBefore(dot, header.firstChild);
+
+    const btn = document.createElement('button');
+    btn.className = 'edit-btn';
+    btn.innerHTML = '&#9998;';
+    btn.title = 'Edit segment';
+    header.appendChild(btn);
+
+    const actions = document.createElement('div');
+    actions.className = 'edit-actions';
+    actions.innerHTML = '<button class="btn-save">Save</button><button class="btn-cancel">Cancel</button>';
+    header.appendChild(actions);
+
+    let backup = {};
+
+    btn.addEventListener('click', () => {
+      seg.classList.add('editing');
+      backup = {};
+      seg.querySelectorAll('.script-col, .media-col').forEach(col => {
+        col.querySelectorAll('p, .media-note, .media-label, .placeholder-type, .placeholder-desc, .shot-note').forEach(el => {
+          el.setAttribute('contenteditable', 'true');
+        });
+        backup[col.className] = col.innerHTML;
+      });
+    });
+
+    actions.querySelector('.btn-cancel').addEventListener('click', () => {
+      seg.classList.remove('editing');
+      seg.querySelectorAll('.script-col, .media-col').forEach(col => {
+        if (backup[col.className]) col.innerHTML = backup[col.className];
+        col.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+      });
+    });
+
+    actions.querySelector('.btn-save').addEventListener('click', () => {
+      seg.classList.remove('editing');
+      seg.classList.add('was-edited');
+      const store = getStore();
+      const id = segId(seg);
+      store[id] = {};
+      seg.querySelectorAll('.script-col, .media-col').forEach(col => {
+        col.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+        store[id][col.className] = col.innerHTML;
+      });
+      localStorage.setItem('dads_script_edits', JSON.stringify(store));
+    });
+  });
+
+  const store = getStore();
+  document.querySelectorAll('.segment').forEach(seg => {
+    const id = segId(seg);
+    if (store[id]) {
+      seg.classList.add('was-edited');
+      seg.querySelectorAll('.script-col, .media-col').forEach(col => {
+        if (store[id][col.className]) col.innerHTML = store[id][col.className];
+      });
+    }
+  });
+})();
+
+
+// ── Review Status (approve / maybe / reject) ──
+(function() {
+  const PAGE_KEY = document.title.replace(/[^a-zA-Z0-9]/g, '_');
+  const STORE_KEY = 'dads_script_reviews';
+
+  function getReviews() {
+    return JSON.parse(localStorage.getItem(STORE_KEY) || '{}');
+  }
+
+  function revId(seg) {
+    const num = seg.querySelector('.segment-number')?.textContent.trim() || '';
+    const title = seg.querySelector('.segment-title')?.textContent.trim() || '';
+    return PAGE_KEY + '__' + num + '__' + title;
+  }
+
+  const statuses = [
+    { key: 'approved', label: '✓', cls: 'rv-approve', tip: 'Approve' },
+    { key: 'maybe',   label: '?',       cls: 'rv-maybe',  tip: 'Maybe' },
+    { key: 'rejected',label: '✗', cls: 'rv-reject', tip: 'Reject' }
+  ];
+
+  document.querySelectorAll('.segment').forEach(seg => {
+    const header = seg.querySelector('.segment-header');
+    if (!header) return;
+
+    const wrap = document.createElement('span');
+    wrap.className = 'review-toggle';
+
+    statuses.forEach(s => {
+      const b = document.createElement('button');
+      b.className = s.cls;
+      b.textContent = s.label;
+      b.title = s.tip;
+      b.addEventListener('click', () => {
+        const id = revId(seg);
+        const reviews = getReviews();
+        const current = seg.getAttribute('data-review');
+        // Toggle off if same status clicked again
+        if (current === s.key) {
+          seg.removeAttribute('data-review');
+          delete reviews[id];
+          wrap.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+        } else {
+          seg.setAttribute('data-review', s.key);
+          reviews[id] = s.key;
+          wrap.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+          b.classList.add('active');
+        }
+        localStorage.setItem(STORE_KEY, JSON.stringify(reviews));
+      });
+      wrap.appendChild(b);
+    });
+
+    // Insert after segment-title
+    const title = header.querySelector('.segment-title');
+    if (title && title.nextSibling) {
+      header.insertBefore(wrap, title.nextSibling);
+    } else {
+      header.appendChild(wrap);
+    }
+  });
+
+  // Restore on load
+  const reviews = getReviews();
+  document.querySelectorAll('.segment').forEach(seg => {
+    const id = revId(seg);
+    if (reviews[id]) {
+      seg.setAttribute('data-review', reviews[id]);
+      const wrap = seg.querySelector('.review-toggle');
+      if (wrap) {
+        const s = statuses.find(x => x.key === reviews[id]);
+        if (s) wrap.querySelector('.' + s.cls)?.classList.add('active');
+      }
+    }
+  });
+})();
+
+
+function exportScript() {
+  let videoBlocks = [];
+
+  document.querySelectorAll('.video-section').forEach(section => {
+    // Skip TA-only or export-disabled videos
+    if (section.dataset.scriptExport === 'false') return;
+    if (section.dataset.taOnly === 'true') return;
+
+    // Get video number from id="video-N"
+    const videoNum = section.id.replace('video-', '');
+    // Get clean title from h2 (strip any HTML tags)
+    const h2El = section.querySelector('.video-header h2');
+    const h2Raw = h2El ? h2El.textContent.trim() : '';
+    // Extract just the title part after "Video N: " - remove quotes
+    const titleMatch = h2Raw.match(/Video\s+\d+:\s*"?([^"]*)"?\s*$/);
+    const videoTitle = titleMatch ? titleMatch[1].replace(/\s*$/, '') : h2Raw;
+
+    let partBlocks = [];
+
+    section.querySelectorAll('.segment').forEach(seg => {
+      // Use the segment-number text from the HTML (e.g. "PART 01", "PART A")
+      const segNum = seg.querySelector('.segment-number')?.textContent?.trim() || '';
+      const segTitle = seg.querySelector('.segment-title')?.textContent?.trim() || '';
+      // Format: "PART 1: Title" - use the number/letter from the span
+      const partLabel = segNum ? segNum : 'PART';
+      const partHeader = segTitle ? partLabel + ': ' + segTitle : partLabel;
+
+      let paragraphs = [];
+
+      const scriptCol = seg.querySelector('.script-col');
+      if (scriptCol) {
+        const ta = scriptCol.querySelector('.ta-guidelines');
+        scriptCol.querySelectorAll(':scope > p').forEach(p => {
+          if (ta && ta.contains(p)) return;
+          const text = p.textContent.trim();
+          if (text) paragraphs.push(text);
+        });
+
+        // Also handle selected option cards
+        const selected = scriptCol.querySelector('.option-card.selected');
+        if (selected) {
+          selected.querySelectorAll('p').forEach(p => {
+            const text = p.textContent.trim();
+            if (text) paragraphs.push(text);
+          });
+        }
+
+        // Also handle .script-card blocks
+        const scriptCard = scriptCol.querySelector('.script-card');
+        if (scriptCard) {
+          scriptCard.querySelectorAll('p').forEach(p => {
+            const text = p.textContent.trim();
+            if (text) paragraphs.push(text);
+          });
+        }
+      }
+
+      partBlocks.push(partHeader + '\n\n' + paragraphs.join('\n\n'));
+    });
+
+    const videoHeader = 'VIDEO ' + videoNum + ' \u2014 ' + videoTitle;
+    videoBlocks.push(videoHeader + '\n\n' + partBlocks.join('\n\n---\n\n'));
+  });
+
+  const text = videoBlocks.join('\n\n===\n\n');
+  // Extract module number from title for filename
+  const modMatch = document.title.match(/M(\d+)/);
+  const filename = modMatch ? 'M' + modMatch[1] + '_Script.txt' : 'Script_Export.txt';
+  const blob = new Blob([text], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  const btn = document.querySelector('.btn-action[onclick="exportScript()"]');
+  const original = btn.textContent;
+  btn.textContent = 'Downloaded!';
+  btn.style.background = 'var(--accent)';
+  btn.style.color = '#fff';
+  setTimeout(() => {
+    btn.textContent = original;
+    btn.style.background = '';
+    btn.style.color = '';
+  }, 1500);
+}
+
+// ── Audio Player v4: all parts on one page ──
+let currentlyPlaying = null;
+
+function playPart(id) {
+  const audio = document.getElementById('audio-' + id);
+  const seg = document.getElementById('audio-part-' + id);
+  if (!audio || !seg) return;
+  const btn = seg.querySelector('.audio-play-btn');
+  const progress = document.getElementById('progress-' + id);
+
+  if (currentlyPlaying && currentlyPlaying !== id) {
+    const pa = document.getElementById('audio-' + currentlyPlaying);
+    const pb = document.querySelector('.audio-play-btn.playing');
+    const pp = document.getElementById('progress-' + currentlyPlaying);
+    if (pa) { pa.pause(); pa.currentTime = 0; }
+    if (pb) pb.classList.remove('playing');
+    if (pp) pp.style.width = '0%';
+    currentlyPlaying = null;
+  }
+
+  if (!audio.paused) { audio.pause(); btn.classList.remove('playing'); currentlyPlaying = null; return; }
+
+  audio.play().then(() => { btn.classList.add('playing'); currentlyPlaying = id; }).catch(() => {
+    let note = seg.querySelector('.audio-not-recorded');
+    if (!note) {
+      note = document.createElement('div');
+      note.className = 'audio-not-recorded';
+      note.textContent = 'Audio not yet recorded \u2014 voiceover will be added by the TA.';
+      const header = seg.querySelector('.audio-header');
+      if (header) header.parentNode.insertBefore(note, header.nextSibling);
+    }
+    setTimeout(() => { if (note && note.parentNode) note.remove(); }, 3000);
+  });
+
+  audio.ontimeupdate = () => {
+    if (audio.duration && progress) progress.style.width = (audio.currentTime / audio.duration * 100) + '%';
+  };
+  audio.onended = () => {
+    btn.classList.remove('playing');
+    if (progress) progress.style.width = '0%';
+    currentlyPlaying = null;
+  };
+}
+
+</script>
+
+</body>
+</html>

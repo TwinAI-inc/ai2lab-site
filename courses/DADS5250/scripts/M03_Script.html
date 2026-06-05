@@ -1,0 +1,2292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>/* dads5250-faculty-gate */
+(function(){try{var k="dads5250_faculty_v1";var v=localStorage.getItem(k)||sessionStorage.getItem(k);if(v==="2026")return;location.replace("./");}catch(e){location.replace("./");}})();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M03 Production Script — DADS 5250</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #F0F4FA;
+  --accent: #2563EB;
+  --accent-light: #dbeafe;
+  --accent-dark: #1d4ed8;
+  --text: #1e293b;
+  --text-muted: #64748b;
+  --card-bg: rgba(255,255,255,0.72);
+  --card-border: rgba(255,255,255,0.5);
+  --card-shadow: 0 4px 24px rgba(37,99,235,0.08);
+  --radius: 14px;
+  --green: #10b981;
+  --amber: #f59e0b;
+  --muted: #94a3b8;
+  --col-left: 60%;
+  --col-right: 40%;
+}
+
+body {
+  font-family: 'Outfit', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: -120px;
+  right: -120px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(37,99,235,0.09) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(240,244,250,0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(37,99,235,0.08);
+  padding: 8px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.topbar-left { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.topbar-title { font-size: 0.92rem; font-weight: 600; color: var(--text); white-space: nowrap; }
+.topbar-subtitle { font-size: 0.8rem; color: var(--text-muted); font-weight: 400; }
+
+.video-tabs {
+  display: flex;
+  gap: 4px;
+  flex-basis: 100%;
+  width: 100%;
+  order: 10;
+  flex-wrap: wrap;
+  margin-top: 6px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(37,99,235,0.08);
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(37,99,235,0.3) transparent;
+  padding-bottom: 2px;
+}
+.video-tabs::-webkit-scrollbar { height: 4px; }
+.video-tabs::-webkit-scrollbar-thumb { background: rgba(37,99,235,0.25); border-radius: 2px; }
+.video-tabs::-webkit-scrollbar-track { background: transparent; }
+
+.video-tab { padding: 5px 14px; border-radius: 999px; border: 1px solid rgba(37,99,235,0.15); background: transparent; color: var(--text-muted); font-family: 'Outfit', sans-serif; font-size: 0.82rem; font-weight: 500; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+.video-tab:hover { background: var(--accent-light); color: var(--accent); }
+.video-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* Video type distinction: scripted (professor, narrated) vs TA walkthrough (recorded later) */
+.video-tab.scripted { border-color: rgba(37,99,235,0.25); }
+.video-tab.scripted::before,
+.video-tab.ta-recorded::before,
+.video-tab.voiceover-only::before {
+  content: ""; display: inline-block; width: 14px; height: 14px; margin-right: 7px; vertical-align: -2px;
+  background-repeat: no-repeat; background-position: center; background-size: contain;
+}
+.video-tab.scripted::before { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'/><polyline points='14 2 14 8 20 8'/><line x1='8' y1='13' x2='16' y2='13'/><line x1='8' y1='17' x2='16' y2='17'/><line x1='8' y1='9' x2='10' y2='9'/></svg>"); }
+.video-tab.scripted.active::before { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'/><polyline points='14 2 14 8 20 8'/><line x1='8' y1='13' x2='16' y2='13'/><line x1='8' y1='17' x2='16' y2='17'/><line x1='8' y1='9' x2='10' y2='9'/></svg>"); }
+.video-tab.ta-recorded { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.45); color: #92400e; }
+.video-tab.ta-recorded:hover { background: rgba(245,158,11,0.18); color: #78350f; }
+.video-tab.ta-recorded::before { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b45309' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='2' y='3' width='20' height='14' rx='2' ry='2'/><line x1='8' y1='21' x2='16' y2='21'/><line x1='12' y1='17' x2='12' y2='21'/><polygon points='10 8 15 10 10 12 10 8' fill='%23b45309'/></svg>"); }
+.video-tab.ta-recorded.active { background: #f59e0b; color: #fff; border-color: #f59e0b; }
+.video-tab.ta-recorded.active::before { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='2' y='3' width='20' height='14' rx='2' ry='2'/><line x1='8' y1='21' x2='16' y2='21'/><line x1='12' y1='17' x2='12' y2='21'/><polygon points='10 8 15 10 10 12 10 8' fill='white'/></svg>"); }
+
+/* Voiceover-only videos (no on-camera) -- microphone icon, teal accent */
+.video-tab.voiceover-only { background: rgba(20,184,166,0.08); border-color: rgba(20,184,166,0.45); color: #0f766e; }
+.video-tab.voiceover-only:hover { background: rgba(20,184,166,0.18); color: #134e4a; }
+.video-tab.voiceover-only::before { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230f766e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z'/><path d='M19 10v2a7 7 0 0 1-14 0v-2'/><line x1='12' y1='19' x2='12' y2='23'/><line x1='8' y1='23' x2='16' y2='23'/></svg>"); }
+.video-tab.voiceover-only.active { background: #14b8a6; color: #fff; border-color: #14b8a6; }
+.video-tab.voiceover-only.active::before { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z'/><path d='M19 10v2a7 7 0 0 1-14 0v-2'/><line x1='12' y1='19' x2='12' y2='23'/><line x1='8' y1='23' x2='16' y2='23'/></svg>"); }
+.video-tab.voiceover-only::before,
+.video-tab.voiceover-only.active::before { /* inherit the ::before positioning already defined for scripted/ta-recorded */ }
+
+/* ── Audio Player v4 · All parts on one page · Liquid Glass ── */
+
+/* Step nav — scroll-to index, not hide/show */
+.audio-nav {
+  display: flex; justify-content: center; gap: 8px;
+  padding: 12px 0 20px; flex-wrap: wrap;
+}
+.audio-nav-step {
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  cursor: pointer; padding: 8px 12px; border-radius: 14px;
+  background: rgba(255,255,255,0.4);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.5);
+  transition: all 0.25s; min-width: 72px;
+  text-decoration: none;
+}
+.audio-nav-step:hover {
+  background: rgba(37,99,235,0.06);
+  border-color: rgba(37,99,235,0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(37,99,235,0.08);
+}
+.audio-nav-num {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #fff; font-family: 'Outfit', sans-serif; font-size: 0.78rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 6px rgba(37,99,235,0.25);
+}
+.audio-nav-label {
+  font-family: 'Outfit', sans-serif; font-size: 0.64rem; font-weight: 500;
+  color: var(--text-muted); text-align: center; line-height: 1.2;
+  max-width: 80px;
+}
+
+/* All segments always visible */
+.audio-segment {
+  display: flex; flex-direction: column;
+  max-width: 720px; margin: 0 auto 24px;
+  scroll-margin-top: 80px;
+}
+
+/* Glass card */
+.audio-card {
+  background: rgba(255,255,255,0.5);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: 18px;
+  box-shadow: 0 4px 20px rgba(37,99,235,0.05), 0 1px 4px rgba(0,0,0,0.03),
+              inset 0 1px 0 rgba(255,255,255,0.6);
+  overflow: hidden;
+  transition: box-shadow 0.3s;
+}
+.audio-card:hover {
+  box-shadow: 0 6px 28px rgba(37,99,235,0.08), 0 2px 6px rgba(0,0,0,0.04),
+              inset 0 1px 0 rgba(255,255,255,0.7);
+}
+
+/* Header row: number + play + title */
+.audio-segment .audio-header {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 22px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.2) 100%);
+  border-bottom: 1px solid rgba(255,255,255,0.35);
+}
+
+/* Number badge */
+.audio-segment .audio-part-label {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #fff; font-family: 'Outfit', sans-serif; font-size: 0.85rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(37,99,235,0.25);
+}
+
+.audio-segment .audio-part-title {
+  font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 600;
+  color: #1e293b; flex: 1;
+}
+
+/* Play button */
+.audio-play-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 3px 10px rgba(37,99,235,0.3);
+  transition: all 0.2s;
+}
+.audio-play-btn::after {
+  content: ""; display: block;
+  width: 0; height: 0;
+  border-style: solid;
+  border-width: 8px 0 8px 13px;
+  border-color: transparent transparent transparent #fff;
+  margin-left: 2px;
+}
+.audio-play-btn svg { display: none; }
+.audio-play-btn:hover { transform: scale(1.08); box-shadow: 0 5px 16px rgba(37,99,235,0.4); }
+.audio-play-btn.playing {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  box-shadow: 0 3px 10px rgba(239,68,68,0.3);
+}
+.audio-play-btn.playing::after {
+  border-width: 0; width: 12px; height: 12px; margin-left: 0;
+  border-radius: 2px; background: #fff;
+}
+
+/* Progress bar */
+.audio-progress { height: 3px; background: rgba(37,99,235,0.06); }
+.audio-progress-bar {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  border-radius: 3px; transition: width 0.3s linear;
+}
+
+/* Script text */
+.audio-segment .audio-script {
+  padding: 18px 24px;
+  background: rgba(255,255,255,0.3);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+}
+.audio-segment .audio-script p {
+  font-size: 0.94rem; line-height: 1.8; color: #334155; margin-bottom: 11px;
+}
+.audio-segment .audio-script p:last-child { margin-bottom: 0; }
+.audio-segment .audio-script .code-block { margin: 12px 0; }
+.audio-segment .audio-script strong { color: #1e293b; }
+.audio-segment .audio-script em { color: #2563eb; }
+.audio-segment .audio-script code {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.85em;
+  background: rgba(37,99,235,0.06); color: #2563eb;
+  padding: 2px 6px; border-radius: 4px;
+}
+
+/* Visual / SVG — light mode override for dark SVGs */
+.audio-segment .audio-visual {
+  padding: 16px; display: flex; justify-content: center;
+  background: rgba(248,250,252,0.5);
+  border-top: 1px solid rgba(255,255,255,0.3);
+}
+.audio-segment .audio-visual svg {
+  max-width: 520px; width: 100%; height: auto;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+/* SVGs keep their original theme — no forced override */
+.audio-segment .audio-visual svg.placeholder-remove {
+  display: none;
+}
+
+.audio-not-recorded {
+  font-size: 0.8rem; color: #94a3b8; font-style: italic;
+  text-align: center; padding: 8px 0;
+}
+
+/* Hide nav arrows from v3 */
+.audio-nav-arrows { display: none !important; }
+
+@keyframes pulse-mic { 0%,100% { box-shadow: 0 0 0 0 rgba(37,99,235,0.3); } 50% { box-shadow: 0 0 0 8px rgba(37,99,235,0); } } } } }
+
+.audio-progress { height: 3px; background: rgba(37,99,235,0.06); overflow: hidden; }
+.audio-progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #14b8a6, #2563EB); border-radius: 3px; transition: width 0.3s linear; }
+
+.audio-segment .audio-script {
+  padding: 16px 22px;
+  background: rgba(255,255,255,0.4); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+}
+.audio-segment .audio-script p { font-size: 0.93rem; line-height: 1.78; color: var(--text); margin-bottom: 10px; }
+.audio-segment .audio-script p:last-child { margin-bottom: 0; }
+.audio-segment .audio-script .code-block { margin: 10px 0; }
+
+.audio-segment .audio-visual {
+  padding: 16px; display: flex; justify-content: center;
+  background: rgba(248,250,252,0.5);
+  border-top: 1px solid rgba(37,99,235,0.04);
+}
+.audio-segment .audio-visual svg { max-width: 500px; width: 100%; height: auto; border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+
+.audio-not-recorded {
+  font-size: 0.78rem; color: #94a3b8; font-style: italic; text-align: center; padding: 8px 0;
+  background: rgba(255,255,255,0.3);
+}
+
+.topbar-actions { display: flex; gap: 8px; }
+.btn-action { padding: 6px 16px; border-radius: 999px; border: 1px solid rgba(37,99,235,0.18); background: var(--card-bg); color: var(--text); font-family: 'Outfit', sans-serif; font-size: 0.8rem; font-weight: 500; cursor: pointer; transition: all 0.2s; backdrop-filter: blur(8px); }
+.btn-action:hover { background: var(--accent-light); color: var(--accent); }
+.btn-action.teleprompter-active { background: #0f172a; color: #fff; border-color: #0f172a; }
+
+.container { max-width: 1440px; margin: 0 auto; padding: 28px 32px 80px; position: relative; z-index: 1; }
+
+.video-section { display: none; }
+.video-section.active { display: block; }
+
+.video-header { margin-bottom: 28px; }
+.video-header h2 { font-size: 1.5rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.video-header .video-meta { font-size: 0.88rem; color: var(--text-muted); font-weight: 400; }
+
+.segment { display: grid; grid-template-columns: var(--col-left) var(--col-right); gap: 24px; margin-bottom: 28px; min-height: 120px; }
+.segment-header { grid-column: 1 / -1; display: flex; align-items: center; gap: 12px; padding-bottom: 8px; border-bottom: 1px solid rgba(37,99,235,0.08); margin-bottom: 4px; }
+/* ── Inline Edit ── */
+.edit-btn {
+  margin-left: 8px;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 4px 7px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  transition: all 0.2s;
+  opacity: 0;
+}
+.segment:hover .edit-btn,
+.segment.editing .edit-btn { opacity: 1; }
+.edit-btn:hover { color: var(--accent); background: var(--accent-light); border-color: rgba(37,99,235,0.15); }
+
+.segment.editing .script-col,
+.segment.editing .media-col {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  border-radius: var(--radius);
+}
+.segment.editing .script-col [contenteditable],
+.segment.editing .media-col [contenteditable] {
+  min-height: 40px;
+}
+
+.edit-actions {
+  display: none;
+  gap: 6px;
+  margin-left: auto;
+}
+.segment.editing .edit-actions { display: flex; }
+.segment.editing .segment-badges { display: none; }
+
+.edit-actions button {
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 1px solid;
+}
+.btn-save {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.btn-save:hover { background: var(--accent-dark); }
+.btn-cancel {
+  background: transparent;
+  color: var(--text-muted);
+  border-color: rgba(37,99,235,0.15);
+}
+.btn-cancel:hover { background: #f1f5f9; color: var(--text); }
+
+.segment-edited-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  display: none;
+  flex-shrink: 0;
+}
+.segment.was-edited .segment-edited-dot { display: block; }
+/* ── Review Status ── */
+.review-toggle {
+  display: inline-flex;
+  gap: 2px;
+  margin-left: 4px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.segment:hover .review-toggle,
+.segment[data-review] .review-toggle { opacity: 1; }
+
+.review-toggle button {
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 2px 5px;
+  font-size: 0.7rem;
+  line-height: 1;
+  transition: all 0.15s;
+  color: var(--text-muted);
+}
+.review-toggle button:hover { background: #f1f5f9; }
+.review-toggle button.active { border-color: currentColor; }
+
+.review-toggle .rv-approve { color: #10b981; }
+.review-toggle .rv-approve.active { background: #ecfdf5; }
+.review-toggle .rv-maybe  { color: #f59e0b; }
+.review-toggle .rv-maybe.active  { background: #fffbeb; }
+.review-toggle .rv-reject { color: #ef4444; }
+.review-toggle .rv-reject.active { background: #fef2f2; }
+
+/* Subtle left-border tint on reviewed segments */
+.segment[data-review="approved"] { border-left: 3px solid #10b981; padding-left: 12px; }
+.segment[data-review="maybe"]    { border-left: 3px solid #f59e0b; padding-left: 12px; }
+.segment[data-review="rejected"] { border-left: 3px solid #ef4444; padding-left: 12px; }
+
+
+.segment-number { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 500; color: var(--accent); background: var(--accent-light); padding: 3px 10px; border-radius: 999px; }
+.segment-title { font-size: 1.05rem; font-weight: 600; color: var(--text); }
+.segment-badges { display: flex; gap: 6px; margin-left: auto; }
+.badge { font-size: 0.7rem; font-weight: 500; padding: 2px 10px; border-radius: 999px; white-space: nowrap; }
+.badge-type { background: rgba(37,99,235,0.1); color: var(--accent); }
+.badge-duration { background: rgba(16,185,129,0.1); color: var(--green); }
+.badge-shot { background: rgba(245,158,11,0.1); color: #b45309; }
+
+.script-col { background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--card-border); border-radius: var(--radius); box-shadow: var(--card-shadow); padding: 28px 32px; }
+.script-col p { font-size: 1.05rem; line-height: 1.85; color: var(--text); margin-bottom: 16px; }
+.script-col p:last-child { margin-bottom: 0; }
+
+.media-col { background: rgba(255,255,255,0.55); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(37,99,235,0.06); border-radius: var(--radius); padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+.media-col .media-label { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); margin-bottom: 4px; }
+.media-col .media-note { font-size: 0.82rem; color: var(--text-muted); line-height: 1.55; background: rgba(37,99,235,0.04); border-left: 2px solid var(--accent); padding: 10px 14px; border-radius: 0 8px 8px 0; }
+.media-col .shot-note { font-size: 0.85rem; color: var(--text-muted); line-height: 1.55; font-style: italic; }
+
+.media-placeholder { background: #f8fafc; border: 1px dashed rgba(37,99,235,0.2); border-radius: 10px; padding: 20px; text-align: center; min-height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+.media-placeholder .placeholder-type { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; font-weight: 500; color: var(--accent); background: var(--accent-light); padding: 2px 10px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.04em; }
+.media-placeholder .placeholder-desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; max-width: 280px; }
+.media-placeholder .placeholder-duration { font-size: 0.72rem; color: var(--muted); }
+.media-placeholder .placeholder-style { font-size: 0.7rem; color: var(--accent); font-weight: 500; line-height: 1.4; max-width: 280px; }
+.media-placeholder .placeholder-deliverable { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; color: var(--muted); background: rgba(148,163,184,0.08); padding: 2px 8px; border-radius: 4px; }
+
+.code-block { background: #1e293b; border-radius: 10px; padding: 20px 24px; overflow-x: auto; margin: 12px 0; }
+.code-block pre { font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; line-height: 1.7; color: #e2e8f0; margin: 0; white-space: pre; }
+.code-block .kw { color: #93c5fd; } .code-block .str { color: #86efac; } .code-block .fn { color: #fde68a; } .code-block .cm { color: #64748b; }
+
+.key-message-bar { background: rgba(37,99,235,0.06); border: 1px solid rgba(37,99,235,0.15); border-radius: 10px; padding: 14px 24px; margin-bottom: 28px; display: flex; align-items: center; gap: 12px; }
+.key-message-bar .km-label { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; font-weight: 600; color: var(--accent); background: var(--accent-light); padding: 2px 10px; border-radius: 999px; white-space: nowrap; letter-spacing: 0.04em; }
+.key-message-bar .km-text { font-size: 0.95rem; font-weight: 500; color: var(--text); line-height: 1.5; }
+
+.references-section { margin-top: 32px; padding-top: 20px; border-top: 1px solid rgba(37,99,235,0.06); max-width: 600px; margin-left: auto; margin-right: auto; }
+.references-section h3 { font-size: 0.68rem; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+.ref-table { width: 100%; border-collapse: collapse; font-size: 0.62rem; }
+.ref-table th { text-align: left; font-weight: 600; color: var(--text-muted); padding: 3px 6px; border-bottom: 1px solid rgba(37,99,235,0.08); font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.ref-table td { padding: 3px 6px; border-bottom: 1px solid rgba(37,99,235,0.03); color: var(--text-muted); vertical-align: top; line-height: 1.4; }
+.ref-table a { color: var(--accent); text-decoration: none; font-size: 0.62rem; }
+.ref-table a:hover { text-decoration: underline; }
+
+/* ── Teleprompter mode ── */
+body.teleprompter { background: #0a0a0a; }
+body.teleprompter::before { display: none; }
+body.teleprompter .topbar { background: rgba(10,10,10,0.92); border-bottom-color: rgba(255,255,255,0.06); }
+body.teleprompter .topbar-title, body.teleprompter .topbar-subtitle { color: rgba(255,255,255,0.5); }
+body.teleprompter .video-tab { color: rgba(255,255,255,0.4); border-color: rgba(255,255,255,0.1); }
+body.teleprompter .video-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+body.teleprompter .btn-action { color: rgba(255,255,255,0.5); border-color: rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); }
+body.teleprompter .video-header h2 { color: rgba(255,255,255,0.3); }
+body.teleprompter .video-header .video-meta { color: rgba(255,255,255,0.15); }
+body.teleprompter .media-col { display: none; }
+body.teleprompter .key-message-bar { background: rgba(37,99,235,0.08); border-color: rgba(37,99,235,0.2); max-width: 800px; margin-left: auto; margin-right: auto; }
+body.teleprompter .key-message-bar .km-text { color: rgba(255,255,255,0.85); }
+body.teleprompter .segment { grid-template-columns: 1fr; max-width: 800px; margin-left: auto; margin-right: auto; }
+body.teleprompter .segment-header { border-bottom-color: rgba(255,255,255,0.06); }
+body.teleprompter .segment-number { background: rgba(37,99,235,0.15); color: var(--accent); }
+body.teleprompter .segment-title { color: rgba(255,255,255,0.4); }
+body.teleprompter .badge { opacity: 0.5; }
+body.teleprompter .script-col { background: transparent; border: none; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; padding: 20px 0; }
+body.teleprompter .script-col p { font-size: 1.55rem; line-height: 2; color: rgba(255,255,255,0.92); font-weight: 400; }
+body.teleprompter .references-section { display: none; }
+
+.scroll-controls { display: none; position: fixed; bottom: 24px; right: 24px; z-index: 200; background: rgba(30,30,30,0.9); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 10px 16px; gap: 10px; align-items: center; }
+body.teleprompter .scroll-controls { display: flex; }
+.scroll-controls label { font-size: 0.78rem; color: rgba(255,255,255,0.5); font-weight: 500; }
+.scroll-controls input[type="range"] { width: 100px; accent-color: var(--accent); }
+.scroll-controls button { padding: 4px 14px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.15); background: transparent; color: rgba(255,255,255,0.7); font-family: 'Outfit', sans-serif; font-size: 0.78rem; cursor: pointer; transition: all 0.2s; }
+.scroll-controls button:hover { background: rgba(255,255,255,0.1); }
+.scroll-controls button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+@media print {
+  .topbar, .scroll-controls { display: none !important; }
+  body { background: #fff; } body::before { display: none; }
+  .container { max-width: 100%; padding: 16px; }
+  .video-section { display: block !important; page-break-before: always; }
+  .video-section:first-of-type { page-break-before: avoid; }
+  .segment { page-break-inside: avoid; }
+  .script-col { background: #fff; box-shadow: none; border: 1px solid #e2e8f0; }
+  .media-col { background: #f8fafc; border: 1px solid #e2e8f0; }
+}
+
+@media (max-width: 900px) {
+  .segment { grid-template-columns: 1fr; }
+  .topbar { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .video-tabs { flex-wrap: wrap; }
+}
+</style>
+</head>
+<body>
+<a href="../../planning/course-outline.html" class="back-to-outline" style="position:fixed;top:8px;left:8px;z-index:900;font-size:0.7rem;font-weight:600;color:#2563EB;text-decoration:none;background:rgba(255,255,255,0.9);backdrop-filter:blur(8px);padding:4px 10px;border-radius:6px;border:1px solid rgba(37,99,235,0.15);">← Course Outline</a>
+
+<!-- ── Top Bar ── -->
+<div class="topbar">
+  <div class="topbar-left">
+    <span class="topbar-title">M03 Production Script</span>
+    <span class="topbar-subtitle">DADS 5250 -- Generative AI in Practice</span>
+  </div>
+  <div class="video-tabs">
+    <button class="video-tab scripted active" onclick="switchVideo(1)" title="Scripted video">V1: The Spark</button>
+    <!-- HIDDEN (non-studio): <button class="video-tab voiceover-only" onclick="switchVideo(2)" title="TA voiceover + animation -- not included in teleprompter script export">V2: Prompting Foundations (TA)</button> -->
+    <!-- HIDDEN (non-studio): <button class="video-tab scripted" onclick="switchVideo(3)" title="Scripted video">V3: Prompting Strategies</button> -->
+    <!-- HIDDEN (non-studio): <button class="video-tab scripted" onclick="switchVideo(4)" title="Scripted video">V4: Text to Structure</button> -->
+    <!-- HIDDEN (non-studio): <button class="video-tab ta-recorded" onclick="switchVideo(5)" title="TA lab walkthrough -- no script">V5: Structured Output Lab</button> -->
+    <button class="video-tab scripted" onclick="switchVideo(6)" title="Scripted video">V6: Function Calling</button>
+    <!-- HIDDEN (non-studio): <button class="video-tab ta-recorded" onclick="switchVideo(7)" title="TA lab walkthrough -- no script">V7: Function Calling Lab</button> -->
+    <!-- HIDDEN (non-studio): <button class="video-tab scripted" onclick="switchVideo(8)" title="Scripted video">V8: Wrap-Up</button> -->
+  </div>
+  <div class="topbar-actions">
+    <button class="btn-action" onclick="toggleTeleprompter()" id="teleBtn">Teleprompter</button>
+    <button class="btn-action" onclick="window.print()">Print</button>
+    <button class="btn-action" onclick="exportScript()">Export Script</button>
+  </div>
+</div>
+
+<div class="container">
+
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- VIDEO 1: "The Spark" -- The Coffee Order                -->
+<!-- ════════════════════════════════════════════════════════ -->
+<div class="video-section active" id="video-1">
+
+  <div class="video-header">
+    <h2>Video 1: "The Spark" -- The Coffee Order</h2>
+    <div class="video-meta">Opening -- Prof on camera -- 3-4 minutes -- 2 segments</div>
+  </div>
+
+  <div class="key-message-bar">
+    <span class="km-label">KEY MESSAGE</span>
+    <span class="km-text">Control what AI says, how it formats the answer, and what actions it takes.</span>
+  </div>
+
+  <!-- ── SEGMENT 1 ��─ -->
+  <div class="segment">
+    <div class="segment-header">
+      <span class="segment-number">PART 01</span>
+      <span class="segment-title">The Coffee Order Analogy</span>
+      <div class="segment-badges">
+        <span class="badge badge-type">On Camera</span>
+        <span class="badge badge-duration">~1 min</span>
+        <span class="badge badge-shot">Medium close-up</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <p>Every morning I place the same coffee order. Medium dark roast, whole milk on the side, cinnamon on top. My barista knows it by heart. I never have to explain myself twice.</p>
+      <p>That is exactly the standard we should hold ourselves to when we communicate with AI models.</p>
+    </div>
+    <div class="media-col">
+      <span class="media-label">Opening Visual</span>
+      <p class="shot-note">Medium close-up, warm lighting. Prof holds an actual coffee cup (dark ceramic, no branding). Conversational, relatable tone. The coffee cup is a physical prop that anchors the analogy.</p>
+      <svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg" style="background: #0f172a; border: 1px solid #1e293b;">
+        <text x="200" y="24" text-anchor="middle" font-family="Outfit" font-size="11" fill="#e2e8f0" font-weight="600">My Coffee Order — Same Standard for AI</text>
+        <!-- Receipt -->
+        <rect x="120" y="48" width="160" height="160" rx="2" fill="#fef3c7" stroke="#f59e0b" stroke-width="1"/>
+        <line x1="120" y1="60" x2="280" y2="60" stroke="#f59e0b" stroke-width="0.5" stroke-dasharray="2,2"/>
+        <text x="200" y="78" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#92400e" font-weight="600">DAILY ORDER — REG.</text>
+        <line x1="130" y1="86" x2="270" y2="86" stroke="#f59e0b" stroke-width="0.4" stroke-dasharray="1,2"/>
+        <text x="135" y="106" font-family="JetBrains Mono" font-size="9" fill="#451a03">▪ Medium dark roast</text>
+        <text x="135" y="124" font-family="JetBrains Mono" font-size="9" fill="#451a03">▪ Whole milk, side</text>
+        <text x="135" y="142" font-family="JetBrains Mono" font-size="9" fill="#451a03">▪ Cinnamon, top</text>
+        <line x1="130" y1="156" x2="270" y2="156" stroke="#f59e0b" stroke-width="0.4" stroke-dasharray="1,2"/>
+        <text x="200" y="174" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#92400e">never explained twice</text>
+        <text x="200" y="194" text-anchor="middle" font-family="Outfit" font-size="7" fill="#a16207" font-style="italic">— same as a great prompt</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ── SEGMENT 2 ── -->
+  <div class="segment">
+    <div class="segment-header">
+      <span class="segment-number">PART 02</span>
+      <span class="segment-title">The Three Levels of Control</span>
+      <div class="segment-badges">
+        <span class="badge badge-type">On Camera</span>
+        <span class="badge badge-duration">~1.5 min</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <p>You have probably already noticed something when you use AI. It works -- mostly. But sometimes the output is inconsistent. Sometimes the model gives you a paragraph when you needed a formula. Sometimes the format is wrong. Sometimes you have to run the same prompt three times to get what you actually wanted.</p>
+      <p>This module fixes that. You will learn three levels of control. First -- how to write prompts that get exactly the response you need. Second -- how to force the output into structured JSON that code can use. Third -- how to make the model decide when to call a function and take action.</p>
+      <p>By the end of this module, your AI outputs will be reliable, structured, and actionable. Every single time.</p>
+    </div>
+    <div class="media-col">
+      <span class="media-label">Storyboard -- Three Levels of Control</span>
+      <svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg" style="background: #0f172a; border: 1px solid #1e293b;">
+        <text x="200" y="22" text-anchor="middle" font-family="Outfit" font-size="11" fill="#e2e8f0" font-weight="600">From Vague Outputs to Reliable Actions</text>
+        <!-- Step 1: Prompt Control (lowest) -->
+        <rect x="30" y="160" width="110" height="50" rx="6" fill="rgba(37,99,235,0.1)" stroke="#2563EB" stroke-width="1.5"/>
+        <text x="85" y="178" text-anchor="middle" font-family="Outfit" font-size="9" fill="#60a5fa" font-weight="600" letter-spacing="0.08em">LEVEL 1</text>
+        <text x="85" y="194" text-anchor="middle" font-family="Outfit" font-size="10" fill="#bfdbfe" font-weight="600">Prompt Control</text>
+        <text x="85" y="206" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8">say it right</text>
+        <!-- Step 2: Output Structure (middle) -->
+        <rect x="145" y="100" width="110" height="50" rx="6" fill="rgba(16,185,129,0.1)" stroke="#10b981" stroke-width="1.5"/>
+        <text x="200" y="118" text-anchor="middle" font-family="Outfit" font-size="9" fill="#34d399" font-weight="600" letter-spacing="0.08em">LEVEL 2</text>
+        <text x="200" y="134" text-anchor="middle" font-family="Outfit" font-size="10" fill="#a7f3d0" font-weight="600">Output Structure</text>
+        <text x="200" y="146" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8">force JSON · validate</text>
+        <!-- Step 3: Action Control (highest) -->
+        <rect x="260" y="40" width="110" height="50" rx="6" fill="rgba(245,158,11,0.1)" stroke="#f59e0b" stroke-width="1.5"/>
+        <text x="315" y="58" text-anchor="middle" font-family="Outfit" font-size="9" fill="#fbbf24" font-weight="600" letter-spacing="0.08em">LEVEL 3</text>
+        <text x="315" y="74" text-anchor="middle" font-family="Outfit" font-size="10" fill="#fde68a" font-weight="600">Action Control</text>
+        <text x="315" y="86" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8">call functions</text>
+        <!-- Connecting climbing line -->
+        <path d="M 85 160 L 85 150 L 200 150 L 200 90 L 315 90" stroke="#475569" stroke-width="1" stroke-dasharray="3,3" fill="none"/>
+        <text x="200" y="232" text-anchor="middle" font-family="Outfit" font-size="9" fill="#94a3b8" font-style="italic">Reliable. Structured. Actionable. Every single time.</text>
+      </svg>
+      <div class="media-note">
+        MEDIA TEAM: This staircase visual becomes the recurring motif for M03. It reappears at the start of V2, V4, and V5 with the corresponding step highlighted. Build it as a reusable asset. The glass material should match the course design language.
+      </div>
+    </div>
+  </div>
+
+</div><!-- end video-1 -->
+
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- VIDEO 2: Prompting Foundations                           -->
+<!-- ════════════════════════════════════════════════════════ -->
+<div class="video-section" id="video-2" data-script-export="false" data-ta-only="true" style="display:none">
+
+  <div class="video-header">
+    <h2>Video 2: "Prompting Foundations" (TA) &mdash; <span style="color:#0f766e;">Voiceover Only · Not Part of Teleprompter Script Export</span></h2>
+    <div class="video-meta">TA-produced voiceover + animation -- 7-9 minutes -- 7 segments (A intro · B RTCF overview · C Role · D Task · E Context · F Format · G Bad vs Good)</div>
+    <div style="margin-top: 10px; padding: 12px 16px; background: rgba(20,184,166,0.08); border-left: 3px solid #14b8a6; border-radius: 0 6px 6px 0;">
+      <strong style="color:#0f766e;">🎙 TA-produced voiceover video &mdash; no on-camera shots of the instructor.</strong>
+      <p style="margin: 6px 0 0 0; font-size: 0.88rem; color: #475569;"><strong>Ownership:</strong> The TA produces this video end-to-end &mdash; records the voiceover, builds the animation with the media team, and delivers the finished file. Prof. Dehghani does not appear on camera and does not read this script on the teleprompter.</p>
+      <p style="margin: 8px 0 0 0; font-size: 0.88rem; color: #475569;"><strong>Not part of the teleprompter script export:</strong> This video is marked <code>data-script-export="false"</code>. When the teleprompter script tool pulls scripted content for Prof. Dehghani to read, this video is skipped. The narration below exists only as a reference for the TA to adapt or read themselves.</p>
+      <p style="margin: 8px 0 0 0; font-size: 0.88rem; color: #475569;">This video is 100% animation + voice narration. The student watches the animation while listening.</p>
+      <p style="margin: 8px 0 0 0; font-size: 0.84rem; color: #64748b;"><strong>Voiceover options:</strong> TA records the VO directly, OR we can use a high-quality AI voice (ElevenLabs, OpenAI TTS, or similar) reading the TA-approved script. Final call on voice pending.</p>
+      <p style="margin: 8px 0 0 0; font-size: 0.84rem; color: #64748b;"><strong>Media team:</strong> build a cohesive animation sequence that runs through all 7 segments. Visuals for each segment are specified in the media-col below. Each of the 4 RTCF elements (Role, Task, Context, Format) is its own clickable segment with its own card, so the student can jump directly to the one they want. The Bad vs Good Prompt segment (SEG G) already has a detailed SVG spec &mdash; replicate that contrast as an actual animated comparison at the end.</p>
+    </div>
+  </div>
+
+  <div class="key-message-bar">
+    <span class="km-label">KEY MESSAGE</span>
+    <span class="km-text">Every good prompt has four elements: Role, Task, Context, Format.</span>
+  </div>
+
+  <!-- ══════ PART 1: Introduction to Prompting ══════ -->
+
+  <div class="audio-nav" data-video="video-2">
+      <div class="audio-nav-step" onclick="document.querySelectorAll('.audio-segment')[0]?.scrollIntoView({behavior:'smooth',block:'center'})">
+        <div class="audio-nav-num">1</div>
+        <div class="audio-nav-label">Introduction to Pr...</div>
+      </div>
+      <div class="audio-nav-step" onclick="document.querySelectorAll('.audio-segment')[1]?.scrollIntoView({behavior:'smooth',block:'center'})">
+        <div class="audio-nav-num">2</div>
+        <div class="audio-nav-label">The RTCF Framework</div>
+      </div>
+      <div class="audio-nav-step" onclick="document.querySelectorAll('.audio-segment')[2]?.scrollIntoView({behavior:'smooth',block:'center'})">
+        <div class="audio-nav-num">3</div>
+        <div class="audio-nav-label">Role Deep Dive</div>
+      </div>
+      <div class="audio-nav-step" onclick="document.querySelectorAll('.audio-segment')[3]?.scrollIntoView({behavior:'smooth',block:'center'})">
+        <div class="audio-nav-num">4</div>
+        <div class="audio-nav-label">Task Deep Dive</div>
+      </div>
+      <div class="audio-nav-step" onclick="document.querySelectorAll('.audio-segment')[4]?.scrollIntoView({behavior:'smooth',block:'center'})">
+        <div class="audio-nav-num">5</div>
+        <div class="audio-nav-label">Context Deep Dive</div>
+      </div>
+      <div class="audio-nav-step" onclick="document.querySelectorAll('.audio-segment')[5]?.scrollIntoView({behavior:'smooth',block:'center'})">
+        <div class="audio-nav-num">6</div>
+        <div class="audio-nav-label">Format Deep Dive</div>
+      </div>
+      <div class="audio-nav-step" onclick="document.querySelectorAll('.audio-segment')[6]?.scrollIntoView({behavior:'smooth',block:'center'})">
+        <div class="audio-nav-num">7</div>
+        <div class="audio-nav-label">Bad vs Good Prompt...</div>
+      </div>
+  </div>
+  <div class="audio-segment" id="audio-part-1">
+    <div class="audio-card">
+    <div class="audio-header">
+      <button class="audio-play-btn" onclick="playPart(1)" title="Play voiceover">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      </button>
+      <span class="audio-part-label">1</span>
+      <span class="audio-part-title">Introduction to Prompting</span>
+    </div>
+    <div class="audio-progress"><div class="audio-progress-bar" id="progress-1"></div></div>
+    <audio id="audio-1" src="audio/M03_V2_Part1.mp3" preload="none"></audio>
+    <div class="audio-script">
+      <p>When you type a message to ChatGPT, you are writing a prompt. But there is a difference between a prompt that works and a prompt that works <em>well</em>.</p>
+      <p>A good prompt gets you a useful, accurate, well-structured response on the first try. A bad prompt gets you something vague, generic, or completely wrong -- and then you spend five minutes trying to fix it.</p>
+      <p>In this video, we are going to learn a simple framework that turns every prompt into a good one. It has four parts. We call it RTCF: Role, Task, Context, Format.</p>
+    </div>
+  
+    </div></div>
+
+  <!-- ══════ PART 2: The RTCF Framework ══════ -->
+  <div class="audio-segment" id="audio-part-2">
+    <div class="audio-card">
+    <div class="audio-header">
+      <button class="audio-play-btn" onclick="playPart(2)" title="Play voiceover">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      </button>
+      <span class="audio-part-label">2</span>
+      <span class="audio-part-title">The RTCF Framework</span>
+    </div>
+    <div class="audio-progress"><div class="audio-progress-bar" id="progress-2"></div></div>
+    <audio id="audio-2" src="audio/M03_V2_Part2.mp3" preload="none"></audio>
+    <div class="audio-script">
+      <p>Here is the framework. Four letters. Four questions you should ask yourself every time you write a prompt.</p>
+      <p><strong>R -- Role.</strong> Who should the model pretend to be? A data analyst? A teacher? A Python developer? The role sets the tone, the vocabulary, and the expertise level of the response.</p>
+      <p><strong>T -- Task.</strong> What exactly do you want the model to do? Summarize? Compare? Write code? Generate a table? Be specific. "Help me with this" is not a task. "Write a Python function that takes a list of numbers and returns the median" -- that is a task.</p>
+      <p><strong>C -- Context.</strong> What background information does the model need? What data are you working with? What have you already tried? What constraints exist? The more relevant context you give, the better the output.</p>
+      <p><strong>F -- Format.</strong> How should the response look? A bulleted list? A JSON object? A three-paragraph essay? A table with specific columns? If you do not specify the format, the model will guess -- and it will often guess wrong.</p>
+    </div>
+    <div class="audio-visual">
+      <svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg" style="background: #0f172a; border: 1px solid #1e293b; border-radius: 8px;">
+        <text x="200" y="22" text-anchor="middle" font-family="Outfit" font-size="11" fill="#e2e8f0" font-weight="600">Every Good Prompt Has Four Elements</text>
+        <rect x="20" y="44" width="170" height="76" rx="8" fill="rgba(37,99,235,0.1)" stroke="#2563EB" stroke-width="1.5"/>
+        <text x="34" y="64" font-family="Outfit" font-size="11" fill="#60a5fa" font-weight="700">ROLE</text>
+        <text x="34" y="82" font-family="Outfit" font-size="8" fill="#bfdbfe">Who is the model?</text>
+        <text x="34" y="102" font-family="Outfit" font-size="7" fill="#94a3b8" font-style="italic">"You are a senior</text>
+        <text x="34" y="112" font-family="Outfit" font-size="7" fill="#94a3b8" font-style="italic">supply chain consultant..."</text>
+        <rect x="210" y="44" width="170" height="76" rx="8" fill="rgba(16,185,129,0.1)" stroke="#10b981" stroke-width="1.5"/>
+        <text x="224" y="64" font-family="Outfit" font-size="11" fill="#34d399" font-weight="700">TASK</text>
+        <text x="224" y="82" font-family="Outfit" font-size="8" fill="#a7f3d0">What should it do?</text>
+        <text x="224" y="102" font-family="Outfit" font-size="7" fill="#94a3b8" font-style="italic">"Analyze the bullwhip</text>
+        <text x="224" y="112" font-family="Outfit" font-size="7" fill="#94a3b8" font-style="italic">effect for..."</text>
+        <rect x="20" y="130" width="170" height="76" rx="8" fill="rgba(245,158,11,0.1)" stroke="#f59e0b" stroke-width="1.5"/>
+        <text x="34" y="150" font-family="Outfit" font-size="11" fill="#fbbf24" font-weight="700">CONTEXT</text>
+        <text x="34" y="168" font-family="Outfit" font-size="8" fill="#fde68a">What does it need to know?</text>
+        <text x="34" y="188" font-family="Outfit" font-size="7" fill="#94a3b8" font-style="italic">"...for a mid-size</text>
+        <text x="34" y="198" font-family="Outfit" font-size="7" fill="#94a3b8" font-style="italic">electronics manufacturer."</text>
+        <rect x="210" y="130" width="170" height="76" rx="8" fill="rgba(20,184,166,0.1)" stroke="#14b8a6" stroke-width="1.5"/>
+        <text x="224" y="150" font-family="Outfit" font-size="11" fill="#5eead4" font-weight="700">FORMAT</text>
+        <text x="224" y="168" font-family="Outfit" font-size="8" fill="#99f6e4">How should output look?</text>
+        <text x="224" y="188" font-family="Outfit" font-size="7" fill="#94a3b8" font-style="italic">"3 strategies, numbered,</text>
+        <text x="224" y="198" font-family="Outfit" font-size="7" fill="#94a3b8" font-style="italic">with cost reduction %"</text>
+        <text x="200" y="228" text-anchor="middle" font-family="Outfit" font-size="9" fill="#94a3b8" font-style="italic">Role + Task + Context + Format = a prompt that lands every time.</text>
+      </svg>
+    </div>
+  
+    </div></div>
+
+  <!-- ══════ PART 3: Role Deep Dive ══════ -->
+  <div class="audio-segment" id="audio-part-3">
+    <div class="audio-card">
+    <div class="audio-header">
+      <button class="audio-play-btn" onclick="playPart(3)" title="Play voiceover">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      </button>
+      <span class="audio-part-label">3</span>
+      <span class="audio-part-title">Role Deep Dive</span>
+    </div>
+    <div class="audio-progress"><div class="audio-progress-bar" id="progress-3"></div></div>
+    <audio id="audio-3" src="audio/M03_V2_Part3.mp3" preload="none"></audio>
+    <div class="audio-script">
+      <p>Let us take each element one at a time. Starting with Role.</p>
+      <p>When you assign a role, you are not just being cute. You are activating a different distribution of knowledge inside the model. Watch what happens when we ask the same question with different roles.</p>
+      <p>No role: "Explain what a p-value is." The model gives a generic textbook answer.</p>
+      <p>Role -- statistics professor: "You are a statistics professor. Explain what a p-value is." Now the response is more precise, uses proper terminology, and might include a formal definition.</p>
+      <p>Role -- data journalist: "You are a data journalist writing for a general audience. Explain what a p-value is." Now the response is simpler, uses analogies, avoids jargon.</p>
+      <p>Same question. Different roles. Completely different outputs. That is the power of Role.</p>
+    </div>
+    <div class="audio-visual">
+      <svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg" style="background: #0f172a; border: 1px solid #1e293b; border-radius: 8px;">
+        <text x="200" y="22" text-anchor="middle" font-family="Outfit" font-size="11" fill="#e2e8f0" font-weight="600">R &middot; Role &mdash; Who Is the Model?</text>
+        <rect x="14" y="40" width="372" height="60" rx="8" fill="rgba(37,99,235,0.1)" stroke="#2563EB" stroke-width="1.5"/>
+        <text x="26" y="60" font-family="Outfit" font-size="12" fill="#60a5fa" font-weight="700">ROLE</text>
+        <text x="26" y="78" font-family="Outfit" font-size="9" fill="#bfdbfe">Gives the model a professional identity to think from.</text>
+        <text x="26" y="92" font-family="Outfit" font-size="8" fill="#94a3b8">Changes tone, depth, vocabulary, and the questions it anticipates.</text>
+        <text x="14" y="124" font-family="Outfit" font-size="8" fill="#94a3b8">Generic (default):</text>
+        <rect x="14" y="130" width="372" height="22" rx="4" fill="rgba(148,163,184,0.08)" stroke="#475569"/>
+        <text x="22" y="145" font-family="JetBrains Mono" font-size="8" fill="#cbd5e1">(no role set &mdash; acts like a helpful assistant)</text>
+        <text x="14" y="172" font-family="Outfit" font-size="8" fill="#60a5fa">With a specific role:</text>
+        <rect x="14" y="178" width="372" height="32" rx="4" fill="rgba(37,99,235,0.12)" stroke="#2563EB"/>
+        <text x="22" y="193" font-family="JetBrains Mono" font-size="8" fill="#bfdbfe">"You are a senior supply chain consultant</text>
+        <text x="22" y="204" font-family="JetBrains Mono" font-size="8" fill="#bfdbfe">with 20 years of experience."</text>
+      </svg>
+    </div>
+  
+    </div></div>
+
+  <!-- ══════ PART 4: Task Deep Dive ══════ -->
+  <div class="audio-segment" id="audio-part-4">
+    <div class="audio-card">
+    <div class="audio-header">
+      <button class="audio-play-btn" onclick="playPart(4)" title="Play voiceover">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      </button>
+      <span class="audio-part-label">4</span>
+      <span class="audio-part-title">Task Deep Dive</span>
+    </div>
+    <div class="audio-progress"><div class="audio-progress-bar" id="progress-4"></div></div>
+    <audio id="audio-4" src="audio/M03_V2_Part4.mp3" preload="none"></audio>
+    <div class="audio-script">
+      <p>Now Task. This is where most people fail. They write prompts that are too vague.</p>
+      <p>Bad task: "Tell me about Python." That could mean anything. The model has to guess what you want, and it will give you a generic overview that helps no one.</p>
+      <p>Good task: "Write a Python function that reads a CSV file, calculates the average of a specified column, and returns the result as a formatted string." Now the model knows exactly what to build. No guessing. No ambiguity.</p>
+      <p>The rule is simple: if a human reading your prompt would need to ask a follow-up question, your task is not specific enough.</p>
+    </div>
+    <div class="audio-visual">
+      <svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg" style="background: #0f172a; border: 1px solid #1e293b; border-radius: 8px;">
+        <text x="200" y="22" text-anchor="middle" font-family="Outfit" font-size="11" fill="#e2e8f0" font-weight="600">T &middot; Task &mdash; What Should It Do?</text>
+        <rect x="14" y="40" width="372" height="60" rx="8" fill="rgba(16,185,129,0.1)" stroke="#10b981" stroke-width="1.5"/>
+        <text x="26" y="60" font-family="Outfit" font-size="12" fill="#34d399" font-weight="700">TASK</text>
+        <text x="26" y="78" font-family="Outfit" font-size="9" fill="#a7f3d0">One clear action verb + the deliverable you want.</text>
+        <text x="26" y="92" font-family="Outfit" font-size="8" fill="#94a3b8">If you cannot say it in one sentence, the model cannot either.</text>
+        <text x="14" y="124" font-family="Outfit" font-size="8" fill="#fca5a5">&#x2717; Vague (a wish):</text>
+        <rect x="14" y="130" width="372" height="22" rx="4" fill="rgba(239,68,68,0.06)" stroke="#ef4444"/>
+        <text x="22" y="145" font-family="JetBrains Mono" font-size="8" fill="#fca5a5">"Tell me about Python."</text>
+        <text x="14" y="172" font-family="Outfit" font-size="8" fill="#34d399">&#x2713; Clear (a task):</text>
+        <rect x="14" y="178" width="372" height="32" rx="4" fill="rgba(16,185,129,0.1)" stroke="#10b981"/>
+        <text x="22" y="193" font-family="JetBrains Mono" font-size="8" fill="#a7f3d0">"Write a Python function that reads a CSV,</text>
+        <text x="22" y="204" font-family="JetBrains Mono" font-size="8" fill="#a7f3d0">calculates the average, returns formatted string."</text>
+      </svg>
+    </div>
+  
+    </div></div>
+
+  <!-- ══════ PART 5: Context Deep Dive ══════ -->
+  <div class="audio-segment" id="audio-part-5">
+    <div class="audio-card">
+    <div class="audio-header">
+      <button class="audio-play-btn" onclick="playPart(5)" title="Play voiceover">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      </button>
+      <span class="audio-part-label">5</span>
+      <span class="audio-part-title">Context Deep Dive</span>
+    </div>
+    <div class="audio-progress"><div class="audio-progress-bar" id="progress-5"></div></div>
+    <audio id="audio-5" src="audio/M03_V2_Part5.mp3" preload="none"></audio>
+    <div class="audio-script">
+      <p>Context is the secret weapon. Most people skip it entirely, and then wonder why the model gives generic answers.</p>
+      <p>Here is an example. Without context: "Write me a cover letter." The model has nothing to work with. It will produce something bland and forgettable.</p>
+      <p>With context: "Write me a cover letter. I am a second-year data science graduate student applying for a summer internship at a healthcare analytics startup. I have experience with Python, SQL, and Tableau. The job posting emphasizes collaboration and communication skills." Now the model can write something specific, relevant, and actually useful.</p>
+      <p>Context is not optional. It is the difference between a generic response and a personalized one.</p>
+    </div>
+    <div class="audio-visual">
+      <svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg" style="background: #0f172a; border: 1px solid #1e293b; border-radius: 8px;">
+        <text x="200" y="22" text-anchor="middle" font-family="Outfit" font-size="11" fill="#e2e8f0" font-weight="600">C &middot; Context &mdash; What Does It Need to Know?</text>
+        <rect x="14" y="40" width="372" height="60" rx="8" fill="rgba(245,158,11,0.1)" stroke="#f59e0b" stroke-width="1.5"/>
+        <text x="26" y="60" font-family="Outfit" font-size="12" fill="#fbbf24" font-weight="700">CONTEXT</text>
+        <text x="26" y="78" font-family="Outfit" font-size="9" fill="#fde68a">Enough background to anchor the model in your situation.</text>
+        <text x="26" y="92" font-family="Outfit" font-size="8" fill="#94a3b8">The "smart intern" test: could they do it from what you wrote?</text>
+        <text x="14" y="124" font-family="Outfit" font-size="9" fill="#94a3b8" letter-spacing="0.06em">GOOD CONTEXT USUALLY INCLUDES</text>
+        <text x="22" y="144" font-family="Outfit" font-size="9" fill="#fbbf24">&#x25aa; Industry and company size</text>
+        <text x="22" y="160" font-family="Outfit" font-size="9" fill="#fbbf24">&#x25aa; Specific problem you are solving</text>
+        <text x="22" y="176" font-family="Outfit" font-size="9" fill="#fbbf24">&#x25aa; Data, timeframe, and constraints</text>
+        <text x="22" y="192" font-family="Outfit" font-size="9" fill="#fbbf24">&#x25aa; Audience for the output</text>
+        <text x="22" y="208" font-family="Outfit" font-size="9" fill="#fbbf24">&#x25aa; Any restrictions or hard requirements</text>
+        <text x="200" y="228" text-anchor="middle" font-family="Outfit" font-size="8" fill="#94a3b8" font-style="italic">Just enough to anchor &mdash; not your whole life story.</text>
+      </svg>
+    </div>
+  
+    </div></div>
+
+  <!-- ══════ PART 6: Format Deep Dive ══════ -->
+  <div class="audio-segment" id="audio-part-6">
+    <div class="audio-card">
+    <div class="audio-header">
+      <button class="audio-play-btn" onclick="playPart(6)" title="Play voiceover">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      </button>
+      <span class="audio-part-label">6</span>
+      <span class="audio-part-title">Format Deep Dive</span>
+    </div>
+    <div class="audio-progress"><div class="audio-progress-bar" id="progress-6"></div></div>
+    <audio id="audio-6" src="audio/M03_V2_Part6.mp3" preload="none"></audio>
+    <div class="audio-script">
+      <p>Finally, Format. This is the easiest one to use and the one people forget most often.</p>
+      <p>Without format instructions, the model defaults to paragraphs of prose. That might be fine for an essay, but terrible for a comparison, a checklist, or structured data.</p>
+      <p>Examples of format instructions: "Respond in a bulleted list." "Return the result as a JSON object with keys: name, score, recommendation." "Create a markdown table with columns: Metric, Value, Interpretation." "Write exactly three sentences."</p>
+      <p>Format is not a nice-to-have. When you are building applications that parse LLM output, format is everything. If the model returns a paragraph when your code expects JSON, your pipeline breaks.</p>
+    </div>
+    <div class="audio-visual">
+      <svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg" style="background: #0f172a; border: 1px solid #1e293b; border-radius: 8px;">
+        <text x="200" y="22" text-anchor="middle" font-family="Outfit" font-size="11" fill="#e2e8f0" font-weight="600">F &middot; Format &mdash; How Should the Output Look?</text>
+        <rect x="14" y="40" width="372" height="60" rx="8" fill="rgba(20,184,166,0.1)" stroke="#14b8a6" stroke-width="1.5"/>
+        <text x="26" y="60" font-family="Outfit" font-size="12" fill="#5eead4" font-weight="700">FORMAT</text>
+        <text x="26" y="78" font-family="Outfit" font-size="9" fill="#99f6e4">The shape of the output &mdash; list, table, JSON, paragraph.</text>
+        <text x="26" y="92" font-family="Outfit" font-size="8" fill="#94a3b8">Specify it, or the model will pick one for you.</text>
+        <rect x="14" y="120" width="120" height="60" rx="6" fill="rgba(20,184,166,0.08)" stroke="#14b8a6"/>
+        <text x="74" y="138" text-anchor="middle" font-family="Outfit" font-size="9" fill="#5eead4" font-weight="600">numbered list</text>
+        <text x="74" y="156" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#94a3b8">1. ...</text>
+        <text x="74" y="168" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#94a3b8">2. ...</text>
+        <rect x="140" y="120" width="120" height="60" rx="6" fill="rgba(20,184,166,0.08)" stroke="#14b8a6"/>
+        <text x="200" y="138" text-anchor="middle" font-family="Outfit" font-size="9" fill="#5eead4" font-weight="600">markdown table</text>
+        <text x="200" y="156" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#94a3b8">| col | col |</text>
+        <text x="200" y="168" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#94a3b8">|-----|-----|</text>
+        <rect x="266" y="120" width="120" height="60" rx="6" fill="rgba(96,165,250,0.1)" stroke="#60a5fa" stroke-width="1.5"/>
+        <text x="326" y="138" text-anchor="middle" font-family="Outfit" font-size="9" fill="#bfdbfe" font-weight="600">JSON</text>
+        <text x="326" y="156" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#94a3b8">{"key": ...}</text>
+        <text x="326" y="168" text-anchor="middle" font-family="Outfit" font-size="7" fill="#60a5fa">for code use &#x2192;</text>
+        <text x="200" y="204" text-anchor="middle" font-family="Outfit" font-size="9" fill="#60a5fa" font-style="italic">Pro tip: for anything that will feed into code, ask for JSON.</text>
+        <text x="200" y="220" text-anchor="middle" font-family="Outfit" font-size="8" fill="#94a3b8">(Covered in depth in the next video.)</text>
+      </svg>
+    </div>
+  
+    </div></div>
+
+  <!-- ══════ PART 7: Bad vs Good Prompt Comparison ══════ -->
+  <div class="audio-segment" id="audio-part-7">
+    <div class="audio-card">
+    <div class="audio-header">
+      <button class="audio-play-btn" onclick="playPart(7)" title="Play voiceover">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      </button>
+      <span class="audio-part-label">7</span>
+      <span class="audio-part-title">Bad vs Good Prompt Comparison</span>
+    </div>
+    <div class="audio-progress"><div class="audio-progress-bar" id="progress-7"></div></div>
+    <audio id="audio-7" src="audio/M03_V2_Part7.mp3" preload="none"></audio>
+    <div class="audio-script">
+      <p>Let us put it all together with a real example.</p>
+      <p>Bad prompt: "Help me with Excel." No role. Vague task. No context. No format. The model will produce something generic and probably useless.</p>
+      <p>Good prompt: "You are an Excel expert who specializes in financial modeling. Write a VLOOKUP formula that matches product SKUs in column A of Sheet1 to prices in column B of Sheet2. The SKU format is three letters followed by four digits, like ABC1234. Return the formula, a brief explanation of each argument, and one common mistake to avoid. Format as a numbered list."</p>
+      <p>Role: Excel expert in financial modeling. Task: Write a specific VLOOKUP formula. Context: SKU format, sheet layout, column references. Format: Numbered list with formula, explanation, and common mistake.</p>
+      <p>That is RTCF. Four elements. One framework. Every prompt you write from now on should have all four.</p>
+    </div>
+    <div class="audio-visual">
+      <svg viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg" style="background: #0f172a; border: 1px solid #1e293b; border-radius: 8px;">
+        <text x="200" y="22" text-anchor="middle" font-family="Outfit" font-size="11" fill="#e2e8f0" font-weight="600">Same Model, Dramatically Different Output</text>
+        <rect x="14" y="42" width="180" height="220" rx="8" fill="rgba(239,68,68,0.06)" stroke="#ef4444" stroke-width="1.2"/>
+        <text x="104" y="60" text-anchor="middle" font-family="Outfit" font-size="9" fill="#fca5a5" font-weight="600" letter-spacing="0.1em">BAD PROMPT</text>
+        <rect x="26" y="72" width="156" height="22" rx="3" fill="#0a1428" stroke="#1e293b"/>
+        <text x="34" y="86" font-family="JetBrains Mono" font-size="8" fill="#94a3b8">"Help me with Excel."</text>
+        <text x="104" y="112" text-anchor="middle" font-family="Outfit" font-size="8" fill="#fca5a5">&#x2193; output</text>
+        <rect x="26" y="120" width="156" height="120" rx="3" fill="rgba(148,163,184,0.05)" stroke="#475569"/>
+        <text x="34" y="138" font-family="Outfit" font-size="7" fill="#94a3b8">Excel is a spreadsheet</text>
+        <text x="34" y="150" font-family="Outfit" font-size="7" fill="#94a3b8">application developed by</text>
+        <text x="34" y="162" font-family="Outfit" font-size="7" fill="#94a3b8">Microsoft. Here are some</text>
+        <text x="34" y="174" font-family="Outfit" font-size="7" fill="#94a3b8">tips for using it...</text>
+        <text x="34" y="206" font-family="Outfit" font-size="7" fill="#475569" font-style="italic">vague &#xb7; unstructured</text>
+        <text x="34" y="218" font-family="Outfit" font-size="7" fill="#475569" font-style="italic">no actionable detail</text>
+        <rect x="206" y="42" width="180" height="220" rx="8" fill="rgba(16,185,129,0.06)" stroke="#10b981" stroke-width="1.5"/>
+        <text x="296" y="60" text-anchor="middle" font-family="Outfit" font-size="9" fill="#34d399" font-weight="600" letter-spacing="0.1em">GOOD PROMPT</text>
+        <rect x="218" y="72" width="156" height="40" rx="3" fill="#0a1428" stroke="#1e293b"/>
+        <text x="226" y="84" font-family="JetBrains Mono" font-size="6.5" fill="#60a5fa">[ROLE] Excel expert, fin. modeling</text>
+        <text x="226" y="93" font-family="JetBrains Mono" font-size="6.5" fill="#34d399">[TASK] VLOOKUP for SKU matching</text>
+        <text x="226" y="102" font-family="JetBrains Mono" font-size="6.5" fill="#fbbf24">[CONTEXT] ABC1234 format, 2 sheets</text>
+        <rect x="218" y="120" width="156" height="120" rx="3" fill="rgba(16,185,129,0.06)" stroke="#10b981"/>
+        <text x="226" y="138" font-family="Outfit" font-size="8" fill="#a7f3d0">1. Formula</text>
+        <text x="232" y="150" font-family="JetBrains Mono" font-size="6.5" fill="#94a3b8">=VLOOKUP(A2,Sheet2!A:B,2,0)</text>
+        <text x="226" y="168" font-family="Outfit" font-size="8" fill="#a7f3d0">2. Explanation</text>
+        <text x="232" y="180" font-family="Outfit" font-size="7" fill="#94a3b8">lookup_value, range, col, exact</text>
+        <text x="226" y="198" font-family="Outfit" font-size="8" fill="#a7f3d0">3. Common mistake</text>
+        <text x="232" y="210" font-family="Outfit" font-size="7" fill="#94a3b8">forgetting exact match (0)</text>
+        <text x="226" y="230" font-family="Outfit" font-size="7" fill="#34d399" font-style="italic">structured &#xb7; numbered</text>
+        <text x="226" y="242" font-family="Outfit" font-size="7" fill="#34d399" font-style="italic">specific &#xb7; usable</text>
+      </svg>
+    </div>
+  
+    </div></div>
+
+  
+
+  <div class="audio-nav-arrows">
+    <button class="audio-arrow-btn audio-arrow-prev" onclick="prevAudioPart('video-2')">&#8592; Previous</button>
+    <button class="audio-arrow-btn audio-arrow-next" onclick="nextAudioPart('video-2')">Next &#8594;</button>
+  </div>
+
+</div><!-- end video-2 -->
+
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- VIDEO 3: Prompting Strategies                           -->
+<!-- ════════════════════════════════════════════════════════ -->
+<div class="video-section" id="video-3" data-script-export="false">
+
+  <div class="video-header">
+    <h2>Video 3: "Prompting Strategies"</h2>
+    <div class="video-meta">Voiceover + animation -- 6-8 minutes -- 4 segments (A intro · B Zero-Shot · C Few-Shot · D Chain-of-Thought)</div>
+  </div>
+
+  <div class="key-message-bar">
+    <span class="km-label">KEY MESSAGE</span>
+    <span class="km-text">Zero-shot for simple, few-shot for consistency, chain-of-thought for reasoning.</span>
+  </div>
+
+  <!-- ── SEGMENT A — Intro: LLMs Love Examples ── -->
+  <div class="segment">
+    <div class="segment-header">
+      <span class="segment-number">PART A</span>
+      <span class="segment-title">Intro — Why Strategies Matter</span>
+      <div class="segment-badges">
+        <span class="badge badge-type">Voiceover + Animation</span>
+        <span class="badge badge-duration">~45 sec</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <p>Now that you know the anatomy of a prompt, let me tell you something that might surprise you. Large language models actually enjoy getting examples. Just like us.</p>
+      <p>Think about it. If I asked you to "classify these customer reviews" with no context, you would probably ask me to show you a few first. "What does a positive one look like? What does a tricky one look like?" You would want to see the pattern before you start.</p>
+      <p>LLMs work the same way. Sometimes they can figure it out on their own. Sometimes they need a few examples. And sometimes, for harder problems, they need to slow down and think out loud. These three modes have names: zero-shot, few-shot, and chain-of-thought. In this video, we will walk through all three -- when to use each one, and why.</p>
+    </div>
+    <div class="media-col">
+      <span class="media-label">Storyboard -- Three Strategies Overview</span>
+      <svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg" style="background: #0f172a; border: 1px solid #1e293b;">
+        <text x="200" y="22" text-anchor="middle" font-family="Outfit" font-size="11" fill="#e2e8f0" font-weight="600">Three Ways to Prompt · Pick the Right One</text>
+        <rect x="14" y="42" width="120" height="148" rx="10" fill="rgba(37,99,235,0.08)" stroke="#2563EB" stroke-width="1.5"/>
+        <text x="74" y="64" text-anchor="middle" font-family="Outfit" font-size="11" fill="#60a5fa" font-weight="700">Zero-Shot</text>
+        <text x="74" y="80" text-anchor="middle" font-family="Outfit" font-size="8" fill="#bfdbfe">no examples</text>
+        <line x1="26" y1="92" x2="122" y2="92" stroke="#2563EB" stroke-width="0.5"/>
+        <text x="74" y="116" text-anchor="middle" font-family="Outfit" font-size="8" fill="#94a3b8">"just do this"</text>
+        <text x="74" y="142" text-anchor="middle" font-family="Outfit" font-size="14">⚡</text>
+        <text x="74" y="170" text-anchor="middle" font-family="Outfit" font-size="8" fill="#bfdbfe">simple tasks</text>
+        <text x="74" y="182" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8">fastest</text>
+        <rect x="140" y="42" width="120" height="148" rx="10" fill="rgba(16,185,129,0.08)" stroke="#10b981" stroke-width="1.5"/>
+        <text x="200" y="64" text-anchor="middle" font-family="Outfit" font-size="11" fill="#34d399" font-weight="700">Few-Shot</text>
+        <text x="200" y="80" text-anchor="middle" font-family="Outfit" font-size="8" fill="#a7f3d0">a few examples</text>
+        <line x1="152" y1="92" x2="248" y2="92" stroke="#10b981" stroke-width="0.5"/>
+        <text x="200" y="116" text-anchor="middle" font-family="Outfit" font-size="8" fill="#94a3b8">"here is how"</text>
+        <text x="200" y="142" text-anchor="middle" font-family="Outfit" font-size="14">📚</text>
+        <text x="200" y="170" text-anchor="middle" font-family="Outfit" font-size="8" fill="#a7f3d0">consistency</text>
+        <text x="200" y="182" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8">repeatable format</text>
+        <rect x="266" y="42" width="120" height="148" rx="10" fill="rgba(168,85,247,0.08)" stroke="#a855f7" stroke-width="1.5"/>
+        <text x="326" y="64" text-anchor="middle" font-family="Outfit" font-size="11" fill="#c4b5fd" font-weight="700">Chain-of-Thought</text>
+        <text x="326" y="80" text-anchor="middle" font-family="Outfit" font-size="8" fill="#c4b5fd">think step by step</text>
+        <line x1="278" y1="92" x2="374" y2="92" stroke="#a855f7" stroke-width="0.5"/>
+        <text x="326" y="116" text-anchor="middle" font-family="Outfit" font-size="8" fill="#94a3b8">"show your work"</text>
+        <text x="326" y="142" text-anchor="middle" font-family="Outfit" font-size="14">🧠</text>
+        <text x="326" y="170" text-anchor="middle" font-family="Outfit" font-size="8" fill="#c4b5fd">reasoning</text>
+        <text x="326" y="182" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8">math, logic</text>
+        <text x="200" y="208" text-anchor="middle" font-family="Outfit" font-size="9" fill="#94a3b8" font-style="italic">Each one has a sweet spot. Pick the right tool for the job.</text>
+      </svg>
+      <div class="media-note">
+        MEDIA TEAM: Three cards fade in one at a time as Prof names each strategy. Zero-Shot (blue), Few-Shot (green), Chain-of-Thought (purple). Final state holds for 2 seconds before transitioning to the next segment.
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SEGMENT B — Zero-Shot Prompting ── -->
+  <div class="segment">
+    <div class="segment-header">
+      <span class="segment-number">PART B</span>
+      <span class="segment-title">Zero-Shot Prompting</span>
+      <div class="segment-badges">
+        <span class="badge badge-type">Voiceover + Animation</span>
+        <span class="badge badge-duration">~90 sec</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <p>Let us start with zero-shot. Zero-shot means exactly what it sounds like -- you give the model a task with zero examples. You just tell it what to do and trust it to figure out the pattern.</p>
+      <p>Here is a classic zero-shot prompt: "Classify this review as positive, negative, or neutral." No examples. No training. Just the task. And most of the time, this works beautifully -- the model has seen millions of reviews during training, so it knows what positive and negative look like.</p>
+      <p>But what about edge cases? "The food was amazing but the service ruined everything." Is that positive or negative? A human would probably say "mixed." The model might say "positive" one time and "negative" the next, depending on which part it focused on. Same prompt, different answer. That is the risk with zero-shot.</p>
+    </div>
+    <div class="media-col">
+      <span class="media-label">Storyboard -- Zero-Shot · Works, but Edge Cases Wobble</span>
+      <svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg" style="background: #0f172a; border: 1px solid #1e293b;">
+        <text x="200" y="22" text-anchor="middle" font-family="Outfit" font-size="11" fill="#e2e8f0" font-weight="600">Zero-Shot — No Examples, Just Trust</text>
+        <!-- Easy case (top, confident) -->
+        <text x="14" y="56" font-family="Outfit" font-size="8" fill="#94a3b8" letter-spacing="0.06em">CASE 1 · CLEAR</text>
+        <rect x="14" y="62" width="180" height="34" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+        <text x="24" y="84" font-family="Outfit" font-size="9" fill="#1e293b">"Great product, fast delivery!"</text>
+        <line x1="200" y1="80" x2="234" y2="80" stroke="#10b981" stroke-width="1.5" marker-end="url(#m03zsArrow)"/>
+        <rect x="240" y="62" width="146" height="34" rx="6" fill="rgba(16,185,129,0.15)" stroke="#10b981" stroke-width="1.2"/>
+        <text x="313" y="84" text-anchor="middle" font-family="Outfit" font-size="10" fill="#34d399" font-weight="600">POSITIVE · 96%</text>
+        <!-- Hard case (bottom, wobble) -->
+        <text x="14" y="120" font-family="Outfit" font-size="8" fill="#94a3b8" letter-spacing="0.06em">CASE 2 · AMBIGUOUS</text>
+        <rect x="14" y="126" width="180" height="50" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+        <text x="24" y="146" font-family="Outfit" font-size="9" fill="#1e293b">"The food was amazing</text>
+        <text x="24" y="160" font-family="Outfit" font-size="9" fill="#1e293b">but the service ruined</text>
+        <text x="24" y="174" font-family="Outfit" font-size="9" fill="#1e293b">everything."</text>
+        <line x1="200" y1="150" x2="234" y2="150" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#m03zsArrow)"/>
+        <text x="217" y="142" font-family="Outfit" font-size="8" fill="#fbbf24">?</text>
+        <rect x="240" y="126" width="68" height="22" rx="4" fill="rgba(16,185,129,0.12)" stroke="#10b981"/>
+        <text x="274" y="141" text-anchor="middle" font-family="Outfit" font-size="8" fill="#34d399">POSITIVE</text>
+        <rect x="316" y="126" width="68" height="22" rx="4" fill="rgba(239,68,68,0.12)" stroke="#ef4444"/>
+        <text x="350" y="141" text-anchor="middle" font-family="Outfit" font-size="8" fill="#fca5a5">NEGATIVE</text>
+        <text x="313" y="166" text-anchor="middle" font-family="Outfit" font-size="7" fill="#fbbf24">flickers · confidence drops</text>
+        <text x="313" y="178" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#fbbf24" font-weight="600">52% / 48%</text>
+        <text x="200" y="206" text-anchor="middle" font-family="Outfit" font-size="9" fill="#94a3b8" font-style="italic">Zero-shot wins on simple. Edge cases need more.</text>
+        <text x="200" y="222" text-anchor="middle" font-family="Outfit" font-size="8" fill="#60a5fa">→ try few-shot next</text>
+        <defs>
+          <marker id="m03zsArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8"/>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ── SEGMENT B ── -->
+  <div class="segment">
+    <div class="segment-header">
+      <span class="segment-number">PART C</span>
+      <span class="segment-title">Few-Shot Prompting</span>
+      <div class="segment-badges">
+        <span class="badge badge-type">Voiceover + Animation</span>
+        <span class="badge badge-duration">~1.5 min</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <p>Strategy two: few-shot. You give the model a few examples before the actual task. "Here are three reviews with their classifications. Now classify this one." Suddenly the edge case gets consistent results. The model learns the pattern from your examples.</p>
+    </div>
+    <div class="media-col">
+      <span class="media-label">Storyboard -- Few-Shot · Show, Then Ask</span>
+      <svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg" style="background: #0f172a; border: 1px solid #1e293b;">
+        <text x="200" y="22" text-anchor="middle" font-family="Outfit" font-size="11" fill="#e2e8f0" font-weight="600">Few-Shot — Three Examples Lock the Pattern</text>
+        <!-- 3 example cards (left) -->
+        <text x="80" y="46" text-anchor="middle" font-family="Outfit" font-size="8" fill="#94a3b8" letter-spacing="0.06em">EXAMPLES</text>
+        <rect x="14" y="56" width="132" height="28" rx="4" fill="rgba(255,255,255,0.04)" stroke="#475569"/>
+        <text x="22" y="68" font-family="Outfit" font-size="7" fill="#e2e8f0">"Loved it!"</text>
+        <rect x="106" y="62" width="36" height="14" rx="3" fill="rgba(16,185,129,0.2)"/>
+        <text x="124" y="72" text-anchor="middle" font-family="Outfit" font-size="6" fill="#34d399">POS</text>
+        <rect x="14" y="90" width="132" height="28" rx="4" fill="rgba(255,255,255,0.04)" stroke="#475569"/>
+        <text x="22" y="102" font-family="Outfit" font-size="7" fill="#e2e8f0">"Total disappointment"</text>
+        <rect x="106" y="96" width="36" height="14" rx="3" fill="rgba(239,68,68,0.2)"/>
+        <text x="124" y="106" text-anchor="middle" font-family="Outfit" font-size="6" fill="#fca5a5">NEG</text>
+        <rect x="14" y="124" width="132" height="28" rx="4" fill="rgba(255,255,255,0.04)" stroke="#475569"/>
+        <text x="22" y="136" font-family="Outfit" font-size="7" fill="#e2e8f0">"Good food, bad service"</text>
+        <rect x="106" y="130" width="36" height="14" rx="3" fill="rgba(239,68,68,0.2)"/>
+        <text x="124" y="140" text-anchor="middle" font-family="Outfit" font-size="6" fill="#fca5a5">NEG</text>
+        <!-- Bridge arrow -->
+        <line x1="152" y1="104" x2="186" y2="104" stroke="#60a5fa" stroke-width="2" marker-end="url(#m03fsArrow)"/>
+        <text x="169" y="96" text-anchor="middle" font-family="Outfit" font-size="7" fill="#60a5fa">learns</text>
+        <!-- New ambiguous review passes through -->
+        <text x="280" y="46" text-anchor="middle" font-family="Outfit" font-size="8" fill="#94a3b8" letter-spacing="0.06em">NEW INPUT</text>
+        <rect x="194" y="60" width="180" height="46" rx="6" fill="#ffffff" stroke="#10b981" stroke-width="1.2"/>
+        <text x="204" y="78" font-family="Outfit" font-size="9" fill="#1e293b">"The food was amazing</text>
+        <text x="204" y="90" font-family="Outfit" font-size="9" fill="#1e293b">but the service ruined it."</text>
+        <line x1="284" y1="112" x2="284" y2="130" stroke="#10b981" stroke-width="1.5" marker-end="url(#m03fsArrow)"/>
+        <rect x="194" y="134" width="180" height="34" rx="6" fill="rgba(239,68,68,0.15)" stroke="#ef4444" stroke-width="1.2"/>
+        <text x="284" y="156" text-anchor="middle" font-family="Outfit" font-size="11" fill="#fca5a5" font-weight="600">NEGATIVE · 91%</text>
+        <text x="200" y="194" text-anchor="middle" font-family="Outfit" font-size="9" fill="#94a3b8" font-style="italic">3 examples · the model now matches your pattern.</text>
+        <text x="200" y="212" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#34d399" font-weight="600">consistent · repeatable</text>
+        <defs>
+          <marker id="m03fsArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#10b981"/>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ── SEGMENT C ── -->
+  <div class="segment">
+    <div class="segment-header">
+      <span class="segment-number">PART D</span>
+      <span class="segment-title">Chain-of-Thought -- The Bat and Ball</span>
+      <div class="segment-badges">
+        <span class="badge badge-type">Voiceover + Animation</span>
+        <span class="badge badge-duration">~2.5 min</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <p>Strategy three: chain-of-thought. You tell the model to think step by step. Here is the classic example. "A bat and a ball cost $1.10 together. The bat costs $1.00 more than the ball. How much does the ball cost?"</p>
+      <p>Without chain-of-thought, most models say 10 cents. That is wrong. With chain-of-thought -- "Think step by step" -- the model works through the algebra and gets 5 cents. Just four words can dramatically improve accuracy on reasoning tasks.</p>
+      <p>When do you use which? Zero-shot for simple tasks. Few-shot when you need consistent formatting. Chain-of-thought when the task requires reasoning. You will practice all three in Lab 1.</p>
+    </div>
+    <div class="media-col">
+      <span class="media-label">Storyboard -- Chain-of-Thought · Bat &amp; Ball</span>
+      <svg viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg" style="background: #0f172a; border: 1px solid #1e293b;">
+        <text x="200" y="22" text-anchor="middle" font-family="Outfit" font-size="11" fill="#e2e8f0" font-weight="600">"Think step by step." — Four Words That Change Everything</text>
+        <!-- Question bar -->
+        <rect x="14" y="38" width="372" height="34" rx="6" fill="#1e293b"/>
+        <text x="200" y="58" text-anchor="middle" font-family="Outfit" font-size="9" fill="#e2e8f0" font-style="italic">"A bat and a ball cost $1.10. The bat costs $1.00 more than the ball. Ball cost?"</text>
+        <!-- Without CoT -->
+        <rect x="14" y="86" width="180" height="186" rx="8" fill="rgba(239,68,68,0.06)" stroke="#ef4444" stroke-width="1.2"/>
+        <text x="104" y="104" text-anchor="middle" font-family="Outfit" font-size="9" fill="#fca5a5" font-weight="600" letter-spacing="0.08em">WITHOUT CoT</text>
+        <text x="104" y="146" text-anchor="middle" font-family="Outfit" font-size="36" fill="#ef4444" font-weight="700">10¢</text>
+        <text x="124" y="138" font-family="Outfit" font-size="22" fill="#ef4444" font-weight="700">✗</text>
+        <text x="104" y="180" text-anchor="middle" font-family="Outfit" font-size="9" fill="#94a3b8" font-style="italic">"Bat is $1, ball is 10¢."</text>
+        <text x="104" y="194" text-anchor="middle" font-family="Outfit" font-size="9" fill="#94a3b8" font-style="italic">— gut answer, wrong</text>
+        <text x="104" y="232" text-anchor="middle" font-family="Outfit" font-size="8" fill="#fca5a5">No reasoning shown</text>
+        <text x="104" y="246" text-anchor="middle" font-family="Outfit" font-size="8" fill="#fca5a5">No self-check</text>
+        <!-- With CoT -->
+        <rect x="206" y="86" width="180" height="186" rx="8" fill="rgba(37,99,235,0.06)" stroke="#2563EB" stroke-width="1.5"/>
+        <text x="296" y="104" text-anchor="middle" font-family="Outfit" font-size="9" fill="#60a5fa" font-weight="600" letter-spacing="0.08em">WITH "STEP BY STEP"</text>
+        <text x="218" y="124" font-family="JetBrains Mono" font-size="8" fill="#bfdbfe">Let ball = x</text>
+        <text x="218" y="138" font-family="JetBrains Mono" font-size="8" fill="#bfdbfe">bat = x + $1.00</text>
+        <text x="218" y="152" font-family="JetBrains Mono" font-size="8" fill="#bfdbfe">x + (x + 1.00) = 1.10</text>
+        <text x="218" y="166" font-family="JetBrains Mono" font-size="8" fill="#bfdbfe">2x = 0.10</text>
+        <text x="218" y="180" font-family="JetBrains Mono" font-size="8" fill="#bfdbfe">x = $0.05</text>
+        <text x="296" y="216" text-anchor="middle" font-family="Outfit" font-size="22" fill="#34d399" font-weight="700">5¢ ✓</text>
+        <text x="296" y="246" text-anchor="middle" font-family="Outfit" font-size="8" fill="#a7f3d0">Reasoning shown · self-checks</text>
+        <text x="296" y="258" text-anchor="middle" font-family="Outfit" font-size="8" fill="#a7f3d0">Math holds together</text>
+      </svg>
+      <div class="media-note">
+        MEDIA TEAM: This is the signature animation for M03. The wrong answer should feel impulsive. The correct reasoning should feel satisfying and inevitable. Each algebra step at reading pace. The "+40% accuracy" stat is the punchline.
+      </div>
+    </div>
+  </div>
+
+</div><!-- end video-3 -->
+
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- VIDEO 4: From Text to Structure                         -->
+<!-- ════════════════════════════════════════════════════════ -->
+<div class="video-section" id="video-4" data-script-export="false">
+
+  <div class="video-header">
+    <h2>Video 4: "From Text to Structure"</h2>
+    <div class="video-meta">Voiceover + animation + code -- 7-9 minutes -- 4 segments (A intro · B Problem with Text · C JSON Mode · D Pydantic)</div>
+  </div>
+
+  <div class="key-message-bar">
+    <span class="km-label">KEY MESSAGE</span>
+    <span class="km-text">JSON mode guarantees parseable output. Pydantic guarantees correct structure.</span>
+  </div>
+
+  <!-- ── SEGMENT A — Intro: Second Level of Control ── -->
+  <div class="segment">
+    <div class="segment-header">
+      <span class="segment-number">PART A</span>
+      <span class="segment-title">Intro — The Second Level of Control</span>
+      <div class="segment-badges">
+        <span class="badge badge-type">Voiceover + Animation</span>
+        <span class="badge badge-duration">~45 sec</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <p>So far in this module, you have learned how to talk to the model. You know how to set the role, the task, the context, the format. You know when to use examples and when to ask for step-by-step reasoning. That is the first level of control -- input control.</p>
+      <p>But here is the thing. Even when you ask the model beautifully, you still get back text. Free-form paragraphs. A block of writing. And that is fine when the answer is for a human to read. But the moment you want to do something with the output -- store it, filter it, feed it into another system -- text becomes a problem.</p>
+      <p>This video is about the second level of control. Not just what the model says, but the exact shape of what it hands you back. We will cover two tools: JSON mode, which forces the model to return valid JSON, and Pydantic, which makes sure that JSON has exactly the fields and types your code needs.</p>
+    </div>
+    <div class="media-col">
+      <span class="media-label">Storyboard -- Three Levels of Control (You Are Here: Level 2)</span>
+      <svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg" style="background: #0f172a; border: 1px solid #1e293b;">
+        <text x="200" y="22" text-anchor="middle" font-family="Outfit" font-size="11" fill="#e2e8f0" font-weight="600">Three Levels of Control · You Are Here: Level 2</text>
+        <rect x="14" y="44" width="120" height="160" rx="10" fill="rgba(37,99,235,0.06)" stroke="#60a5fa" stroke-width="1"/>
+        <text x="74" y="64" text-anchor="middle" font-family="Outfit" font-size="9" fill="#60a5fa" font-weight="600" letter-spacing="0.08em">LEVEL 1</text>
+        <text x="74" y="82" text-anchor="middle" font-family="Outfit" font-size="10" fill="#bfdbfe" font-weight="600">Input Control</text>
+        <text x="74" y="104" text-anchor="middle" font-family="Outfit" font-size="8" fill="#94a3b8">what you say</text>
+        <text x="74" y="120" text-anchor="middle" font-family="Outfit" font-size="7" fill="#64748b">RTCF · few-shot · CoT</text>
+        <text x="74" y="160" text-anchor="middle" font-family="Outfit" font-size="18">✓</text>
+        <text x="74" y="188" text-anchor="middle" font-family="Outfit" font-size="8" fill="#34d399" font-style="italic">done</text>
+        <rect x="140" y="44" width="120" height="160" rx="10" fill="rgba(245,158,11,0.12)" stroke="#f59e0b" stroke-width="2"/>
+        <text x="200" y="64" text-anchor="middle" font-family="Outfit" font-size="9" fill="#fbbf24" font-weight="600" letter-spacing="0.08em">LEVEL 2</text>
+        <text x="200" y="82" text-anchor="middle" font-family="Outfit" font-size="10" fill="#fde68a" font-weight="600">Output Control</text>
+        <text x="200" y="104" text-anchor="middle" font-family="Outfit" font-size="8" fill="#94a3b8">shape of the answer</text>
+        <text x="200" y="120" text-anchor="middle" font-family="Outfit" font-size="7" fill="#64748b">JSON mode · Pydantic</text>
+        <text x="200" y="160" text-anchor="middle" font-family="Outfit" font-size="16">📍</text>
+        <text x="200" y="188" text-anchor="middle" font-family="Outfit" font-size="8" fill="#fbbf24" font-weight="600" font-style="italic">you are here</text>
+        <rect x="266" y="44" width="120" height="160" rx="10" fill="rgba(148,163,184,0.06)" stroke="#475569" stroke-width="1"/>
+        <text x="326" y="64" text-anchor="middle" font-family="Outfit" font-size="9" fill="#94a3b8" font-weight="600" letter-spacing="0.08em">LEVEL 3</text>
+        <text x="326" y="82" text-anchor="middle" font-family="Outfit" font-size="10" fill="#cbd5e1" font-weight="600">Action Control</text>
+        <text x="326" y="104" text-anchor="middle" font-family="Outfit" font-size="8" fill="#94a3b8">let it call functions</text>
+        <text x="326" y="120" text-anchor="middle" font-family="Outfit" font-size="7" fill="#64748b">function calling</text>
+        <text x="326" y="160" text-anchor="middle" font-family="Outfit" font-size="16">⏭</text>
+        <text x="326" y="188" text-anchor="middle" font-family="Outfit" font-size="8" fill="#64748b" font-style="italic">next video</text>
+      </svg>
+      <div class="media-note">
+        MEDIA TEAM: All three cards visible but Level 2 highlighted (amber). Level 1 shows a green ✓ check. Level 3 is faded out with a ⏭ "next video" marker. This card is a progress bar the student can see themselves moving through.
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SEGMENT B — The Problem with Text ── -->
+  <div class="segment">
+    <div class="segment-header">
+      <span class="segment-number">PART B</span>
+      <span class="segment-title">The Problem with Text</span>
+      <div class="segment-badges">
+        <span class="badge badge-type">Voiceover + Animation</span>
+        <span class="badge badge-duration">~90 sec</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <p>Let me make the problem concrete. The output of a model, by default, is text. Free-form, unstructured text. And text is great for humans -- but terrible for code.</p>
+      <p>You cannot put a paragraph into a database column. You cannot feed prose into an analytics pipeline. You cannot reliably pull three numbers out of a sentence using string matching without it breaking the moment the wording changes. If your goal is to use the model's output in code, text is the enemy.</p>
+      <p>What you need instead is structure. You need to know, in advance, that the field called "sentiment" will always be there, and it will always be one of three values, and "confidence" will always be a number between zero and one. That is what JSON gives you -- a contract.</p>
+    </div>
+    <div class="media-col">
+      <span class="media-label">Storyboard -- Text Is Great for Humans, Bad for Code</span>
+      <svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg" style="background: #0f172a; border: 1px solid #1e293b;">
+        <text x="200" y="22" text-anchor="middle" font-family="Outfit" font-size="11" fill="#e2e8f0" font-weight="600">From Prose to Parseable</text>
+        <!-- Top: text trying to enter DB -->
+        <text x="14" y="48" font-family="Outfit" font-size="8" fill="#fca5a5" letter-spacing="0.06em">FREE-FORM TEXT</text>
+        <rect x="14" y="56" width="220" height="48" rx="6" fill="rgba(255,255,255,0.04)" stroke="#475569"/>
+        <text x="22" y="74" font-family="Outfit" font-size="8" fill="#cbd5e1" font-style="italic">"The customer was satisfied with</text>
+        <text x="22" y="86" font-family="Outfit" font-size="8" fill="#cbd5e1" font-style="italic">the product, especially the quality</text>
+        <text x="22" y="98" font-family="Outfit" font-size="8" fill="#cbd5e1" font-style="italic">and the fast delivery time."</text>
+        <line x1="240" y1="80" x2="276" y2="80" stroke="#ef4444" stroke-width="1.5" marker-end="url(#m03tsArrow)"/>
+        <!-- Database cylinder -->
+        <ellipse cx="320" cy="62" rx="34" ry="6" fill="rgba(148,163,184,0.15)" stroke="#94a3b8"/>
+        <path d="M 286 62 L 286 102 Q 286 108 320 108 Q 354 108 354 102 L 354 62" fill="rgba(148,163,184,0.08)" stroke="#94a3b8"/>
+        <ellipse cx="320" cy="62" rx="34" ry="6" fill="none" stroke="#94a3b8"/>
+        <text x="320" y="86" text-anchor="middle" font-family="Outfit" font-size="8" fill="#94a3b8">DB</text>
+        <text x="278" y="116" font-family="Outfit" font-size="8" fill="#fca5a5">✗ ERROR: cannot parse</text>
+        <!-- Bottom: JSON enters cleanly -->
+        <text x="14" y="146" font-family="Outfit" font-size="8" fill="#34d399" letter-spacing="0.06em">STRUCTURED JSON</text>
+        <rect x="14" y="154" width="220" height="56" rx="6" fill="#0a1428" stroke="#10b981"/>
+        <text x="22" y="170" font-family="JetBrains Mono" font-size="8" fill="#e2e8f0">{</text>
+        <text x="32" y="180" font-family="JetBrains Mono" font-size="8" fill="#fb923c">"sentiment"</text>
+        <text x="92" y="180" font-family="JetBrains Mono" font-size="8" fill="#e2e8f0">:</text>
+        <text x="100" y="180" font-family="JetBrains Mono" font-size="8" fill="#a7f3d0">"positive"</text>
+        <text x="155" y="180" font-family="JetBrains Mono" font-size="8" fill="#e2e8f0">,</text>
+        <text x="32" y="192" font-family="JetBrains Mono" font-size="8" fill="#fb923c">"keywords"</text>
+        <text x="86" y="192" font-family="JetBrains Mono" font-size="8" fill="#e2e8f0">: [</text>
+        <text x="102" y="192" font-family="JetBrains Mono" font-size="8" fill="#a7f3d0">"quality"</text>
+        <text x="148" y="192" font-family="JetBrains Mono" font-size="8" fill="#e2e8f0">,</text>
+        <text x="156" y="192" font-family="JetBrains Mono" font-size="8" fill="#a7f3d0">"delivery"</text>
+        <text x="206" y="192" font-family="JetBrains Mono" font-size="8" fill="#e2e8f0">]</text>
+        <text x="22" y="204" font-family="JetBrains Mono" font-size="8" fill="#e2e8f0">}</text>
+        <line x1="240" y1="180" x2="276" y2="180" stroke="#10b981" stroke-width="1.5" marker-end="url(#m03tsArrowG)"/>
+        <ellipse cx="320" cy="162" rx="34" ry="6" fill="rgba(16,185,129,0.15)" stroke="#10b981"/>
+        <path d="M 286 162 L 286 202 Q 286 208 320 208 Q 354 208 354 202 L 354 162" fill="rgba(16,185,129,0.08)" stroke="#10b981"/>
+        <ellipse cx="320" cy="162" rx="34" ry="6" fill="none" stroke="#10b981"/>
+        <text x="320" y="186" text-anchor="middle" font-family="Outfit" font-size="8" fill="#34d399">DB</text>
+        <text x="278" y="222" font-family="Outfit" font-size="8" fill="#34d399">✓ json.loads() · done</text>
+        <defs>
+          <marker id="m03tsArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#ef4444"/>
+          </marker>
+          <marker id="m03tsArrowG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#10b981"/>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ── SEGMENT B ── -->
+  <div class="segment">
+    <div class="segment-header">
+      <span class="segment-number">PART C</span>
+      <span class="segment-title">JSON Mode</span>
+      <div class="segment-badges">
+        <span class="badge badge-type">Voiceover + Code Display</span>
+        <span class="badge badge-duration">~2 min</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <p>JSON mode forces the model to return valid JSON -- guaranteed parseable, guaranteed structured.</p>
+      <p>Watch the difference. Same question, two modes.</p>
+      <p>Text mode: "The sentiment of the review is positive. The customer expressed satisfaction with the product quality and delivery speed."</p>
+      <p>JSON mode: {"sentiment": "positive", "confidence": 0.92, "keywords": ["quality", "delivery speed"]}</p>
+      <p>Same information. But the JSON version can be parsed by code in one line. No regex. No string manipulation. Just json.loads() and you have a Python dictionary.</p>
+    </div>
+    <div class="media-col">
+      <span class="media-label">Storyboard -- 12 Lines vs 1 Line</span>
+      <svg viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg" style="background: #0f172a; border: 1px solid #1e293b;">
+        <text x="200" y="22" text-anchor="middle" font-family="Outfit" font-size="11" fill="#e2e8f0" font-weight="600">JSON Mode — Stop Parsing, Start Loading</text>
+        <!-- TEXT MODE -->
+        <text x="14" y="46" font-family="Outfit" font-size="9" fill="#fca5a5" font-weight="600" letter-spacing="0.08em">TEXT MODE · 12 LINES TO PARSE</text>
+        <rect x="14" y="52" width="372" height="100" rx="6" fill="#0a1428" stroke="#ef4444"/>
+        <text x="22" y="68" font-family="JetBrains Mono" font-size="7" fill="#94a3b8">import re</text>
+        <text x="22" y="80" font-family="JetBrains Mono" font-size="7" fill="#94a3b8">text = response.choices[0].message.content</text>
+        <text x="22" y="92" font-family="JetBrains Mono" font-size="7" fill="#fbbf24">sentiment = re.search(r'sentiment.*?(\w+)', text)</text>
+        <text x="22" y="104" font-family="JetBrains Mono" font-size="7" fill="#fbbf24">if sentiment: sentiment = sentiment.group(1)</text>
+        <text x="22" y="116" font-family="JetBrains Mono" font-size="7" fill="#fbbf24">conf = re.search(r'(\d+\.\d+)', text)</text>
+        <text x="22" y="128" font-family="JetBrains Mono" font-size="7" fill="#fbbf24">try: conf = float(conf.group(1))</text>
+        <text x="22" y="140" font-family="JetBrains Mono" font-size="7" fill="#fbbf24">except: conf = None  # fragile</text>
+        <rect x="338" y="58" width="44" height="14" rx="3" fill="rgba(239,68,68,0.2)"/>
+        <text x="360" y="68" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#fca5a5">12 lines</text>
+        <!-- JSON MODE -->
+        <text x="14" y="174" font-family="Outfit" font-size="9" fill="#34d399" font-weight="600" letter-spacing="0.08em">JSON MODE · 1 LINE</text>
+        <rect x="14" y="180" width="372" height="56" rx="6" fill="#0a1428" stroke="#10b981"/>
+        <text x="22" y="200" font-family="JetBrains Mono" font-size="9" fill="#a78bfa">import json</text>
+        <text x="22" y="218" font-family="JetBrains Mono" font-size="9" fill="#34d399">data = json.loads(response.choices[0].message.content)</text>
+        <rect x="338" y="186" width="44" height="14" rx="3" fill="rgba(16,185,129,0.2)"/>
+        <text x="360" y="196" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#34d399">1 line</text>
+        <text x="200" y="262" text-anchor="middle" font-family="Outfit" font-size="9" fill="#94a3b8" font-style="italic">Same information. Twelve times less code. Zero regex.</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ── SEGMENT C ── -->
+  <div class="segment">
+    <div class="segment-header">
+      <span class="segment-number">PART D</span>
+      <span class="segment-title">Pydantic Validation</span>
+      <div class="segment-badges">
+        <span class="badge badge-type">Voiceover + Animation</span>
+        <span class="badge badge-duration">~2 min</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <p>But JSON mode has a gap. It guarantees valid JSON, but it does not guarantee the right fields or the right types. That is where Pydantic comes in.</p>
+      <p>Pydantic lets you define a schema -- a class that says "I expect a field called sentiment of type string, a field called confidence of type float between 0 and 1." If the model returns something that does not match, Pydantic catches it immediately. No silent bugs. No bad data reaching your database.</p>
+    </div>
+    <div class="media-col">
+      <span class="media-label">Storyboard -- Pydantic Gatekeeper</span>
+      <svg viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg" style="background: #0f172a; border: 1px solid #1e293b;">
+        <text x="200" y="22" text-anchor="middle" font-family="Outfit" font-size="11" fill="#e2e8f0" font-weight="600">Pydantic — Catches Bad Data Before Your Database Sees It</text>
+        <!-- Schema blueprint at top -->
+        <rect x="14" y="38" width="372" height="76" rx="6" fill="rgba(37,99,235,0.06)" stroke="#2563EB" stroke-width="1"/>
+        <text x="22" y="54" font-family="Outfit" font-size="8" fill="#60a5fa" font-weight="600" letter-spacing="0.08em">SCHEMA · class Review(BaseModel)</text>
+        <text x="22" y="72" font-family="JetBrains Mono" font-size="8" fill="#bfdbfe">sentiment: Literal["positive", "negative", "neutral"]</text>
+        <text x="22" y="86" font-family="JetBrains Mono" font-size="8" fill="#bfdbfe">confidence: float = Field(ge=0, le=1)</text>
+        <text x="22" y="100" font-family="JetBrains Mono" font-size="8" fill="#bfdbfe">keywords: list[str]</text>
+        <!-- Conveyor: 3 incoming objects -->
+        <text x="14" y="138" font-family="Outfit" font-size="8" fill="#94a3b8" letter-spacing="0.06em">INCOMING JSON</text>
+        <!-- Object 1: valid -->
+        <rect x="14" y="146" width="118" height="36" rx="4" fill="rgba(16,185,129,0.06)" stroke="#10b981"/>
+        <text x="20" y="158" font-family="JetBrains Mono" font-size="7" fill="#a7f3d0">{sentiment: "positive",</text>
+        <text x="20" y="168" font-family="JetBrains Mono" font-size="7" fill="#a7f3d0"> confidence: 0.92, ...}</text>
+        <text x="73" y="178" text-anchor="middle" font-family="Outfit" font-size="8" fill="#34d399">✓ valid</text>
+        <!-- Object 2: invalid type -->
+        <rect x="142" y="146" width="118" height="36" rx="4" fill="rgba(239,68,68,0.06)" stroke="#ef4444"/>
+        <text x="148" y="158" font-family="JetBrains Mono" font-size="7" fill="#fca5a5">{sentiment: "positive",</text>
+        <text x="148" y="168" font-family="JetBrains Mono" font-size="7" fill="#fca5a5"> confidence: "high"}</text>
+        <text x="201" y="178" text-anchor="middle" font-family="Outfit" font-size="8" fill="#fca5a5">✗ wrong type</text>
+        <!-- Object 3: valid -->
+        <rect x="270" y="146" width="116" height="36" rx="4" fill="rgba(16,185,129,0.06)" stroke="#10b981"/>
+        <text x="276" y="158" font-family="JetBrains Mono" font-size="7" fill="#a7f3d0">{sentiment: "neutral",</text>
+        <text x="276" y="168" font-family="JetBrains Mono" font-size="7" fill="#a7f3d0"> confidence: 0.61, ...}</text>
+        <text x="328" y="178" text-anchor="middle" font-family="Outfit" font-size="8" fill="#34d399">✓ valid</text>
+        <!-- Pydantic gate -->
+        <line x1="14" y1="200" x2="386" y2="200" stroke="#475569" stroke-width="0.8"/>
+        <text x="200" y="216" text-anchor="middle" font-family="Outfit" font-size="8" fill="#60a5fa" font-weight="600" letter-spacing="0.08em">PYDANTIC GATE</text>
+        <line x1="14" y1="222" x2="386" y2="222" stroke="#475569" stroke-width="0.8"/>
+        <!-- Below gate: passed/error -->
+        <rect x="14" y="234" width="220" height="34" rx="4" fill="rgba(16,185,129,0.08)" stroke="#10b981"/>
+        <text x="22" y="248" font-family="Outfit" font-size="8" fill="#34d399">2 passed → ready for database</text>
+        <text x="22" y="260" font-family="JetBrains Mono" font-size="7" fill="#a7f3d0">Review(sentiment="positive", confidence=0.92, ...)</text>
+        <rect x="244" y="234" width="142" height="34" rx="4" fill="rgba(239,68,68,0.08)" stroke="#ef4444"/>
+        <text x="252" y="248" font-family="Outfit" font-size="8" fill="#fca5a5">1 caught → ValidationError</text>
+        <text x="252" y="260" font-family="JetBrains Mono" font-size="7" fill="#fca5a5">confidence: float required</text>
+      </svg>
+      <div class="media-note">
+        MEDIA TEAM: The gatekeeper should feel protective. The error catch = near-miss prevented. Show the specific error message clearly. The database at end of conveyor only receives clean data.
+      </div>
+    </div>
+  </div>
+
+</div><!-- end video-4 -->
+
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- VIDEO 5: TA — Structured Output Lab Walkthrough         -->
+<!-- ════════════════════════════════════════════════════════ -->
+<div class="video-section" id="video-5" data-script-export="false" data-ta-only="true" style="display:none">
+
+  <div class="video-header">
+    <h2>Video 5: "Structured Output Lab Walkthrough" (TA) &mdash; <span style="color:#b45309;">Not Part of Script Export</span></h2>
+    <div class="video-meta">TA screen recording -- 8-12 minutes -- no script, walkthrough only</div>
+    <div style="background:#fff3cd;border-left:4px solid #f59e0b;padding:10px 14px;border-radius:6px;margin-top:10px;font-size:0.95em;">
+      <strong>Note:</strong> This video has <em>no narration script</em>. The TA records a live screen walkthrough of the <code>M03_Lab1_JSON_Mode_Pydantic.ipynb</code> Colab notebook, talking naturally through each cell. The items below are <strong>guidelines for the TA</strong> on how to record the video &mdash; they are <strong>not part of the script export</strong>.
+    </div>
+  </div>
+
+  <div class="segment">
+    <div class="segment-header">
+      <span class="segment-number">TA</span>
+      <span class="segment-title">Structured Output Lab Walkthrough</span>
+      <div class="segment-badges">
+        <span class="badge badge-ta">TA GUIDELINES</span>
+        <span class="badge badge-duration">8-12 min</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <div class="ta-guidelines">
+        <h4>GUIDELINES FOR TA</h4>
+        <p class="ta-intro">Open <code>M03_Lab1_JSON_Mode_Pydantic.ipynb</code> in Colab and record a live screen walkthrough. Run every cell from top to bottom. Talk naturally -- no script. The goal is to show how structured output turns messy text into clean, typed data.</p>
+
+        <div class="ta-section">
+          <h5>1. Open the Notebook</h5>
+          <ul>
+            <li>Open the Lab 1 notebook in Google Colab</li>
+            <li>Show the table of contents: free-text output &rarr; JSON mode &rarr; Pydantic schema</li>
+            <li>Confirm the API key is loaded from Colab Secrets</li>
+          </ul>
+        </div>
+
+        <div class="ta-section">
+          <h5>2. Free-Text Baseline</h5>
+          <ul>
+            <li>Run the first cell that asks the model to "extract product details from this review" in plain text</li>
+            <li>Show the messy, unpredictable output -- this is the problem we are about to solve</li>
+          </ul>
+        </div>
+
+        <div class="ta-section">
+          <h5>3. JSON Mode</h5>
+          <ul>
+            <li>Walk through the <code>response_format={"type": "json_object"}</code> parameter</li>
+            <li>Run the cell and show the clean JSON output</li>
+            <li>Highlight how you can now <code>json.loads()</code> it directly -- no regex hacks</li>
+          </ul>
+        </div>
+
+        <div class="ta-section">
+          <h5>4. Pydantic Schema</h5>
+          <ul>
+            <li>Define the Pydantic model with typed fields</li>
+            <li>Run the schema-enforced call and show the validated Pydantic object</li>
+            <li>Demonstrate what happens when the model returns an invalid type -- Pydantic catches it</li>
+          </ul>
+        </div>
+
+        <div class="ta-section">
+          <h5>5. Assignment Handoff</h5>
+          <ul>
+            <li>Point to the exercise at the bottom of the notebook</li>
+            <li>Tell students what to submit and where</li>
+            <li>Sign off warmly</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="media-col">
+      <span class="media-label">Recording Setup</span>
+      <p class="shot-note">TA screen recording at 1920x1080, 30fps. Colab notebook at comfortable zoom (students should be able to read every line). TA voiceover recorded with a decent mic -- clean, warm, conversational.</p>
+      <div class="media-note">
+        MEDIA TEAM: Walkthrough, not a scripted lecture. Record the screen, capture the audio, edit only for length. No B-roll, no overlays. Keep it raw and authentic.
+      </div>
+    </div>
+  </div>
+
+</div><!-- end video-5 (TA Structured Output Lab) -->
+
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- VIDEO 6: Function Calling                               -->
+<!-- ════════════════════════════════════════════════════════ -->
+<div class="video-section" id="video-6">
+
+  <div class="video-header">
+    <h2>Video 6: "Function Calling -- From Text to Action"</h2>
+    <div class="video-meta">Voiceover + animation + code -- 6-8 minutes -- 2 segments</div>
+  </div>
+
+  <div class="key-message-bar">
+    <span class="km-label">KEY MESSAGE</span>
+    <span class="km-text">The model decides which function to call. Your code does the work. That is the bridge to agents.</span>
+  </div>
+
+  <!-- ── SEGMENT A ── -->
+  <div class="segment">
+    <div class="segment-header">
+      <span class="segment-number">PART A</span>
+      <span class="segment-title">What Is Function Calling</span>
+      <div class="segment-badges">
+        <span class="badge badge-type">Voiceover + Animation</span>
+        <span class="badge badge-duration">~2.5 min</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <p>Until now, the model only produces text -- or structured text. Function calling lets it produce actions.</p>
+      <p>You define tools -- functions with names, descriptions, and parameter schemas. The model reads the user request and decides: which tool should I use? What arguments should I pass?</p>
+      <p>The model does not execute the function. It generates a structured call -- a JSON object saying "call this function with these arguments." Your code handles execution.</p>
+      <p>This is the bridge between a chatbot and an agent. The model reasons about which tool to use. Your code does the work.</p>
+    </div>
+    <div class="media-col">
+      <span class="media-label">Storyboard -- From Chatbot to Agent</span>
+      <svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg" style="background: #0f172a; border: 1px solid #1e293b;">
+        <text x="200" y="22" text-anchor="middle" font-family="Outfit" font-size="11" fill="#e2e8f0" font-weight="600">The Bridge from Text to Action</text>
+        <!-- LEFT: Chatbot -->
+        <text x="70" y="52" text-anchor="middle" font-family="Outfit" font-size="9" fill="#94a3b8" font-weight="600" letter-spacing="0.08em">CHATBOT</text>
+        <circle cx="70" cy="120" r="36" fill="rgba(148,163,184,0.1)" stroke="#94a3b8" stroke-width="1.5"/>
+        <text x="70" y="125" text-anchor="middle" font-family="Outfit" font-size="10" fill="#cbd5e1" font-weight="600">LLM</text>
+        <rect x="42" y="168" width="56" height="18" rx="4" fill="rgba(148,163,184,0.12)" stroke="#475569"/>
+        <text x="70" y="180" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8">text only</text>
+        <text x="70" y="210" text-anchor="middle" font-family="Outfit" font-size="8" fill="#64748b" font-style="italic">can describe things</text>
+        <!-- Bridge -->
+        <line x1="110" y1="120" x2="290" y2="120" stroke="#2563EB" stroke-width="2" stroke-dasharray="6,4"/>
+        <text x="200" y="110" text-anchor="middle" font-family="Outfit" font-size="9" fill="#60a5fa" font-weight="600" letter-spacing="0.08em">FUNCTION CALLING</text>
+        <text x="200" y="138" text-anchor="middle" font-family="Outfit" font-size="8" fill="#94a3b8">model decides which tool</text>
+        <!-- RIGHT: Agent -->
+        <text x="330" y="52" text-anchor="middle" font-family="Outfit" font-size="9" fill="#60a5fa" font-weight="600" letter-spacing="0.08em">AGENT</text>
+        <circle cx="330" cy="120" r="36" fill="rgba(37,99,235,0.12)" stroke="#2563EB" stroke-width="2"/>
+        <text x="330" y="125" text-anchor="middle" font-family="Outfit" font-size="10" fill="#bfdbfe" font-weight="600">LLM</text>
+        <!-- Orbiting tool icons -->
+        <circle cx="286" cy="84" r="11" fill="rgba(16,185,129,0.15)" stroke="#10b981"/>
+        <text x="286" y="88" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#34d399">DB</text>
+        <circle cx="374" cy="84" r="11" fill="rgba(245,158,11,0.15)" stroke="#f59e0b"/>
+        <text x="374" y="88" text-anchor="middle" font-family="Outfit" font-size="10" fill="#fbbf24">⚙</text>
+        <circle cx="286" cy="156" r="11" fill="rgba(244,114,182,0.15)" stroke="#ec4899"/>
+        <text x="286" y="160" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#f9a8d4">API</text>
+        <circle cx="374" cy="156" r="11" fill="rgba(168,85,247,0.15)" stroke="#a855f7"/>
+        <text x="374" y="160" text-anchor="middle" font-family="Outfit" font-size="10" fill="#c4b5fd">✉</text>
+        <line x1="296" y1="92" x2="310" y2="104" stroke="#475569" stroke-width="0.8" stroke-dasharray="2,2"/>
+        <line x1="364" y1="92" x2="350" y2="104" stroke="#475569" stroke-width="0.8" stroke-dasharray="2,2"/>
+        <line x1="296" y1="148" x2="310" y2="136" stroke="#475569" stroke-width="0.8" stroke-dasharray="2,2"/>
+        <line x1="364" y1="148" x2="350" y2="136" stroke="#475569" stroke-width="0.8" stroke-dasharray="2,2"/>
+        <text x="330" y="210" text-anchor="middle" font-family="Outfit" font-size="8" fill="#60a5fa" font-style="italic">can actually DO things</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ── SEGMENT B ── -->
+  <div class="segment">
+    <div class="segment-header">
+      <span class="segment-number">PART B</span>
+      <span class="segment-title">The Five-Step Weather Example</span>
+      <div class="segment-badges">
+        <span class="badge badge-type">Voiceover + Step Animation</span>
+        <span class="badge badge-duration">~3 min</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <p>Here is a complete example. You define get_weather with parameters city and units. User asks "What is the weather in Boston?" The model does not answer directly -- it returns a JSON call: {"name": "get_weather", "arguments": {"city": "Boston"}}.</p>
+      <p>Your code executes the real API call, sends the result back, and now the model generates a human-readable response. The model decided which function to call. Your code did the work. That is function calling.</p>
+    </div>
+    <div class="media-col">
+      <span class="media-label">Storyboard -- Five-Step Weather Example</span>
+      <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg" style="background: #0f172a; border: 1px solid #1e293b;">
+        <text x="200" y="22" text-anchor="middle" font-family="Outfit" font-size="11" fill="#e2e8f0" font-weight="600">Five Steps · Model Decides · Your Code Acts</text>
+        <!-- Step 1: Define -->
+        <circle cx="30" cy="58" r="10" fill="#2563EB"/>
+        <text x="30" y="62" text-anchor="middle" font-family="Outfit" font-size="9" fill="#ffffff" font-weight="700">1</text>
+        <text x="50" y="56" font-family="Outfit" font-size="9" fill="#60a5fa" font-weight="600">DEFINE the tool</text>
+        <rect x="50" y="64" width="320" height="24" rx="4" fill="#0a1428" stroke="#1e293b"/>
+        <text x="58" y="79" font-family="JetBrains Mono" font-size="8" fill="#bfdbfe">get_weather(city: str, units: str = "fahrenheit")</text>
+        <!-- Arrow -->
+        <line x1="30" y1="78" x2="30" y2="108" stroke="#475569" stroke-width="1"/>
+        <!-- Step 2: User asks -->
+        <circle cx="30" cy="118" r="10" fill="#2563EB"/>
+        <text x="30" y="122" text-anchor="middle" font-family="Outfit" font-size="9" fill="#ffffff" font-weight="700">2</text>
+        <text x="50" y="116" font-family="Outfit" font-size="9" fill="#60a5fa" font-weight="600">USER asks</text>
+        <rect x="50" y="124" width="320" height="20" rx="4" fill="rgba(255,255,255,0.05)" stroke="#475569"/>
+        <text x="58" y="138" font-family="Outfit" font-size="9" fill="#cbd5e1" font-style="italic">"What is the weather in Boston?"</text>
+        <line x1="30" y1="138" x2="30" y2="166" stroke="#475569" stroke-width="1"/>
+        <!-- Step 3: Model reasons (JSON) -->
+        <circle cx="30" cy="176" r="10" fill="#f59e0b"/>
+        <text x="30" y="180" text-anchor="middle" font-family="Outfit" font-size="9" fill="#ffffff" font-weight="700">3</text>
+        <text x="50" y="174" font-family="Outfit" font-size="9" fill="#fbbf24" font-weight="600">MODEL returns JSON call (not text)</text>
+        <rect x="50" y="182" width="320" height="26" rx="4" fill="#0a1428" stroke="#f59e0b"/>
+        <text x="58" y="198" font-family="JetBrains Mono" font-size="8" fill="#fde68a">{"name": "get_weather", "arguments": {"city": "Boston"}}</text>
+        <line x1="30" y1="202" x2="30" y2="228" stroke="#475569" stroke-width="1"/>
+        <!-- Step 4: Execute -->
+        <circle cx="30" cy="238" r="10" fill="#10b981"/>
+        <text x="30" y="242" text-anchor="middle" font-family="Outfit" font-size="9" fill="#ffffff" font-weight="700">4</text>
+        <text x="50" y="236" font-family="Outfit" font-size="9" fill="#34d399" font-weight="600">YOUR CODE executes the call</text>
+        <rect x="50" y="244" width="320" height="20" rx="4" fill="rgba(16,185,129,0.06)" stroke="#10b981"/>
+        <text x="58" y="258" font-family="JetBrains Mono" font-size="8" fill="#a7f3d0">→ weather_api.fetch("Boston") → 72°F, partly cloudy</text>
+        <line x1="30" y1="258" x2="30" y2="286" stroke="#475569" stroke-width="1"/>
+        <!-- Step 5: Respond -->
+        <circle cx="30" cy="296" r="10" fill="#2563EB"/>
+        <text x="30" y="300" text-anchor="middle" font-family="Outfit" font-size="9" fill="#ffffff" font-weight="700">5</text>
+        <text x="50" y="294" font-family="Outfit" font-size="9" fill="#60a5fa" font-weight="600">MODEL writes the human answer</text>
+        <rect x="50" y="302" width="320" height="14" rx="4" fill="rgba(37,99,235,0.08)" stroke="#2563EB"/>
+        <text x="58" y="312" font-family="Outfit" font-size="8" fill="#bfdbfe">"It's 72°F in Boston right now, partly cloudy."</text>
+      </svg>
+      <div class="media-note">
+        MEDIA TEAM: Most complex animation in M03. Each step must be clear -- do not rush. Key insight at Step 3: model produces function call JSON instead of text answer. Highlight with brief pause and "decision" indicator. The loop reinforces the pattern.
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SEGMENT C -- Curiosity Spark ── -->
+  <div class="segment">
+    <div class="segment-header">
+      <span class="segment-number">PART C</span>
+      <span class="segment-title">One Small Question Before We Go</span>
+      <div class="segment-badges">
+        <span class="badge badge-type">On Camera</span>
+        <span class="badge badge-duration">~40 sec</span>
+        <span class="badge badge-shot">Medium close-up</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <p>Before we wrap this up, let me leave you with one small question.</p>
+      <p>We have been throwing around the word <em>JSON</em> this entire module. JSON mode, JSON schema, JSON this, JSON that. But have you ever stopped and asked yourself &mdash; why is it called JSON? What does it even stand for? And who invented it?</p>
+      <p>I am not going to tell you. I want you to take two minutes after this video, search it up, and find out for yourself. Read about where it came from, who named it, and how it became the language that almost every API on the internet now speaks. I promise you &mdash; the story is more interesting than you think.</p>
+      <p>Because here is a habit I want you to build in this course: when a tool shows up in your work over and over again, get curious about it. Learn its history. Learn its shape. The engineers who understand <em>why</em> a tool exists always build better things with it than the engineers who just use it.</p>
+      <p>Go look it up. I will see you in the next video.</p>
+    </div>
+    <div class="media-col">
+      <span class="media-label">Shot Setup</span>
+      <p class="shot-note">Medium close-up, warm lighting, direct to camera. Conversational, curious tone -- like a teacher planting a seed rather than giving an answer. Small smile on "I am not going to tell you." Gentle pause after "you think." before the habit line.</p>
+      <div class="media-note">
+        MEDIA TEAM: Minimal overlay. As Prof says "JSON mode, JSON schema, JSON this, JSON that," do a fast-cut montage of the JSON snippets we showed earlier in the module (3-4 flashes, ~0.4s each). Otherwise stay on Prof's face -- the point is curiosity, not content. Optional subtle lower-third at the end: "Your homework: why is JSON called JSON?"
+      </div>
+    </div>
+  </div>
+
+</div><!-- end video-6 (Function Calling) -->
+
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- VIDEO 7: TA — Function Calling Lab Walkthrough          -->
+<!-- ════════════════════════════════════════════════════════ -->
+<div class="video-section" id="video-7" data-script-export="false" data-ta-only="true" style="display:none">
+
+  <div class="video-header">
+    <h2>Video 7: "Function Calling Lab Walkthrough" (TA) &mdash; <span style="color:#b45309;">Not Part of Script Export</span></h2>
+    <div class="video-meta">TA screen recording -- 8-12 minutes -- no script, walkthrough only</div>
+    <div style="background:#fff3cd;border-left:4px solid #f59e0b;padding:10px 14px;border-radius:6px;margin-top:10px;font-size:0.95em;">
+      <strong>Note:</strong> This video has <em>no narration script</em>. The TA records a live screen walkthrough of the <code>M03_Lab2_Function_Calling.ipynb</code> Colab notebook, talking naturally through each cell. The items below are <strong>guidelines for the TA</strong> on how to record the video &mdash; they are <strong>not part of the script export</strong>.
+    </div>
+  </div>
+
+  <div class="segment">
+    <div class="segment-header">
+      <span class="segment-number">TA</span>
+      <span class="segment-title">Function Calling Lab Walkthrough</span>
+      <div class="segment-badges">
+        <span class="badge badge-ta">TA GUIDELINES</span>
+        <span class="badge badge-duration">8-12 min</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <div class="ta-guidelines">
+        <h4>GUIDELINES FOR TA</h4>
+        <p class="ta-intro">Open <code>M03_Lab2_Function_Calling.ipynb</code> in Colab and record a live screen walkthrough. The goal is to show how function calling lets the model <em>act</em> -- not just talk -- by invoking real Python tools.</p>
+
+        <div class="ta-section">
+          <h5>1. Open the Notebook</h5>
+          <ul>
+            <li>Open the Lab 2 notebook in Google Colab</li>
+            <li>Show the flow: define tools &rarr; pass to model &rarr; model picks a tool &rarr; you run it &rarr; model sees the result</li>
+          </ul>
+        </div>
+
+        <div class="ta-section">
+          <h5>2. Defining Tools</h5>
+          <ul>
+            <li>Walk through the <code>tools</code> array with JSON Schema definitions</li>
+            <li>Explain each field: name, description, parameters</li>
+            <li>Emphasize: the description is how the model decides when to call it -- write it carefully</li>
+          </ul>
+        </div>
+
+        <div class="ta-section">
+          <h5>3. First Call -- Model Picks a Tool</h5>
+          <ul>
+            <li>Run the first chat completion with <code>tools=tools</code></li>
+            <li>Show the <code>tool_calls</code> in the response -- explain the model is <em>requesting</em>, not executing</li>
+          </ul>
+        </div>
+
+        <div class="ta-section">
+          <h5>4. Executing the Tool + Round-Trip</h5>
+          <ul>
+            <li>Parse the tool call, run the Python function, capture the result</li>
+            <li>Send the result back to the model with a <code>tool</code>-role message</li>
+            <li>Show the final natural-language response that incorporates the tool result</li>
+          </ul>
+        </div>
+
+        <div class="ta-section">
+          <h5>5. Multi-Step Example</h5>
+          <ul>
+            <li>Run the example where the model chains two tools together</li>
+            <li>Show how the loop keeps going until the model has enough to answer</li>
+          </ul>
+        </div>
+
+        <div class="ta-section">
+          <h5>6. Assignment Handoff</h5>
+          <ul>
+            <li>Point to the exercise at the bottom of the notebook</li>
+            <li>Tell students what to submit and where</li>
+            <li>Sign off warmly</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="media-col">
+      <span class="media-label">Recording Setup</span>
+      <p class="shot-note">TA screen recording at 1920x1080, 30fps. Colab notebook at comfortable zoom. Make sure <code>tool_calls</code> and the round-trip messages are clearly visible -- that is the "aha" moment.</p>
+      <div class="media-note">
+        MEDIA TEAM: Walkthrough, not a scripted lecture. Record the screen, capture the audio, edit only for length. No B-roll, no overlays.
+      </div>
+    </div>
+  </div>
+
+</div><!-- end video-7 (TA Function Calling Lab) -->
+
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- VIDEO 8: Module 3 Wrap-Up                               -->
+<!-- ════════════════════════════════════════════════════════ -->
+<div class="video-section" id="video-8" data-script-export="false" style="display:none">
+
+  <div class="video-header">
+    <h2>Video 8: "Module 3 Wrap-Up"</h2>
+    <div class="video-meta">Closing -- Prof on camera -- 2-3 minutes -- 2 segments</div>
+  </div>
+
+  <!-- ── SEGMENT 1 ── -->
+  <div class="segment">
+    <div class="segment-header">
+      <span class="segment-number">PART 01</span>
+      <span class="segment-title">The Complete Pipeline</span>
+      <div class="segment-badges">
+        <span class="badge badge-type">On Camera</span>
+        <span class="badge badge-duration">~1.5 min</span>
+        <span class="badge badge-shot">Medium close-up</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <p>This was the biggest module in the course -- and for good reason.</p>
+      <p>You learned to engineer prompts that produce reliable output. You learned to force that output into structured JSON and validate it with Pydantic. And you learned to let the model decide when to call functions and take actions.</p>
+      <p>That is the complete pipeline. Input control. Output control. Action control.</p>
+      <p>Think about what you can build now. An AI that reads invoices and validates the data before it touches your database. An AI that answers questions by querying a real database. An AI assistant with tools.</p>
+    </div>
+    <div class="media-col">
+      <span class="media-label">Storyboard -- The Complete Pipeline</span>
+      <svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg" style="background: #0f172a; border: 1px solid #1e293b;">
+        <text x="200" y="22" text-anchor="middle" font-family="Outfit" font-size="11" fill="#e2e8f0" font-weight="600">Input Control · Output Control · Action Control</text>
+        <!-- 3 horizontal panels -->
+        <rect x="14" y="44" width="116" height="100" rx="8" fill="rgba(37,99,235,0.1)" stroke="#2563EB" stroke-width="1.5"/>
+        <text x="72" y="62" text-anchor="middle" font-family="Outfit" font-size="9" fill="#60a5fa" font-weight="600">INPUT CONTROL</text>
+        <text x="72" y="78" text-anchor="middle" font-family="Outfit" font-size="8" fill="#bfdbfe">Prompt engineering</text>
+        <text x="72" y="92" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8">RTCF · zero/few-shot</text>
+        <text x="72" y="106" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8">chain-of-thought</text>
+        <line x1="22" y1="118" x2="122" y2="118" stroke="#475569" stroke-width="0.5"/>
+        <text x="72" y="132" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8" font-style="italic">"say it right"</text>
+        <line x1="134" y1="94" x2="146" y2="94" stroke="#60a5fa" stroke-width="1.5" marker-end="url(#m03plArrow)"/>
+        <rect x="146" y="44" width="108" height="100" rx="8" fill="rgba(16,185,129,0.1)" stroke="#10b981" stroke-width="1.5"/>
+        <text x="200" y="62" text-anchor="middle" font-family="Outfit" font-size="9" fill="#34d399" font-weight="600">OUTPUT CONTROL</text>
+        <text x="200" y="78" text-anchor="middle" font-family="Outfit" font-size="8" fill="#a7f3d0">Structured JSON</text>
+        <text x="200" y="92" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8">JSON mode</text>
+        <text x="200" y="106" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8">Pydantic validation</text>
+        <line x1="154" y1="118" x2="246" y2="118" stroke="#475569" stroke-width="0.5"/>
+        <text x="200" y="132" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8" font-style="italic">"shape it right"</text>
+        <line x1="258" y1="94" x2="270" y2="94" stroke="#10b981" stroke-width="1.5" marker-end="url(#m03plArrow2)"/>
+        <rect x="270" y="44" width="116" height="100" rx="8" fill="rgba(245,158,11,0.1)" stroke="#f59e0b" stroke-width="1.5"/>
+        <text x="328" y="62" text-anchor="middle" font-family="Outfit" font-size="9" fill="#fbbf24" font-weight="600">ACTION CONTROL</text>
+        <text x="328" y="78" text-anchor="middle" font-family="Outfit" font-size="8" fill="#fde68a">Function calling</text>
+        <text x="328" y="92" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8">tools · arguments</text>
+        <text x="328" y="106" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8">model decides</text>
+        <line x1="278" y1="118" x2="378" y2="118" stroke="#475569" stroke-width="0.5"/>
+        <text x="328" y="132" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8" font-style="italic">"act on it"</text>
+        <!-- Examples below -->
+        <text x="200" y="172" text-anchor="middle" font-family="Outfit" font-size="9" fill="#94a3b8" letter-spacing="0.06em">WHAT YOU CAN BUILD NOW</text>
+        <text x="72" y="194" text-anchor="middle" font-family="Outfit" font-size="8" fill="#bfdbfe">Invoice reader</text>
+        <text x="72" y="206" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8">that validates data</text>
+        <text x="200" y="194" text-anchor="middle" font-family="Outfit" font-size="8" fill="#a7f3d0">Database Q&amp;A</text>
+        <text x="200" y="206" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8">in plain English</text>
+        <text x="328" y="194" text-anchor="middle" font-family="Outfit" font-size="8" fill="#fde68a">Tool-using assistant</text>
+        <text x="328" y="206" text-anchor="middle" font-family="Outfit" font-size="7" fill="#94a3b8">that takes action</text>
+        <defs>
+          <marker id="m03plArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#60a5fa"/>
+          </marker>
+          <marker id="m03plArrow2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#10b981"/>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ── SEGMENT 2 ── -->
+  <div class="segment">
+    <div class="segment-header">
+      <span class="segment-number">PART 02</span>
+      <span class="segment-title">Bridge to Module 4</span>
+      <div class="segment-badges">
+        <span class="badge badge-type">On Camera</span>
+        <span class="badge badge-duration">~1 min</span>
+        <span class="badge badge-shot">Medium close-up</span>
+      </div>
+    </div>
+    <div class="script-col">
+      <p>Next module -- we chain these operations into multi-step workflows. That is LangChain. And we put it to the test with a supply chain simulation called the Beer Game.</p>
+      
+    </div>
+    <div class="media-col">
+      <span class="media-label">End Card</span>
+      <svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg" style="background: #0f172a; border: 1px solid #1e293b;">
+        <rect x="0" y="0" width="400" height="32" fill="#1e293b"/>
+        <text x="20" y="20" font-family="Outfit" font-size="9" fill="#60a5fa" font-weight="600" letter-spacing="0.14em">DADS 5250</text>
+        <text x="380" y="20" text-anchor="end" font-family="Outfit" font-size="9" fill="#475569" letter-spacing="0.1em">MODULE 03 / 14</text>
+        <text x="200" y="68" text-anchor="middle" font-family="Outfit" font-size="18" fill="#ffffff" font-weight="600">Module 3 Complete</text>
+        <text x="200" y="86" text-anchor="middle" font-family="Outfit" font-size="10" fill="#94a3b8">Prompt Engineering · Structured Output · Function Calling</text>
+        <line x1="120" y1="106" x2="280" y2="106" stroke="#1e293b" stroke-width="1"/>
+        <text x="200" y="132" text-anchor="middle" font-family="Outfit" font-size="9" fill="#475569" letter-spacing="0.12em">NEXT WEEK</text>
+        <!-- Chain link icon -->
+        <ellipse cx="178" cy="155" rx="10" ry="6" fill="none" stroke="#60a5fa" stroke-width="1.5"/>
+        <ellipse cx="190" cy="155" rx="10" ry="6" fill="none" stroke="#60a5fa" stroke-width="1.5"/>
+        <text x="206" y="160" font-family="Outfit" font-size="14" fill="#60a5fa" font-weight="600">Module 4 — LangChain</text>
+        <text x="200" y="176" text-anchor="middle" font-family="Outfit" font-size="9" fill="#94a3b8">Multi-step pipelines · The Beer Game · Bullwhip effect</text>
+        <text x="200" y="202" text-anchor="middle" font-family="Outfit" font-size="8" fill="#475569">Prof. Mohammad Dehghani — Northeastern University</text>
+      </svg>
+      <div class="media-note">
+        MEDIA TEAM: Chain-link teaser should spark curiosity. Keep it abstract. Supply chain silhouette plants the Beer Game seed. End card matches M01/M02 style. Hold 4 seconds. Fade to black.
+      </div>
+    </div>
+  </div>
+
+</div><!-- end video-8 (Wrap-Up) -->
+
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- REFERENCES                                              -->
+<!-- ════════════════════════════════════════════════════════ -->
+<div class="references-section">
+  <h3>Verified References</h3>
+  <table class="ref-table">
+    <thead>
+      <tr>
+        <th>Claim</th>
+        <th>Fact</th>
+        <th>Source</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>CoT +40% accuracy on reasoning</td>
+        <td>Chain-of-thought prompting improved accuracy on GSM8K math benchmark by ~40%</td>
+        <td><a href="https://arxiv.org/abs/2201.11903" target="_blank" rel="noopener">Wei et al., "Chain-of-Thought Prompting," NeurIPS 2022</a></td>
+      </tr>
+      <tr>
+        <td>Bat-and-ball problem</td>
+        <td>Classic cognitive reflection test (Kahneman, Thinking Fast and Slow)</td>
+        <td><a href="https://en.wikipedia.org/wiki/Cognitive_reflection_test" target="_blank" rel="noopener">Frederick, 2005; Kahneman, 2011</a></td>
+      </tr>
+      <tr>
+        <td>OpenAI JSON mode</td>
+        <td>response_format: {"type": "json_object"} guarantees valid JSON</td>
+        <td><a href="https://platform.openai.com/docs/guides/text-generation" target="_blank" rel="noopener">OpenAI API Docs</a></td>
+      </tr>
+      <tr>
+        <td>OpenAI Function Calling</td>
+        <td>tools parameter with function definitions, model returns structured tool_calls</td>
+        <td><a href="https://platform.openai.com/docs/guides/function-calling" target="_blank" rel="noopener">OpenAI Function Calling Docs</a></td>
+      </tr>
+      <tr>
+        <td>Pydantic validation</td>
+        <td>Pydantic v2 provides runtime type validation for Python dataclasses</td>
+        <td><a href="https://docs.pydantic.dev/" target="_blank" rel="noopener">docs.pydantic.dev</a></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+</div><!-- end container -->
+
+<div class="scroll-controls" id="scrollControls">
+  <label>Speed</label>
+  <input type="range" min="0" max="5" step="0.25" value="1" id="scrollSpeed">
+  <button id="scrollToggle" onclick="toggleAutoScroll()">Start</button>
+</div>
+
+<script>
+function switchVideo(num) {
+  document.querySelectorAll('.video-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.video-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('video-' + num).classList.add('active');
+  document.querySelectorAll('.video-tab')[num - 1].classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+let teleMode = false;
+function toggleTeleprompter() {
+  teleMode = !teleMode;
+  document.body.classList.toggle('teleprompter', teleMode);
+  const btn = document.getElementById('teleBtn');
+  btn.classList.toggle('teleprompter-active', teleMode);
+  btn.textContent = teleMode ? 'Exit Teleprompter' : 'Teleprompter';
+  if (!teleMode) stopAutoScroll();
+}
+
+let scrollInterval = null;
+let isScrolling = false;
+
+function toggleAutoScroll() {
+  if (isScrolling) stopAutoScroll();
+  else startAutoScroll();
+}
+
+function startAutoScroll() {
+  isScrolling = true;
+  const btn = document.getElementById('scrollToggle');
+  btn.textContent = 'Stop';
+  btn.classList.add('active');
+  scrollInterval = setInterval(() => {
+    const speed = parseFloat(document.getElementById('scrollSpeed').value);
+    window.scrollBy(0, speed);
+  }, 16);
+}
+
+function stopAutoScroll() {
+  isScrolling = false;
+  const btn = document.getElementById('scrollToggle');
+  btn.textContent = 'Start';
+  btn.classList.remove('active');
+  if (scrollInterval) { clearInterval(scrollInterval); scrollInterval = null; }
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 't' && !e.ctrlKey && !e.metaKey && e.target.tagName !== 'INPUT') toggleTeleprompter();
+  if (e.key === ' ' && teleMode && e.target.tagName !== 'INPUT') { e.preventDefault(); toggleAutoScroll(); }
+  if (['1','2','3','4','5','6','7','8'].includes(e.key) && !e.ctrlKey && !e.metaKey && e.target.tagName !== 'INPUT') switchVideo(parseInt(e.key));
+});
+
+// ── Inline Segment Editing ──
+(function() {
+  const PAGE_KEY = document.title.replace(/[^a-zA-Z0-9]/g, '_');
+
+  function getStore() {
+    return JSON.parse(localStorage.getItem('dads_script_edits') || '{}');
+  }
+
+  function segId(seg) {
+    const num = seg.querySelector('.segment-number')?.textContent.trim() || '';
+    const title = seg.querySelector('.segment-title')?.textContent.trim() || '';
+    return PAGE_KEY + '__' + num + '__' + title;
+  }
+
+  document.querySelectorAll('.segment').forEach(seg => {
+    const header = seg.querySelector('.segment-header');
+    if (!header) return;
+
+    const dot = document.createElement('span');
+    dot.className = 'segment-edited-dot';
+    dot.title = 'Edited';
+    header.insertBefore(dot, header.firstChild);
+
+    const btn = document.createElement('button');
+    btn.className = 'edit-btn';
+    btn.innerHTML = '&#9998;';
+    btn.title = 'Edit segment';
+    header.appendChild(btn);
+
+    const actions = document.createElement('div');
+    actions.className = 'edit-actions';
+    actions.innerHTML = '<button class="btn-save">Save</button><button class="btn-cancel">Cancel</button>';
+    header.appendChild(actions);
+
+    let backup = {};
+
+    btn.addEventListener('click', () => {
+      seg.classList.add('editing');
+      backup = {};
+      seg.querySelectorAll('.script-col, .media-col').forEach(col => {
+        col.querySelectorAll('p, .media-note, .media-label, .placeholder-type, .placeholder-desc, .shot-note').forEach(el => {
+          el.setAttribute('contenteditable', 'true');
+        });
+        backup[col.className] = col.innerHTML;
+      });
+    });
+
+    actions.querySelector('.btn-cancel').addEventListener('click', () => {
+      seg.classList.remove('editing');
+      seg.querySelectorAll('.script-col, .media-col').forEach(col => {
+        if (backup[col.className]) col.innerHTML = backup[col.className];
+        col.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+      });
+    });
+
+    actions.querySelector('.btn-save').addEventListener('click', () => {
+      seg.classList.remove('editing');
+      seg.classList.add('was-edited');
+      const store = getStore();
+      const id = segId(seg);
+      store[id] = {};
+      seg.querySelectorAll('.script-col, .media-col').forEach(col => {
+        col.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+        store[id][col.className] = col.innerHTML;
+      });
+      localStorage.setItem('dads_script_edits', JSON.stringify(store));
+    });
+  });
+
+  const store = getStore();
+  document.querySelectorAll('.segment').forEach(seg => {
+    const id = segId(seg);
+    if (store[id]) {
+      seg.classList.add('was-edited');
+      seg.querySelectorAll('.script-col, .media-col').forEach(col => {
+        if (store[id][col.className]) col.innerHTML = store[id][col.className];
+      });
+    }
+  });
+})();
+
+
+// ── Review Status (approve / maybe / reject) ──
+(function() {
+  const PAGE_KEY = document.title.replace(/[^a-zA-Z0-9]/g, '_');
+  const STORE_KEY = 'dads_script_reviews';
+
+  function getReviews() {
+    return JSON.parse(localStorage.getItem(STORE_KEY) || '{}');
+  }
+
+  function revId(seg) {
+    const num = seg.querySelector('.segment-number')?.textContent.trim() || '';
+    const title = seg.querySelector('.segment-title')?.textContent.trim() || '';
+    return PAGE_KEY + '__' + num + '__' + title;
+  }
+
+  const statuses = [
+    { key: 'approved', label: '✓', cls: 'rv-approve', tip: 'Approve' },
+    { key: 'maybe',   label: '?',       cls: 'rv-maybe',  tip: 'Maybe' },
+    { key: 'rejected',label: '✗', cls: 'rv-reject', tip: 'Reject' }
+  ];
+
+  document.querySelectorAll('.segment').forEach(seg => {
+    const header = seg.querySelector('.segment-header');
+    if (!header) return;
+
+    const wrap = document.createElement('span');
+    wrap.className = 'review-toggle';
+
+    statuses.forEach(s => {
+      const b = document.createElement('button');
+      b.className = s.cls;
+      b.textContent = s.label;
+      b.title = s.tip;
+      b.addEventListener('click', () => {
+        const id = revId(seg);
+        const reviews = getReviews();
+        const current = seg.getAttribute('data-review');
+        // Toggle off if same status clicked again
+        if (current === s.key) {
+          seg.removeAttribute('data-review');
+          delete reviews[id];
+          wrap.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+        } else {
+          seg.setAttribute('data-review', s.key);
+          reviews[id] = s.key;
+          wrap.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+          b.classList.add('active');
+        }
+        localStorage.setItem(STORE_KEY, JSON.stringify(reviews));
+      });
+      wrap.appendChild(b);
+    });
+
+    // Insert after segment-title
+    const title = header.querySelector('.segment-title');
+    if (title && title.nextSibling) {
+      header.insertBefore(wrap, title.nextSibling);
+    } else {
+      header.appendChild(wrap);
+    }
+  });
+
+  // Restore on load
+  const reviews = getReviews();
+  document.querySelectorAll('.segment').forEach(seg => {
+    const id = revId(seg);
+    if (reviews[id]) {
+      seg.setAttribute('data-review', reviews[id]);
+      const wrap = seg.querySelector('.review-toggle');
+      if (wrap) {
+        const s = statuses.find(x => x.key === reviews[id]);
+        if (s) wrap.querySelector('.' + s.cls)?.classList.add('active');
+      }
+    }
+  });
+})();
+
+
+function exportScript() {
+  let videoBlocks = [];
+
+  document.querySelectorAll('.video-section').forEach(section => {
+    // Skip TA-only or export-disabled videos
+    if (section.dataset.scriptExport === 'false') return;
+    if (section.dataset.taOnly === 'true') return;
+
+    // Get video number from id="video-N"
+    const videoNum = section.id.replace('video-', '');
+    // Get clean title from h2 (strip any HTML tags)
+    const h2El = section.querySelector('.video-header h2');
+    const h2Raw = h2El ? h2El.textContent.trim() : '';
+    // Extract just the title part after "Video N: " - remove quotes
+    const titleMatch = h2Raw.match(/Video\s+\d+:\s*"?([^"]*)"?\s*$/);
+    const videoTitle = titleMatch ? titleMatch[1].replace(/\s*$/, '') : h2Raw;
+
+    let partBlocks = [];
+
+    section.querySelectorAll('.segment').forEach(seg => {
+      // Use the segment-number text from the HTML (e.g. "PART 01", "PART A")
+      const segNum = seg.querySelector('.segment-number')?.textContent?.trim() || '';
+      const segTitle = seg.querySelector('.segment-title')?.textContent?.trim() || '';
+      // Format: "PART 1: Title" - use the number/letter from the span
+      const partLabel = segNum ? segNum : 'PART';
+      const partHeader = segTitle ? partLabel + ': ' + segTitle : partLabel;
+
+      let paragraphs = [];
+
+      const scriptCol = seg.querySelector('.script-col');
+      if (scriptCol) {
+        const ta = scriptCol.querySelector('.ta-guidelines');
+        scriptCol.querySelectorAll(':scope > p').forEach(p => {
+          if (ta && ta.contains(p)) return;
+          const text = p.textContent.trim();
+          if (text) paragraphs.push(text);
+        });
+
+        // Also handle selected option cards
+        const selected = scriptCol.querySelector('.option-card.selected');
+        if (selected) {
+          selected.querySelectorAll('p').forEach(p => {
+            const text = p.textContent.trim();
+            if (text) paragraphs.push(text);
+          });
+        }
+
+        // Also handle .script-card blocks
+        const scriptCard = scriptCol.querySelector('.script-card');
+        if (scriptCard) {
+          scriptCard.querySelectorAll('p').forEach(p => {
+            const text = p.textContent.trim();
+            if (text) paragraphs.push(text);
+          });
+        }
+      }
+
+      partBlocks.push(partHeader + '\n\n' + paragraphs.join('\n\n'));
+    });
+
+    const videoHeader = 'VIDEO ' + videoNum + ' \u2014 ' + videoTitle;
+    videoBlocks.push(videoHeader + '\n\n' + partBlocks.join('\n\n---\n\n'));
+  });
+
+  const text = videoBlocks.join('\n\n===\n\n');
+  // Extract module number from title for filename
+  const modMatch = document.title.match(/M(\d+)/);
+  const filename = modMatch ? 'M' + modMatch[1] + '_Script.txt' : 'Script_Export.txt';
+  const blob = new Blob([text], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  const btn = document.querySelector('.btn-action[onclick="exportScript()"]');
+  const original = btn.textContent;
+  btn.textContent = 'Downloaded!';
+  btn.style.background = 'var(--accent)';
+  btn.style.color = '#fff';
+  setTimeout(() => {
+    btn.textContent = original;
+    btn.style.background = '';
+    btn.style.color = '';
+  }, 1500);
+}
+
+// ── Audio Player v4: all parts on one page ──
+let currentlyPlaying = null;
+
+function playPart(id) {
+  const audio = document.getElementById('audio-' + id);
+  const seg = document.getElementById('audio-part-' + id);
+  if (!audio || !seg) return;
+  const btn = seg.querySelector('.audio-play-btn');
+  const progress = document.getElementById('progress-' + id);
+
+  if (currentlyPlaying && currentlyPlaying !== id) {
+    const pa = document.getElementById('audio-' + currentlyPlaying);
+    const pb = document.querySelector('.audio-play-btn.playing');
+    const pp = document.getElementById('progress-' + currentlyPlaying);
+    if (pa) { pa.pause(); pa.currentTime = 0; }
+    if (pb) pb.classList.remove('playing');
+    if (pp) pp.style.width = '0%';
+    currentlyPlaying = null;
+  }
+
+  if (!audio.paused) { audio.pause(); btn.classList.remove('playing'); currentlyPlaying = null; return; }
+
+  audio.play().then(() => { btn.classList.add('playing'); currentlyPlaying = id; }).catch(() => {
+    let note = seg.querySelector('.audio-not-recorded');
+    if (!note) {
+      note = document.createElement('div');
+      note.className = 'audio-not-recorded';
+      note.textContent = 'Audio not yet recorded \u2014 voiceover will be added by the TA.';
+      const header = seg.querySelector('.audio-header');
+      if (header) header.parentNode.insertBefore(note, header.nextSibling);
+    }
+    setTimeout(() => { if (note && note.parentNode) note.remove(); }, 3000);
+  });
+
+  audio.ontimeupdate = () => {
+    if (audio.duration && progress) progress.style.width = (audio.currentTime / audio.duration * 100) + '%';
+  };
+  audio.onended = () => {
+    btn.classList.remove('playing');
+    if (progress) progress.style.width = '0%';
+    currentlyPlaying = null;
+  };
+}
+
+</script>
+
+</body>
+</html>
