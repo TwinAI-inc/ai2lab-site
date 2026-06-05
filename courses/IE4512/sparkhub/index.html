@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SparkHub &middot; Student Project Showcase &middot; IE 4512</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf9f5; --paper: #ffffff; --ink: #1a1a1a; --muted: #5a5247; --soft: #8b7355;
+    --border: #e8e3d4; --line: #d4cfc0;
+    --blue: #1947d6; --blue-deep: #0d2e9e; --blue-light: #4a6fe6; --blue-soft: #eef2ff;
+    --gold: #b8860b; --gold-soft: #faf3e0;
+    --olive: #5c7a4a; --olive-soft: #f0f4ea;
+    --crimson: #8a2828; --crimson-soft: #fdf2f3;
+  }
+  body { background: var(--bg); color: var(--ink); font-family: 'Outfit', -apple-system, system-ui, sans-serif; font-size: 14px; line-height: 1.55; min-height: 100vh; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 18px 22px 40px; }
+
+  /* TOP NAV */
+  .topbar {
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    padding: 9px 16px; background: var(--paper); border: 1px solid var(--border);
+    border-radius: 10px; border-top: 3px solid var(--crimson); flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  .brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .brand .code { font-size: 10px; color: var(--crimson); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; }
+  .brand h1 { font-family: 'Lora', Georgia, serif; font-size: 19px; font-weight: 700; line-height: 1; }
+  .brand h1 em { font-style: italic; color: var(--crimson); font-weight: 400; }
+  .brand .tag { font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted); }
+  .topbar .nav { display: flex; gap: 6px; }
+  .topbar .nav a {
+    font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft); text-decoration: none; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px;
+    transition: all 0.15s; background: var(--paper); font-family: 'Outfit', sans-serif;
+  }
+  .topbar .nav a:hover { color: var(--crimson); border-color: var(--crimson); background: var(--crimson-soft); }
+
+  /* HERO */
+  .hero {
+    padding: 18px 4px 14px; border-bottom: 1px solid var(--border); margin-bottom: 22px;
+  }
+  .hero .kicker {
+    font-size: 11px; color: var(--gold); letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .hero h2 { font-family: 'Lora', Georgia, serif; font-size: 32px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; }
+  .hero h2 em { font-style: italic; color: var(--crimson); font-weight: 400; }
+  .hero .lede {
+    font-family: 'Lora', serif; font-style: italic; font-size: 15px; line-height: 1.7;
+    color: var(--muted); margin-top: 12px; max-width: 780px;
+  }
+
+  /* TEAM SECTION */
+  .team {
+    margin-bottom: 32px; padding: 24px 26px;
+    background: var(--paper); border: 1px solid var(--border); border-radius: 14px;
+    border-top: 3px solid var(--blue);
+  }
+  .team.gold { border-top-color: var(--gold); }
+  .team.olive { border-top-color: var(--olive); }
+  .team.crimson { border-top-color: var(--crimson); }
+
+  .team-head {
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 18px;
+    margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .team-head .left { min-width: 0; flex: 1; }
+  .team-head .badge {
+    font-size: 10.5px; color: var(--blue); letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .team.gold .team-head .badge { color: var(--gold); }
+  .team.olive .team-head .badge { color: var(--olive); }
+  .team.crimson .team-head .badge { color: var(--crimson); }
+
+  .team-head h3 { font-family: 'Lora', Georgia, serif; font-size: 24px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.2; }
+  .team-head h3 em { font-style: italic; color: var(--blue); font-weight: 400; }
+  .team.gold .team-head h3 em { color: var(--gold); }
+  .team.olive .team-head h3 em { color: var(--olive); }
+  .team.crimson .team-head h3 em { color: var(--crimson); }
+
+  .team-head .desc {
+    font-family: 'Lora', serif; font-style: italic; font-size: 14px; line-height: 1.65;
+    color: var(--muted); margin-top: 8px; max-width: 680px;
+  }
+  .team-head .award {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; background: var(--gold-soft); color: var(--gold);
+    border: 1px solid var(--gold); border-radius: 999px;
+    font-family: 'Outfit', sans-serif; font-size: 10.5px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    flex-shrink: 0;
+  }
+  .team-head .award svg { width: 13px; height: 13px; }
+
+  .tools-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px;
+  }
+
+  .tool-card {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 14px;
+    overflow: hidden; cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    text-decoration: none; color: inherit; display: flex; flex-direction: column;
+    border-top: 3px solid var(--blue);
+  }
+  .tool-card:hover { transform: translateY(-3px); box-shadow: 0 14px 36px rgba(25,71,214,0.14); }
+  .tool-card.gold { border-top-color: var(--gold); }
+  .tool-card.olive { border-top-color: var(--olive); }
+  .tool-card.crimson { border-top-color: var(--crimson); }
+
+  .tool-icon { padding: 16px 18px 6px; color: var(--blue); display: flex; align-items: center; gap: 12px; }
+  .tool-icon svg { width: 30px; height: 30px; flex-shrink: 0; }
+  .tool-card.gold .tool-icon { color: var(--gold); }
+  .tool-card.olive .tool-icon { color: var(--olive); }
+  .tool-card.crimson .tool-icon { color: var(--crimson); }
+  .tool-type-row { display: flex; justify-content: space-between; align-items: center; flex: 1; }
+  .tool-type {
+    font-family: 'Outfit', sans-serif; font-size: 10px; color: var(--blue);
+    letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700;
+  }
+  .tool-card.gold .tool-type { color: var(--gold); }
+  .tool-card.olive .tool-type { color: var(--olive); }
+  .tool-card.crimson .tool-type { color: var(--crimson); }
+  .tool-time { font-size: 10.5px; color: var(--soft); font-weight: 500; }
+  .tool-title {
+    font-family: 'Lora', Georgia, serif; font-size: 18px; font-weight: 700; line-height: 1.15;
+    padding: 4px 18px 8px; color: var(--ink);
+  }
+  .tool-title em { font-style: italic; color: var(--blue); font-weight: 400; }
+  .tool-card.gold .tool-title em { color: var(--gold); }
+  .tool-card.olive .tool-title em { color: var(--olive); }
+  .tool-card.crimson .tool-title em { color: var(--crimson); }
+  .tool-desc { font-family: 'Lora', serif; font-size: 13px; line-height: 1.55; color: var(--muted); padding: 0 18px 14px; flex: 1; }
+  .tool-open {
+    padding: 12px 18px; background: var(--bg); border-top: 1px solid var(--border);
+    font-family: 'Outfit', sans-serif; font-size: 11.5px; color: var(--blue); font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    display: flex; justify-content: space-between; align-items: center; transition: all 0.18s;
+  }
+  .tool-open svg { width: 14px; height: 14px; transition: transform 0.2s; }
+  .tool-card:hover .tool-open svg { transform: translateX(3px); }
+  .tool-card.gold .tool-open { color: var(--gold); }
+  .tool-card:hover.gold .tool-open { background: var(--gold-soft); }
+  .tool-card.olive .tool-open { color: var(--olive); }
+  .tool-card:hover.olive .tool-open { background: var(--olive-soft); }
+  .tool-card.crimson .tool-open { color: var(--crimson); }
+  .tool-card:hover.crimson .tool-open { background: var(--crimson-soft); }
+  .tool-card:hover .tool-open { background: var(--blue-soft); }
+
+  /* CREDIT FOOTER */
+  .credit {
+    margin-top: 32px; padding: 18px 22px; background: var(--paper);
+    border: 1px solid var(--border); border-left: 4px solid var(--gold); border-radius: 10px;
+    font-family: 'Lora', serif; font-style: italic; font-size: 13.5px; line-height: 1.6; color: var(--muted);
+  }
+  .credit strong { font-style: normal; color: var(--gold); font-weight: 700; }
+
+  .foot {
+    text-align: center; margin-top: 22px; padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted);
+  }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    .wrap { padding: 12px 12px 28px; }
+    .hero h2 { font-size: 22px; }
+    .team { padding: 16px 14px; }
+    .team-head h3 { font-size: 19px; }
+    .tools-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="code">IE 4512 / EMGT 6225 &middot; Module 11</span>
+      <h1>Spark<em>Hub</em></h1>
+      <span class="tag">student project showcase</span>
+    </div>
+    <nav class="nav">
+      <a href="../index.html">← All Modules</a>
+      <a href="https://www.ai2lab.ai" target="_blank">ai2lab.ai →</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="kicker">Spring 2026 &middot; Top Three Final Projects</div>
+    <h2>Three teams. Three industries. <em>One hard question</em>: will it pay?</h2>
+    <p class="lede">
+      Every team built three interactive web tools to analyze their project &mdash; a break even calculator, a sensitivity slider lab, and a Monte Carlo simulator.
+      These are the top three final projects from the Spring 2026 EMGT 6225 cohort, hosted here so future students can see what their own capstone could look like.
+      Each tool is fully interactive in your browser. No login. No setup.
+    </p>
+  </section>
+
+  <!-- TEAM 1: COFFEE SHOP -->
+  <section class="team gold">
+    <div class="team-head">
+      <div class="left">
+        <div class="badge">Group 9 &middot; Section 1</div>
+        <h3>Coffee Shop <em>Expansion</em></h3>
+        <p class="desc">A neighborhood coffee shop weighing a new location. Daily traffic, ticket size, and rent are uncertain &mdash; the team built three tools to ask whether the second store would break even, what drives the answer, and how much risk is involved.</p>
+      </div>
+      <span class="award"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 5h10v5a5 5 0 01-10 0V5z"/><path d="M7 7H4a2 2 0 002 4M17 7h3a2 2 0 01-2 4"/></svg> Top 3</span>
+    </div>
+    <div class="tools-grid">
+      <a class="tool-card gold" href="coffee-shop/breakeven.html" target="_blank">
+        <div class="tool-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="21" x2="21" y2="21"/><line x1="3" y1="21" x2="3" y2="5"/><polyline points="6 14 11 9 14 12 19 6"/><line x1="3" y1="14" x2="19" y2="14" stroke-dasharray="2 3"/></svg>
+          <div class="tool-type-row"><div class="tool-type">Tool · 1 of 3</div><div class="tool-time">~10 min</div></div>
+        </div>
+        <div class="tool-title">Break-Even <em>Analysis</em></div>
+        <div class="tool-desc">Solve for the daily customer count where revenue equals cost. Drag the price and operating-cost sliders, watch the break-even point shift in real time.</div>
+        <div class="tool-open"><span>Open student tool</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg></div>
+      </a>
+      <a class="tool-card gold" href="coffee-shop/sensitivity.html" target="_blank">
+        <div class="tool-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="10" cy="6" r="2.5" fill="white"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="16" cy="12" r="2.5" fill="white"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="8" cy="18" r="2.5" fill="white"/></svg>
+          <div class="tool-type-row"><div class="tool-type">Tool · 2 of 3</div><div class="tool-time">~10 min</div></div>
+        </div>
+        <div class="tool-title">Sensitivity <em>Slider Lab</em></div>
+        <div class="tool-desc">Which assumption matters most? Move each input one at a time and watch NPV swing. The biggest swing wins the tornado.</div>
+        <div class="tool-open"><span>Open student tool</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg></div>
+      </a>
+      <a class="tool-card gold" href="coffee-shop/monte-carlo.html" target="_blank">
+        <div class="tool-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.3" fill="currentColor"/><circle cx="16" cy="8" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><circle cx="8" cy="16" r="1.3" fill="currentColor"/><circle cx="16" cy="16" r="1.3" fill="currentColor"/></svg>
+          <div class="tool-type-row"><div class="tool-type">Tool · 3 of 3</div><div class="tool-time">~10 min</div></div>
+        </div>
+        <div class="tool-title">Monte Carlo <em>Simulation</em></div>
+        <div class="tool-desc">Roll thousands of futures with uncertain traffic and price. Histogram of NPV outcomes, probability of loss, and the verdict.</div>
+        <div class="tool-open"><span>Open student tool</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg></div>
+      </a>
+    </div>
+  </section>
+
+  <!-- TEAM 2: CGM -->
+  <section class="team olive">
+    <div class="team-head">
+      <div class="left">
+        <div class="badge">Group 7 &middot; Section 1</div>
+        <h3>Continuous Glucose <em>Monitor</em></h3>
+        <p class="desc">A medical device team modeled the economics of a new continuous glucose monitor for the U.S. diabetic population. Adoption curve, reimbursement, and unit cost all uncertain &mdash; the three tools walk through the case from breakeven to full Monte Carlo.</p>
+      </div>
+      <span class="award"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 5h10v5a5 5 0 01-10 0V5z"/><path d="M7 7H4a2 2 0 002 4M17 7h3a2 2 0 01-2 4"/></svg> Top 3</span>
+    </div>
+    <div class="tools-grid">
+      <a class="tool-card olive" href="cgm/breakeven.html" target="_blank">
+        <div class="tool-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="21" x2="21" y2="21"/><line x1="3" y1="21" x2="3" y2="5"/><polyline points="6 14 11 9 14 12 19 6"/><line x1="3" y1="14" x2="19" y2="14" stroke-dasharray="2 3"/></svg>
+          <div class="tool-type-row"><div class="tool-type">Tool · 1 of 3</div><div class="tool-time">~10 min</div></div>
+        </div>
+        <div class="tool-title">Break-Even <em>Analysis</em></div>
+        <div class="tool-desc">How many monitors must ship per year to cover R&amp;D and manufacturing? Solve the threshold, then test it against realistic adoption curves.</div>
+        <div class="tool-open"><span>Open student tool</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg></div>
+      </a>
+      <a class="tool-card olive" href="cgm/sensitivity.html" target="_blank">
+        <div class="tool-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="10" cy="6" r="2.5" fill="white"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="16" cy="12" r="2.5" fill="white"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="8" cy="18" r="2.5" fill="white"/></svg>
+          <div class="tool-type-row"><div class="tool-type">Tool · 2 of 3</div><div class="tool-time">~10 min</div></div>
+        </div>
+        <div class="tool-title">Sensitivity <em>Analysis</em></div>
+        <div class="tool-desc">Reimbursement rate, unit cost, market penetration &mdash; which one most threatens NPV? Drag sliders, rank the levers.</div>
+        <div class="tool-open"><span>Open student tool</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg></div>
+      </a>
+      <a class="tool-card olive" href="cgm/monte-carlo.html" target="_blank">
+        <div class="tool-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.3" fill="currentColor"/><circle cx="16" cy="8" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><circle cx="8" cy="16" r="1.3" fill="currentColor"/><circle cx="16" cy="16" r="1.3" fill="currentColor"/></svg>
+          <div class="tool-type-row"><div class="tool-type">Tool · 3 of 3</div><div class="tool-time">~10 min</div></div>
+        </div>
+        <div class="tool-title">Monte Carlo <em>Analysis</em></div>
+        <div class="tool-desc">Sample adoption, price, and cost from realistic distributions. Run thousands of scenarios. Read off P(loss) and decide.</div>
+        <div class="tool-open"><span>Open student tool</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg></div>
+      </a>
+    </div>
+  </section>
+
+  <!-- TEAM 3: TEAM 11 -->
+  <section class="team crimson">
+    <div class="team-head">
+      <div class="left">
+        <div class="badge">Team 11 &middot; Section 2</div>
+        <h3>Team 11 <em>Capstone</em></h3>
+        <p class="desc">Section 2's top finishers shipped a full three-tool engineering economy suite for their semester project. Each tool is interactive and self contained &mdash; open them up and see how they framed the decision.</p>
+      </div>
+      <span class="award"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 5h10v5a5 5 0 01-10 0V5z"/><path d="M7 7H4a2 2 0 002 4M17 7h3a2 2 0 01-2 4"/></svg> Top 3</span>
+    </div>
+    <div class="tools-grid">
+      <a class="tool-card crimson" href="team-11/breakeven.html" target="_blank">
+        <div class="tool-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="21" x2="21" y2="21"/><line x1="3" y1="21" x2="3" y2="5"/><polyline points="6 14 11 9 14 12 19 6"/><line x1="3" y1="14" x2="19" y2="14" stroke-dasharray="2 3"/></svg>
+          <div class="tool-type-row"><div class="tool-type">Tool · 1 of 3</div><div class="tool-time">~10 min</div></div>
+        </div>
+        <div class="tool-title">Break-Even <em>Tool</em></div>
+        <div class="tool-desc">Tool 1 of the team's three-tool suite. Solve for the break-even quantity and see the revenue / cost lines cross.</div>
+        <div class="tool-open"><span>Open student tool</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg></div>
+      </a>
+      <a class="tool-card crimson" href="team-11/sensitivity.html" target="_blank">
+        <div class="tool-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="10" cy="6" r="2.5" fill="white"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="16" cy="12" r="2.5" fill="white"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="8" cy="18" r="2.5" fill="white"/></svg>
+          <div class="tool-type-row"><div class="tool-type">Tool · 2 of 3</div><div class="tool-time">~10 min</div></div>
+        </div>
+        <div class="tool-title">Sensitivity <em>Tool</em></div>
+        <div class="tool-desc">Tool 2 of the suite. Drag the inputs, watch the NPV curve shift, and rank the levers by impact.</div>
+        <div class="tool-open"><span>Open student tool</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg></div>
+      </a>
+      <a class="tool-card crimson" href="team-11/monte-carlo.html" target="_blank">
+        <div class="tool-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.3" fill="currentColor"/><circle cx="16" cy="8" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><circle cx="8" cy="16" r="1.3" fill="currentColor"/><circle cx="16" cy="16" r="1.3" fill="currentColor"/></svg>
+          <div class="tool-type-row"><div class="tool-type">Tool · 3 of 3</div><div class="tool-time">~10 min</div></div>
+        </div>
+        <div class="tool-title">Monte Carlo <em>Tool</em></div>
+        <div class="tool-desc">Tool 3 of the suite. Roll thousands of futures and check the histogram and risk metrics against the team's verdict.</div>
+        <div class="tool-open"><span>Open student tool</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg></div>
+      </a>
+    </div>
+  </section>
+
+  <div class="credit">
+    <strong>About SparkHub.</strong> The tools above were built by IE 4512 / EMGT 6225 students for their final project. Hosting them here recognizes the work, gives the cohort a public portfolio, and shows incoming students what a finished engineering economy project can look like. Source files preserved exactly as submitted &mdash; nothing edited but the file name.
+  </div>
+
+  <div class="foot">
+    SparkHub &middot; IE 4512 / EMGT 6225 &middot; Engineering Economy &middot; Prof. Mohammad Dehghani
+  </div>
+
+</div>
+
+</body>
+</html>
