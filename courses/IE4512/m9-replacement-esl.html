@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Module 9 · Replacement Analysis &amp; Economic Service Life</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf9f5; --paper: #ffffff; --ink: #1a1a1a; --muted: #5a5247; --soft: #8b7355;
+    --border: #e8e3d4; --line: #d4cfc0;
+    --gold: #b8860b; --gold-deep: #8a6608; --gold-soft: #faf3e0;
+    --olive: #5c7a4a; --olive-deep: #455d36; --olive-soft: #f0f4ea;
+    --crimson: #8a2828; --crimson-deep: #6b1e1e; --crimson-soft: #fdf2f3;
+    --teal: #0e7c80; --teal-deep: #0a5e62; --teal-soft: #e6f4f4;
+    --blue: #1947d6;
+  }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: 'Outfit', -apple-system, system-ui, sans-serif; font-size: 13px; line-height: 1.45;
+    overflow: hidden;
+  }
+  .app {
+    height: 100vh; display: flex; flex-direction: column;
+    max-width: 1500px; margin: 0 auto; padding: 10px 18px; gap: 8px;
+  }
+  .head {
+    flex-shrink: 0;
+    display: flex; justify-content: space-between; align-items: center; gap: 14px;
+    padding: 8px 16px; background: var(--paper); border: 1px solid var(--border);
+    border-radius: 10px; border-top: 3px solid var(--olive); flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .brand .code { font-size: 10px; color: var(--olive); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; }
+  .brand h1 { font-family: 'Lora', Georgia, serif; font-size: 18px; font-weight: 700; line-height: 1; }
+  .brand h1 em { font-style: italic; color: var(--olive); font-weight: 400; }
+  .brand .tag { font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted); }
+  .head .nav { display: flex; gap: 6px; }
+  .head .nav a {
+    font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft); text-decoration: none; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px;
+  }
+  .head .nav a:hover { color: var(--olive); border-color: var(--olive); background: var(--olive-soft); }
+
+  /* CONTROLS */
+  .controls {
+    flex-shrink: 0;
+    background: var(--paper); border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 14px;
+    display: grid; grid-template-columns: 90px repeat(4, 1fr) 90px repeat(4, 1fr) auto; gap: 9px; align-items: end;
+  }
+  @media (max-width: 1300px) { .controls { grid-template-columns: repeat(5, 1fr); } .controls .grp-lbl { grid-column: 1 / -1; } }
+  @media (max-width: 700px) { .controls { grid-template-columns: 1fr 1fr; } }
+  .grp-lbl {
+    font-family: 'Lora', serif; font-style: italic; font-size: 12.5px; font-weight: 700;
+    color: var(--ink); align-self: center; padding-bottom: 2px;
+  }
+  .grp-lbl.def { color: var(--olive-deep); }
+  .grp-lbl.chl { color: var(--crimson); }
+  .ctrl { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .ctrl .lbl {
+    font-family: 'Outfit', sans-serif; font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .ctrl input[type=number] {
+    width: 100%; padding: 5px 7px;
+    border: 1px solid var(--border); border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: var(--ink);
+    background: var(--bg); outline: none; text-align: right;
+  }
+  .ctrl.def input:focus { border-color: var(--olive); box-shadow: 0 0 0 3px rgba(92,122,74,0.12); }
+  .ctrl.chl input:focus { border-color: var(--crimson); box-shadow: 0 0 0 3px rgba(138,40,40,0.12); }
+  .ctrl input:focus { border-color: var(--olive); box-shadow: 0 0 0 3px rgba(92,122,74,0.12); }
+  .controls .reset-btn {
+    font-family: 'Outfit', sans-serif; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700;
+    padding: 7px 13px; border-radius: 7px; cursor: pointer;
+    background: var(--olive-soft); color: var(--olive-deep); border: 1px solid var(--olive);
+    transition: all 0.15s;
+  }
+  .controls .reset-btn:hover { background: var(--olive); color: #fff; }
+
+  /* MAIN */
+  .main {
+    flex: 1; min-height: 0;
+    display: grid; grid-template-columns: 1fr 0.72fr; gap: 10px;
+  }
+  @media (max-width: 1100px) {
+    .main { grid-template-columns: 1fr; }
+    html, body { overflow: auto; } .app { height: auto; }
+  }
+
+  /* TABLE panel */
+  .table-panel {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 16px;
+    display: flex; flex-direction: column; min-height: 0;
+  }
+  .table-head {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+    padding-bottom: 7px; border-bottom: 1px solid var(--border); margin-bottom: 6px;
+  }
+  .table-head h3 { font-family: 'Lora', serif; font-size: 15px; font-weight: 700; }
+  .table-head h3 em { font-style: italic; color: var(--olive); }
+  .table-head .meta { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--soft); }
+  .table-scroll { flex: 1; min-height: 0; overflow-y: auto; }
+  table.esl {
+    width: 100%; border-collapse: collapse;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  }
+  table.esl thead th {
+    position: sticky; top: 0; background: var(--bg); z-index: 2;
+    font-family: 'Outfit', sans-serif; font-size: 8.5px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft);
+    padding: 6px 5px;
+    border-bottom: 1px solid var(--border);
+    text-align: right;
+  }
+  table.esl thead th:first-child { text-align: center; }
+  table.esl thead th.olive-col { color: var(--olive-deep); }
+  table.esl thead th.crimson-col { color: var(--crimson); }
+  table.esl thead th.gold-col { color: var(--gold-deep); }
+  table.esl tbody td {
+    padding: 4px 5px;
+    border-bottom: 1px dotted var(--line);
+    text-align: right;
+    color: var(--ink); font-weight: 600;
+  }
+  table.esl tbody td:first-child { text-align: center; font-weight: 700; color: var(--muted); }
+  table.esl tbody td.cr { color: var(--gold-deep); }
+  table.esl tbody td.aoc { color: var(--crimson); }
+  table.esl tbody td.euac-d { color: var(--olive-deep); font-weight: 700; }
+  table.esl tbody td.euac-c { color: var(--crimson-deep); font-weight: 700; }
+  table.esl tbody tr.esl-def { background: var(--olive-soft); }
+  table.esl tbody tr.esl-def td:first-child::after { content: ' ★'; color: var(--olive); }
+  table.esl tbody tr.esl-chl td.euac-c { position: relative; }
+  table.esl tbody tr.esl-chl { background: var(--crimson-soft); }
+  table.esl tbody tr.esl-chl td:first-child::after { content: ' ◆'; color: var(--crimson); }
+
+  /* RIGHT panel */
+  .right { display: flex; flex-direction: column; gap: 10px; min-height: 0; }
+  .chart-panel {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 16px;
+    display: flex; flex-direction: column; min-height: 0; gap: 8px; flex: 1;
+  }
+  .chart-panel h3 { font-family: 'Lora', serif; font-size: 15px; font-weight: 700; padding-bottom: 7px; border-bottom: 1px solid var(--border); }
+  .chart-panel h3 em { font-style: italic; color: var(--olive); }
+  .chart-panel svg { flex: 1; min-height: 150px; width: 100%; }
+  .legend {
+    display: flex; gap: 14px; flex-wrap: wrap;
+    font-family: 'Outfit', sans-serif; font-size: 10.5px;
+  }
+  .legend .it { display: inline-flex; align-items: center; gap: 5px; color: var(--muted); }
+  .legend .sw { width: 14px; height: 3px; border-radius: 2px; }
+
+  .verdict {
+    border-radius: 10px; padding: 12px 15px;
+    border: 1.5px solid var(--olive); background: linear-gradient(135deg, var(--olive-soft) 0%, #dde7cd 100%);
+  }
+  .verdict.replace { border-color: var(--crimson); background: linear-gradient(135deg, var(--crimson-soft) 0%, #f6dada 100%); }
+  .verdict .l {
+    font-family: 'Outfit', sans-serif; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700;
+    color: var(--olive-deep);
+  }
+  .verdict.replace .l { color: var(--crimson); }
+  .verdict .v {
+    font-family: 'Lora', serif; font-style: italic; font-size: 22px; font-weight: 700; color: var(--olive-deep);
+    margin-top: 1px; line-height: 1.1;
+  }
+  .verdict.replace .v { color: var(--crimson-deep); }
+  .verdict .desc {
+    font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--ink); line-height: 1.5;
+    margin-top: 4px;
+  }
+  .verdict .desc b { font-style: normal; font-weight: 700; }
+
+  .esl-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .esl-card {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+    padding: 9px 12px; border-left: 3px solid var(--olive);
+  }
+  .esl-card.chl { border-left-color: var(--crimson); }
+  .esl-card .l {
+    font-family: 'Outfit', sans-serif; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700;
+    color: var(--olive-deep);
+  }
+  .esl-card.chl .l { color: var(--crimson); }
+  .esl-card .v {
+    font-family: 'Lora', serif; font-style: italic; font-size: 20px; font-weight: 700; color: var(--olive-deep);
+    line-height: 1; margin-top: 3px;
+  }
+  .esl-card.chl .v { color: var(--crimson-deep); }
+  .esl-card .sub { font-family: 'Lora', serif; font-style: italic; font-size: 10.5px; color: var(--muted); margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <header class="head">
+    <div class="brand">
+      <span class="code">IE 4512 · Module 9</span>
+      <h1>Replacement <em>Analysis</em></h1>
+      <span class="tag">defender vs challenger · economic service life</span>
+    </div>
+    <nav class="nav">
+      <a href="index.html">← Module 9</a>
+      <a href="m9-inflation-lab.html">Inflation Lab</a>
+    </nav>
+  </header>
+
+  <!-- CONTROLS -->
+  <section class="controls">
+    <div class="grp-lbl def">★ Defender</div>
+    <div class="ctrl def">
+      <span class="lbl">Market value now</span>
+      <input type="number" id="d_mv" value="15000" min="0" step="500">
+    </div>
+    <div class="ctrl def">
+      <span class="lbl">MV decline %/yr</span>
+      <input type="number" id="d_dec" value="25" min="0" max="90" step="1">
+    </div>
+    <div class="ctrl def">
+      <span class="lbl">AOC year 1</span>
+      <input type="number" id="d_aoc" value="6000" min="0" step="250">
+    </div>
+    <div class="ctrl def">
+      <span class="lbl">AOC gradient</span>
+      <input type="number" id="d_grad" value="2000" min="0" step="250">
+    </div>
+
+    <div class="grp-lbl chl">◆ Challenger</div>
+    <div class="ctrl chl">
+      <span class="lbl">First cost</span>
+      <input type="number" id="c_mv" value="40000" min="0" step="500">
+    </div>
+    <div class="ctrl chl">
+      <span class="lbl">MV decline %/yr</span>
+      <input type="number" id="c_dec" value="20" min="0" max="90" step="1">
+    </div>
+    <div class="ctrl chl">
+      <span class="lbl">AOC year 1</span>
+      <input type="number" id="c_aoc" value="2500" min="0" step="250">
+    </div>
+    <div class="ctrl chl">
+      <span class="lbl">AOC gradient</span>
+      <input type="number" id="c_grad" value="800" min="0" step="100">
+    </div>
+
+    <button class="reset-btn" id="reset-btn">Reset</button>
+  </section>
+
+  <div class="main">
+
+    <!-- TABLE -->
+    <div class="table-panel">
+      <div class="table-head">
+        <h3>EUAC by retention period · <em>capital recovery + operating</em></h3>
+        <span class="meta" id="meta-line">MARR — · horizon — yr</span>
+      </div>
+      <div class="table-scroll">
+        <table class="esl">
+          <thead>
+            <tr>
+              <th>keep n</th>
+              <th class="gold-col">CR&nbsp;def</th>
+              <th class="crimson-col">AOC&nbsp;def</th>
+              <th class="olive-col">EUAC&nbsp;def</th>
+              <th class="gold-col">CR&nbsp;chl</th>
+              <th class="crimson-col">AOC&nbsp;chl</th>
+              <th class="crimson-col">EUAC&nbsp;chl</th>
+            </tr>
+          </thead>
+          <tbody id="esl-tbody"></tbody>
+        </table>
+      </div>
+      <div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:7px;padding-top:7px;border-top:1px solid var(--border);font-family:'Outfit',sans-serif;font-size:10px;color:var(--muted);">
+        <span>CR = capital recovery (cost of capital tied up)</span>
+        <span>AOC = equiv. annual operating cost</span>
+        <span>★ / ◆ = economic service life (min EUAC)</span>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right">
+      <div class="chart-panel">
+        <h3>The <em>U-shaped</em> total · find the bottom</h3>
+        <svg id="euac-svg" viewBox="0 0 480 230" preserveAspectRatio="xMidYMid meet"></svg>
+        <div class="legend">
+          <div class="it"><div class="sw" style="background:var(--olive)"></div>EUAC defender</div>
+          <div class="it"><div class="sw" style="background:var(--crimson)"></div>EUAC challenger</div>
+          <div class="it"><div class="sw" style="background:var(--gold);height:2px;border-bottom:2px dashed var(--gold)"></div>marginal cost · defender</div>
+        </div>
+      </div>
+
+      <div class="esl-cards">
+        <div class="esl-card">
+          <div class="l">★ Defender ESL</div>
+          <div class="v" id="d-euac">$—</div>
+          <div class="sub" id="d-esl">keep — more yr</div>
+        </div>
+        <div class="esl-card chl">
+          <div class="l">◆ Challenger ESL</div>
+          <div class="v" id="c-euac">$—</div>
+          <div class="sub" id="c-esl">life — yr</div>
+        </div>
+      </div>
+
+      <div class="verdict" id="verdict">
+        <div class="l" id="v-label">Recommendation</div>
+        <div class="v" id="v-headline">—</div>
+        <div class="desc" id="v-desc">—</div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  const DEFAULT = {
+    d_mv: 15000, d_dec: 25, d_aoc: 6000, d_grad: 2000,
+    c_mv: 40000, c_dec: 20, c_aoc: 2500, c_grad: 800,
+    marr: 12, horizon: 12
+  };
+  const state = { ...DEFAULT };
+  const MARR = 12;        // study MARR (fixed pedagogical default)
+  const HORIZON = 12;     // max retention years shown
+
+  // ---- engineering economy factors ----
+  function AP(i, n) { // A/P
+    if (i === 0) return 1 / n;
+    const p = Math.pow(1 + i, n);
+    return (i * p) / (p - 1);
+  }
+  function AF(i, n) { // A/F
+    if (i === 0) return 1 / n;
+    return i / (Math.pow(1 + i, n) - 1);
+  }
+
+  // EUAC of an asset kept for n years.
+  // P = first cost / current market value
+  // dec = annual % decline in market value (geometric)
+  // aoc1 = operating cost in year 1, grad = arithmetic gradient
+  function eslCurve(P, dec, aoc1, grad, n_max, i) {
+    const rows = [];
+    for (let n = 1; n <= n_max; n++) {
+      const Sn = P * Math.pow(1 - dec, n);               // salvage at end of year n
+      const CR = P * AP(i, n) - Sn * AF(i, n);            // capital recovery
+      // PW of operating costs (base + gradient), then annualize
+      let pwAOC = 0;
+      for (let j = 1; j <= n; j++) {
+        const aoc = aoc1 + (j - 1) * grad;
+        pwAOC += aoc / Math.pow(1 + i, j);
+      }
+      const eqAOC = pwAOC * AP(i, n);
+      rows.push({ n, Sn, CR, eqAOC, euac: CR + eqAOC });
+    }
+    return rows;
+  }
+
+  function minRow(rows) {
+    return rows.reduce((best, r) => (r.euac < best.euac ? r : best), rows[0]);
+  }
+
+  // Marginal cost of keeping the defender one more year (year k):
+  // MC(k) = lost market value + interest on capital + operating cost
+  function marginalCost(P, dec, aoc1, grad, n_max, i) {
+    const out = [];
+    for (let k = 1; k <= n_max; k++) {
+      const MVprev = P * Math.pow(1 - dec, k - 1);
+      const MVnow = P * Math.pow(1 - dec, k);
+      const aoc = aoc1 + (k - 1) * grad;
+      out.push((MVprev - MVnow) + i * MVprev + aoc);
+    }
+    return out;
+  }
+
+  function fmt$(v) {
+    const sign = v < 0 ? '-' : '';
+    const a = Math.abs(v);
+    if (a >= 1e6) return sign + '$' + (a / 1e6).toFixed(2) + 'M';
+    if (a >= 1e4) return sign + '$' + (a / 1e3).toFixed(1) + 'k';
+    if (a >= 1e3) return sign + '$' + Math.round(a).toLocaleString();
+    return sign + '$' + Math.round(a);
+  }
+
+  function compute() {
+    const i = MARR / 100;
+    const dRows = eslCurve(state.d_mv, state.d_dec / 100, state.d_aoc, state.d_grad, HORIZON, i);
+    const cRows = eslCurve(state.c_mv, state.c_dec / 100, state.c_aoc, state.c_grad, HORIZON, i);
+    const dMC = marginalCost(state.d_mv, state.d_dec / 100, state.d_aoc, state.d_grad, HORIZON, i);
+    const dEsl = minRow(dRows);
+    const cEsl = minRow(cRows);
+    return { dRows, cRows, dMC, dEsl, cEsl, i };
+  }
+
+  function renderTable(c) {
+    const tb = document.getElementById('esl-tbody');
+    let html = '';
+    for (let k = 0; k < HORIZON; k++) {
+      const d = c.dRows[k], ch = c.cRows[k];
+      const isDef = d.n === c.dEsl.n;
+      const isChl = ch.n === c.cEsl.n;
+      const cls = (isDef ? ' esl-def' : '') + (isChl ? ' esl-chl' : '');
+      html += `<tr class="${cls.trim()}">
+        <td>${d.n}</td>
+        <td class="cr">${fmt$(d.CR)}</td>
+        <td class="aoc">${fmt$(d.eqAOC)}</td>
+        <td class="euac-d">${fmt$(d.euac)}</td>
+        <td class="cr">${fmt$(ch.CR)}</td>
+        <td class="aoc">${fmt$(ch.eqAOC)}</td>
+        <td class="euac-c">${fmt$(ch.euac)}</td>
+      </tr>`;
+    }
+    tb.innerHTML = html;
+    document.getElementById('meta-line').textContent = `MARR ${MARR}% · horizon ${HORIZON} yr`;
+  }
+
+  function renderCards(c) {
+    document.getElementById('d-euac').textContent = fmt$(c.dEsl.euac) + '/yr';
+    document.getElementById('d-esl').textContent = `min cost if kept ${c.dEsl.n} more yr`;
+    document.getElementById('c-euac').textContent = fmt$(c.cEsl.euac) + '/yr';
+    document.getElementById('c-esl').textContent = `economic life ${c.cEsl.n} yr`;
+  }
+
+  function renderVerdict(c) {
+    const v = document.getElementById('verdict');
+    const headline = document.getElementById('v-headline');
+    const desc = document.getElementById('v-desc');
+    const dCost = c.dEsl.euac, cCost = c.cEsl.euac;
+    const gap = Math.abs(dCost - cCost);
+    // Marginal-cost test: keep the defender as long as the cost of one more year
+    // stays below the challenger's minimum EUAC.
+    const mc1 = c.dMC[0];
+    if (dCost <= cCost) {
+      v.className = 'verdict';
+      document.getElementById('v-label').textContent = 'Recommendation · Keep';
+      headline.textContent = '★ Keep the defender';
+      let extra = '';
+      if (mc1 < cCost) {
+        // find how many more years the marginal cost stays under challenger EUAC
+        let yrs = 0;
+        for (const m of c.dMC) { if (m < cCost) yrs++; else break; }
+        extra = ` Its marginal cost stays under the challenger's ${fmt$(cCost)}/yr for about <b>${yrs} more year${yrs===1?'':'s'}</b> — revisit then.`;
+      }
+      desc.innerHTML = `The defender's lowest annual cost is <b>${fmt$(dCost)}/yr</b> vs the challenger's <b>${fmt$(cCost)}/yr</b> — cheaper by <b>${fmt$(gap)}/yr</b>. Hold the existing asset.${extra}`;
+    } else {
+      v.className = 'verdict replace';
+      document.getElementById('v-label').textContent = 'Recommendation · Replace';
+      headline.textContent = '◆ Replace with the challenger';
+      desc.innerHTML = `The challenger's economic-life cost is <b>${fmt$(cCost)}/yr</b> — <b>${fmt$(gap)}/yr cheaper</b> than the best the defender can do (<b>${fmt$(dCost)}/yr</b>). The marginal cost of keeping the old asset one more year is already <b>${fmt$(mc1)}</b>. Retire it now.`;
+    }
+  }
+
+  function renderChart(c) {
+    const svg = document.getElementById('euac-svg');
+    const W = 480, H = 230;
+    const padL = 52, padR = 14, padT = 14, padB = 30;
+    const x0 = padL, x1 = W - padR, y0 = padT, y1 = H - padB;
+    const n = HORIZON;
+
+    const allVals = c.dRows.map(r => r.euac)
+      .concat(c.cRows.map(r => r.euac))
+      .concat(c.dMC);
+    const minY = Math.min(...allVals) * 0.92;
+    const maxY = Math.max(...allVals) * 1.04;
+    const range = Math.max(1, maxY - minY);
+
+    const xPos = t => x0 + ((t - 1) / (n - 1)) * (x1 - x0);
+    const yPos = v => y1 - ((v - minY) / range) * (y1 - y0);
+
+    let html = '';
+    html += `<line x1="${x0}" y1="${y0}" x2="${x0}" y2="${y1}" stroke="#5a5247" stroke-width="0.9"/>`;
+    html += `<line x1="${x0}" y1="${y1}" x2="${x1}" y2="${y1}" stroke="#5a5247" stroke-width="0.9"/>`;
+
+    // Y ticks
+    [minY, (minY + maxY) / 2, maxY].forEach(val => {
+      const yy = yPos(val);
+      html += `<line x1="${x0-3}" y1="${yy}" x2="${x0}" y2="${yy}" stroke="#5a5247" stroke-width="0.6"/>`;
+      html += `<text x="${x0 - 6}" y="${yy + 3}" text-anchor="end" font-family="Outfit,sans-serif" font-size="9" fill="#5a5247">${fmt$(val)}</text>`;
+    });
+    // X ticks
+    for (let t = 1; t <= n; t++) {
+      const xx = xPos(t);
+      html += `<line x1="${xx}" y1="${y1}" x2="${xx}" y2="${y1 + 3}" stroke="#5a5247" stroke-width="0.6"/>`;
+      html += `<text x="${xx}" y="${y1 + 13}" text-anchor="middle" font-family="Outfit,sans-serif" font-size="8.5" fill="#5a5247">${t}</text>`;
+    }
+    html += `<text x="${(x0+x1)/2}" y="${H-3}" text-anchor="middle" font-family="Outfit,sans-serif" font-size="9" letter-spacing="0.16em" font-weight="700" fill="#8b7355">YEARS KEPT</text>`;
+
+    const path = (rows, key, stroke, w, dash) => {
+      const d = rows.map((r, idx) => (idx === 0 ? 'M' : 'L') + ` ${xPos(r.n).toFixed(2)} ${yPos(r[key]).toFixed(2)}`).join(' ');
+      return `<path d="${d}" stroke="${stroke}" stroke-width="${w}" fill="none" stroke-linecap="round" stroke-linejoin="round"${dash ? ` stroke-dasharray="${dash}"` : ''}/>`;
+    };
+    // marginal cost (defender) — dashed gold
+    const mcRows = c.dMC.map((v, idx) => ({ n: idx + 1, mc: v }));
+    html += path(mcRows, 'mc', '#b8860b', 1.6, '4 3');
+    // EUAC curves
+    html += path(c.dRows, 'euac', '#5c7a4a', 2.4);
+    html += path(c.cRows, 'euac', '#8a2828', 2.4);
+
+    // ESL minimum markers
+    const dm = c.dEsl, cm = c.cEsl;
+    html += `<circle cx="${xPos(dm.n)}" cy="${yPos(dm.euac)}" r="4" fill="#5c7a4a" stroke="#fff" stroke-width="1.3"/>`;
+    html += `<circle cx="${xPos(cm.n)}" cy="${yPos(cm.euac)}" r="4" fill="#8a2828" stroke="#fff" stroke-width="1.3"/>`;
+    html += `<text x="${xPos(dm.n)}" y="${yPos(dm.euac) - 7}" text-anchor="middle" font-family="Outfit,sans-serif" font-size="8.5" font-weight="700" fill="#455d36">★ESL</text>`;
+    html += `<text x="${xPos(cm.n)}" y="${yPos(cm.euac) - 7}" text-anchor="middle" font-family="Outfit,sans-serif" font-size="8.5" font-weight="700" fill="#6b1e1e">◆ESL</text>`;
+
+    svg.innerHTML = html;
+  }
+
+  function refresh() {
+    const c = compute();
+    renderTable(c);
+    renderCards(c);
+    renderVerdict(c);
+    renderChart(c);
+  }
+
+  Object.keys(DEFAULT).forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', e => {
+      const v = parseFloat(e.target.value);
+      if (!isNaN(v)) { state[id] = v; refresh(); }
+    });
+  });
+  document.getElementById('reset-btn').addEventListener('click', () => {
+    Object.assign(state, DEFAULT);
+    Object.keys(DEFAULT).forEach(id => { const el = document.getElementById(id); if (el) el.value = DEFAULT[id]; });
+    refresh();
+  });
+
+  refresh();
+</script>
+
+</body>
+</html>

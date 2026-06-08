@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Module 9 · Inflation &amp; Purchasing Power Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf9f5; --paper: #ffffff; --ink: #1a1a1a; --muted: #5a5247; --soft: #8b7355;
+    --border: #e8e3d4; --line: #d4cfc0;
+    --gold: #b8860b; --gold-deep: #8a6608; --gold-soft: #faf3e0;
+    --olive: #5c7a4a; --olive-deep: #455d36; --olive-soft: #f0f4ea;
+    --crimson: #8a2828; --crimson-deep: #6b1e1e; --crimson-soft: #fdf2f3;
+    --teal: #0e7c80; --teal-deep: #0a5e62; --teal-soft: #e6f4f4;
+    --blue: #1947d6;
+  }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: 'Outfit', -apple-system, system-ui, sans-serif; font-size: 13px; line-height: 1.45;
+    overflow: hidden;
+  }
+  .app {
+    height: 100vh; display: flex; flex-direction: column;
+    max-width: 1500px; margin: 0 auto; padding: 10px 18px; gap: 8px;
+  }
+  .head {
+    flex-shrink: 0;
+    display: flex; justify-content: space-between; align-items: center; gap: 14px;
+    padding: 8px 16px; background: var(--paper); border: 1px solid var(--border);
+    border-radius: 10px; border-top: 3px solid var(--teal); flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .brand .code { font-size: 10px; color: var(--teal-deep); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; }
+  .brand h1 { font-family: 'Lora', Georgia, serif; font-size: 18px; font-weight: 700; line-height: 1; }
+  .brand h1 em { font-style: italic; color: var(--teal-deep); font-weight: 400; }
+  .brand .tag { font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted); }
+  .head .nav { display: flex; gap: 6px; }
+  .head .nav a {
+    font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft); text-decoration: none; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px;
+  }
+  .head .nav a:hover { color: var(--teal-deep); border-color: var(--teal); background: var(--teal-soft); }
+
+  /* CONTROLS */
+  .controls {
+    flex-shrink: 0;
+    background: var(--paper); border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 16px;
+    display: grid; grid-template-columns: repeat(4, 1fr) 1.6fr auto; gap: 12px; align-items: end;
+  }
+  @media (max-width: 1000px) { .controls { grid-template-columns: 1fr 1fr; } }
+  .ctrl { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .ctrl .lbl {
+    font-family: 'Outfit', sans-serif; font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700;
+    color: var(--teal-deep);
+  }
+  .ctrl input[type=number] {
+    width: 100%; padding: 5px 8px;
+    border: 1px solid var(--border); border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace; font-size: 13.5px; font-weight: 700; color: var(--ink);
+    background: var(--bg); outline: none; text-align: right;
+  }
+  .ctrl input[type=number]:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(14,124,128,0.12); }
+  /* Fisher box lives in the controls row */
+  .fisher {
+    background: linear-gradient(135deg, var(--teal-soft) 0%, #d3ecec 100%);
+    border: 1.5px solid var(--teal); border-radius: 8px; padding: 7px 13px;
+    display: flex; flex-direction: column; justify-content: center; gap: 1px;
+  }
+  .fisher .l { font-family: 'Outfit', sans-serif; font-size: 8.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; color: var(--teal-deep); }
+  .fisher .eq { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; font-weight: 700; color: var(--teal-deep); }
+  .fisher .eq b { color: var(--crimson-deep); }
+  .controls .reset-btn {
+    font-family: 'Outfit', sans-serif; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700;
+    padding: 7px 13px; border-radius: 7px; cursor: pointer;
+    background: var(--teal-soft); color: var(--teal-deep); border: 1px solid var(--teal);
+    transition: all 0.15s;
+  }
+  .controls .reset-btn:hover { background: var(--teal); color: #fff; }
+
+  /* MAIN */
+  .main {
+    flex: 1; min-height: 0;
+    display: grid; grid-template-columns: 1fr 0.72fr; gap: 10px;
+  }
+  @media (max-width: 1100px) {
+    .main { grid-template-columns: 1fr; }
+    html, body { overflow: auto; } .app { height: auto; }
+  }
+
+  /* TABLE */
+  .table-panel {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 16px;
+    display: flex; flex-direction: column; min-height: 0;
+  }
+  .table-head {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+    padding-bottom: 7px; border-bottom: 1px solid var(--border); margin-bottom: 6px;
+  }
+  .table-head h3 { font-family: 'Lora', serif; font-size: 15px; font-weight: 700; }
+  .table-head h3 em { font-style: italic; color: var(--teal-deep); }
+  .table-head .meta { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--soft); }
+  .table-scroll { flex: 1; min-height: 0; overflow-y: auto; }
+  table.inf {
+    width: 100%; border-collapse: collapse;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  }
+  table.inf thead th {
+    position: sticky; top: 0; background: var(--bg); z-index: 2;
+    font-family: 'Outfit', sans-serif; font-size: 8.5px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft);
+    padding: 6px 6px;
+    border-bottom: 1px solid var(--border);
+    text-align: right;
+  }
+  table.inf thead th:first-child { text-align: center; }
+  table.inf thead th.nom-col { color: var(--crimson); }
+  table.inf thead th.real-col { color: var(--olive-deep); }
+  table.inf thead th.pw-col { color: var(--teal-deep); }
+  table.inf tbody td {
+    padding: 4px 6px;
+    border-bottom: 1px dotted var(--line);
+    text-align: right;
+    color: var(--ink); font-weight: 600;
+  }
+  table.inf tbody td:first-child { text-align: center; font-weight: 700; color: var(--muted); }
+  table.inf tbody td.nom { color: var(--crimson); }
+  table.inf tbody td.real { color: var(--olive-deep); }
+  table.inf tbody td.pw { color: var(--teal-deep); font-weight: 700; }
+  table.inf tbody td.power { color: var(--soft); }
+  table.inf tfoot td {
+    padding: 6px 6px; border-top: 2px solid var(--border); text-align: right;
+    font-family: 'Outfit', sans-serif; font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft);
+  }
+  table.inf tfoot td .total { font-family: 'Lora', serif; font-style: italic; font-size: 12px; }
+
+  /* RIGHT */
+  .right { display: flex; flex-direction: column; gap: 10px; min-height: 0; }
+  .chart-panel {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 16px; display: flex; flex-direction: column; min-height: 0; gap: 8px; flex: 1;
+  }
+  .chart-panel h3 { font-family: 'Lora', serif; font-size: 15px; font-weight: 700; padding-bottom: 7px; border-bottom: 1px solid var(--border); }
+  .chart-panel h3 em { font-style: italic; color: var(--teal-deep); }
+  .chart-panel svg { flex: 1; min-height: 140px; width: 100%; }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; font-family: 'Outfit', sans-serif; font-size: 10.5px; }
+  .legend .it { display: inline-flex; align-items: center; gap: 5px; color: var(--muted); }
+  .legend .sw { width: 14px; height: 3px; border-radius: 2px; }
+
+  .pw-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .pw-card {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px;
+    border-left: 3px solid var(--teal);
+  }
+  .pw-card.b { border-left-color: var(--olive); }
+  .pw-card .l { font-family: 'Outfit', sans-serif; font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; color: var(--teal-deep); }
+  .pw-card.b .l { color: var(--olive-deep); }
+  .pw-card .v { font-family: 'Lora', serif; font-style: italic; font-size: 20px; font-weight: 700; color: var(--teal-deep); line-height: 1; margin-top: 3px; }
+  .pw-card.b .v { color: var(--olive-deep); }
+  .pw-card .sub { font-family: 'Lora', serif; font-style: italic; font-size: 10px; color: var(--muted); margin-top: 2px; line-height: 1.3; }
+
+  .power-callout {
+    background: linear-gradient(135deg, var(--gold-soft) 0%, #f0e2bc 100%);
+    border: 1.5px solid var(--gold); border-radius: 9px; padding: 11px 14px;
+  }
+  .power-callout .l { font-family: 'Outfit', sans-serif; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; color: var(--gold-deep); }
+  .power-callout .v { font-family: 'Lora', serif; font-style: italic; font-size: 18px; font-weight: 700; color: var(--gold-deep); margin-top: 2px; line-height: 1.2; }
+  .power-callout .v b { color: var(--crimson-deep); font-style: normal; }
+  .power-callout .desc { font-family: 'Lora', serif; font-style: italic; font-size: 11px; color: var(--ink); line-height: 1.45; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <header class="head">
+    <div class="brand">
+      <span class="code">IE 4512 · Module 9</span>
+      <h1>Inflation &amp; <em>Purchasing Power</em></h1>
+      <span class="tag">then-current vs constant dollars · the Fisher relation</span>
+    </div>
+    <nav class="nav">
+      <a href="index.html">← Module 9</a>
+      <a href="m9-replacement-esl.html">Replacement</a>
+    </nav>
+  </header>
+
+  <!-- CONTROLS -->
+  <section class="controls">
+    <div class="ctrl">
+      <span class="lbl">Cash flow · today's $</span>
+      <input type="number" id="amount" value="10000" min="0" step="500">
+    </div>
+    <div class="ctrl">
+      <span class="lbl">Inflation f %</span>
+      <input type="number" id="infl" value="4" min="0" max="50" step="0.5">
+    </div>
+    <div class="ctrl">
+      <span class="lbl">Real MARR · i&#8242; %</span>
+      <input type="number" id="real" value="6" min="0" max="40" step="0.5">
+    </div>
+    <div class="ctrl">
+      <span class="lbl">Study period · n</span>
+      <input type="number" id="years" value="10" min="1" max="40" step="1">
+    </div>
+    <div class="fisher">
+      <div class="l">Fisher · market rate i = i&#8242; + f + i&#8242;·f</div>
+      <div class="eq" id="fisher-eq">i = — </div>
+    </div>
+    <button class="reset-btn" id="reset-btn">Reset</button>
+  </section>
+
+  <div class="main">
+
+    <!-- TABLE -->
+    <div class="table-panel">
+      <div class="table-head">
+        <h3>Year-by-year · <em>two dollars, one present worth</em></h3>
+        <span class="meta" id="meta-line">f — · i&#8242; — · i —</span>
+      </div>
+      <div class="table-scroll">
+        <table class="inf">
+          <thead>
+            <tr>
+              <th>yr</th>
+              <th class="nom-col">then-current $</th>
+              <th class="real-col">constant (today's) $</th>
+              <th class="power-col">$1 buys</th>
+              <th class="pw-col">PW @ market</th>
+              <th class="real-col">PW @ real</th>
+            </tr>
+          </thead>
+          <tbody id="inf-tbody"></tbody>
+          <tfoot>
+            <tr>
+              <td>Σ</td>
+              <td class="nom-col"><span class="total" id="nom-total">—</span></td>
+              <td class="real-col"><span class="total" id="real-total">—</span></td>
+              <td></td>
+              <td class="pw-col"><span class="total" id="pw-total">—</span></td>
+              <td class="real-col"><span class="total" id="pwr-total">—</span></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:7px;padding-top:7px;border-top:1px solid var(--border);font-family:'Outfit',sans-serif;font-size:10px;color:var(--muted);">
+        <span><b style="color:var(--crimson)">Then-current</b> = actual dollars you'll hand over that year</span>
+        <span><b style="color:var(--olive-deep)">Constant</b> = same purchasing power as today</span>
+        <span>Both PW columns match — that's the whole point.</span>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right">
+      <div class="chart-panel">
+        <h3>Nominal climbs · <em>real stays flat</em></h3>
+        <svg id="inf-svg" viewBox="0 0 480 220" preserveAspectRatio="xMidYMid meet"></svg>
+        <div class="legend">
+          <div class="it"><div class="sw" style="background:var(--crimson)"></div>then-current $</div>
+          <div class="it"><div class="sw" style="background:var(--olive)"></div>constant $</div>
+          <div class="it"><div class="sw" style="background:var(--gold)"></div>$1 purchasing power</div>
+        </div>
+      </div>
+
+      <div class="pw-cards">
+        <div class="pw-card">
+          <div class="l">PW · nominal @ market i</div>
+          <div class="v" id="pw-market">$—</div>
+          <div class="sub">inflated dollars, market rate</div>
+        </div>
+        <div class="pw-card b">
+          <div class="l">PW · real @ rate i&#8242;</div>
+          <div class="v" id="pw-realm">$—</div>
+          <div class="sub">today's dollars, real rate — identical</div>
+        </div>
+      </div>
+
+      <div class="power-callout">
+        <div class="l">What inflation does to a dollar</div>
+        <div class="v" id="power-line">$1 today &rarr; <b>$—</b> in — years</div>
+        <div class="desc" id="power-desc">Both present-worth methods give the same answer because the inflation in the cash flow and the inflation baked into the market rate cancel exactly. Use whichever is easier — just never mix them.</div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  const DEFAULT = { amount: 10000, infl: 4, real: 6, years: 10 };
+  const state = { ...DEFAULT };
+
+  function compute() {
+    const A0 = state.amount;
+    const f = state.infl / 100;
+    const ir = state.real / 100;
+    const im = (1 + ir) * (1 + f) - 1;   // Fisher: market (combined) rate
+    const n = Math.round(state.years);
+    const rows = [];
+    let nomTot = 0, realTot = 0, pwTot = 0, pwrTot = 0;
+    for (let t = 1; t <= n; t++) {
+      const nominal = A0 * Math.pow(1 + f, t);   // then-current dollars
+      const constant = A0;                        // constant purchasing power (today's $)
+      const power = 1 / Math.pow(1 + f, t);       // what $1 buys after t years
+      const pwMarket = nominal / Math.pow(1 + im, t);
+      const pwReal = constant / Math.pow(1 + ir, t);
+      nomTot += nominal; realTot += constant; pwTot += pwMarket; pwrTot += pwReal;
+      rows.push({ t, nominal, constant, power, pwMarket, pwReal });
+    }
+    return { rows, n, f, ir, im, A0, nomTot, realTot, pwTot, pwrTot, power: 1 / Math.pow(1 + f, n) };
+  }
+
+  function fmt$(v) {
+    const sign = v < 0 ? '-' : '';
+    const a = Math.abs(v);
+    if (a >= 1e6) return sign + '$' + (a / 1e6).toFixed(2) + 'M';
+    if (a >= 1e4) return sign + '$' + (a / 1e3).toFixed(1) + 'k';
+    return sign + '$' + Math.round(a).toLocaleString();
+  }
+  function fmtCents(v) { return '$' + v.toFixed(2); }
+
+  function renderTable(c) {
+    const tb = document.getElementById('inf-tbody');
+    let html = '';
+    c.rows.forEach(r => {
+      html += `<tr>
+        <td>${r.t}</td>
+        <td class="nom">${fmt$(r.nominal)}</td>
+        <td class="real">${fmt$(r.constant)}</td>
+        <td class="power">${fmtCents(r.power)}</td>
+        <td class="pw">${fmt$(r.pwMarket)}</td>
+        <td class="real">${fmt$(r.pwReal)}</td>
+      </tr>`;
+    });
+    tb.innerHTML = html;
+    document.getElementById('nom-total').textContent = fmt$(c.nomTot);
+    document.getElementById('real-total').textContent = fmt$(c.realTot);
+    document.getElementById('pw-total').textContent = fmt$(c.pwTot);
+    document.getElementById('pwr-total').textContent = fmt$(c.pwrTot);
+    document.getElementById('meta-line').textContent = `f ${state.infl}% · i′ ${state.real}% · i ${(c.im*100).toFixed(2)}%`;
+  }
+
+  function renderCards(c) {
+    document.getElementById('pw-market').textContent = fmt$(c.pwTot);
+    document.getElementById('pw-realm').textContent = fmt$(c.pwrTot);
+    document.getElementById('fisher-eq').innerHTML = `i = ${(c.im*100).toFixed(2)}% &nbsp;<span style="color:var(--soft)">(${state.real}% + ${state.infl}% + ${(c.ir*c.f*100).toFixed(2)}%)</span>`;
+    const lostPct = (1 - c.power) * 100;
+    document.getElementById('power-line').innerHTML = `$1 today &rarr; <b>${fmtCents(c.power)}</b> of buying power in ${c.n} years`;
+    document.getElementById('power-desc').innerHTML = `At ${state.infl}% inflation, a dollar loses <b>${lostPct.toFixed(0)}%</b> of its purchasing power over ${c.n} years. Notice the two PW columns are <b>identical</b> &mdash; discounting inflated dollars at the market rate equals discounting today's dollars at the real rate. Use whichever is easier; never mix them.`;
+  }
+
+  function renderChart(c) {
+    const svg = document.getElementById('inf-svg');
+    const W = 480, H = 220;
+    const padL = 50, padR = 38, padT = 14, padB = 30;
+    const x0 = padL, x1 = W - padR, y0 = padT, y1 = H - padB;
+    const n = c.n;
+
+    const dollarVals = c.rows.map(r => r.nominal).concat(c.rows.map(r => r.constant));
+    const maxY = Math.max(...dollarVals) * 1.05;
+    const minY = 0;
+    const range = Math.max(1, maxY - minY);
+
+    const xPos = t => x0 + ((t) / n) * (x1 - x0);
+    const yPos = v => y1 - ((v - minY) / range) * (y1 - y0);
+    const yPow = p => y1 - p * (y1 - y0);   // power axis 0..1 on right
+
+    let html = '';
+    html += `<line x1="${x0}" y1="${y0}" x2="${x0}" y2="${y1}" stroke="#5a5247" stroke-width="0.9"/>`;
+    html += `<line x1="${x0}" y1="${y1}" x2="${x1}" y2="${y1}" stroke="#5a5247" stroke-width="0.9"/>`;
+    // right axis (purchasing power 0..1)
+    html += `<line x1="${x1}" y1="${y0}" x2="${x1}" y2="${y1}" stroke="#b8860b" stroke-width="0.8" opacity="0.6"/>`;
+
+    // Y ticks (left, dollars)
+    [0, maxY/2, maxY].forEach(val => {
+      const yy = yPos(val);
+      html += `<text x="${x0 - 6}" y="${yy + 3}" text-anchor="end" font-family="Outfit,sans-serif" font-size="9" fill="#5a5247">${fmt$(val)}</text>`;
+    });
+    // right ticks (power)
+    [0, 0.5, 1].forEach(p => {
+      const yy = yPow(p);
+      html += `<text x="${x1 + 5}" y="${yy + 3}" text-anchor="start" font-family="Outfit,sans-serif" font-size="8.5" fill="#b8860b">${fmtCents(p)}</text>`;
+    });
+    // X ticks
+    for (let t = 0; t <= n; t++) {
+      if (n <= 12 || t % Math.ceil(n / 10) === 0) {
+        const xx = xPos(t);
+        html += `<line x1="${xx}" y1="${y1}" x2="${xx}" y2="${y1 + 3}" stroke="#5a5247" stroke-width="0.6"/>`;
+        html += `<text x="${xx}" y="${y1 + 13}" text-anchor="middle" font-family="Outfit,sans-serif" font-size="8.5" fill="#5a5247">${t}</text>`;
+      }
+    }
+    html += `<text x="${(x0+x1)/2}" y="${H-3}" text-anchor="middle" font-family="Outfit,sans-serif" font-size="9" letter-spacing="0.16em" font-weight="700" fill="#8b7355">YEAR</text>`;
+
+    // constant line (flat olive)
+    const constD = [{t:0,v:c.A0}].concat(c.rows.map(r=>({t:r.t,v:r.constant})))
+      .map((p,idx)=>(idx===0?'M':'L')+` ${xPos(p.t).toFixed(2)} ${yPos(p.v).toFixed(2)}`).join(' ');
+    html += `<path d="${constD}" stroke="#5c7a4a" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+    // nominal line (rising crimson)
+    const nomD = [{t:0,v:c.A0}].concat(c.rows.map(r=>({t:r.t,v:r.nominal})))
+      .map((p,idx)=>(idx===0?'M':'L')+` ${xPos(p.t).toFixed(2)} ${yPos(p.v).toFixed(2)}`).join(' ');
+    html += `<path d="${nomD}" stroke="#8a2828" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+    // purchasing power (gold, right axis, decaying)
+    const powD = [{t:0,p:1}].concat(c.rows.map(r=>({t:r.t,p:r.power})))
+      .map((p,idx)=>(idx===0?'M':'L')+` ${xPos(p.t).toFixed(2)} ${yPow(p.p).toFixed(2)}`).join(' ');
+    html += `<path d="${powD}" stroke="#b8860b" stroke-width="1.8" fill="none" stroke-dasharray="4 3" stroke-linecap="round" stroke-linejoin="round"/>`;
+
+    // endpoint markers
+    const last = c.rows[c.rows.length - 1];
+    html += `<circle cx="${xPos(n)}" cy="${yPos(last.nominal)}" r="3.5" fill="#8a2828"/>`;
+    html += `<circle cx="${xPos(n)}" cy="${yPos(last.constant)}" r="3.5" fill="#5c7a4a"/>`;
+    html += `<circle cx="${xPos(n)}" cy="${yPow(last.power)}" r="3" fill="#b8860b"/>`;
+
+    svg.innerHTML = html;
+  }
+
+  function refresh() {
+    const c = compute();
+    renderTable(c);
+    renderCards(c);
+    renderChart(c);
+  }
+
+  ['amount','infl','real','years'].forEach(id => {
+    document.getElementById(id).addEventListener('input', e => {
+      const v = parseFloat(e.target.value);
+      if (!isNaN(v)) { state[id] = v; refresh(); }
+    });
+  });
+  document.getElementById('reset-btn').addEventListener('click', () => {
+    Object.assign(state, DEFAULT);
+    ['amount','infl','real','years'].forEach(id => { document.getElementById(id).value = DEFAULT[id]; });
+    refresh();
+  });
+
+  refresh();
+</script>
+
+</body>
+</html>

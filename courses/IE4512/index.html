@@ -434,11 +434,12 @@
       ]
     },
     { n: 9, short: 'Replacement & Inflation', name: 'Replacement Analysis and Inflation', release: 'Week 6 (optional)',
-      lede: 'When to replace an aging asset? How does inflation distort engineering economic decisions? This module is <em>optional</em> &mdash; released alongside Module 10 for students who want the extra reading. Not part of any quiz, exam, or scheduled class meeting.',
-      meta: ['Ch. 11, 12', 'Optional · video'],
+      lede: 'When to replace an aging asset? How does inflation distort engineering economic decisions? This module is <em>optional</em> &mdash; explore the two interactive tools below at your own pace. Not part of any quiz, exam, or scheduled class meeting.',
+      meta: ['Ch. 11, 12', 'Optional · 2 tools'],
       optional: true,
       tools: [
-        { type: 'Video', icon: 'video', title: 'Replacement &amp; <em>Inflation</em>', desc: 'Self-paced lecture video covering replacement analysis and inflation. Watch any time.', url: '#video-coming-soon', time: '~45 min', color: 'olive' }
+        { type: 'Decision Lab', icon: 'sliders', title: 'Replacement <em>Analysis</em>', desc: 'Defender vs challenger on one screen. Tune market value, decline rate, and rising operating costs for both assets and watch the U-shaped EUAC curve find each one\'s economic service life. Marginal-cost overlay plus a live keep-or-replace verdict that tells you how many more years to hold the old asset. (Ch. 11)', url: 'm9-replacement-esl.html', time: '~20 min', color: 'olive' },
+        { type: 'Lab', icon: 'chart', title: 'Inflation &amp; <em>Purchasing Power</em>', desc: 'Then-current vs constant dollars, side by side, with the Fisher relation (i = i&prime; + f + i&prime;&middot;f) computed live. The year-by-year table proves the two present-worth methods give the identical answer, while a purchasing-power curve shows how fast a dollar erodes. (Ch. 12)', url: 'm9-inflation-lab.html', time: '~20 min', color: 'olive' }
       ]
     },
     { n: 10, short: 'Breakeven & Sensitivity', name: 'Breakeven and Sensitivity Analysis', release: 'Week 6',
@@ -555,7 +556,7 @@
     }
 
     const optionalBanner = m.optional
-      ? `<div class="optional-banner">📺 <strong>This module is optional.</strong> Watch the video below at your own pace. Not part of any quiz, exam, or scheduled class meeting.</div>`
+      ? `<div class="optional-banner">✨ <strong>This module is optional.</strong> Explore the interactive tools below at your own pace. Not part of any quiz, exam, or scheduled class meeting.</div>`
       : '';
 
     $('main').innerHTML = `
