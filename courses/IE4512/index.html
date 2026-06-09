@@ -462,7 +462,13 @@
   ];
 
   const $ = id => document.getElementById(id);
-  let curr = 1;
+  // Allow opening a specific module directly via URL hash, e.g. index.html#module-11
+  function moduleFromHash() {
+    const mm = (location.hash || '').match(/module-(\d+)/i);
+    if (mm) { const n = parseInt(mm[1], 10); if (MODULES.find(x => x.n === n)) return n; }
+    return null;
+  }
+  let curr = moduleFromHash() || 1;
   let unlocked = new Set(DEFAULT_AVAILABLE);
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
@@ -507,7 +513,7 @@
         <div class="label">${m.short}</div>
         ${right}
       `;
-      item.addEventListener('click', () => { curr = m.n; render(); });
+      item.addEventListener('click', () => { curr = m.n; render(); location.hash = 'module-' + m.n; });
       list.appendChild(item);
     });
   }
@@ -603,8 +609,14 @@
 
   document.addEventListener('keydown', e => {
     if (e.target && (e.target.tagName === 'INPUT')) return;
-    if (e.key === 'ArrowUp' && curr > 1) { curr--; render(); }
-    if (e.key === 'ArrowDown' && curr < MODULES.length) { curr++; render(); }
+    if (e.key === 'ArrowUp' && curr > 1) { curr--; render(); location.hash = 'module-' + curr; }
+    if (e.key === 'ArrowDown' && curr < MODULES.length) { curr++; render(); location.hash = 'module-' + curr; }
+  });
+
+  // Back/forward buttons and pasted #module-N links
+  window.addEventListener('hashchange', () => {
+    const n = moduleFromHash();
+    if (n && n !== curr) { curr = n; render(); }
   });
 
   render();
