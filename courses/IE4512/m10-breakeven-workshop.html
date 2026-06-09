@@ -1,567 +1,870 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GenAI Workshop: Break-Even Analysis | EMGT 6225</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Module 10 · Break-Even &amp; Sensitivity · Prompt Engineering Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;600;700&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf9f5; --paper: #ffffff; --ink: #1a1a1a; --muted: #5a5247; --soft: #8b7355;
+    --border: #e8e3d4; --line: #d4cfc0;
+    --crimson: #8a2828; --crimson-deep: #6b1e1e; --crimson-soft: #fdf2f3;
+    --gold: #b8860b; --gold-deep: #8a6608; --gold-soft: #faf3e0;
+    --olive: #5c7a4a; --olive-deep: #455d36; --olive-soft: #f0f4ea;
+    --blue: #1947d6; --blue-soft: #eef2ff;
+    --purple: #7c3aed; --purple-soft: #f3eeff;
+    --teal: #0e7c80; --teal-soft: #e6f4f4;
+    --code-bg: #1a1f2e; --code-ink: #e8e3d4;
+  }
+  html, body { min-height: 100%; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: 'Outfit', -apple-system, system-ui, sans-serif; font-size: 13px; line-height: 1.5;
+  }
+  .app { max-width: 1280px; margin: 0 auto; padding: 14px 22px 60px; }
 
-:root{
-    --bg:#000;
-    --glass:hsla(210 10% 8%/0.7);
-    --glass-hover:hsla(210 8% 12%/0.75);
-    --glass-border:hsla(210 20% 80%/0.09);
-    --glass-border-b:hsla(210 20% 80%/0.18);
-    --cyan:#06b6d4;--cyan-l:#67e8f9;--cyan-d:#0891b2;
-    --violet:#b388ff;--rose:#ff6b9d;--amber:#ffd740;--emerald:#69f0ae;
-    --text-1:hsl(0 0% 96%);--text-2:hsl(0 0% 55%);--text-3:hsl(0 0% 35%);
-    --r-sm:.75rem;--r-md:1rem;--r-lg:1.25rem;--r-pill:9999px;
-    --shadow:0 8px 32px rgba(0,0,0,0.4),inset 0 1px 0 hsla(0 0% 100%/0.06);
-}
+  /* HEAD */
+  .head {
+    display: flex; justify-content: space-between; align-items: center; gap: 14px;
+    padding: 9px 16px; background: var(--paper); border: 1px solid var(--border);
+    border-radius: 10px; border-top: 3px solid var(--gold); flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .brand .code { font-size: 10px; color: var(--gold-deep); letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; }
+  .brand h1 { font-family: 'Lora', Georgia, serif; font-size: 19px; font-weight: 700; line-height: 1; }
+  .brand h1 em { font-style: italic; color: var(--gold-deep); font-weight: 400; }
+  .brand .tag { font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted); }
+  .head .nav { display: flex; gap: 6px; }
+  .head .nav a {
+    font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    color: var(--soft); text-decoration: none; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px;
+    transition: all 0.15s; background: var(--paper); font-family: 'Outfit', sans-serif;
+  }
+  .head .nav a:hover { color: var(--gold-deep); border-color: var(--gold); background: var(--gold-soft); }
 
-html{scroll-behavior:smooth}
-body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text-1);min-height:100vh;font-weight:300;letter-spacing:-0.015em;font-size:16px;position:relative}
+  /* TITLE strip */
+  .title-strip {
+    padding: 14px 4px 12px; border-bottom: 1px solid var(--border); margin-bottom: 18px;
+    display: flex; justify-content: space-between; align-items: flex-end; gap: 14px; flex-wrap: wrap;
+  }
+  .title-strip h2 { font-family: 'Lora', serif; font-size: 24px; font-weight: 700; line-height: 1.2; }
+  .title-strip h2 em { font-style: italic; color: var(--gold-deep); }
+  .title-strip .sub {
+    font-family: 'Lora', serif; font-style: italic; font-size: 13px; color: var(--muted); margin-top: 3px; max-width: 720px;
+  }
 
-/* ── Graphical background: conceptual curves + grain ── */
-body::before{content:'';position:fixed;inset:0;z-index:-2;background:
-    /* Subtle film grain */
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E"),
-    /* Break-even conceptual curves */
-    radial-gradient(ellipse 80% 60% at 50% 30%, rgba(6,182,212,0.06), transparent 60%),
-    radial-gradient(ellipse 50% 40% at 80% 70%, rgba(179,136,255,0.04), transparent 50%),
-    radial-gradient(ellipse 40% 50% at 15% 60%, rgba(105,240,174,0.03), transparent 50%),
-    var(--bg)}
-body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:
-    /* Revenue line (rising) */
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800'%3E%3Cpath d='M0 700 Q300 550 600 350 Q900 150 1200 50' fill='none' stroke='rgba(6%2C182%2C212%2C0.04)' stroke-width='2'/%3E%3Cpath d='M0 600 Q300 520 600 400 Q900 280 1200 200' fill='none' stroke='rgba(179%2C136%2C255%2C0.03)' stroke-width='1.5'/%3E%3Cpath d='M0 500 Q400 480 600 420 Q800 360 1200 320' fill='none' stroke='rgba(255%2C255%2C255%2C0.02)' stroke-width='1.5'/%3E%3Ccircle cx='520' cy='410' r='4' fill='rgba(6%2C182%2C212%2C0.08)'/%3E%3Ccircle cx='520' cy='410' r='12' fill='none' stroke='rgba(6%2C182%2C212%2C0.04)' stroke-width='1'/%3E%3C/svg%3E");
-    background-size:cover;background-position:center;opacity:.8}
+  /* TIMELINE — 5 nodes */
+  .timeline-wrap {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
+    padding: 18px 26px 16px; margin-bottom: 22px; overflow-x: auto;
+  }
+  .timeline {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    position: relative; min-width: 720px;
+  }
+  .timeline::before {
+    content: ''; position: absolute; left: 10%; right: 10%; top: 18px;
+    transform: translateY(-50%); height: 1.5px;
+    background-image: repeating-linear-gradient(90deg, rgba(26,26,46,0.18) 0 5px, transparent 5px 10px);
+    z-index: 0;
+  }
+  .tl-node {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    cursor: pointer; padding: 0 4px; text-decoration: none; color: var(--text);
+    transition: transform 0.18s ease;
+  }
+  .tl-node:hover { transform: translateY(-2px); }
+  .tl-dot {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--paper); border: 2px solid var(--border); color: var(--soft);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700;
+    box-shadow: 0 0 0 4px var(--bg); transition: all 0.18s ease;
+  }
+  .tl-node.active .tl-dot {
+    background: var(--gold); color: #fff; border-color: var(--gold);
+    transform: scale(1.08);
+    box-shadow: 0 0 0 4px var(--bg), 0 4px 14px rgba(184,134,11,0.32);
+  }
+  .tl-node.done .tl-dot {
+    background: var(--olive); color: #fff; border-color: var(--olive);
+  }
+  .tl-node.done .tl-dot::before { content: '✓'; font-size: 16px; font-family: 'Outfit', sans-serif; }
+  .tl-node.done .tl-dot .n { display: none; }
+  .tl-label {
+    font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: 0.04em;
+    text-align: center; line-height: 1.25; max-width: 120px;
+  }
+  .tl-node.active .tl-label { color: var(--gold-deep); }
+  .tl-node.done .tl-label { color: var(--olive); }
+  .tl-sub {
+    font-size: 9.5px; color: var(--soft); letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; margin-top: -2px;
+  }
 
-/* ── Glass card ── */
-.g{background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:var(--r-lg);box-shadow:var(--shadow);transition:all .3s ease}
-.g:hover{border-color:var(--glass-border-b)}
+  /* STEP container */
+  .stage { display: flex; flex-direction: column; gap: 18px; }
+  .step { display: none; }
+  .step.active { display: flex; flex-direction: column; gap: 16px; }
 
-/* ── Header ── */
-.hero{position:relative;padding:80px 40px 60px;text-align:center;overflow:hidden}
-.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 40%,rgba(6,182,212,0.08),transparent 70%)}
-.hero h1{font-size:3.5rem;font-weight:200;letter-spacing:-0.03em;position:relative;z-index:1;line-height:1.15}
-.hero h1 em{font-style:italic;font-weight:400;background:linear-gradient(135deg,#a5f3fc,#06b6d4,#0891b2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hero .sub{font-size:1.15rem;color:var(--text-2);margin-top:12px;font-weight:300;position:relative;z-index:1}
-.hero .badge{display:inline-flex;align-items:center;gap:8px;margin-top:20px;padding:8px 20px;border-radius:var(--r-pill);background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);font-size:.8rem;color:var(--text-2);position:relative;z-index:1}
-.hero .badge span{color:var(--cyan)}
+  .step-card {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 14px;
+    padding: 16px 18px 18px; box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+    border-top: 3px solid var(--gold);
+  }
+  .step.s2 .step-card { border-top-color: var(--blue); }
+  .step.s3 .step-card { border-top-color: var(--olive); }
+  .step.s4 .step-card { border-top-color: var(--crimson); }
+  .step.s5 .step-card { border-top-color: var(--purple); }
 
-/* ── Tabs ── */
-.tabs{position:sticky;top:0;z-index:50;display:flex;justify-content:center;gap:4px;padding:12px 16px;background:hsla(0 0% 4%/0.85);backdrop-filter:blur(24px);border-bottom:1px solid var(--glass-border)}
-.tab{padding:8px 20px;border-radius:var(--r-pill);border:none;background:transparent;color:var(--text-3);font-family:'Outfit',sans-serif;font-size:.9rem;font-weight:500;cursor:pointer;transition:all .2s ease}
-.tab:hover{color:var(--text-2);background:hsl(0 0% 8%)}
-.tab.active{background:hsl(0 0% 96%);color:hsl(0 0% 2%)}
-.tab.locked{opacity:.25;cursor:not-allowed}
+  .step-head {
+    display: flex; align-items: baseline; gap: 11px; padding-bottom: 9px;
+    border-bottom: 1px solid var(--border); margin-bottom: 14px; flex-wrap: wrap;
+  }
+  .step-head .num {
+    font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 700; color: var(--gold-deep);
+    letter-spacing: -0.02em; line-height: 1;
+  }
+  .step.s2 .step-head .num { color: var(--blue); }
+  .step.s3 .step-head .num { color: var(--olive-deep); }
+  .step.s4 .step-head .num { color: var(--crimson); }
+  .step.s5 .step-head .num { color: var(--purple); }
 
-/* ── Content ── */
-.wrap{max-width:1000px;margin:0 auto;padding:32px 24px}
-.panel{display:none;animation:fadeUp .6s cubic-bezier(.22,1,.36,1) forwards}
-.panel.active{display:block}
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  .step-head h3 { font-family: 'Lora', serif; font-size: 17px; font-weight: 700; line-height: 1.2; }
+  .step-head h3 em { font-style: italic; color: var(--gold-deep); }
+  .step.s2 .step-head h3 em { color: var(--blue); }
+  .step.s3 .step-head h3 em { color: var(--olive-deep); }
+  .step.s4 .step-head h3 em { color: var(--crimson); }
+  .step.s5 .step-head h3 em { color: var(--purple); }
 
-/* ── Section titles ── */
-.sec{font-size:1.8rem;font-weight:300;letter-spacing:-0.02em;margin-bottom:20px;display:flex;align-items:center;gap:10px}
-.sec .dot{width:8px;height:8px;border-radius:50%;background:var(--cyan)}
+  .step-head .lede {
+    flex: 1 1 100%;
+    font-family: 'Lora', serif; font-style: italic; font-size: 12px; color: var(--muted); line-height: 1.45; margin-top: 1px;
+  }
 
-/* ── Stat grid ── */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}
-.stat{text-align:center;padding:20px 12px}
-.stat .num{font-size:2rem;font-weight:600;color:var(--cyan-l);letter-spacing:-0.02em}
-.stat .lbl{font-size:.75rem;color:var(--text-3);margin-top:4px;text-transform:uppercase;letter-spacing:.08em}
+  /* QUESTION block */
+  .q {
+    margin-bottom: 12px;
+    background: var(--bg); border: 1px solid var(--border);
+    border-left: 3px solid var(--gold); border-radius: 8px;
+    padding: 10px 12px 11px;
+  }
+  .q:last-child { margin-bottom: 0; }
+  .step.s2 .q { border-left-color: var(--blue); }
+  .step.s3 .q { border-left-color: var(--olive); }
+  .step.s4 .q { border-left-color: var(--crimson); }
+  .step.s5 .q { border-left-color: var(--purple); }
+  .q-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+  .q-num {
+    font-size: 8.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+    color: #fff; background: var(--gold);
+    padding: 3px 8px; border-radius: 999px; flex-shrink: 0;
+  }
+  .step.s2 .q-num { background: var(--blue); }
+  .step.s3 .q-num { background: var(--olive); }
+  .step.s4 .q-num { background: var(--crimson); }
+  .step.s5 .q-num { background: var(--purple); }
+  .q-text { font-family: 'Lora', serif; font-size: 14px; font-weight: 700; color: var(--ink); line-height: 1.3; }
+  .q-hint {
+    flex: 1 1 100%; font-size: 11px; color: var(--muted); margin-top: 2px; font-style: italic;
+    font-family: 'Lora', serif;
+  }
 
-/* ── Question groups ── */
-.q{padding:28px;margin-bottom:16px}
-.q-label{font-size:1.05rem;font-weight:500;color:var(--text-1);margin-bottom:6px}
-.q-desc{font-size:.88rem;color:var(--text-3);margin-bottom:16px;line-height:1.6}
-.q-grid{display:grid;gap:10px}
-.q-grid.cols-5{grid-template-columns:repeat(5,1fr)}
-.q-grid.cols-3{grid-template-columns:repeat(3,1fr)}
+  .q-opts { display: grid; gap: 7px; }
+  .q-opts.cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .q-opts.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .q-opts.cols-4 { grid-template-columns: repeat(4, 1fr); }
+  .q-opts.cols-5 { grid-template-columns: repeat(5, 1fr); }
+  @media (max-width: 920px) { .q-opts.cols-3, .q-opts.cols-4, .q-opts.cols-5 { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .q-opts.cols-2, .q-opts.cols-3, .q-opts.cols-4, .q-opts.cols-5 { grid-template-columns: 1fr; } }
 
-/* ── Option cards ── */
-.oc{padding:14px;border-radius:var(--r-md);border:1px solid var(--glass-border);background:rgba(255,255,255,0.02);cursor:pointer;transition:all .25s ease;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
-.oc:hover{border-color:var(--glass-border-b);background:rgba(255,255,255,0.04);transform:translateY(-2px)}
-.oc.sel{border-color:rgba(6,182,212,0.4);background:rgba(6,182,212,0.06);box-shadow:0 0 16px rgba(6,182,212,0.08)}
-.oc .demo{width:100%;border-radius:var(--r-sm);overflow:hidden}
-.oc .oc-t{font-size:.9rem;font-weight:500;color:var(--text-1)}
-.oc .oc-d{font-size:.78rem;color:var(--text-3);line-height:1.4}
-.oc.sel .oc-t{color:var(--cyan-l)}
-.oc.sel .oc-d{color:var(--text-2)}
+  .opt {
+    position: relative; cursor: pointer;
+    background: var(--paper); border: 1.5px solid var(--border); border-radius: 8px;
+    padding: 6px 8px 7px;
+    display: flex; flex-direction: column; gap: 5px;
+    transition: all 0.15s ease;
+  }
+  .opt:hover { border-color: var(--gold); background: var(--gold-soft); transform: translateY(-1px); }
+  .opt input[type="radio"] { position: absolute; opacity: 0; pointer-events: none; }
+  .opt.checked {
+    border-color: var(--gold); background: var(--gold-soft);
+    box-shadow: 0 0 0 3px rgba(184,134,11,0.18);
+  }
+  .step.s2 .opt:hover { border-color: var(--blue); background: var(--blue-soft); }
+  .step.s2 .opt.checked { border-color: var(--blue); background: var(--blue-soft); box-shadow: 0 0 0 3px rgba(25,71,214,0.16); }
+  .step.s3 .opt:hover { border-color: var(--olive); background: var(--olive-soft); }
+  .step.s3 .opt.checked { border-color: var(--olive); background: var(--olive-soft); box-shadow: 0 0 0 3px rgba(92,122,74,0.16); }
+  .step.s4 .opt:hover { border-color: var(--crimson); background: var(--crimson-soft); }
+  .step.s4 .opt.checked { border-color: var(--crimson); background: var(--crimson-soft); box-shadow: 0 0 0 3px rgba(138,40,40,0.14); }
+  .step.s5 .opt:hover { border-color: var(--purple); background: var(--purple-soft); }
+  .step.s5 .opt.checked { border-color: var(--purple); background: var(--purple-soft); box-shadow: 0 0 0 3px rgba(124,58,237,0.16); }
 
-/* ── Name input ── */
-.inp{width:100%;padding:13px 16px;font-size:1rem;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:.6rem;color:var(--text-1);font-family:'Outfit',sans-serif;font-weight:300;outline:none;transition:border-color .2s,box-shadow .2s}
-.inp:focus{border-color:rgba(6,182,212,0.4);box-shadow:0 0 0 3px rgba(6,182,212,0.08)}
-.inp::placeholder{color:rgba(255,255,255,0.2)}
+  .opt .preview {
+    height: 50px;
+    background: #fff; border: 1px solid var(--border); border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; position: relative;
+  }
+  .opt .meta { display: flex; flex-direction: column; gap: 0; }
+  .opt .meta .name { font-size: 11.5px; font-weight: 700; color: var(--ink); line-height: 1.2; }
+  .opt .meta .hint { font-size: 10px; color: var(--muted); line-height: 1.3; }
+  .opt .check-mark {
+    position: absolute; top: 5px; right: 5px;
+    width: 15px; height: 15px; border-radius: 50%;
+    background: var(--gold); color: #fff;
+    display: none; align-items: center; justify-content: center;
+    font-size: 9.5px; font-weight: 700;
+  }
+  .opt.checked .check-mark { display: flex; }
+  .step.s2 .opt.checked .check-mark { background: var(--blue); }
+  .step.s3 .opt.checked .check-mark { background: var(--olive); }
+  .step.s4 .opt.checked .check-mark { background: var(--crimson); }
+  .step.s5 .opt.checked .check-mark { background: var(--purple); }
 
-/* ── CTA button ── */
-.cta{display:block;width:100%;padding:14px;border-radius:var(--r-pill);border:none;background:rgba(255,255,255,0.9);color:#000;font-family:'Outfit',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;transition:all .3s;margin-top:20px;letter-spacing:-0.01em}
-.cta:hover{box-shadow:0 0 30px rgba(6,182,212,0.15),0 8px 24px rgba(0,0,0,0.3);transform:translateY(-1px)}
-.cta:disabled{opacity:.2;cursor:not-allowed;transform:none;box-shadow:none}
-.cta-status{text-align:center;margin-top:8px;font-size:.78rem;color:var(--text-3)}
+  /* NAME input */
+  .name-input {
+    width: 100%; max-width: 380px; padding: 8px 12px;
+    border: 1.5px solid var(--border); border-radius: 8px;
+    font-family: 'Lora', serif; font-size: 14px; font-weight: 600; color: var(--ink);
+    background: #fff; outline: none; transition: all 0.15s;
+  }
+  .name-input:focus { border-color: var(--gold); background: var(--gold-soft); box-shadow: 0 0 0 3px rgba(184,134,11,0.14); }
 
-/* ── Stage cards ── */
-.stage{padding:28px;margin-bottom:20px;position:relative}
-.stage-head{display:flex;align-items:center;gap:14px;margin-bottom:16px}
-.stage-n{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:1rem;flex-shrink:0;border:1px solid var(--glass-border)}
-.stage-n.c1{color:var(--cyan);border-color:rgba(6,182,212,0.3)}
-.stage-n.c2{color:var(--violet);border-color:rgba(179,136,255,0.3)}
-.stage-n.c3{color:var(--emerald);border-color:rgba(105,240,174,0.3)}
-.stage-n.c4{color:var(--amber);border-color:rgba(255,215,64,0.3)}
-.stage-n.c5{color:var(--rose);border-color:rgba(255,107,157,0.3)}
-.stage-info h3{font-size:1.2rem;font-weight:500;letter-spacing:-0.015em}
-.stage-info p{font-size:.88rem;color:var(--text-3);margin-top:2px}
+  /* PREVIEWS — color swatch strip */
+  .sw-strip { display: flex; height: 100%; width: 100%; }
+  .sw-strip > div { flex: 1; }
 
-/* ── Prompt box ── */
-.prompt{background:hsla(0 0% 4%/0.8);border:1px solid var(--glass-border);border-radius:var(--r-md);padding:22px;padding-top:46px;font-family:'JetBrains Mono','Fira Code','Consolas',monospace;font-size:.85rem;line-height:1.85;color:var(--text-2);white-space:pre-line;word-wrap:break-word;position:relative;max-height:500px;overflow-y:auto;margin:14px 0}
-.prompt::-webkit-scrollbar{width:6px}
-.prompt::-webkit-scrollbar-track{background:transparent}
-.prompt::-webkit-scrollbar-thumb{background:hsl(0 0% 15%);border-radius:3px}
-.prompt-lbl{position:absolute;top:12px;left:16px;font-size:.65rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);font-family:'Outfit',sans-serif}
-.copy{position:absolute;top:10px;right:10px;padding:6px 14px;border-radius:var(--r-pill);border:1px solid var(--glass-border);background:transparent;color:var(--text-2);font-family:'Outfit',sans-serif;font-size:.75rem;font-weight:500;cursor:pointer;transition:all .2s}
-.copy:hover{background:hsl(0 0% 8%);border-color:var(--glass-border-b);color:var(--text-1)}
+  /* PREVIEW — chart style */
+  .chart-prev { width: 100%; height: 100%; padding: 4px; }
+  .chart-prev svg { width: 100%; height: 100%; }
 
-/* ── Info boxes ── */
-.note{padding:16px 20px;border-radius:var(--r-sm);margin:12px 0;font-size:.9rem;line-height:1.6;border-left:3px solid}
-.note.cyan{background:rgba(6,182,212,0.04);border-color:var(--cyan);color:rgba(103,232,249,0.8)}
-.note.amber{background:rgba(255,215,64,0.04);border-color:var(--amber);color:rgba(255,215,64,0.8)}
-.note.green{background:rgba(105,240,174,0.04);border-color:var(--emerald);color:rgba(105,240,174,0.8)}
+  /* PREVIEW — pill / mini label */
+  .thresh-prev {
+    width: 100%; height: 100%; padding: 4px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  }
+  .thresh-prev .pill {
+    font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 999px;
+    background: var(--gold-soft); color: var(--gold-deep); border: 1px solid var(--gold);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .thresh-prev .pill.ok { background: var(--olive-soft); color: var(--olive-deep); border-color: var(--olive); }
+  .thresh-prev .lbl { font-size: 8.5px; color: var(--muted); letter-spacing: 0.04em; }
 
-/* ── Overview cards ── */
-.ov-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
-.ov{padding:18px;display:flex;flex-direction:column;gap:6px}
-.ov-tag{font-size:.7rem;font-weight:500;text-transform:uppercase;letter-spacing:.06em}
-.ov-tag.t1{color:var(--cyan)}.ov-tag.t2{color:var(--violet)}
-.ov h4{font-size:1.1rem;font-weight:400}.ov p{font-size:.9rem;color:var(--text-3);line-height:1.6}
+  /* PREVIEW — layout schematic */
+  .layout-prev { width: 100%; height: 100%; padding: 5px; }
+  .layout-prev svg { width: 100%; height: 100%; }
 
-/* ── Step flow ── */
-.flow{display:flex;align-items:center;gap:0;margin:24px 0;justify-content:center;flex-wrap:wrap}
-.flow-chip{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:.6rem;font-size:.92rem;color:var(--text-2);white-space:nowrap}
-.flow-chip .fc-n{width:22px;height:22px;border-radius:50%;background:rgba(6,182,212,0.15);color:var(--cyan);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:600}
-.flow-line{width:40px;height:1px;background:rgba(255,255,255,0.1);position:relative}
-.flow-line::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.2)}
+  /* PROMPT panel */
+  .prompt-area {
+    margin-top: 4px;
+    background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px 16px;
+  }
+  .prompt-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    margin-bottom: 8px; flex-wrap: wrap;
+  }
+  .prompt-head .lbl {
+    font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; color: var(--soft);
+  }
+  .prompt-head .lbl b { color: var(--gold-deep); font-size: 12px; }
+  .step.s2 .prompt-head .lbl b { color: var(--blue); }
+  .step.s3 .prompt-head .lbl b { color: var(--olive-deep); }
+  .step.s4 .prompt-head .lbl b { color: var(--crimson); }
+  .step.s5 .prompt-head .lbl b { color: var(--purple); }
 
-.footer{text-align:center;padding:40px 20px;color:var(--text-3);font-size:.75rem;letter-spacing:.02em}
-.divider{height:1px;background:rgba(255,255,255,0.06);margin:24px 0}
+  .copy-btn {
+    font-family: 'Outfit', sans-serif; font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700;
+    padding: 8px 16px; border: 1px solid var(--gold); background: var(--gold); color: #fff; border-radius: 6px;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .copy-btn:hover { background: var(--gold-deep); border-color: var(--gold-deep); }
+  .copy-btn.copied { background: var(--olive); border-color: var(--olive); }
+  .step.s2 .copy-btn { background: var(--blue); border-color: var(--blue); }
+  .step.s3 .copy-btn { background: var(--olive); border-color: var(--olive); }
+  .step.s4 .copy-btn { background: var(--crimson); border-color: var(--crimson); }
+  .step.s5 .copy-btn { background: var(--purple); border-color: var(--purple); }
 
-@media(max-width:768px){
-    .hero h1{font-size:2rem}
-    .stats{grid-template-columns:1fr 1fr}
-    .q-grid.cols-5,.q-grid.cols-3{grid-template-columns:1fr}
-    .ov-grid{grid-template-columns:1fr}
-    .flow{flex-direction:column;gap:8px}
-    .flow-line{width:1px;height:20px}
-    .tab{padding:6px 12px;font-size:.75rem}
-}
+  .prompt-box {
+    width: 100%; min-height: 220px; max-height: 380px;
+    background: var(--code-bg); color: var(--code-ink); border: 1px solid var(--code-bg); border-radius: 8px;
+    padding: 12px 14px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11.5px; line-height: 1.55;
+    white-space: pre-wrap; word-wrap: break-word;
+    overflow-y: auto; resize: vertical; user-select: text;
+  }
+  .prompt-box::-webkit-scrollbar { width: 8px; }
+  .prompt-box::-webkit-scrollbar-thumb { background: #334155; border-radius: 999px; }
+
+  .step-tip {
+    display: flex; align-items: flex-start; gap: 8px;
+    margin-top: 12px; padding: 9px 12px;
+    background: var(--gold-soft); border: 1px solid #ead9a3; border-radius: 8px;
+    font-size: 12px; color: var(--gold-deep); line-height: 1.5;
+  }
+  .step.s2 .step-tip { background: var(--blue-soft); border-color: #c8d5fe; color: var(--blue); }
+  .step.s3 .step-tip { background: var(--olive-soft); border-color: #cbd9bb; color: var(--olive-deep); }
+  .step.s4 .step-tip { background: var(--crimson-soft); border-color: #f0d2d4; color: var(--crimson); }
+  .step.s5 .step-tip { background: var(--purple-soft); border-color: #d8cbf5; color: var(--purple); }
+  .step-tip .ico {
+    font-family: 'Lora', serif; font-style: italic; font-weight: 700;
+    flex-shrink: 0; width: 16px; height: 16px; line-height: 16px; text-align: center;
+    border-radius: 50%; background: rgba(255,255,255,0.5); font-size: 11px; margin-top: 1px;
+  }
+
+  /* NAV row */
+  .step-nav {
+    display: flex; justify-content: space-between; align-items: center; gap: 14px;
+    margin-top: 6px; flex-wrap: wrap;
+  }
+  .nav-btn {
+    font-family: 'Outfit', sans-serif; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700;
+    padding: 10px 18px; border-radius: 8px; cursor: pointer;
+    background: var(--paper); color: var(--ink); border: 1.5px solid var(--border);
+    transition: all 0.15s;
+  }
+  .nav-btn:hover:not(:disabled) { border-color: var(--gold); color: var(--gold-deep); background: var(--gold-soft); }
+  .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .nav-btn.primary { background: var(--gold); color: #fff; border-color: var(--gold); }
+  .nav-btn.primary:hover:not(:disabled) { background: var(--gold-deep); border-color: var(--gold-deep); color: #fff; }
+  .step.s2 .nav-btn.primary { background: var(--blue); border-color: var(--blue); }
+  .step.s3 .nav-btn.primary { background: var(--olive); border-color: var(--olive); }
+  .step.s4 .nav-btn.primary { background: var(--crimson); border-color: var(--crimson); }
+  .step.s5 .nav-btn.primary { background: var(--purple); border-color: var(--purple); }
+  .nav-progress {
+    font-family: 'Outfit', sans-serif; font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    color: var(--muted);
+  }
+  .nav-progress b { color: var(--gold-deep); font-size: 13px; }
+
+  /* FINISH card */
+  .finish {
+    display: none;
+    margin-top: 24px; padding: 24px 26px 22px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #2a2a4a 100%);
+    border-radius: 14px; color: #faf9f5;
+    grid-template-columns: 1fr auto; gap: 24px; align-items: center;
+  }
+  .finish.show { display: grid; }
+  @media (max-width: 720px) { .finish.show { grid-template-columns: 1fr; } }
+  .finish .kicker { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700; color: #d8b14e; margin-bottom: 4px; }
+  .finish h3 { font-family: 'Lora', serif; font-size: 22px; font-weight: 700; line-height: 1.2; margin-bottom: 8px; }
+  .finish h3 em { font-style: italic; color: #f0d68a; }
+  .finish p { font-size: 13px; color: #d4cfc0; line-height: 1.55; max-width: 620px; }
+  .finish p b { color: #fff; font-weight: 600; }
+  .finish .check {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px;
+    padding: 14px 18px; min-width: 240px;
+  }
+  .finish .check ul { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+  .finish .check li { font-size: 12px; color: #d4cfc0; display: flex; gap: 7px; align-items: flex-start; }
+  .finish .check li::before { content: '✓'; color: #5c7a4a; font-weight: 700; flex-shrink: 0; }
+
+  /* footer */
+  .foot {
+    text-align: center; margin-top: 28px; padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-family: 'Lora', serif; font-style: italic; font-size: 11.5px; color: var(--muted);
+  }
+
+  /* toast */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--olive); color: #fff;
+    padding: 9px 18px; border-radius: 999px;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.06em;
+    box-shadow: 0 6px 22px rgba(0,0,0,0.18);
+    opacity: 0; pointer-events: none;
+    transition: all 0.28s ease; z-index: 1000;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    .app { padding: 10px 12px 30px; }
+    .brand h1 { font-size: 16px; }
+    .title-strip h2 { font-size: 20px; }
+    .step-card { padding: 12px 14px; }
+    .nav-btn { font-size: 11px; padding: 9px 12px; }
+    input, textarea { font-size: 16px; }
+  }
 </style>
 </head>
 <body>
 
-<!-- ══ HERO ══ -->
-<div class="hero">
-    <h1>Break-Even Analysis<br><em>Tool Builder</em></h1>
-    <div class="sub">Build an interactive engineering calculator with 5 progressive AI prompts</div>
-    <div class="badge"><span>EMGT 6225</span> &middot; Prof. Dehghani &middot; Northeastern University</div>
-</div>
+<div class="app">
 
-<!-- ══ TABS ══ -->
-<div class="tabs" id="tabBar">
-    <button class="tab active" onclick="showTab(0)">Overview</button>
-    <button class="tab" onclick="showTab(1)">Personalize</button>
-    <button class="tab locked" onclick="showTab(2)" id="tb2">Prompt 1</button>
-    <button class="tab locked" onclick="showTab(3)" id="tb3">Prompt 2</button>
-    <button class="tab locked" onclick="showTab(4)" id="tb4">Prompt 3</button>
-    <button class="tab locked" onclick="showTab(5)" id="tb5">Prompt 4</button>
-    <button class="tab locked" onclick="showTab(6)" id="tb6">Prompt 5</button>
-</div>
-
-<div class="wrap">
-
-<!-- ══════ TAB 0: OVERVIEW ══════ -->
-<div class="panel active" id="tab0">
-    <div class="sec"><div class="dot"></div> What You'll Build</div>
-    <div class="g" style="padding:28px">
-        <p style="font-size:1.05rem;line-height:1.8;color:var(--text-2)">Using <strong style="color:var(--text-1)">5 progressive prompts</strong> in Claude AI, you'll build a fully interactive Break-Even Analysis tool. Each prompt adds a layer — by Prompt 5 you'll have a professional engineering decision tool with live charts and parameter controls.</p>
-        <div class="stats">
-            <div class="stat g"><div class="num">5</div><div class="lbl">Prompts</div></div>
-            <div class="stat g"><div class="num">2</div><div class="lbl">Products</div></div>
-            <div class="stat g"><div class="num">AW</div><div class="lbl">Method</div></div>
-            <div class="stat g"><div class="num">15%</div><div class="lbl">MARR</div></div>
-        </div>
+  <!-- HEAD -->
+  <header class="head">
+    <div class="brand">
+      <span class="code">IE 4512 · Module 10</span>
+      <h1>Break-Even &amp; <em>Sensitivity</em></h1>
+      <span class="tag">a prompt engineering lab</span>
     </div>
+    <nav class="nav">
+      <a href="index.html#module-10">← Module 10</a>
+      <a href="m7-sensitivity.html">Sensitivity Lab</a>
+    </nav>
+  </header>
 
-    <div class="divider"></div>
-    <div class="sec"><div class="dot"></div> The Scenario</div>
-    <div class="ov-grid">
-        <!-- ── Product I Card ── -->
-        <div class="g ov" style="padding:0;overflow:hidden;position:relative">
-            <svg viewBox="0 0 500 200" style="width:100%;display:block;position:absolute;inset:0;height:100%">
-                <!-- Grid -->
-                <line x1="60" y1="40" x2="60" y2="170" stroke="rgba(6,182,212,0.06)" stroke-width="1"/>
-                <line x1="170" y1="40" x2="170" y2="170" stroke="rgba(6,182,212,0.06)" stroke-width="1"/>
-                <line x1="280" y1="40" x2="280" y2="170" stroke="rgba(6,182,212,0.06)" stroke-width="1"/>
-                <line x1="390" y1="40" x2="390" y2="170" stroke="rgba(6,182,212,0.06)" stroke-width="1"/>
-                <line x1="40" y1="80" x2="480" y2="80" stroke="rgba(6,182,212,0.04)" stroke-width="1"/>
-                <line x1="40" y1="130" x2="480" y2="130" stroke="rgba(6,182,212,0.04)" stroke-width="1"/>
-                <!-- Revenue line (steep, cyan) -->
-                <line x1="40" y1="170" x2="460" y2="30" stroke="rgba(6,182,212,0.2)" stroke-width="2" stroke-linecap="round"/>
-                <!-- Cost line (gentler, silver) -->
-                <line x1="40" y1="120" x2="460" y2="60" stroke="rgba(255,255,255,0.08)" stroke-width="2" stroke-linecap="round"/>
-                <!-- Break-even intersection -->
-                <line x1="310" y1="30" x2="310" y2="175" stroke="rgba(6,182,212,0.12)" stroke-width="1" stroke-dasharray="6,4"/>
-                <circle cx="310" cy="82" r="6" fill="none" stroke="rgba(6,182,212,0.3)" stroke-width="1.5"/>
-                <circle cx="310" cy="82" r="2.5" fill="var(--cyan)" opacity="0.6"/>
-                <!-- Loss region label -->
-                <text x="160" y="155" text-anchor="middle" font-family="Outfit" font-size="10" fill="rgba(239,68,68,0.15)" font-weight="500">LOSS</text>
-                <!-- Profit region label -->
-                <text x="400" y="55" text-anchor="middle" font-family="Outfit" font-size="10" fill="rgba(105,240,174,0.15)" font-weight="500">PROFIT</text>
-                <!-- BE label -->
-                <rect x="278" y="88" width="64" height="18" rx="4" fill="rgba(6,182,212,0.08)"/>
-                <text x="310" y="100" text-anchor="middle" font-family="Outfit" font-size="8" fill="rgba(6,182,212,0.4)" font-weight="500">BE: 18,937</text>
-                <!-- Factory icon (simple) -->
-                <rect x="420" y="140" width="30" height="24" rx="2" fill="none" stroke="rgba(6,182,212,0.08)" stroke-width="1"/>
-                <rect x="425" y="145" width="6" height="6" rx="1" fill="rgba(6,182,212,0.06)"/>
-                <rect x="435" y="145" width="6" height="6" rx="1" fill="rgba(6,182,212,0.06)"/>
-                <rect x="425" y="155" width="6" height="6" rx="1" fill="rgba(6,182,212,0.06)"/>
-                <rect x="435" y="155" width="6" height="6" rx="1" fill="rgba(6,182,212,0.06)"/>
-                <rect x="430" y="130" width="8" height="10" rx="1" fill="none" stroke="rgba(6,182,212,0.08)" stroke-width="1"/>
-                <!-- Glow -->
-                <circle cx="310" cy="82" r="30" fill="rgba(6,182,212,0.03)"/>
-            </svg>
-            <div style="position:relative;z-index:1;padding:24px 28px">
-                <div class="ov-tag t1">Product I — Standard</div>
-                <h4 style="margin-top:8px">$17.50/unit &middot; $250K equipment</h4>
-                <p style="margin-top:6px">Lower margins, simpler product. Break-even around <strong style="color:var(--cyan-l)">18,937 units</strong>.</p>
-                <div style="display:flex;gap:10px;margin-top:14px">
-                    <div style="padding:6px 14px;border-radius:var(--r-pill);background:rgba(6,182,212,0.06);border:1px solid rgba(6,182,212,0.12);font-size:.75rem;color:var(--cyan)">Revenue: $17.50/u</div>
-                    <div style="padding:6px 14px;border-radius:var(--r-pill);background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);font-size:.75rem;color:var(--text-3)">Variable: $3.00/u</div>
-                    <div style="padding:6px 14px;border-radius:var(--r-pill);background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);font-size:.75rem;color:var(--text-3)">Net: $14.50/u</div>
-                </div>
-            </div>
+  <!-- TITLE -->
+  <div class="title-strip">
+    <div>
+      <h2>Five prompts, <em>one break-even tool</em>, your name on it.</h2>
+      <div class="sub">
+        Two products go head to head: Product&nbsp;I breaks even near <b>18,937 units</b>, Product&nbsp;II near <b>14,815 units</b>.
+        Pick your theme, charts, and controls. The prompt below updates live with every choice. Paste each one in order into a single <b>claude.ai</b> chat, save the reply as <code>break-even-tool.html</code>, and come back for the next prompt.
+      </div>
+    </div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="timeline-wrap">
+    <div class="timeline" id="timeline">
+      <a class="tl-node" data-go="1"><div class="tl-dot"><span class="n">1</span></div><div class="tl-sub">Step 1</div><div class="tl-label">Foundation &amp; Product I</div></a>
+      <a class="tl-node" data-go="2"><div class="tl-dot"><span class="n">2</span></div><div class="tl-sub">Step 2</div><div class="tl-label">Product II &amp; compare</div></a>
+      <a class="tl-node" data-go="3"><div class="tl-dot"><span class="n">3</span></div><div class="tl-sub">Step 3</div><div class="tl-label">Break-even charts</div></a>
+      <a class="tl-node" data-go="4"><div class="tl-dot"><span class="n">4</span></div><div class="tl-sub">Step 4</div><div class="tl-label">Interactive controls</div></a>
+      <a class="tl-node" data-go="5"><div class="tl-dot"><span class="n">5</span></div><div class="tl-sub">Step 5</div><div class="tl-label">Sensitivity &amp; polish</div></a>
+    </div>
+  </div>
+
+  <!-- STAGE -->
+  <div class="stage" id="stage">
+
+    <!-- STEP 1 -->
+    <section class="step s1" data-step="1">
+      <div class="step-card">
+        <div class="step-head">
+          <div class="num">01</div>
+          <h3>Foundation &amp; <em>Product&nbsp;I table</em></h3>
+          <div class="lede">Start with a single page shell with your name in the header, your color theme, your layout, and the first break-even calculation table for Product&nbsp;I.</div>
         </div>
 
-        <!-- ── Product II Card ── -->
-        <div class="g ov" style="padding:0;overflow:hidden;position:relative">
-            <svg viewBox="0 0 500 200" style="width:100%;display:block;position:absolute;inset:0;height:100%">
-                <!-- Grid -->
-                <line x1="60" y1="40" x2="60" y2="170" stroke="rgba(179,136,255,0.06)" stroke-width="1"/>
-                <line x1="170" y1="40" x2="170" y2="170" stroke="rgba(179,136,255,0.06)" stroke-width="1"/>
-                <line x1="280" y1="40" x2="280" y2="170" stroke="rgba(179,136,255,0.06)" stroke-width="1"/>
-                <line x1="390" y1="40" x2="390" y2="170" stroke="rgba(179,136,255,0.06)" stroke-width="1"/>
-                <line x1="40" y1="80" x2="480" y2="80" stroke="rgba(179,136,255,0.04)" stroke-width="1"/>
-                <line x1="40" y1="130" x2="480" y2="130" stroke="rgba(179,136,255,0.04)" stroke-width="1"/>
-                <!-- Revenue line (very steep, violet) -->
-                <line x1="40" y1="175" x2="380" y2="20" stroke="rgba(179,136,255,0.22)" stroke-width="2" stroke-linecap="round"/>
-                <!-- Cost line (steeper than Prod I, silver) -->
-                <line x1="40" y1="110" x2="460" y2="45" stroke="rgba(255,255,255,0.08)" stroke-width="2" stroke-linecap="round"/>
-                <!-- Break-even intersection (earlier) -->
-                <line x1="230" y1="30" x2="230" y2="175" stroke="rgba(179,136,255,0.12)" stroke-width="1" stroke-dasharray="6,4"/>
-                <circle cx="230" cy="88" r="6" fill="none" stroke="rgba(179,136,255,0.3)" stroke-width="1.5"/>
-                <circle cx="230" cy="88" r="2.5" fill="var(--violet)" opacity="0.6"/>
-                <!-- Loss region -->
-                <text x="120" y="155" text-anchor="middle" font-family="Outfit" font-size="10" fill="rgba(239,68,68,0.15)" font-weight="500">LOSS</text>
-                <!-- Profit region (larger!) -->
-                <text x="380" y="50" text-anchor="middle" font-family="Outfit" font-size="10" fill="rgba(105,240,174,0.18)" font-weight="500">PROFIT</text>
-                <!-- BE label -->
-                <rect x="198" y="94" width="64" height="18" rx="4" fill="rgba(179,136,255,0.08)"/>
-                <text x="230" y="106" text-anchor="middle" font-family="Outfit" font-size="8" fill="rgba(179,136,255,0.4)" font-weight="500">BE: 14,815</text>
-                <!-- Gear/sophisticated icon -->
-                <circle cx="435" cy="150" r="14" fill="none" stroke="rgba(179,136,255,0.08)" stroke-width="1.5"/>
-                <circle cx="435" cy="150" r="5" fill="none" stroke="rgba(179,136,255,0.1)" stroke-width="1"/>
-                <line x1="435" y1="134" x2="435" y2="139" stroke="rgba(179,136,255,0.08)" stroke-width="2"/>
-                <line x1="435" y1="161" x2="435" y2="166" stroke="rgba(179,136,255,0.08)" stroke-width="2"/>
-                <line x1="419" y1="150" x2="424" y2="150" stroke="rgba(179,136,255,0.08)" stroke-width="2"/>
-                <line x1="446" y1="150" x2="451" y2="150" stroke="rgba(179,136,255,0.08)" stroke-width="2"/>
-                <line x1="424" y1="139" x2="427" y2="142" stroke="rgba(179,136,255,0.08)" stroke-width="2"/>
-                <line x1="443" y1="158" x2="446" y2="161" stroke="rgba(179,136,255,0.08)" stroke-width="2"/>
-                <line x1="424" y1="161" x2="427" y2="158" stroke="rgba(179,136,255,0.08)" stroke-width="2"/>
-                <line x1="443" y1="142" x2="446" y2="139" stroke="rgba(179,136,255,0.08)" stroke-width="2"/>
-                <!-- Glow -->
-                <circle cx="230" cy="88" r="30" fill="rgba(179,136,255,0.03)"/>
-                <!-- Steeper profit arrow -->
-                <path d="M 350 60 L 370 48" stroke="rgba(105,240,174,0.12)" stroke-width="1.5" fill="none" marker-end="url(#arrowG)"/>
-                <defs><marker id="arrowG" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,6 2.5,0 5" fill="rgba(105,240,174,0.15)"/></marker></defs>
-                <text x="380" y="68" font-family="Outfit" font-size="7" fill="rgba(105,240,174,0.2)" font-weight="500">Higher slope</text>
-            </svg>
-            <div style="position:relative;z-index:1;padding:24px 28px">
-                <div class="ov-tag t2">Product II — Sophisticated</div>
-                <h4 style="margin-top:8px">$41.25/unit &middot; $525K equipment</h4>
-                <p style="margin-top:6px">Higher margins, complex product. Break-even around <strong style="color:var(--violet)">14,815 units</strong>.</p>
-                <div style="display:flex;gap:10px;margin-top:14px">
-                    <div style="padding:6px 14px;border-radius:var(--r-pill);background:rgba(179,136,255,0.06);border:1px solid rgba(179,136,255,0.12);font-size:.75rem;color:var(--violet)">Revenue: $41.25/u</div>
-                    <div style="padding:6px 14px;border-radius:var(--r-pill);background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);font-size:.75rem;color:var(--text-3)">Variable: $10.43/u</div>
-                    <div style="padding:6px 14px;border-radius:var(--r-pill);background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);font-size:.75rem;color:var(--text-3)">Net: $30.83/u</div>
-                </div>
-            </div>
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q1 of 3</span>
+            <div class="q-text">What is your full name?</div>
+            <div class="q-hint">Goes in the page header and the footer.</div>
+          </div>
+          <input type="text" class="name-input" id="s1q1" placeholder="e.g., John Smith" maxlength="60" />
         </div>
+
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q2 of 3</span>
+            <div class="q-text">Pick your color theme.</div>
+            <div class="q-hint">Sets the background, cards, and accent color for your entire tool.</div>
+          </div>
+          <div class="q-opts cols-5">
+            <label class="opt"><input type="radio" name="s1q2" value="midnight">
+              <div class="preview"><div class="sw-strip"><div style="background:#0f172a"></div><div style="background:#1e293b"></div><div style="background:#3b82f6"></div><div style="background:#fbbf24"></div><div style="background:#e2e8f0"></div></div></div>
+              <div class="meta"><div class="name">Midnight &amp; Gold</div><div class="hint">Dark, corporate</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s1q2" value="emerald">
+              <div class="preview"><div class="sw-strip"><div style="background:#0c1a0c"></div><div style="background:#1a3320"></div><div style="background:#10b981"></div><div style="background:#cbd5e1"></div><div style="background:#e2e8f0"></div></div></div>
+              <div class="meta"><div class="name">Emerald &amp; Silver</div><div class="hint">Calm, natural</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s1q2" value="sunset">
+              <div class="preview"><div class="sw-strip"><div style="background:#1a0f05"></div><div style="background:#2d1810"></div><div style="background:#f97316"></div><div style="background:#1e40af"></div><div style="background:#fef3c7"></div></div></div>
+              <div class="meta"><div class="name">Sunset &amp; Navy</div><div class="hint">Warm, bold</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s1q2" value="rose">
+              <div class="preview"><div class="sw-strip"><div style="background:#1a0a14"></div><div style="background:#2d1020"></div><div style="background:#e11d48"></div><div style="background:#6b7280"></div><div style="background:#fce7f3"></div></div></div>
+              <div class="meta"><div class="name">Rose &amp; Charcoal</div><div class="hint">Elegant, sleek</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s1q2" value="arctic">
+              <div class="preview"><div class="sw-strip"><div style="background:#f8fafc"></div><div style="background:#e2e8f0"></div><div style="background:#0f172a"></div><div style="background:#3b82f6"></div><div style="background:#ffffff"></div></div></div>
+              <div class="meta"><div class="name">Arctic &amp; Steel</div><div class="hint">Light, minimal</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q3 of 3</span>
+            <div class="q-text">Page layout.</div>
+            <div class="q-hint">How should the calculation table and chart be arranged?</div>
+          </div>
+          <div class="q-opts cols-3">
+            <label class="opt"><input type="radio" name="s1q3" value="side">
+              <div class="preview"><div class="layout-prev"><svg viewBox="0 0 180 70" fill="none"><rect x="6" y="8" width="78" height="54" rx="4" fill="#faf3e0" stroke="#b8860b" stroke-width="1.2"/><rect x="96" y="8" width="78" height="54" rx="4" fill="#eef2ff" stroke="#1947d6" stroke-width="1.2"/><polyline points="104,54 168,20" stroke="#1947d6" stroke-width="1.5"/></svg></div></div>
+              <div class="meta"><div class="name">Side-by-Side</div><div class="hint">Table left, chart right — see both at once</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s1q3" value="stacked">
+              <div class="preview"><div class="layout-prev"><svg viewBox="0 0 180 70" fill="none"><rect x="8" y="6" width="164" height="26" rx="4" fill="#faf3e0" stroke="#b8860b" stroke-width="1.2"/><rect x="8" y="38" width="164" height="26" rx="4" fill="#eef2ff" stroke="#1947d6" stroke-width="1.2"/></svg></div></div>
+              <div class="meta"><div class="name">Stacked</div><div class="hint">Full-width table on top, chart below</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s1q3" value="tabs">
+              <div class="preview"><div class="layout-prev"><svg viewBox="0 0 180 70" fill="none"><rect x="10" y="8" width="44" height="14" rx="7" fill="#b8860b"/><rect x="58" y="8" width="44" height="14" rx="7" fill="none" stroke="#d4cfc0" stroke-width="1"/><rect x="106" y="8" width="52" height="14" rx="7" fill="none" stroke="#d4cfc0" stroke-width="1"/><rect x="8" y="28" width="164" height="36" rx="4" fill="#f0f4ea" stroke="#5c7a4a" stroke-width="1"/></svg></div></div>
+              <div class="meta"><div class="name">Tabbed</div><div class="hint">Switch between Product I, II, and Compare tabs</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="prompt-area">
+        <div class="prompt-head">
+          <div class="lbl">Prompt <b>1 of 5</b> · paste this into a new claude.ai chat</div>
+          <button class="copy-btn" data-copy="p1">Copy prompt</button>
+        </div>
+        <textarea class="prompt-box" id="p1" readonly></textarea>
+        <div class="step-tip">
+          <span class="ico">i</span>
+          <span>Start a <b>new chat</b> in claude.ai. After Claude replies, save the code block as <code>break-even-tool.html</code> and open it. You should see a styled page with Product&nbsp;I's break-even table. Verify the break-even &asymp; <b>18,937 units</b>, then come back and click <b>Next</b>.</span>
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <button class="nav-btn" data-nav="prev" disabled>← Previous</button>
+        <div class="nav-progress"><b id="progress">0</b> / 5 steps configured</div>
+        <button class="nav-btn primary" data-nav="next">Next step →</button>
+      </div>
+    </section>
+
+    <!-- STEP 2 -->
+    <section class="step s2" data-step="2">
+      <div class="step-card">
+        <div class="step-head">
+          <div class="num">02</div>
+          <h3>Product&nbsp;II &amp; <em>decision comparison</em></h3>
+          <div class="lede">Add the second product table and a head-to-head recommendation. Product&nbsp;II carries higher margins and breaks even sooner, near 14,815 units.</div>
+        </div>
+
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q1 of 1</span>
+            <div class="q-text">Comparison panel style.</div>
+            <div class="q-hint">How should the "which product wins?" recommendation look?</div>
+          </div>
+          <div class="q-opts cols-3">
+            <label class="opt"><input type="radio" name="s2q1" value="scorecard">
+              <div class="preview"><div class="chart-prev"><svg viewBox="0 0 180 60" fill="none"><circle cx="55" cy="30" r="18" stroke="#cbd9bb" stroke-width="2.5"/><path d="M 55 48 A 18 18 0 1 1 73 30" stroke="#5c7a4a" stroke-width="2.5" stroke-linecap="round"/><text x="55" y="34" text-anchor="middle" font-size="8" fill="#455d36" font-family="Outfit" font-weight="700">72%</text><circle cx="130" cy="30" r="18" stroke="#cdd9f6" stroke-width="2.5"/><path d="M 130 48 A 18 18 0 1 1 148 30" stroke="#1947d6" stroke-width="2.5" stroke-linecap="round"/><text x="130" y="34" text-anchor="middle" font-size="8" fill="#1947d6" font-family="Outfit" font-weight="700">85%</text></svg></div></div>
+              <div class="meta"><div class="name">Scorecard + Gauges</div><div class="hint">Circular gauges, large AW numbers, trophy on winner</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s2q1" value="versus">
+              <div class="preview"><div class="chart-prev"><svg viewBox="0 0 180 60" fill="none"><rect x="8" y="8" width="64" height="44" rx="4" fill="#eef2ff" stroke="#1947d6" stroke-width="1"/><text x="40" y="28" text-anchor="middle" font-size="7" fill="#1947d6" font-family="Outfit" font-weight="600">PROD I</text><text x="40" y="42" text-anchor="middle" font-size="9" fill="#1a1a1a" font-family="Outfit" font-weight="700">$87.9K</text><text x="90" y="36" text-anchor="middle" font-size="12" fill="#b8860b" font-family="Outfit" font-weight="700">VS</text><rect x="108" y="8" width="64" height="44" rx="4" fill="#f0f4ea" stroke="#5c7a4a" stroke-width="1.5"/><text x="140" y="28" text-anchor="middle" font-size="7" fill="#455d36" font-family="Outfit" font-weight="600">PROD II</text><text x="140" y="42" text-anchor="middle" font-size="9" fill="#1a1a1a" font-family="Outfit" font-weight="700">$97.2K</text></svg></div></div>
+              <div class="meta"><div class="name">VS Battle Card</div><div class="hint">Products face off side-by-side, winner glows</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s2q1" value="traffic">
+              <div class="preview"><div class="chart-prev"><svg viewBox="0 0 180 60" fill="none"><rect x="22" y="10" width="14" height="40" rx="4" fill="#f4f1e8"/><circle cx="29" cy="20" r="4" fill="#f0d2d4"/><circle cx="29" cy="30" r="4" fill="#faf3e0"/><circle cx="29" cy="40" r="4" fill="#5c7a4a"/><text x="50" y="33" font-size="7" fill="#455d36" font-family="Outfit" font-weight="600">Prod I: GO</text><rect x="110" y="10" width="14" height="40" rx="4" fill="#f4f1e8"/><circle cx="117" cy="20" r="4" fill="#f0d2d4"/><circle cx="117" cy="30" r="4" fill="#faf3e0"/><circle cx="117" cy="40" r="4" fill="#5c7a4a"/><text x="137" y="33" font-size="7" fill="#455d36" font-family="Outfit" font-weight="600">Prod II: GO</text></svg></div></div>
+              <div class="meta"><div class="name">Traffic Lights</div><div class="hint">Red/yellow/green signals for each metric</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="prompt-area">
+        <div class="prompt-head">
+          <div class="lbl">Prompt <b>2 of 5</b> · paste in the same chat</div>
+          <button class="copy-btn" data-copy="p2">Copy prompt</button>
+        </div>
+        <textarea class="prompt-box" id="p2" readonly></textarea>
+        <div class="step-tip">
+          <span class="ico">i</span>
+          <span>Stay in the <b>same chat</b>. Replace <code>break-even-tool.html</code> with Claude's new code, refresh, and check that Product&nbsp;II's table and the comparison panel appear. Product&nbsp;II should be recommended (higher AW).</span>
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <button class="nav-btn" data-nav="prev">← Previous</button>
+        <div class="nav-progress"><b class="progress-live">0</b> / 5 steps configured</div>
+        <button class="nav-btn primary" data-nav="next">Next step →</button>
+      </div>
+    </section>
+
+    <!-- STEP 3 -->
+    <section class="step s3" data-step="3">
+      <div class="step-card">
+        <div class="step-head">
+          <div class="num">03</div>
+          <h3>Break-even <em>charts</em></h3>
+          <div class="lede">Canvas charts with revenue/cost lines, the break-even point, and shaded loss &amp; profit regions for each product. Pick the chart style and one bonus visualization.</div>
+        </div>
+
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q1 of 2</span>
+            <div class="q-text">Chart style.</div>
+            <div class="q-hint">Controls how break-even charts display revenue/cost lines and profit/loss regions.</div>
+          </div>
+          <div class="q-opts cols-3">
+            <label class="opt"><input type="radio" name="s3q1" value="filled">
+              <div class="preview"><div class="chart-prev"><svg viewBox="0 0 180 70" fill="none"><polygon points="12,60 90,30 90,60" fill="rgba(138,40,40,0.12)"/><polygon points="90,30 168,8 168,60 90,60" fill="rgba(92,122,74,0.14)"/><line x1="12" y1="60" x2="168" y2="8" stroke="#1947d6" stroke-width="1.5"/><line x1="12" y1="48" x2="168" y2="24" stroke="#b8860b" stroke-width="1.5"/><line x1="90" y1="10" x2="90" y2="60" stroke="#8b7355" stroke-width="1" stroke-dasharray="3,3"/></svg></div></div>
+              <div class="meta"><div class="name">Filled Area</div><div class="hint">Translucent loss (red) and profit (green) fills</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s3q1" value="clean">
+              <div class="preview"><div class="chart-prev"><svg viewBox="0 0 180 70" fill="none"><line x1="12" y1="60" x2="168" y2="8" stroke="#1947d6" stroke-width="2"/><line x1="12" y1="48" x2="168" y2="24" stroke="#b8860b" stroke-width="2"/><circle cx="90" cy="30" r="4" fill="#8a2828"/><circle cx="12" cy="60" r="2.5" fill="#1947d6"/><circle cx="168" cy="8" r="2.5" fill="#1947d6"/><line x1="90" y1="10" x2="90" y2="60" stroke="#5a5247" stroke-width="1.2" stroke-dasharray="4,3"/><rect x="70" y="11" width="40" height="11" rx="3" fill="#faf3e0"/><text x="90" y="19" text-anchor="middle" font-size="6" fill="#8a6608" font-family="Outfit">18,937</text></svg></div></div>
+              <div class="meta"><div class="name">Clean Lines</div><div class="hint">Solid lines with dot markers and labeled annotation</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s3q1" value="gradient">
+              <div class="preview"><div class="chart-prev"><svg viewBox="0 0 180 70" fill="none"><defs><linearGradient id="gl2" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(138,40,40,0.18)"/><stop offset="50%" stop-color="transparent"/></linearGradient><linearGradient id="gr2" x1="0" y1="0" x2="1" y2="0"><stop offset="50%" stop-color="transparent"/><stop offset="100%" stop-color="rgba(92,122,74,0.18)"/></linearGradient></defs><rect x="12" y="10" width="78" height="50" fill="url(#gl2)"/><rect x="90" y="10" width="78" height="50" fill="url(#gr2)"/><line x1="12" y1="60" x2="168" y2="8" stroke="#1947d6" stroke-width="2.5" stroke-linecap="round"/><line x1="12" y1="48" x2="168" y2="24" stroke="#b8860b" stroke-width="2.5" stroke-linecap="round"/></svg></div></div>
+              <div class="meta"><div class="name">Gradient Zones</div><div class="hint">Smooth gradient fills fading from edges to break-even</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q2 of 2</span>
+            <div class="q-text">Bonus chart visual.</div>
+            <div class="q-hint">Beyond the standard chart, pick one extra visualization to deepen understanding.</div>
+          </div>
+          <div class="q-opts cols-3">
+            <label class="opt"><input type="radio" name="s3q2" value="emoji">
+              <div class="preview"><div class="chart-prev"><svg viewBox="0 0 180 50" fill="none"><line x1="12" y1="42" x2="168" y2="8" stroke="#1947d6" stroke-width="1.5" opacity=".5"/><text x="40" y="42" font-size="12">📉</text><text x="130" y="20" font-size="12">💰</text><text x="85" y="16" font-size="10">⚠️</text></svg></div></div>
+              <div class="meta"><div class="name">Emoji Annotations</div><div class="hint">Visual emoji markers in loss/profit zones</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s3q2" value="crossover">
+              <div class="preview"><div class="chart-prev"><svg viewBox="0 0 180 50" fill="none"><line x1="12" y1="42" x2="168" y2="8" stroke="#1947d6" stroke-width="1.5"/><line x1="12" y1="40" x2="168" y2="5" stroke="#7c3aed" stroke-width="1.5"/><circle cx="90" cy="25" r="3" fill="#1947d6"/><circle cx="70" cy="28" r="3" fill="#7c3aed"/><text x="110" y="44" font-size="6" fill="#1947d6" font-family="Outfit">I</text><text x="140" y="44" font-size="6" fill="#7c3aed" font-family="Outfit">II</text></svg></div></div>
+              <div class="meta"><div class="name">Crossover Chart</div><div class="hint">Both products overlaid — see where II overtakes I</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s3q2" value="waterfall">
+              <div class="preview"><div class="chart-prev"><svg viewBox="0 0 180 50" fill="none"><rect x="15" y="10" width="18" height="32" rx="2" fill="rgba(92,122,74,0.4)"/><rect x="38" y="18" width="18" height="16" rx="2" fill="rgba(138,40,40,0.28)"/><rect x="61" y="22" width="18" height="12" rx="2" fill="rgba(138,40,40,0.28)"/><rect x="84" y="25" width="18" height="9" rx="2" fill="rgba(138,40,40,0.28)"/><rect x="107" y="27" width="18" height="7" rx="2" fill="rgba(138,40,40,0.28)"/><rect x="140" y="30" width="18" height="12" rx="2" fill="rgba(25,71,214,0.4)"/></svg></div></div>
+              <div class="meta"><div class="name">Waterfall Breakdown</div><div class="hint">See how revenue is eaten by each cost category</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="prompt-area">
+        <div class="prompt-head">
+          <div class="lbl">Prompt <b>3 of 5</b> · paste in the same chat</div>
+          <button class="copy-btn" data-copy="p3">Copy prompt</button>
+        </div>
+        <textarea class="prompt-box" id="p3" readonly></textarea>
+        <div class="step-tip">
+          <span class="ico">i</span>
+          <span>After Claude replies, each product should show a break-even chart with revenue/cost lines crossing at the break-even point, plus the bonus visual you picked. Confirm the loss region sits left of the crossing and profit to the right.</span>
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <button class="nav-btn" data-nav="prev">← Previous</button>
+        <div class="nav-progress"><b class="progress-live">0</b> / 5 steps configured</div>
+        <button class="nav-btn primary" data-nav="next">Next step →</button>
+      </div>
+    </section>
+
+    <!-- STEP 4 -->
+    <section class="step s4" data-step="4">
+      <div class="step-card">
+        <div class="step-head">
+          <div class="num">04</div>
+          <h3>Make it <em>interactive</em></h3>
+          <div class="lede">Add parameter controls so users change MARR, costs, and prices — and every table, chart, and comparison recalculates and redraws live.</div>
+        </div>
+
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q1 of 1</span>
+            <div class="q-text">Parameter controls.</div>
+            <div class="q-hint">How should users adjust MARR, costs, and prices? Everything recalculates live.</div>
+          </div>
+          <div class="q-opts cols-3">
+            <label class="opt"><input type="radio" name="s4q1" value="sliders">
+              <div class="preview"><div class="chart-prev"><svg viewBox="0 0 180 70" fill="none"><text x="14" y="22" font-size="7" fill="#8a2828" font-family="Outfit" font-weight="600">MARR</text><text x="166" y="22" font-size="7" fill="#8a2828" text-anchor="end" font-family="Outfit" font-weight="600">15%</text><rect x="14" y="30" width="152" height="5" rx="2.5" fill="#e8e3d4"/><rect x="14" y="30" width="76" height="5" rx="2.5" fill="#8a2828"/><circle cx="90" cy="32.5" r="6" fill="#fff" stroke="#8a2828" stroke-width="2"/><text x="14" y="50" font-size="6" fill="#8b7355" font-family="Outfit">5%</text><text x="166" y="50" font-size="6" fill="#8b7355" text-anchor="end" font-family="Outfit">30%</text></svg></div></div>
+              <div class="meta"><div class="name">Range Sliders</div><div class="hint">Drag to adjust — values update instantly</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s4q1" value="dropdowns">
+              <div class="preview"><div class="chart-prev"><svg viewBox="0 0 180 70" fill="none"><text x="14" y="20" font-size="7" fill="#8a2828" font-family="Outfit" font-weight="600">MARR</text><rect x="14" y="26" width="152" height="18" rx="4" fill="#fff" stroke="#d4cfc0" stroke-width="1"/><text x="22" y="38" font-size="8" fill="#1a1a1a" font-family="Outfit">15% (Default)</text><text x="158" y="38" font-size="7" fill="#8b7355" text-anchor="end">▼</text><text x="14" y="58" font-size="6" fill="#8b7355" font-family="Outfit">Presets: 5% · 10% · 15% · 20% · Custom</text></svg></div></div>
+              <div class="meta"><div class="name">Dropdown Menus</div><div class="hint">Pick from presets or choose "Custom"</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s4q1" value="textfields">
+              <div class="preview"><div class="chart-prev"><svg viewBox="0 0 180 70" fill="none"><text x="14" y="20" font-size="7" fill="#8a2828" font-family="Outfit" font-weight="600">MARR</text><rect x="14" y="26" width="152" height="18" rx="4" fill="#fdf2f3" stroke="#8a2828" stroke-width="1.2"/><text x="22" y="38" font-size="9" fill="#1a1a1a" font-family="JetBrains Mono">15</text><text x="158" y="38" font-size="7" fill="#8b7355" text-anchor="end">%</text><text x="14" y="58" font-size="6" fill="#8b7355" font-family="Outfit">Type any value · recalculates on Enter</text></svg></div></div>
+              <div class="meta"><div class="name">Text Fields</div><div class="hint">Type exact values with auto-validation</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="prompt-area">
+        <div class="prompt-head">
+          <div class="lbl">Prompt <b>4 of 5</b> · paste in the same chat</div>
+          <button class="copy-btn" data-copy="p4">Copy prompt</button>
+        </div>
+        <textarea class="prompt-box" id="p4" readonly></textarea>
+        <div class="step-tip">
+          <span class="ico">i</span>
+          <span>This is the core prompt. Change a parameter in your tool — every table, break-even value, and chart should update live. If break-even exceeds the forecast, a warning should appear.</span>
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <button class="nav-btn" data-nav="prev">← Previous</button>
+        <div class="nav-progress"><b class="progress-live">0</b> / 5 steps configured</div>
+        <button class="nav-btn primary" data-nav="next">Next step →</button>
+      </div>
+    </section>
+
+    <!-- STEP 5 -->
+    <section class="step s5" data-step="5">
+      <div class="step-card">
+        <div class="step-head">
+          <div class="num">05</div>
+          <h3>Sensitivity &amp; <em>polish</em></h3>
+          <div class="lede">Add a MARR sensitivity table, chart tooltips, responsive layout, print CSS, your name in the footer — and one premium bonus feature.</div>
+        </div>
+
+        <div class="q">
+          <div class="q-head">
+            <span class="q-num">Q1 of 1</span>
+            <div class="q-text">Bonus feature.</div>
+            <div class="q-hint">Your tool is already functional. Pick one premium feature to make it stand out.</div>
+          </div>
+          <div class="q-opts cols-3">
+            <label class="opt"><input type="radio" name="s5q1" value="darkmode">
+              <div class="preview"><div class="chart-prev"><svg viewBox="0 0 180 48" fill="none"><rect x="12" y="8" width="68" height="32" rx="4" fill="#1a1f2e" stroke="#d4cfc0" stroke-width="1"/><text x="46" y="27" text-anchor="middle" font-size="7" fill="#e8e3d4" font-family="Outfit">Dark</text><circle cx="66" cy="14" r="4" fill="#b8860b"/><rect x="100" y="8" width="68" height="32" rx="4" fill="#f0f0f0" stroke="#d4cfc0" stroke-width="1"/><text x="134" y="27" text-anchor="middle" font-size="7" fill="#1e293b" font-family="Outfit">Light</text><circle cx="154" cy="14" r="4" fill="#b8860b"/><path d="M 84 24 L 96 24 M 93 21 L 96 24 L 93 27" stroke="#7c3aed" stroke-width="1.5" fill="none"/></svg></div></div>
+              <div class="meta"><div class="name">Dark / Light Toggle</div><div class="hint">Switch themes — preference saved in browser</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s5q1" value="export">
+              <div class="preview"><div class="chart-prev"><svg viewBox="0 0 180 48" fill="none"><rect x="55" y="8" width="70" height="32" rx="8" fill="#f3eeff" stroke="#7c3aed" stroke-width="1"/><text x="90" y="22" text-anchor="middle" font-size="7" fill="#7c3aed" font-family="Outfit" font-weight="600">Export PDF</text><path d="M 85 28 L 90 34 L 95 28" stroke="#7c3aed" stroke-width="1.2" fill="none"/></svg></div></div>
+              <div class="meta"><div class="name">Export to PDF</div><div class="hint">One-click clean PDF with all tables and charts</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+            <label class="opt"><input type="radio" name="s5q1" value="scenario">
+              <div class="preview"><div class="chart-prev"><svg viewBox="0 0 180 48" fill="none"><rect x="14" y="8" width="56" height="10" rx="3" fill="#f0f4ea" stroke="#5c7a4a" stroke-width="1"/><text x="42" y="16" text-anchor="middle" font-size="6" fill="#455d36" font-family="Outfit">Default</text><rect x="14" y="20" width="56" height="10" rx="3" fill="#eef2ff" stroke="#1947d6" stroke-width="1"/><text x="42" y="28" text-anchor="middle" font-size="6" fill="#1947d6" font-family="Outfit">Optimistic</text><rect x="14" y="32" width="56" height="10" rx="3" fill="#fdf2f3" stroke="#8a2828" stroke-width="1"/><text x="42" y="40" text-anchor="middle" font-size="6" fill="#8a2828" font-family="Outfit">Pessimistic</text><rect x="100" y="14" width="62" height="12" rx="4" fill="#faf3e0" stroke="#b8860b" stroke-width="1"/><text x="131" y="23" text-anchor="middle" font-size="6" fill="#8a6608" font-family="Outfit">+ Save Current</text></svg></div></div>
+              <div class="meta"><div class="name">Scenario Presets</div><div class="hint">Save/load parameter sets with built-in presets</div></div>
+              <div class="check-mark">✓</div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="prompt-area">
+        <div class="prompt-head">
+          <div class="lbl">Prompt <b>5 of 5</b> · final pass</div>
+          <button class="copy-btn" data-copy="p5">Copy prompt</button>
+        </div>
+        <textarea class="prompt-box" id="p5" readonly></textarea>
+        <div class="step-tip">
+          <span class="ico">i</span>
+          <span>Last paste. Refresh your tool: a MARR sensitivity table, chart tooltips, and your bonus feature should appear. If your name is in the footer, you're done — download the final HTML file and submit.</span>
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <button class="nav-btn" data-nav="prev">← Previous</button>
+        <div class="nav-progress"><b class="progress-live">0</b> / 5 steps configured</div>
+        <button class="nav-btn primary" data-nav="finish">Finish →</button>
+      </div>
+    </section>
+
+    <!-- FINISH -->
+    <div class="finish" id="finish">
+      <div>
+        <div class="kicker">Module 10 &middot; Break-Even Lab</div>
+        <h3>Your <em>break-even tool</em> is ready.</h3>
+        <p>You walked through 5 prompts and configured every choice. The five copy boxes above hold your full prompt sequence. Paste them in order into a single claude.ai chat, save each reply as <b>break-even-tool.html</b>, and open it in your browser.</p>
+        <p style="margin-top:10px;">Submit the final <b>break-even-tool.html</b> together with a short note on which product you would recommend at MARR = 15% and why.</p>
+      </div>
+      <div class="check">
+        <ul>
+          <li>5 prompts copy ready</li>
+          <li>Single self contained HTML</li>
+          <li>No external libraries used</li>
+          <li>Your name on the deliverable</li>
+        </ul>
+      </div>
     </div>
 
-    <div class="divider"></div>
-    <div class="sec"><div class="dot"></div> The 5 Prompts</div>
-    <div class="flow">
-        <div class="flow-chip"><div class="fc-n">1</div> Foundation</div>
-        <div class="flow-line"></div>
-        <div class="flow-chip"><div class="fc-n">2</div> Product II</div>
-        <div class="flow-line"></div>
-        <div class="flow-chip"><div class="fc-n">3</div> Charts</div>
-        <div class="flow-line"></div>
-        <div class="flow-chip"><div class="fc-n">4</div> Interactive</div>
-        <div class="flow-line"></div>
-        <div class="flow-chip"><div class="fc-n">5</div> Polish</div>
-    </div>
-    <div class="note amber"><strong>All 5 prompts go in the same Claude conversation.</strong> Each builds on the previous — don't start a new chat.</div>
+  </div>
+
+  <div class="foot">
+    Module 10 &middot; Break-Even &amp; Sensitivity Analysis &middot; Prof. Mohammad Dehghani &middot; IE 4512 / EMGT 6225
+  </div>
+
 </div>
 
-<!-- ══════ TAB 1: PERSONALIZE ══════ -->
-<div class="panel" id="tab1">
-    <div class="sec"><div class="dot"></div> Personalize Your Tool</div>
-    <p style="font-size:.85rem;color:var(--text-3);margin-bottom:20px">Same formulas for everyone — but each student gets a unique UI based on these choices.</p>
-
-    <div class="g q">
-        <div class="q-label">Your Full Name</div>
-        <div class="q-desc">Appears in the header of your generated tool.</div>
-        <input type="text" class="inp" id="sName" placeholder="e.g., John Smith" oninput="checkReady()">
-    </div>
-
-    <div class="g q">
-        <div class="q-label">Q1. Color Theme</div>
-        <div class="q-desc">Sets the background, cards, and accent color for your entire tool.</div>
-        <div class="q-grid cols-5">
-            <button class="oc" onclick="pick(this,'q1','midnight')">
-                <div class="demo" style="height:44px;background:linear-gradient(135deg,#0f172a,#1e293b);border:1px solid rgba(59,130,246,0.2);display:flex;align-items:center;justify-content:center;gap:5px"><div style="width:10px;height:10px;border-radius:50%;background:#3b82f6"></div><div style="width:10px;height:10px;border-radius:50%;background:#fbbf24"></div></div>
-                <div class="oc-t">Midnight &amp; Gold</div>
-                <div class="oc-d">Dark, corporate</div>
-            </button>
-            <button class="oc" onclick="pick(this,'q1','emerald')">
-                <div class="demo" style="height:44px;background:linear-gradient(135deg,#0c1a0c,#1a3320);border:1px solid rgba(16,185,129,0.2);display:flex;align-items:center;justify-content:center;gap:5px"><div style="width:10px;height:10px;border-radius:50%;background:#10b981"></div><div style="width:10px;height:10px;border-radius:50%;background:#cbd5e1"></div></div>
-                <div class="oc-t">Emerald &amp; Silver</div>
-                <div class="oc-d">Calm, natural</div>
-            </button>
-            <button class="oc" onclick="pick(this,'q1','sunset')">
-                <div class="demo" style="height:44px;background:linear-gradient(135deg,#1a0f05,#2d1810);border:1px solid rgba(249,115,22,0.2);display:flex;align-items:center;justify-content:center;gap:5px"><div style="width:10px;height:10px;border-radius:50%;background:#f97316"></div><div style="width:10px;height:10px;border-radius:50%;background:#1e40af"></div></div>
-                <div class="oc-t">Sunset &amp; Navy</div>
-                <div class="oc-d">Warm, bold</div>
-            </button>
-            <button class="oc" onclick="pick(this,'q1','rose')">
-                <div class="demo" style="height:44px;background:linear-gradient(135deg,#1a0a14,#2d1020);border:1px solid rgba(225,29,72,0.2);display:flex;align-items:center;justify-content:center;gap:5px"><div style="width:10px;height:10px;border-radius:50%;background:#e11d48"></div><div style="width:10px;height:10px;border-radius:50%;background:#6b7280"></div></div>
-                <div class="oc-t">Rose &amp; Charcoal</div>
-                <div class="oc-d">Elegant, sleek</div>
-            </button>
-            <button class="oc" onclick="pick(this,'q1','arctic')">
-                <div class="demo" style="height:44px;background:linear-gradient(135deg,#f0f4f8,#e2e8f0);border:1px solid rgba(15,23,42,0.12);display:flex;align-items:center;justify-content:center;gap:5px"><div style="width:10px;height:10px;border-radius:50%;background:#0f172a"></div><div style="width:10px;height:10px;border-radius:50%;background:#3b82f6"></div></div>
-                <div class="oc-t">Arctic &amp; Steel</div>
-                <div class="oc-d">Light, minimal</div>
-            </button>
-        </div>
-    </div>
-
-    <div class="g q">
-        <div class="q-label">Q2. Chart Style</div>
-        <div class="q-desc">Controls how break-even charts display revenue/cost lines and profit/loss regions.</div>
-        <div class="q-grid cols-3">
-            <button class="oc" onclick="pick(this,'q2','filled')">
-                <div class="demo"><svg viewBox="0 0 180 70" style="width:100%;height:55px"><rect width="180" height="70" fill="#080808" rx="6"/><polygon points="12,60 90,30 90,60" fill="rgba(239,68,68,0.15)"/><polygon points="90,30 168,8 168,60 90,60" fill="rgba(105,240,174,0.12)"/><line x1="12" y1="60" x2="168" y2="8" stroke="var(--cyan)" stroke-width="1.5"/><line x1="12" y1="48" x2="168" y2="24" stroke="var(--amber)" stroke-width="1.5"/><line x1="90" y1="10" x2="90" y2="60" stroke="var(--text-3)" stroke-width="1" stroke-dasharray="3,3"/></svg></div>
-                <div class="oc-t">Filled Area</div>
-                <div class="oc-d">Translucent loss (red) and profit (green) fills</div>
-            </button>
-            <button class="oc" onclick="pick(this,'q2','clean')">
-                <div class="demo"><svg viewBox="0 0 180 70" style="width:100%;height:55px"><rect width="180" height="70" fill="#080808" rx="6"/><line x1="12" y1="60" x2="168" y2="8" stroke="var(--cyan)" stroke-width="2"/><line x1="12" y1="48" x2="168" y2="24" stroke="var(--amber)" stroke-width="2"/><circle cx="90" cy="30" r="4" fill="var(--rose)"/><circle cx="12" cy="60" r="2.5" fill="var(--cyan)"/><circle cx="168" cy="8" r="2.5" fill="var(--cyan)"/><line x1="90" y1="10" x2="90" y2="60" stroke="#fff" stroke-width="1.2" stroke-dasharray="4,3"/><rect x="72" y="12" width="36" height="11" rx="3" fill="rgba(255,255,255,0.1)"/><text x="90" y="20" text-anchor="middle" font-size="6" fill="#fff" font-family="Outfit">18,937</text></svg></div>
-                <div class="oc-t">Clean Lines</div>
-                <div class="oc-d">Solid lines with dot markers and labeled annotation</div>
-            </button>
-            <button class="oc" onclick="pick(this,'q2','gradient')">
-                <div class="demo"><svg viewBox="0 0 180 70" style="width:100%;height:55px"><defs><linearGradient id="gl2" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(239,68,68,0.2)"/><stop offset="50%" stop-color="transparent"/></linearGradient><linearGradient id="gr2" x1="0" y1="0" x2="1" y2="0"><stop offset="50%" stop-color="transparent"/><stop offset="100%" stop-color="rgba(105,240,174,0.18)"/></linearGradient></defs><rect width="180" height="70" fill="#080808" rx="6"/><rect x="12" y="10" width="78" height="50" fill="url(#gl2)"/><rect x="90" y="10" width="78" height="50" fill="url(#gr2)"/><line x1="12" y1="60" x2="168" y2="8" stroke="var(--cyan)" stroke-width="2.5" stroke-linecap="round"/><line x1="12" y1="48" x2="168" y2="24" stroke="var(--amber)" stroke-width="2.5" stroke-linecap="round"/></svg></div>
-                <div class="oc-t">Gradient Zones</div>
-                <div class="oc-d">Smooth gradient fills fading from edges to break-even</div>
-            </button>
-        </div>
-    </div>
-
-    <div class="g q">
-        <div class="q-label">Q3. Page Layout</div>
-        <div class="q-desc">How should the calculation table and chart be arranged?</div>
-        <div class="q-grid cols-3">
-            <button class="oc" onclick="pick(this,'q3','side')">
-                <div class="demo"><svg viewBox="0 0 180 70" style="width:100%;height:55px"><rect width="180" height="70" fill="#080808" rx="6"/><rect x="8" y="8" width="76" height="54" rx="4" fill="rgba(6,182,212,0.06)" stroke="rgba(6,182,212,0.15)" stroke-width="1"/><text x="46" y="26" text-anchor="middle" font-size="7" fill="var(--cyan)" font-family="Outfit" font-weight="500">TABLE</text><line x1="18" y1="34" x2="74" y2="34" stroke="rgba(255,255,255,0.06)" stroke-width="1"/><line x1="18" y1="41" x2="74" y2="41" stroke="rgba(255,255,255,0.06)" stroke-width="1"/><line x1="18" y1="48" x2="74" y2="48" stroke="rgba(255,255,255,0.06)" stroke-width="1"/><rect x="96" y="8" width="76" height="54" rx="4" fill="rgba(179,136,255,0.06)" stroke="rgba(179,136,255,0.15)" stroke-width="1"/><text x="134" y="22" text-anchor="middle" font-size="7" fill="var(--violet)" font-family="Outfit" font-weight="500">CHART</text><line x1="106" y1="52" x2="162" y2="28" stroke="var(--violet)" stroke-width="1.5" opacity=".5"/></svg></div>
-                <div class="oc-t">Side-by-Side</div>
-                <div class="oc-d">Table left, chart right — see both at once</div>
-            </button>
-            <button class="oc" onclick="pick(this,'q3','stacked')">
-                <div class="demo"><svg viewBox="0 0 180 70" style="width:100%;height:55px"><rect width="180" height="70" fill="#080808" rx="6"/><rect x="8" y="6" width="164" height="25" rx="4" fill="rgba(6,182,212,0.06)" stroke="rgba(6,182,212,0.15)" stroke-width="1"/><text x="90" y="20" text-anchor="middle" font-size="7" fill="var(--cyan)" font-family="Outfit" font-weight="500">TABLE</text><rect x="8" y="36" width="164" height="28" rx="4" fill="rgba(179,136,255,0.06)" stroke="rgba(179,136,255,0.15)" stroke-width="1"/><text x="90" y="52" text-anchor="middle" font-size="7" fill="var(--violet)" font-family="Outfit" font-weight="500">CHART</text></svg></div>
-                <div class="oc-t">Stacked</div>
-                <div class="oc-d">Full-width table on top, chart below</div>
-            </button>
-            <button class="oc" onclick="pick(this,'q3','tabs')">
-                <div class="demo"><svg viewBox="0 0 180 70" style="width:100%;height:55px"><rect width="180" height="70" fill="#080808" rx="6"/><rect x="10" y="8" width="44" height="13" rx="6" fill="rgba(255,255,255,0.9)"/><text x="32" y="17" text-anchor="middle" font-size="6" fill="#000" font-family="Outfit" font-weight="600">Prod I</text><rect x="58" y="8" width="44" height="13" rx="6" fill="transparent"/><text x="80" y="17" text-anchor="middle" font-size="6" fill="var(--text-3)" font-family="Outfit">Prod II</text><rect x="106" y="8" width="50" height="13" rx="6" fill="transparent"/><text x="131" y="17" text-anchor="middle" font-size="6" fill="var(--text-3)" font-family="Outfit">Compare</text><rect x="8" y="26" width="164" height="38" rx="4" fill="rgba(6,182,212,0.04)" stroke="rgba(255,255,255,0.06)" stroke-width="1"/></svg></div>
-                <div class="oc-t">Tabbed</div>
-                <div class="oc-d">Switch between Product I, II, and Compare tabs</div>
-            </button>
-        </div>
-    </div>
-
-    <div class="g q">
-        <div class="q-label">Q4. Parameter Controls</div>
-        <div class="q-desc">How should users adjust MARR, costs, and prices? Everything recalculates live.</div>
-        <div class="q-grid cols-3">
-            <button class="oc" onclick="pick(this,'q4','sliders')">
-                <div class="demo" style="padding:10px 14px;background:#080808;border-radius:6px">
-                    <div style="display:flex;justify-content:space-between;font-size:7px;color:var(--cyan);margin-bottom:4px"><span>MARR</span><span>15%</span></div>
-                    <div style="height:5px;background:rgba(255,255,255,0.06);border-radius:3px;position:relative"><div style="width:50%;height:100%;background:linear-gradient(90deg,var(--cyan-d),var(--cyan));border-radius:3px"></div><div style="position:absolute;top:-3px;left:48%;width:11px;height:11px;border-radius:50%;background:#fff;border:2px solid var(--cyan)"></div></div>
-                    <div style="display:flex;justify-content:space-between;font-size:6px;color:var(--text-3);margin-top:3px"><span>5%</span><span>30%</span></div>
-                </div>
-                <div class="oc-t">Range Sliders</div>
-                <div class="oc-d">Drag to adjust — values update instantly</div>
-            </button>
-            <button class="oc" onclick="pick(this,'q4','dropdowns')">
-                <div class="demo" style="padding:10px 14px;background:#080808;border-radius:6px">
-                    <div style="font-size:7px;color:var(--cyan);margin-bottom:4px">MARR</div>
-                    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:5px;padding:4px 8px;display:flex;justify-content:space-between"><span style="font-size:8px;color:var(--text-1)">15% (Default)</span><span style="font-size:7px;color:var(--text-3)">&#9660;</span></div>
-                    <div style="margin-top:3px;font-size:6px;color:var(--text-3)">Presets: 5% &bull; 10% &bull; 15% &bull; 20% &bull; Custom</div>
-                </div>
-                <div class="oc-t">Dropdown Menus</div>
-                <div class="oc-d">Pick from presets or choose "Custom"</div>
-            </button>
-            <button class="oc" onclick="pick(this,'q4','textfields')">
-                <div class="demo" style="padding:10px 14px;background:#080808;border-radius:6px">
-                    <div style="font-size:7px;color:var(--cyan);margin-bottom:4px">MARR</div>
-                    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(6,182,212,0.3);border-radius:5px;padding:4px 8px;display:flex;align-items:center;box-shadow:0 0 6px rgba(6,182,212,0.06)"><span style="font-size:9px;color:var(--text-1);font-family:monospace">15</span><span style="font-size:7px;color:var(--text-3);margin-left:auto">%</span></div>
-                    <div style="margin-top:3px;font-size:6px;color:var(--text-3)">Type any value &bull; recalculates on Enter</div>
-                </div>
-                <div class="oc-t">Text Fields</div>
-                <div class="oc-d">Type exact values with auto-validation</div>
-            </button>
-        </div>
-    </div>
-
-    <button class="cta" id="genBtn" disabled onclick="generate()">Generate All 5 Prompts</button>
-    <div class="cta-status" id="readyMsg">Fill in your name and answer all 4 questions</div>
-</div>
-
-<!-- ══════ TAB 2-6: PROMPTS ══════ -->
-<div class="panel" id="tab2">
-    <div class="g stage"><div class="stage-head"><div class="stage-n c1">1</div><div class="stage-info"><h3>Foundation — Product I Table</h3><p>Page structure, theme, and the first calculation table</p></div></div>
-    <div class="note cyan"><strong>Paste this into a new Claude conversation.</strong> Keep the same conversation for all 5 prompts.</div>
-    <div class="prompt"><span class="prompt-lbl">PROMPT 1 OF 5</span><button class="copy" onclick="copyP(1)">Copy</button><div id="p1"></div></div>
-    <div class="note green"><strong>After Claude responds:</strong> You should see a styled page with Product I's break-even table. Verify the break-even &asymp; 18,937 units.</div>
-    </div>
-</div>
-
-<div class="panel" id="tab3">
-    <div class="g stage"><div class="stage-head"><div class="stage-n c2">2</div><div class="stage-info"><h3>Product II + Decision Comparison</h3><p>Second product table and head-to-head recommendation</p></div></div>
-    <div class="g q" style="border-color:rgba(179,136,255,0.15)">
-        <div class="q-label" style="color:var(--violet)">Comparison Panel Style</div>
-        <div class="q-desc">How should the "which product wins?" recommendation look?</div>
-        <div class="q-grid cols-3">
-            <button class="oc" onclick="pickInline(this,'p2style','scorecard')">
-                <div class="demo"><svg viewBox="0 0 180 60" style="width:100%;height:48px"><rect width="180" height="60" fill="#080808" rx="6"/><circle cx="55" cy="30" r="18" fill="none" stroke="rgba(105,240,174,0.25)" stroke-width="2.5"/><path d="M 55 48 A 18 18 0 1 1 73 30" fill="none" stroke="var(--emerald)" stroke-width="2.5" stroke-linecap="round"/><text x="55" y="34" text-anchor="middle" font-size="8" fill="var(--emerald)" font-family="Outfit" font-weight="600">72%</text><circle cx="130" cy="30" r="18" fill="none" stroke="rgba(6,182,212,0.25)" stroke-width="2.5"/><path d="M 130 48 A 18 18 0 1 1 148 30" fill="none" stroke="var(--cyan)" stroke-width="2.5" stroke-linecap="round"/><text x="130" y="34" text-anchor="middle" font-size="8" fill="var(--cyan)" font-family="Outfit" font-weight="600">85%</text></svg></div>
-                <div class="oc-t">Scorecard + Gauges</div>
-                <div class="oc-d">Circular gauges, large AW numbers, trophy on winner</div>
-            </button>
-            <button class="oc" onclick="pickInline(this,'p2style','versus')">
-                <div class="demo"><svg viewBox="0 0 180 60" style="width:100%;height:48px"><rect width="180" height="60" fill="#080808" rx="6"/><rect x="8" y="8" width="64" height="44" rx="4" fill="rgba(6,182,212,0.06)" stroke="rgba(6,182,212,0.15)" stroke-width="1"/><text x="40" y="28" text-anchor="middle" font-size="7" fill="var(--cyan)" font-family="Outfit" font-weight="500">PROD I</text><text x="40" y="42" text-anchor="middle" font-size="9" fill="var(--text-1)" font-family="Outfit" font-weight="600">$87.9K</text><text x="90" y="36" text-anchor="middle" font-size="12" fill="var(--amber)" font-family="Outfit" font-weight="700">VS</text><rect x="108" y="8" width="64" height="44" rx="4" fill="rgba(105,240,174,0.06)" stroke="rgba(105,240,174,0.2)" stroke-width="1.5"/><text x="140" y="28" text-anchor="middle" font-size="7" fill="var(--emerald)" font-family="Outfit" font-weight="500">PROD II</text><text x="140" y="42" text-anchor="middle" font-size="9" fill="var(--text-1)" font-family="Outfit" font-weight="600">$97.2K</text></svg></div>
-                <div class="oc-t">VS Battle Card</div>
-                <div class="oc-d">Products face off side-by-side, winner glows</div>
-            </button>
-            <button class="oc" onclick="pickInline(this,'p2style','traffic')">
-                <div class="demo"><svg viewBox="0 0 180 60" style="width:100%;height:48px"><rect width="180" height="60" fill="#080808" rx="6"/><rect x="22" y="10" width="14" height="40" rx="4" fill="rgba(255,255,255,0.04)"/><circle cx="29" cy="20" r="4" fill="rgba(239,68,68,0.15)"/><circle cx="29" cy="30" r="4" fill="rgba(255,215,64,0.15)"/><circle cx="29" cy="40" r="4" fill="var(--emerald)"/><text x="50" y="33" font-size="7" fill="var(--emerald)" font-family="Outfit" font-weight="500">Prod I: GO</text><rect x="110" y="10" width="14" height="40" rx="4" fill="rgba(255,255,255,0.04)"/><circle cx="117" cy="20" r="4" fill="rgba(239,68,68,0.15)"/><circle cx="117" cy="30" r="4" fill="rgba(255,215,64,0.15)"/><circle cx="117" cy="40" r="4" fill="var(--emerald)"/><text x="137" y="33" font-size="7" fill="var(--emerald)" font-family="Outfit" font-weight="500">Prod II: GO</text></svg></div>
-                <div class="oc-t">Traffic Lights</div>
-                <div class="oc-d">Red/yellow/green signals for each metric</div>
-            </button>
-        </div>
-    </div>
-    <div class="prompt"><span class="prompt-lbl">PROMPT 2 OF 5</span><button class="copy" onclick="copyP(2)">Copy</button><div id="p2"></div></div>
-    </div>
-</div>
-
-<div class="panel" id="tab4">
-    <div class="g stage"><div class="stage-head"><div class="stage-n c3">3</div><div class="stage-info"><h3>Break-Even Charts</h3><p>Canvas charts with revenue/cost lines, break-even point, loss &amp; profit regions</p></div></div>
-    <div class="g q" style="border-color:rgba(105,240,174,0.15)">
-        <div class="q-label" style="color:var(--emerald)">Bonus Chart Visual</div>
-        <div class="q-desc">Beyond the standard chart, pick one extra visualization to deepen understanding.</div>
-        <div class="q-grid cols-3">
-            <button class="oc" onclick="pickInline(this,'p3extra','emoji')">
-                <div class="demo"><svg viewBox="0 0 180 50" style="width:100%;height:42px"><rect width="180" height="50" fill="#080808" rx="6"/><line x1="12" y1="42" x2="168" y2="8" stroke="var(--cyan)" stroke-width="1.5" opacity=".5"/><text x="40" y="42" font-size="12">&#128200;</text><text x="130" y="20" font-size="12">&#128176;</text><text x="85" y="16" font-size="10">&#9888;</text></svg></div>
-                <div class="oc-t">Emoji Annotations</div>
-                <div class="oc-d">Visual emoji markers in loss/profit zones</div>
-            </button>
-            <button class="oc" onclick="pickInline(this,'p3extra','crossover')">
-                <div class="demo"><svg viewBox="0 0 180 50" style="width:100%;height:42px"><rect width="180" height="50" fill="#080808" rx="6"/><line x1="12" y1="42" x2="168" y2="8" stroke="var(--cyan)" stroke-width="1.5"/><line x1="12" y1="40" x2="168" y2="5" stroke="var(--violet)" stroke-width="1.5"/><circle cx="90" cy="25" r="3" fill="var(--cyan)"/><circle cx="70" cy="28" r="3" fill="var(--violet)"/><text x="110" y="44" font-size="6" fill="var(--cyan)" font-family="Outfit">I</text><text x="140" y="44" font-size="6" fill="var(--violet)" font-family="Outfit">II</text></svg></div>
-                <div class="oc-t">Crossover Chart</div>
-                <div class="oc-d">Both products overlaid — see where II overtakes I</div>
-            </button>
-            <button class="oc" onclick="pickInline(this,'p3extra','waterfall')">
-                <div class="demo"><svg viewBox="0 0 180 50" style="width:100%;height:42px"><rect width="180" height="50" fill="#080808" rx="6"/><rect x="15" y="10" width="18" height="32" rx="2" fill="rgba(105,240,174,0.3)"/><rect x="38" y="18" width="18" height="16" rx="2" fill="rgba(239,68,68,0.25)"/><rect x="61" y="22" width="18" height="12" rx="2" fill="rgba(239,68,68,0.25)"/><rect x="84" y="25" width="18" height="9" rx="2" fill="rgba(239,68,68,0.25)"/><rect x="107" y="27" width="18" height="7" rx="2" fill="rgba(239,68,68,0.25)"/><rect x="140" y="30" width="18" height="12" rx="2" fill="rgba(6,182,212,0.35)"/></svg></div>
-                <div class="oc-t">Waterfall Breakdown</div>
-                <div class="oc-d">See how revenue is eaten by each cost category</div>
-            </button>
-        </div>
-    </div>
-    <div class="prompt"><span class="prompt-lbl">PROMPT 3 OF 5</span><button class="copy" onclick="copyP(3)">Copy</button><div id="p3"></div></div>
-    </div>
-</div>
-
-<div class="panel" id="tab5">
-    <div class="g stage"><div class="stage-head"><div class="stage-n c4">4</div><div class="stage-info"><h3>Make It Interactive</h3><p>Parameter controls — everything recalculates and redraws in real-time</p></div></div>
-    <div class="note amber"><strong>This is the core prompt.</strong> After this, your tool will be fully functional with live parameter controls.</div>
-    <div class="prompt"><span class="prompt-lbl">PROMPT 4 OF 5</span><button class="copy" onclick="copyP(4)">Copy</button><div id="p4"></div></div>
-    </div>
-</div>
-
-<div class="panel" id="tab6">
-    <div class="g stage"><div class="stage-head"><div class="stage-n c5">5</div><div class="stage-info"><h3>Polish &amp; Sensitivity</h3><p>Sensitivity table, tooltips, animations, and a bonus feature</p></div></div>
-    <div class="g q" style="border-color:rgba(255,107,157,0.15)">
-        <div class="q-label" style="color:var(--rose)">Bonus Feature</div>
-        <div class="q-desc">Your tool is already functional. Pick one premium feature to make it stand out.</div>
-        <div class="q-grid cols-3">
-            <button class="oc" onclick="pickInline(this,'p5bonus','darkmode')">
-                <div class="demo"><svg viewBox="0 0 180 48" style="width:100%;height:40px"><rect width="180" height="48" fill="#080808" rx="6"/><rect x="12" y="8" width="68" height="32" rx="4" fill="#080808" stroke="rgba(255,255,255,0.08)" stroke-width="1"/><text x="46" y="27" text-anchor="middle" font-size="7" fill="var(--text-1)" font-family="Outfit">Dark</text><circle cx="66" cy="14" r="4" fill="var(--amber)"/><rect x="100" y="8" width="68" height="32" rx="4" fill="#f0f0f0" stroke="rgba(0,0,0,0.08)" stroke-width="1"/><text x="134" y="27" text-anchor="middle" font-size="7" fill="#1e293b" font-family="Outfit">Light</text><circle cx="154" cy="14" r="4" fill="var(--amber)"/><path d="M 84 24 L 96 24 M 93 21 L 96 24 L 93 27" stroke="var(--cyan)" stroke-width="1.5" fill="none"/></svg></div>
-                <div class="oc-t">Dark / Light Toggle</div>
-                <div class="oc-d">Switch themes — preference saved in browser</div>
-            </button>
-            <button class="oc" onclick="pickInline(this,'p5bonus','export')">
-                <div class="demo"><svg viewBox="0 0 180 48" style="width:100%;height:40px"><rect width="180" height="48" fill="#080808" rx="6"/><rect x="55" y="8" width="70" height="32" rx="8" fill="rgba(6,182,212,0.08)" stroke="rgba(6,182,212,0.2)" stroke-width="1"/><text x="90" y="22" text-anchor="middle" font-size="7" fill="var(--cyan)" font-family="Outfit" font-weight="500">Export PDF</text><path d="M 85 28 L 90 34 L 95 28" stroke="var(--cyan)" stroke-width="1.2" fill="none"/></svg></div>
-                <div class="oc-t">Export to PDF</div>
-                <div class="oc-d">One-click clean PDF with all tables and charts</div>
-            </button>
-            <button class="oc" onclick="pickInline(this,'p5bonus','scenario')">
-                <div class="demo"><svg viewBox="0 0 180 48" style="width:100%;height:40px"><rect width="180" height="48" fill="#080808" rx="6"/><rect x="14" y="8" width="56" height="10" rx="3" fill="rgba(105,240,174,0.08)" stroke="rgba(105,240,174,0.15)" stroke-width="1"/><text x="42" y="16" text-anchor="middle" font-size="6" fill="var(--emerald)" font-family="Outfit">Default</text><rect x="14" y="20" width="56" height="10" rx="3" fill="rgba(6,182,212,0.08)" stroke="rgba(6,182,212,0.15)" stroke-width="1"/><text x="42" y="28" text-anchor="middle" font-size="6" fill="var(--cyan)" font-family="Outfit">Optimistic</text><rect x="14" y="32" width="56" height="10" rx="3" fill="rgba(239,68,68,0.08)" stroke="rgba(239,68,68,0.15)" stroke-width="1"/><text x="42" y="40" text-anchor="middle" font-size="6" fill="var(--rose)" font-family="Outfit">Pessimistic</text><rect x="100" y="14" width="62" height="12" rx="4" fill="rgba(255,215,64,0.08)" stroke="rgba(255,215,64,0.12)" stroke-width="1"/><text x="131" y="23" text-anchor="middle" font-size="6" fill="var(--amber)" font-family="Outfit">+ Save Current</text></svg></div>
-                <div class="oc-t">Scenario Presets</div>
-                <div class="oc-d">Save/load parameter sets with built-in presets</div>
-            </button>
-        </div>
-    </div>
-    <div class="prompt"><span class="prompt-lbl">PROMPT 5 OF 5</span><button class="copy" onclick="copyP(5)">Copy</button><div id="p5"></div></div>
-    <div class="note green"><strong>You're done!</strong> Download the final HTML file, open in your browser, and submit.</div>
-    </div>
-</div>
-
-</div>
-
-<div class="footer">EMGT 6225 &middot; Engineering Decision Making &middot; Prof. Mohammad Dehghani &middot; Northeastern University</div>
+<div class="toast" id="toast">Prompt copied</div>
 
 <script>
-const A={q1:null,q2:null,q3:null,q4:null};
-const IL={p2style:null,p3extra:null,p5bonus:null};
-let charts_g='';
+'use strict';
 
-function showTab(i){const b=document.querySelectorAll('.tab')[i];if(b.classList.contains('locked'))return;document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('active',j===i));document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',j===i))}
-function pick(btn,q,val){btn.parentElement.querySelectorAll('.oc').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');A[q]=val;checkReady()}
-function pickInline(btn,key,val){btn.parentElement.querySelectorAll('.oc').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');IL[key]=val;if(typeof refreshPrompts==='function')refreshPrompts()}
-function checkReady(){const n=document.getElementById('sName').value.trim();const ok=n.length>0&&A.q1&&A.q2&&A.q3&&A.q4;document.getElementById('genBtn').disabled=!ok;document.getElementById('readyMsg').textContent=ok?'Ready — click to generate all 5 prompts':'Fill in your name and answer all 4 questions';document.getElementById('readyMsg').style.color=ok?'var(--emerald)':'var(--text-3)'}
+// STATE
+const state = {
+  s1: { q1: '', q2: '', q3: '' },
+  s2: { q1: '' },
+  s3: { q1: '', q2: '' },
+  s4: { q1: '' },
+  s5: { q1: '' }
+};
+let currentStep = 1;
 
-function generate(){
-    const name=document.getElementById('sName').value.trim();
-    const themes={midnight:{desc:'Dark midnight blue background (#0f172a), glass cards rgba(30,41,59,0.85), accent #3b82f6 blue + #fbbf24 gold, text #e2e8f0, borders rgba(59,130,246,0.2). Gold for key numbers.'},emerald:{desc:'Dark forest (#0c1a0c), glass rgba(20,45,25,0.85), accent #10b981 emerald + #cbd5e1 silver, text #e2e8f0, borders rgba(16,185,129,0.2).'},sunset:{desc:'Dark warm (#1a0f05), glass rgba(40,25,10,0.85), accent #f97316 orange + #1e40af navy, text #fef3c7, borders rgba(249,115,22,0.2).'},rose:{desc:'Dark rose (#1a0a14), glass rgba(45,15,25,0.85), accent #e11d48 rose + #6b7280 charcoal, text #fce7f3, borders rgba(225,29,72,0.2).'},arctic:{desc:'Light clean (#f8fafc), white cards rgba(255,255,255,0.9), accent #0f172a slate + #3b82f6 blue, text #1e293b, borders rgba(15,23,42,0.1). Minimal corporate.'}};
-    const charts={filled:'Semi-transparent filled areas under revenue and cost lines. Loss region (below break-even) translucent red, profit region translucent green. Lines 2.5px solid.',clean:'Clean 3px solid lines with circular dot markers at key points. No fill. Dashed vertical at break-even with labeled annotation box.',gradient:'Gradient fills for regions. Loss: gradient from transparent to rgba(red,0.15). Profit: gradient to rgba(green,0.15). Lines 3px, rounded caps, subtle shadow.'};
-    const layouts={side:'Two-column: table left, chart right, simultaneous. Mobile: stack.',stacked:'Full-width stacked: table top, chart below. Sticky summary bar at top.',tabs:'Tabbed: Tab 1=Product I, Tab 2=Product II, Tab 3=Compare side-by-side.'};
-    const controls={sliders:'Range sliders with live value display, colored track, oninput real-time updates. MARR 5-30% step 1%, Sales Price, Equipment Cost, Overhead, Production hrs.',dropdowns:'Select menus with presets. MARR: 5/8/10/12/15/18/20/25/30%. Costs: Low/Med/High. Custom option reveals text input. onChange recalculates.',textfields:'Number inputs with min/max/step, unit suffix, border glow on focus. Recalculate button + auto on Enter/blur. Red border for invalid.'};
-    const theme=themes[A.q1].desc,chart=charts[A.q2],layout=layouts[A.q3],ctrl=controls[A.q4];
-    charts_g=chart;
+// ============================================================
+// PROMPT SNIPPET LIBRARY
+// ============================================================
+const themes = {
+  midnight: 'Dark midnight blue background (#0f172a), glass cards rgba(30,41,59,0.85), accent #3b82f6 blue + #fbbf24 gold, text #e2e8f0, borders rgba(59,130,246,0.2). Gold for key numbers.',
+  emerald:  'Dark forest (#0c1a0c), glass rgba(20,45,25,0.85), accent #10b981 emerald + #cbd5e1 silver, text #e2e8f0, borders rgba(16,185,129,0.2).',
+  sunset:   'Dark warm (#1a0f05), glass rgba(40,25,10,0.85), accent #f97316 orange + #1e40af navy, text #fef3c7, borders rgba(249,115,22,0.2).',
+  rose:     'Dark rose (#1a0a14), glass rgba(45,15,25,0.85), accent #e11d48 rose + #6b7280 charcoal, text #fce7f3, borders rgba(225,29,72,0.2).',
+  arctic:   'Light clean (#f8fafc), white cards rgba(255,255,255,0.9), accent #0f172a slate + #3b82f6 blue, text #1e293b, borders rgba(15,23,42,0.1). Minimal corporate.'
+};
+const layouts = {
+  side:    'Two-column: table left, chart right, simultaneous. Mobile: stack.',
+  stacked: 'Full-width stacked: table top, chart below. Sticky summary bar at top.',
+  tabs:    'Tabbed: Tab 1=Product I, Tab 2=Product II, Tab 3=Compare side-by-side.'
+};
+const charts = {
+  filled:   'Semi-transparent filled areas under revenue and cost lines. Loss region (below break-even) translucent red, profit region translucent green. Lines 2.5px solid.',
+  clean:    'Clean 3px solid lines with circular dot markers at key points. No fill. Dashed vertical at break-even with labeled annotation box.',
+  gradient: 'Gradient fills for regions. Loss: gradient from transparent to rgba(red,0.15). Profit: gradient to rgba(green,0.15). Lines 3px, rounded caps, subtle shadow.'
+};
+const controls = {
+  sliders:    'Range sliders with live value display, colored track, oninput real-time updates. MARR 5-30% step 1%, Sales Price, Equipment Cost, Overhead, Production hrs.',
+  dropdowns:  'Select menus with presets. MARR: 5/8/10/12/15/18/20/25/30%. Costs: Low/Med/High. Custom option reveals text input. onChange recalculates.',
+  textfields: 'Number inputs with min/max/step, unit suffix, border glow on focus. Recalculate button + auto on Enter/blur. Red border for invalid.'
+};
+const compStyles = {
+  scorecard: 'SCORECARD with circular gauges. Each product gets a gauge showing % above/below break-even. Green if profitable, red if not. AW as large number inside. Trophy badge on winner.',
+  versus:    'VS BATTLE CARD. Product I left, Product II right, glowing "VS" divider. Each shows break-even, forecast, AW, thumbs up/down. Winner side pulses with glow.',
+  traffic:   'TRAFFIC LIGHTS. Each metric (break-even, AW, margin) gets red/yellow/green. Green=profitable. Yellow=within 10% of break-even. Red=unprofitable. Summary light for each product.'
+};
+const chartExtras = {
+  emoji:     'EXTRA: Emoji annotations on canvas — 📉 in loss zone, 📈 in profit zone, 💰 at forecast if profitable, ⚠️ if not. Semi-transparent.',
+  crossover: 'EXTRA: Third chart overlaying BOTH products. Blue for Prod I, purple for Prod II. Shows where each breaks even and where II becomes more profitable.',
+  waterfall: 'EXTRA: Mini waterfall chart below each break-even chart. From gross revenue, subtract each cost as descending bars. Red=costs, green=revenue, blue=final AW.'
+};
+const bonuses = {
+  darkmode: 'BONUS: Dark/Light toggle top-right. Light: #f8fafc bg, dark text, adjusted chart colors. localStorage persistence. Smooth 0.3s transition. Moon/sun icon.',
+  export:   'BONUS: "Export PDF" button using window.print() + @media print CSS. Hide controls, show static values, black on white, header with name+date, page breaks between products. Also "Copy Summary" button.',
+  scenario: 'BONUS: Scenarios panel. Built-in: Default, Optimistic (low cost/high price), Pessimistic (high cost/low price). "Save Current" to localStorage with custom name. "Load" dropdown.'
+};
 
-    document.getElementById('p1').textContent=`I need to build an interactive Break-Even Analysis tool as a single-file HTML page. This is Prompt 1 of 5 — each builds on the previous. Keep all code in one file (inline CSS+JS, no external libs except Google Fonts Outfit).
+// ============================================================
+// PROMPT BUILDERS
+// ============================================================
+function buildPrompt1() {
+  const name = state.s1.q1 || '[YOUR NAME]';
+  const theme = themes[state.s1.q2 || 'midnight'];
+  const layout = layouts[state.s1.q3 || 'side'];
+  return `I need to build an interactive Break-Even Analysis tool as a single-file HTML page. This is Prompt 1 of 5 — each builds on the previous. Keep all code in one file (inline CSS+JS, no external libs except Google Fonts Outfit).
 
 STUDENT: ${name}
 THEME: ${theme}
@@ -593,10 +896,46 @@ LAYOUT: ${layout}
 3. AW equation below: AW(15%) = -$274,578.89 + $14.50X → X* = 18,937 units
 
 Professional styling. No chart yet.`;
+}
 
-    buildP2();buildP3(chart);
+function buildPrompt2() {
+  const layoutKey = state.s1.q3 || 'side';
+  const s = compStyles[state.s2.q1 || 'scorecard'];
+  return `Add Product II and comparison. Continue same page.
 
-    document.getElementById('p4').textContent=`Now make it interactive! Continue in the same file.
+═══ PROMPT 2: PRODUCT II + COMPARISON ═══
+
+1. PRODUCT II TABLE (same format):
+   Sales price $41.25, Equipment $525K, Overhead $50K, S&M $250K, O&M $45/hr, 215hrs/1000units (=$9.675/unit), Packaging $0.75, 5yr, 15%.
+   Fixed=$456,618.07/yr, Variable=$10.425/unit, Net Rev=$30.825/unit, X*=14,815 units.
+
+2. COMPARISON PANEL: ${s}
+   Data: Prod I BE=18,937, forecast=25,000, AW=$87,921. Prod II BE=14,815, forecast=18,000, AW=$97,232.
+   RECOMMEND Product II (higher AW).
+
+3. Layout: ${layoutKey==='tabs'?'Tabbed — Tab 1: Prod I, Tab 2: Prod II, Tab 3: Compare':layoutKey==='side'?'Side-by-side products':'Stacked full-width'}.`;
+}
+
+function buildPrompt3() {
+  const chart = charts[state.s3.q1 || 'filled'];
+  const ex = chartExtras[state.s3.q2 || 'emoji'];
+  const layoutKey = state.s1.q3 || 'side';
+  return `Add break-even charts. Continue same file.
+
+═══ PROMPT 3: BREAK-EVEN CHARTS ═══
+
+Canvas 2D chart per product (no external libs). ${chart}
+
+Each chart: X-axis Annual Sales 0-35,000. Y-axis $0-$600,000. Two lines: Revenue (price×X) and Cost (fixed+variable×X). Break-even where they cross — dashed vertical, labeled. Loss region left, profit region right. Forecast marker with AW annotation. Axis labels + legend.
+
+${ex}
+
+Charts placed: ${layoutKey==='tabs'?'inside each product tab':'next to or below each table'}. Min 500px wide on desktop.`;
+}
+
+function buildPrompt4() {
+  const ctrl = controls[state.s4.q1 || 'sliders'];
+  return `Now make it interactive! Continue in the same file.
 
 ═══ PROMPT 4: INTERACTIVE PARAMETER CONTROLS ═══
 
@@ -613,51 +952,12 @@ PARAMETERS (each product separately):
 
 BEHAVIOR: On any change → recalculate (A|P i,n), update all tables, break-even, redraw charts, update comparison. If break-even > forecast → show WARNING.
 Collapsible parameters panel. "Reset to Default" button.`;
-
-    buildP5(name);
-    for(let i=2;i<=6;i++)document.getElementById('tb'+i).classList.remove('locked');
-    showTab(2);
 }
 
-function buildP2(){
-    const styles={scorecard:'SCORECARD with circular gauges. Each product gets a gauge showing % above/below break-even. Green if profitable, red if not. AW as large number inside. Trophy badge on winner.',versus:'VS BATTLE CARD. Product I left, Product II right, glowing "VS" divider. Each shows break-even, forecast, AW, thumbs up/down. Winner side pulses with glow.',traffic:'TRAFFIC LIGHTS. Each metric (break-even, AW, margin) gets red/yellow/green. Green=profitable. Yellow=within 10% of break-even. Red=unprofitable. Summary light for each product.'};
-    const s=styles[IL.p2style]||styles.scorecard;
-    document.getElementById('p2').textContent=`Add Product II and comparison. Continue same page.
-
-═══ PROMPT 2: PRODUCT II + COMPARISON ═══
-
-1. PRODUCT II TABLE (same format):
-   Sales price $41.25, Equipment $525K, Overhead $50K, S&M $250K, O&M $45/hr, 215hrs/1000units (=$9.675/unit), Packaging $0.75, 5yr, 15%.
-   Fixed=$456,618.07/yr, Variable=$10.425/unit, Net Rev=$30.825/unit, X*=14,815 units.
-
-2. COMPARISON PANEL: ${s}
-   Data: Prod I BE=18,937, forecast=25,000, AW=$87,921. Prod II BE=14,815, forecast=18,000, AW=$97,232.
-   RECOMMEND Product II (higher AW).
-
-3. Layout: ${A.q3==='tabs'?'Tabbed — Tab 1: Prod I, Tab 2: Prod II, Tab 3: Compare':A.q3==='side'?'Side-by-side products':'Stacked full-width'}.`;
-}
-
-function buildP3(chart){
-    const extras={emoji:'EXTRA: Emoji annotations on canvas — 📉 in loss zone, 📈 in profit zone, 💰 at forecast if profitable, ⚠️ if not. Semi-transparent.',crossover:'EXTRA: Third chart overlaying BOTH products. Blue for Prod I, purple for Prod II. Shows where each breaks even and where II becomes more profitable.',waterfall:'EXTRA: Mini waterfall chart below each break-even chart. From gross revenue, subtract each cost as descending bars. Red=costs, green=revenue, blue=final AW.'};
-    const ex=extras[IL.p3extra]||extras.emoji;
-    document.getElementById('p3').textContent=`Add break-even charts. Continue same file.
-
-═══ PROMPT 3: BREAK-EVEN CHARTS ═══
-
-Canvas 2D chart per product (no external libs). ${chart}
-
-Each chart: X-axis Annual Sales 0-35,000. Y-axis $0-$600,000. Two lines: Revenue (price×X) and Cost (fixed+variable×X). Break-even where they cross — dashed vertical, labeled. Loss region left, profit region right. Forecast marker with AW annotation. Axis labels + legend.
-
-${ex}
-
-Charts placed: ${A.q3==='tabs'?'inside each product tab':'next to or below each table'}. Min 500px wide on desktop.`;
-}
-
-function buildP5(name){
-    const bonuses={darkmode:'BONUS: Dark/Light toggle top-right. Light: #f8fafc bg, dark text, adjusted chart colors. localStorage persistence. Smooth 0.3s transition. Moon/sun icon.',export:'BONUS: "Export PDF" button using window.print() + @media print CSS. Hide controls, show static values, black on white, header with name+date, page breaks between products. Also "Copy Summary" button.',scenario:'BONUS: Scenarios panel. Built-in: Default, Optimistic (low cost/high price), Pessimistic (high cost/low price). "Save Current" to localStorage with custom name. "Load" dropdown.'};
-    const b=bonuses[IL.p5bonus]||bonuses.darkmode;
-    name=name||document.getElementById('sName').value.trim()||'Student';
-    document.getElementById('p5').textContent=`Final polish! Continue same file.
+function buildPrompt5() {
+  const name = state.s1.q1 || 'Student';
+  const b = bonuses[state.s5.q1 || 'darkmode'];
+  return `Final polish! Continue same file.
 
 ═══ PROMPT 5: SENSITIVITY + POLISH ═══
 
@@ -676,9 +976,133 @@ function buildP5(name){
 Complete, self-contained, professional. Verify all calculations.`;
 }
 
-function refreshPrompts(){if(!document.getElementById('p1').textContent)return;buildP2();buildP3(charts_g);buildP5()}
+const builders = { p1: buildPrompt1, p2: buildPrompt2, p3: buildPrompt3, p4: buildPrompt4, p5: buildPrompt5 };
 
-function copyP(n){const t=document.getElementById('p'+n).textContent;const panel=document.getElementById('tab'+(n+1));const btn=panel?panel.querySelector('.copy'):null;const done=()=>{if(!btn)return;btn.textContent='Copied';btn.style.background='rgba(6,182,212,0.15)';btn.style.color='var(--cyan)';btn.style.borderColor='rgba(6,182,212,0.3)';setTimeout(()=>{btn.textContent='Copy';btn.style.background='';btn.style.color='';btn.style.borderColor=''},2000)};const fallback=()=>{const ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy')}catch(e){}document.body.removeChild(ta);done()};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done).catch(fallback)}else{fallback()}}
+function isStepDone(s) {
+  const v = state[s];
+  return Object.keys(v).every(k => !!v[k]);
+}
+
+function refresh() {
+  Object.keys(builders).forEach(k => {
+    const el = document.getElementById(k);
+    if (el) el.value = builders[k]();
+  });
+  let done = 0;
+  ['s1','s2','s3','s4','s5'].forEach(s => { if (isStepDone(s)) done++; });
+  document.querySelectorAll('.progress-live, #progress').forEach(el => el.textContent = done);
+
+  document.querySelectorAll('.tl-node').forEach(node => {
+    const n = parseInt(node.dataset.go, 10);
+    node.classList.remove('active', 'done');
+    if (n === currentStep) node.classList.add('active');
+    if (isStepDone('s' + n) && n !== currentStep) node.classList.add('done');
+  });
+}
+
+function showStep(n) {
+  currentStep = Math.max(1, Math.min(5, n));
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  const target = document.querySelector(`.step[data-step="${currentStep}"]`);
+  if (target) target.classList.add('active');
+  const finish = document.getElementById('finish');
+  finish.classList.remove('show');
+  refresh();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showFinish() {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById('finish').classList.add('show');
+  document.getElementById('finish').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Wire radios + text input
+document.querySelectorAll('input[type="radio"]').forEach(r => {
+  r.addEventListener('change', () => {
+    const name = r.name;
+    const stepKey = name.slice(0, 2);
+    const qKey = name.slice(2);
+    if (state[stepKey]) {
+      state[stepKey][qKey] = r.value;
+      const step = r.closest('.step');
+      step.querySelectorAll(`input[name="${name}"]`).forEach(input => {
+        const opt = input.closest('.opt');
+        if (opt) opt.classList.toggle('checked', input.checked);
+      });
+      refresh();
+    }
+  });
+});
+
+const nameInput = document.getElementById('s1q1');
+if (nameInput) {
+  nameInput.addEventListener('input', () => {
+    state.s1.q1 = nameInput.value.trim();
+    refresh();
+  });
+}
+
+// Timeline nodes
+document.querySelectorAll('.tl-node').forEach(node => {
+  node.addEventListener('click', () => {
+    const n = parseInt(node.dataset.go, 10);
+    showStep(n);
+  });
+});
+
+// Nav buttons
+document.querySelectorAll('[data-nav]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const dir = btn.dataset.nav;
+    if (dir === 'next') {
+      if (currentStep >= 5) showFinish();
+      else showStep(currentStep + 1);
+    }
+    else if (dir === 'prev') showStep(currentStep - 1);
+    else if (dir === 'finish') showFinish();
+  });
+});
+
+// Copy buttons
+document.querySelectorAll('.copy-btn').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const id = btn.dataset.copy;
+    const el = document.getElementById(id);
+    if (!el) return;
+    try { await navigator.clipboard.writeText(el.value); }
+    catch (e) {
+      const ta = document.createElement('textarea');
+      ta.value = el.value;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      try { document.execCommand('copy'); } catch (err) {}
+      document.body.removeChild(ta);
+    }
+    btn.classList.add('copied');
+    const orig = btn.textContent;
+    btn.textContent = 'Copied ✓';
+    showToast();
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.textContent = orig;
+    }, 1800);
+  });
+});
+
+function showToast() {
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => t.classList.remove('show'), 1600);
+}
+
+// initial paint
+showStep(1);
 </script>
+
 </body>
 </html>
