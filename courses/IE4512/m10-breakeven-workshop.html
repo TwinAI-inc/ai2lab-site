@@ -678,7 +678,7 @@ Complete, self-contained, professional. Verify all calculations.`;
 
 function refreshPrompts(){if(!document.getElementById('p1').textContent)return;buildP2();buildP3(charts_g);buildP5()}
 
-function copyP(n){const t=document.getElementById('p'+n).textContent;navigator.clipboard.writeText(t).then(()=>{const panel=document.getElementById('tab'+(n+1));const btn=panel.querySelector('.copy');btn.textContent='Copied';btn.style.background='rgba(6,182,212,0.15)';btn.style.color='var(--cyan)';btn.style.borderColor='rgba(6,182,212,0.3)';setTimeout(()=>{btn.textContent='Copy';btn.style.background='';btn.style.color='';btn.style.borderColor=''},2000)})}
+function copyP(n){const t=document.getElementById('p'+n).textContent;const panel=document.getElementById('tab'+(n+1));const btn=panel?panel.querySelector('.copy'):null;const done=()=>{if(!btn)return;btn.textContent='Copied';btn.style.background='rgba(6,182,212,0.15)';btn.style.color='var(--cyan)';btn.style.borderColor='rgba(6,182,212,0.3)';setTimeout(()=>{btn.textContent='Copy';btn.style.background='';btn.style.color='';btn.style.borderColor=''},2000)};const fallback=()=>{const ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy')}catch(e){}document.body.removeChild(ta);done()};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done).catch(fallback)}else{fallback()}}
 </script>
 </body>
 </html>
