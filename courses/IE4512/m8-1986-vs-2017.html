@@ -228,9 +228,38 @@
     font-family: 'Lora', serif; font-style: italic; font-size: 20px; font-weight: 700; color: #fff;
     margin-top: 2px;
   }
+
+  /* ===== COVER / INTRO ===== */
+  .cover { display: none; }
+  body.intro .controls, body.intro .main { display: none; }
+  body.intro .cover {
+    display: flex; flex: 1; min-height: 0; overflow-y: auto;
+    flex-direction: column; align-items: center;
+    background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
+    border-top: 3px solid var(--crimson); padding: 32px 26px;
+  }
+  .cover-inner { max-width: 900px; width: 100%; margin: auto 0; }
+  .cover .kicker { font-family: 'Outfit', sans-serif; font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase; font-weight: 700; color: var(--crimson); text-align: center; }
+  .cover h2 { font-family: 'Lora', serif; font-size: 33px; font-weight: 700; line-height: 1.1; text-align: center; margin-top: 8px; }
+  .cover h2 em { font-style: italic; color: var(--crimson); font-weight: 400; }
+  .cover .lede { font-family: 'Lora', serif; font-style: italic; font-size: 15px; line-height: 1.7; color: var(--muted); text-align: center; max-width: 700px; margin: 13px auto 0; }
+  .cover .concepts { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 24px; }
+  .cover .concept { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; border-top: 2px solid var(--crimson); padding: 14px 16px; }
+  .cover .concept.old { border-top-color: var(--gold); }
+  .cover .concept.new { border-top-color: var(--teal); }
+  .cover .concept .n { font-family: 'Lora', serif; font-style: italic; font-weight: 700; font-size: 15px; color: var(--crimson); }
+  .cover .concept.old .n { color: var(--gold-deep); }
+  .cover .concept.new .n { color: var(--teal-deep); }
+  .cover .concept .d { font-family: 'Lora', serif; font-size: 12.5px; line-height: 1.5; color: var(--muted); margin-top: 5px; }
+  .cover .concept .d em { font-style: italic; color: var(--ink); font-weight: 600; }
+  .cover .insight { background: var(--crimson-soft); border: 1px solid var(--crimson); border-left: 4px solid var(--crimson); border-radius: 10px; padding: 14px 17px; margin-top: 22px; font-family: 'Lora', serif; font-style: italic; font-size: 13.5px; line-height: 1.6; color: var(--ink); }
+  .cover .insight b { font-style: normal; font-weight: 700; color: var(--crimson-deep); }
+  .cover .start-row { text-align: center; margin-top: 26px; }
+  .cover .start-btn { font-family: 'Outfit', sans-serif; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; padding: 14px 32px; border: none; border-radius: 10px; background: linear-gradient(135deg, var(--crimson) 0%, var(--crimson-deep) 100%); color: #fff; cursor: pointer; box-shadow: 0 5px 16px rgba(138,40,40,0.3); transition: transform 0.15s; }
+  .cover .start-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(138,40,40,0.4); }
 </style>
 </head>
-<body>
+<body class="intro">
 
 <div class="app">
 
@@ -246,6 +275,36 @@
       <a href="m8-after-tax-npv.html">After-Tax NPV</a>
     </nav>
   </header>
+
+  <!-- COVER / INTRO -->
+  <section class="cover" id="cover">
+    <div class="cover-inner">
+      <div class="kicker">Module 8 · After-Tax Economic Analysis</div>
+      <h2>Same project, <em>two tax regimes</em></h2>
+      <p class="lede">Two landmark laws reshaped how American companies are taxed. Run one identical project through each and watch which one your money prefers &mdash; and the winner is not always the lower rate.</p>
+
+      <div class="concepts">
+        <div class="concept old">
+          <div class="n">1986 · Tax Reform Act</div>
+          <div class="d">Cut the top corporate rate from 46% to 34% and created MACRS, the accelerated depreciation system still used today. Bonus depreciation did not exist.</div>
+        </div>
+        <div class="concept new">
+          <div class="n">2017 · Tax Cuts &amp; Jobs Act</div>
+          <div class="d">Cut the rate again to 21% and added 100% bonus depreciation, now phasing down (60% in 2024, 0% by 2027). This is the regime in force right now.</div>
+        </div>
+        <div class="concept">
+          <div class="n">The tension</div>
+          <div class="d">A lower <em>rate</em> keeps more of every operating dollar. A bigger, earlier depreciation <em>shield</em> saves more tax up front. The two pull in opposite directions.</div>
+        </div>
+      </div>
+
+      <div class="insight">The question this tool answers: <b>when does a lower tax rate win, and when does a richer depreciation shield win?</b> A project flush with operating profit loves the 21% rate. A capital-heavy project with thin profit leans on the 34%-rate shield. Change the cost, benefit, and salvage and find the crossover for yourself.</div>
+
+      <div class="start-row">
+        <button class="start-btn" type="button" onclick="document.body.classList.remove('intro')">Begin the showdown &rarr;</button>
+      </div>
+    </div>
+  </section>
 
   <section class="controls">
     <div class="ctrl">

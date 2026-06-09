@@ -191,9 +191,34 @@
     margin-top: 3px;
   }
   .shield-callout .desc b { color: var(--olive-deep); font-style: normal; font-weight: 700; }
+
+  /* ===== COVER / INTRO ===== */
+  .cover { display: none; }
+  body.intro .controls, body.intro .main { display: none; }
+  body.intro .cover {
+    display: flex; flex: 1; min-height: 0; overflow-y: auto;
+    flex-direction: column; align-items: center;
+    background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
+    border-top: 3px solid var(--olive); padding: 32px 26px;
+  }
+  .cover-inner { max-width: 900px; width: 100%; margin: auto 0; }
+  .cover .kicker { font-family: 'Outfit', sans-serif; font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase; font-weight: 700; color: var(--olive-deep); text-align: center; }
+  .cover h2 { font-family: 'Lora', serif; font-size: 33px; font-weight: 700; line-height: 1.1; text-align: center; margin-top: 8px; }
+  .cover h2 em { font-style: italic; color: var(--olive-deep); font-weight: 400; }
+  .cover .lede { font-family: 'Lora', serif; font-style: italic; font-size: 15px; line-height: 1.7; color: var(--muted); text-align: center; max-width: 700px; margin: 13px auto 0; }
+  .cover .concepts { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 24px; }
+  .cover .concept { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; border-top: 2px solid var(--olive); padding: 14px 16px; }
+  .cover .concept .n { font-family: 'Lora', serif; font-style: italic; font-weight: 700; font-size: 15px; color: var(--olive-deep); }
+  .cover .concept .d { font-family: 'Lora', serif; font-size: 12.5px; line-height: 1.5; color: var(--muted); margin-top: 5px; }
+  .cover .concept .d em { font-style: italic; color: var(--ink); font-weight: 600; }
+  .cover .insight { background: var(--olive-soft); border: 1px solid var(--olive); border-left: 4px solid var(--olive); border-radius: 10px; padding: 14px 17px; margin-top: 22px; font-family: 'Lora', serif; font-style: italic; font-size: 13.5px; line-height: 1.6; color: var(--ink); }
+  .cover .insight b { font-style: normal; font-weight: 700; color: var(--olive-deep); }
+  .cover .start-row { text-align: center; margin-top: 26px; }
+  .cover .start-btn { font-family: 'Outfit', sans-serif; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; padding: 14px 32px; border: none; border-radius: 10px; background: linear-gradient(135deg, var(--olive) 0%, var(--olive-deep) 100%); color: #fff; cursor: pointer; box-shadow: 0 5px 16px rgba(92,122,74,0.3); transition: transform 0.15s; }
+  .cover .start-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(92,122,74,0.4); }
 </style>
 </head>
-<body>
+<body class="intro">
 
 <div class="app">
 
@@ -208,6 +233,40 @@
       <a href="m8-tax-timeline.html">Tax Timeline</a>
     </nav>
   </header>
+
+  <!-- COVER / INTRO -->
+  <section class="cover" id="cover">
+    <div class="cover-inner">
+      <div class="kicker">Module 8 · After-Tax Economic Analysis</div>
+      <h2>Before tax tells <em>half the story</em></h2>
+      <p class="lede">A before-tax NPV pretends the tax collector does not exist. Bring in the corporate income tax and one quiet hero &mdash; depreciation &mdash; and the project's real number appears.</p>
+
+      <div class="concepts">
+        <div class="concept">
+          <div class="n">Tax is real cash out</div>
+          <div class="d">Every year you hand the IRS the tax rate times your taxable income. After-tax cash flow sits <em>below</em> before-tax, year after year.</div>
+        </div>
+        <div class="concept">
+          <div class="n">Depreciation shields it</div>
+          <div class="d">Depreciation costs no cash, yet it lowers taxable income. Each dollar of depreciation saves you <em>T</em> dollars of tax &mdash; the depreciation tax shield.</div>
+        </div>
+        <div class="concept">
+          <div class="n">MACRS front-loads</div>
+          <div class="d">Accelerated schedules push the shield into the early years, where the time value of money makes each saved dollar worth more.</div>
+        </div>
+        <div class="concept">
+          <div class="n">The shield has a price tag</div>
+          <div class="d">Discount every year's shield back to today and you get its present worth &mdash; what depreciation is actually worth to this project.</div>
+        </div>
+      </div>
+
+      <div class="insight">Watch a healthy before-tax NPV shrink once the tax bites &mdash; then see how much the depreciation shield hands back. The gap between the two curves is the <b>cost of taxes</b>; the shield is your <b>rebate</b>. Change the MACRS class and the tax rate and watch both move.</div>
+
+      <div class="start-row">
+        <button class="start-btn" type="button" onclick="document.body.classList.remove('intro')">Open the calculator &rarr;</button>
+      </div>
+    </div>
+  </section>
 
   <!-- CONTROLS -->
   <section class="controls">

@@ -201,9 +201,34 @@
   }
   table.shield-tbl tbody td:first-child { text-align: center; font-weight: 700; color: var(--muted); }
   table.shield-tbl tbody td.purple { color: var(--purple); font-weight: 700; }
+
+  /* ===== COVER / INTRO ===== */
+  .cover { display: none; }
+  body.intro .controls, body.intro .main { display: none; }
+  body.intro .cover {
+    display: flex; flex: 1; min-height: 0; overflow-y: auto;
+    flex-direction: column; align-items: center;
+    background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
+    border-top: 3px solid var(--purple); padding: 32px 26px;
+  }
+  .cover-inner { max-width: 900px; width: 100%; margin: auto 0; }
+  .cover .kicker { font-family: 'Outfit', sans-serif; font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase; font-weight: 700; color: var(--purple); text-align: center; }
+  .cover h2 { font-family: 'Lora', serif; font-size: 33px; font-weight: 700; line-height: 1.1; text-align: center; margin-top: 8px; }
+  .cover h2 em { font-style: italic; color: var(--purple); font-weight: 400; }
+  .cover .lede { font-family: 'Lora', serif; font-style: italic; font-size: 15px; line-height: 1.7; color: var(--muted); text-align: center; max-width: 700px; margin: 13px auto 0; }
+  .cover .concepts { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 24px; }
+  .cover .concept { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; border-top: 2px solid var(--purple); padding: 14px 16px; }
+  .cover .concept .n { font-family: 'Lora', serif; font-style: italic; font-weight: 700; font-size: 15px; color: var(--purple); }
+  .cover .concept .d { font-family: 'Lora', serif; font-size: 12.5px; line-height: 1.5; color: var(--muted); margin-top: 5px; }
+  .cover .concept .d em { font-style: italic; color: var(--ink); font-weight: 600; }
+  .cover .insight { background: var(--purple-soft); border: 1px solid var(--purple); border-left: 4px solid var(--purple); border-radius: 10px; padding: 14px 17px; margin-top: 22px; font-family: 'Lora', serif; font-style: italic; font-size: 13.5px; line-height: 1.6; color: var(--ink); }
+  .cover .insight b { font-style: normal; font-weight: 700; color: var(--purple); }
+  .cover .start-row { text-align: center; margin-top: 26px; }
+  .cover .start-btn { font-family: 'Outfit', sans-serif; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; padding: 14px 32px; border: none; border-radius: 10px; background: linear-gradient(135deg, var(--purple) 0%, #5b21b6 100%); color: #fff; cursor: pointer; box-shadow: 0 5px 16px rgba(124,58,237,0.3); transition: transform 0.15s; }
+  .cover .start-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(124,58,237,0.4); }
 </style>
 </head>
-<body>
+<body class="intro">
 
 <div class="app">
 
@@ -219,6 +244,40 @@
       <a href="m8-after-tax-npv.html">After-Tax NPV</a>
     </nav>
   </header>
+
+  <!-- COVER / INTRO -->
+  <section class="cover" id="cover">
+    <div class="cover-inner">
+      <div class="kicker">Module 8 · After-Tax Economic Analysis</div>
+      <h2>Three deductions, <em>stacked on one asset</em></h2>
+      <p class="lede">The tax code lets you accelerate write-offs three ways on the same purchase. Stack them in the right order and you can expense most of an asset in its very first year &mdash; pulling the tax shield forward to where it is worth the most.</p>
+
+      <div class="concepts">
+        <div class="concept">
+          <div class="n">1 · §179 expensing</div>
+          <div class="d">Immediately expense the asset up to a yearly cap (<em>$1.16M in 2024</em>). It comes off the top, before anything else.</div>
+        </div>
+        <div class="concept">
+          <div class="n">2 · Bonus depreciation</div>
+          <div class="d">A percentage of whatever basis is left, taken in year 1. But it is phasing out: <em>100% in 2022 down to 0% by 2027</em>.</div>
+        </div>
+        <div class="concept">
+          <div class="n">3 · Regular MACRS</div>
+          <div class="d">The normal accelerated schedule applies to whatever basis the first two layers leave behind, spread over the asset's class life.</div>
+        </div>
+        <div class="concept">
+          <div class="n">Order matters</div>
+          <div class="d">§179 first, then bonus on the remainder, then MACRS on the rest. Each layer feeds the next &mdash; that is the <em>stack</em>.</div>
+        </div>
+      </div>
+
+      <div class="insight">Stacking can move a huge share of the deduction into year 1, where the tax shield is worth the most. But as bonus depreciation phases down toward zero, that front-loaded advantage shrinks. This tool shows the <b>extra present worth</b> the stack buys over plain MACRS &mdash; and how it fades by placed-in-service year.</div>
+
+      <div class="start-row">
+        <button class="start-btn" type="button" onclick="document.body.classList.remove('intro')">Open the stacker &rarr;</button>
+      </div>
+    </div>
+  </section>
 
   <section class="controls">
     <div class="ctrl">
