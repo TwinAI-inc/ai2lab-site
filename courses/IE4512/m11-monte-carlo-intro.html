@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What Is Monte Carlo Simulation? &middot; Engineering Economy</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  /* Editorial cream / serif platform palette (matches IE4512 course system) */
+  --bg:#faf9f5;--bg-2:#f3efe2;
+  --paper:#ffffff;--glass:#ffffff;
+  --border:#e8e3d4;--line:#d4cfc0;
+  /* gold = primary accent, crimson = emphasis, olive = positive */
+  --gold:#b8860b;--gold-l:#c6982b;--gold-d:#8a6508;--gold-soft:#faf3e0;
+  --crimson:#8a2828;--crimson-soft:#fdf2f3;
+  --olive:#5c7a4a;--olive-soft:#f0f4ea;
+  /* legacy aliases remapped so inline var() references resolve to editorial tones */
+  --accent:#b8860b;--accent-l:#c6982b;--accent-d:#8a6508;
+  --violet:#8a2828;--green:#5c7a4a;--red:#8a2828;--orange:#b8860b;
+  --text-1:#1a1a1a;--text-2:#5a5247;--text-3:#8b7355;
+}
+html,body{height:100%;overflow:hidden;margin:0}
+body{font-family:'Outfit',-apple-system,system-ui,sans-serif;background:linear-gradient(135deg,var(--bg) 0%,var(--bg-2) 100%);color:var(--text-1);display:flex;flex-direction:column}
+
+.deck{flex:1;position:relative;overflow:hidden}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:44px 64px;opacity:0;transform:translateX(40px);transition:all .5s cubic-bezier(.22,1,.36,1);pointer-events:none}
+.slide.active{opacity:1;transform:translateX(0);pointer-events:auto}
+.slide.prev{opacity:0;transform:translateX(-40px)}
+
+/* Typography — Lora serif titles, BIG for classroom visibility */
+.s-title{font-family:'Lora',Georgia,serif;font-size:3.7rem;font-weight:600;letter-spacing:-0.015em;line-height:1.1;margin-bottom:18px;color:var(--text-1)}
+.s-title em{font-weight:700;font-style:italic;background:linear-gradient(120deg,var(--gold),var(--crimson));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.s-sub{font-size:1.45rem;color:var(--text-2);line-height:1.62;max-width:920px;font-weight:400}
+.s-sub strong{color:var(--text-1);font-weight:600}
+.s-label{font-size:.92rem;font-weight:700;text-transform:uppercase;letter-spacing:.22em;color:var(--gold);margin-bottom:16px}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:32px;flex:1;align-items:center}
+.col{display:flex;flex-direction:column;gap:14px}
+
+/* Cards — editorial paper, no glass blur */
+.card{padding:22px 26px;background:var(--paper);border:1px solid var(--border);border-radius:14px;box-shadow:0 3px 16px rgba(90,82,71,0.06)}
+.card h3{font-family:'Lora',serif;font-size:1.35rem;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:10px;color:var(--text-1)}
+.card p{font-size:1.1rem;color:var(--text-2);line-height:1.65;font-weight:400}
+
+/* Timeline */
+.timeline{display:flex;flex-direction:column;gap:0;position:relative;padding-left:28px}
+.timeline::before{content:'';position:absolute;left:10.5px;top:8px;bottom:8px;width:2px;background:rgba(184,134,11,0.28);border-radius:1px}
+.tl-item{position:relative;padding:9px 0 9px 22px}
+.tl-item::before{content:'';position:absolute;left:-23px;top:15px;width:13px;height:13px;border-radius:50%;background:var(--gold);border:2px solid #fff;box-shadow:0 0 0 2px var(--gold)}
+.tl-year{font-family:'Lora',serif;font-size:1.05rem;font-weight:700;color:var(--gold-d);letter-spacing:.01em}
+.tl-text{font-size:1.04rem;color:var(--text-2);line-height:1.55;margin-top:3px}
+.tl-text strong{color:var(--text-1);font-weight:600}
+.tl-text em{font-family:'Lora',serif;font-style:italic;color:var(--crimson)}
+
+/* Interactive canvas */
+.sim-canvas{border:1px solid var(--border);border-radius:14px;background:#FFFFFF;overflow:visible;position:relative;box-shadow:0 5px 20px rgba(90,82,71,0.08);margin-bottom:80px}
+.sim-canvas canvas{width:100%;height:100%;display:block}
+.sim-controls{position:absolute;bottom:12px;left:12px;right:12px;display:flex;gap:6px;align-items:center}
+.sim-btn{padding:9px 18px;border-radius:8px;border:none;background:var(--gold);color:#fff;font-family:'Outfit',sans-serif;font-size:.92rem;font-weight:600;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(184,134,11,0.28)}
+.sim-btn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(184,134,11,0.4)}
+.sim-btn.ghost{background:#fff;border:1.5px solid var(--border);color:var(--gold-d);box-shadow:0 1px 4px rgba(90,82,71,0.08)}
+.sim-btn.ghost:hover{border-color:var(--gold);background:var(--gold-soft)}
+.sim-info{font-size:.88rem;color:var(--text-3);margin-left:auto;font-variant-numeric:tabular-nums;font-weight:500}
+.sim-result{position:absolute;bottom:-74px;left:50%;transform:translateX(-50%);padding:13px 32px;border-radius:99px;background:linear-gradient(135deg,var(--gold-d),var(--gold));border:3px solid #fff;font-size:1.35rem;font-weight:800;color:#fff;box-shadow:0 10px 28px rgba(138,101,8,0.32),0 0 0 1px rgba(138,101,8,0.18);white-space:nowrap;letter-spacing:.01em;z-index:10}
+
+/* Steps */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.step{padding:20px;background:var(--paper);border:1px solid var(--border);border-radius:12px;text-align:center;box-shadow:0 3px 14px rgba(90,82,71,0.06)}
+.step-n{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--crimson));color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Lora',serif;font-weight:700;font-size:1.2rem;margin:0 auto 12px;box-shadow:0 2px 8px rgba(184,134,11,0.25)}
+.step h4{font-family:'Lora',serif;font-size:1.18rem;font-weight:700;margin-bottom:6px;color:var(--text-1)}
+.step p{font-size:.96rem;color:var(--text-2);line-height:1.5}
+
+/* Equation */
+.eq{font-family:'Lora',serif;font-size:1.35rem;font-weight:600;font-style:italic;color:var(--gold-d);padding:18px 24px;background:var(--gold-soft);border:1.5px solid rgba(184,134,11,0.3);border-radius:10px;text-align:center;margin:14px 0}
+.eq strong{font-style:normal;color:var(--crimson)}
+
+/* Bullet list */
+.bullets{list-style:none;display:flex;flex-direction:column;gap:10px}
+.bullets li{padding:13px 20px;background:var(--paper);border:1px solid var(--border);border-radius:10px;font-size:1.1rem;color:var(--text-2);line-height:1.5;display:flex;align-items:flex-start;gap:12px;font-weight:400}
+.bullets li::before{content:'';width:9px;height:9px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:9px}
+.bullets li strong{color:var(--text-1);font-weight:600}
+
+/* Application cards */
+.app-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.app-card{padding:22px;background:var(--paper);border:1px solid var(--border);border-radius:12px;box-shadow:0 3px 14px rgba(90,82,71,0.06);border-top:3px solid var(--gold)}
+.app-card:nth-child(3n+2){border-top-color:var(--olive)}
+.app-card:nth-child(3n){border-top-color:var(--crimson)}
+.app-card .app-icon{font-size:2rem;margin-bottom:10px}
+.app-card h4{font-family:'Lora',serif;font-size:1.2rem;font-weight:700;margin-bottom:6px;color:var(--text-1)}
+.app-card p{font-size:.98rem;color:var(--text-2);line-height:1.5}
+
+/* Problem spec table (EDM slide) */
+.spec-table{width:100%;border-collapse:collapse;margin-top:6px}
+.spec-table td{padding:9px 14px;font-size:1.06rem;border-bottom:1px solid var(--line)}
+.spec-table td:first-child{color:var(--text-3);font-weight:500;width:52%}
+.spec-table td:last-child{color:var(--text-1);font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+.spec-table tr:last-child td{border-bottom:none}
+
+/* Navigation */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:12px 28px;border-top:1px solid var(--border);background:rgba(250,249,245,0.92);backdrop-filter:blur(8px);flex-shrink:0}
+.nav-btn{width:42px;height:42px;border-radius:50%;border:1.5px solid var(--border);background:#fff;color:var(--gold-d);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.3rem;transition:all .2s}
+.nav-btn:hover{border-color:var(--gold);background:var(--gold);color:#fff}
+.nav-btn:disabled{opacity:.3;cursor:not-allowed}
+.nav-dots{display:flex;gap:8px}
+.nav-dot{width:10px;height:10px;border-radius:50%;background:rgba(184,134,11,0.25);cursor:pointer;transition:all .2s}
+.nav-dot.active{background:var(--gold);box-shadow:0 0 10px rgba(184,134,11,0.4);transform:scale(1.2)}
+.nav-info{font-family:'Lora',serif;font-style:italic;font-size:.96rem;color:var(--text-3);font-weight:500}
+
+/* Comparison grid */
+.cmp-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:12px}
+.cmp-card{padding:24px 28px;border-radius:12px}
+.cmp-card.det{background:var(--crimson-soft);border:1.5px solid rgba(138,40,40,0.25)}
+.cmp-card.mc{background:var(--olive-soft);border:1.5px solid rgba(92,122,74,0.3)}
+.cmp-card h3{font-family:'Lora',serif;font-size:1.35rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+
+@media(max-width:1000px){
+  .slide{padding:30px 28px}
+  .s-title{font-size:2.3rem}
+  .two-col{grid-template-columns:1fr;gap:20px}
+  .steps{grid-template-columns:repeat(2,1fr)}
+  .app-grid{grid-template-columns:1fr}
+  .cmp-grid{grid-template-columns:1fr}
+}
+
+/* Highlight tokens */
+.hl-red{color:var(--crimson);font-weight:700}
+.hl-green{color:var(--olive);font-weight:700}
+.hl-blue{color:var(--gold-d);font-weight:700}
+.hl-gold{color:var(--gold);font-weight:700}
+.chip{display:inline-block;padding:3px 12px;border-radius:99px;font-size:.9rem;font-weight:600;background:var(--gold-soft);color:var(--gold-d);border:1px solid rgba(184,134,11,0.25);margin:2px}
+
+/* ═══ FULL-BLEED CINEMATIC SLIDES ═══ */
+.slide.cinema{padding:0;overflow:hidden}
+.cinema-bg{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
+.cinema-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,14,4,0.35) 0%,rgba(20,14,4,0.55) 50%,rgba(20,14,4,0.86) 100%)}
+.cinema-content{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding:60px 80px;color:#fff}
+.cinema-content .s-label{color:#e3b341;font-size:1.02rem;letter-spacing:.24em}
+.cinema-content .s-title{font-family:'Lora',serif;color:#fff;font-size:5rem;font-weight:600;line-height:1.06;margin-bottom:20px;text-shadow:0 4px 30px rgba(0,0,0,0.6)}
+.cinema-content .s-title em{background:linear-gradient(135deg,#f0c04e,#d99a2b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:700}
+.cinema-content .s-sub{color:rgba(255,255,255,0.93);font-size:1.4rem;max-width:920px;line-height:1.6;text-shadow:0 2px 12px rgba(0,0,0,0.7)}
+.cinema-content .s-sub strong{color:#fff}
+.cinema-quote{font-family:'Lora',serif;font-size:1.85rem;font-weight:500;font-style:italic;color:#fff;line-height:1.4;max-width:860px;margin-bottom:20px;text-shadow:0 3px 18px rgba(0,0,0,0.7)}
+.cinema-quote::before{content:'\201C';font-family:'Lora',serif;font-size:5rem;font-weight:700;color:#e3b341;line-height:0;vertical-align:-0.4em;margin-right:8px}
+.cinema-byline{font-size:1.05rem;color:#e3b341;font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+
+/* ═══ COVER SPLIT (half text, half image — seamless white merge) ═══ */
+.slide.cover-split{display:grid;grid-template-columns:1.05fr 1fr;padding:0;overflow:hidden;background:#FFFFFF}
+.cover-left{padding:70px 70px 60px;display:flex;flex-direction:column;justify-content:center;background:#FFFFFF}
+.cover-right{position:relative;background:#FFFFFF center/contain no-repeat}
+.cover-right::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,#FFFFFF 0%,rgba(255,255,255,0) 18%)}
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+<!-- SLIDE 1: Title (split — half text, half image) -->
+<div class="slide active cover-split" data-i="0" style="padding:0">
+  <div class="cover-left">
+    <div class="s-label">IE 4512 &middot; Engineering Economy &bull; Module 11</div>
+    <div class="s-title" style="font-size:4.1rem">What is<br><em>Monte Carlo<br>Simulation?</em></div>
+    <div class="s-sub" style="font-size:1.3rem;margin-top:18px">From the <strong>Manhattan Project</strong> to modern <strong>engineering economy</strong> &mdash; how random sampling turns uncertainty into actionable insight for better investment decisions.</div>
+    <div style="margin-top:32px;display:flex;align-items:center;gap:14px">
+      <div style="height:3px;width:60px;background:linear-gradient(90deg,var(--gold),var(--crimson));border-radius:2px"></div>
+      <div style="font-size:1rem;color:var(--text-3);font-weight:600;letter-spacing:.1em;text-transform:uppercase">Prof. Mohammad Dehghani &bull; Northeastern</div>
+    </div>
+  </div>
+  <div class="cover-right" style="background-image:url('images/mc_concept_hero_white.png')"></div>
+</div>
+
+<!-- SLIDE 2: Cinematic Story — Ulam & Solitaire -->
+<div class="slide cinema" data-i="1">
+  <div class="cinema-bg" style="background-image:url('images/ulam_solitaire.png')"></div>
+  <div class="cinema-content">
+    <div class="s-label">Los Alamos &bull; 1946</div>
+    <div class="s-title">A Mathematician,<br>a Deck of <em>Cards</em>,<br>and an <em>H-Bomb</em></div>
+    <div class="s-sub">Recovering from encephalitis, <strong>Stanislaw Ulam</strong> plays Canfield solitaire. He wonders: <em>"What are the odds this hand will come out?"</em> The combinatorics are hopeless &mdash; but what if he simply <strong style="color:#e3b341">dealt a thousand random hands and counted?</strong></div>
+  </div>
+</div>
+
+<!-- SLIDE 3: Cinematic — The Name "Monte Carlo" -->
+<div class="slide cinema" data-i="2">
+  <div class="cinema-bg" style="background-image:url('images/monte_carlo_casino.png')"></div>
+  <div class="cinema-content">
+    <div class="s-label">Monaco &bull; The Name</div>
+    <div class="s-title">Why <em>&ldquo;Monte Carlo&rdquo;</em>?</div>
+    <div class="cinema-quote">My uncle would borrow money from relatives because he &lsquo;just had to go to Monte Carlo&rsquo; to gamble.</div>
+    <div class="cinema-byline">&mdash; Stanislaw Ulam (as told to Nicholas Metropolis, 1947)</div>
+    <div class="s-sub" style="margin-top:20px">The project was classified. They needed a code name. Ulam's gambling uncle &mdash; and Monaco's legendary <strong>Belle &Eacute;poque casino</strong> &mdash; gave it one. The name captured the soul of the method: <strong style="color:#e3b341">chance as a tool for truth.</strong></div>
+  </div>
+</div>
+
+<!-- SLIDE 4: Cinematic — ENIAC & the Bomb -->
+<div class="slide cinema" data-i="3">
+  <div class="cinema-bg" style="background-image:url('images/eniac_computer.png')"></div>
+  <div class="cinema-content">
+    <div class="s-label">ENIAC &bull; April 1948</div>
+    <div class="s-title">The First Real<br>Monte Carlo <em>Runs</em></div>
+    <div class="s-sub"><strong>John von Neumann</strong> saw Ulam's idea and wrote the first Monte Carlo program in March 1947 &mdash; for <strong style="color:#e3b341">neutron diffusion in a hydrogen bomb core</strong>. In April 1948, Klara von Neumann, Metropolis, and team ran it on <strong>ENIAC</strong> &mdash; the first computerized Monte Carlo simulation in history, and one of the first programs ever written in the modern "stored program" paradigm.</div>
+  </div>
+</div>
+
+<!-- SLIDE 5: Timeline -->
+<div class="slide" data-i="4">
+  <div class="s-label">Origins &amp; History</div>
+  <div class="s-title">From Solitaire to <em>Spreadsheets</em></div>
+  <div class="timeline" style="max-width:1000px">
+    <div class="tl-item"><div class="tl-year">1777 &mdash; Buffon's Needle</div><div class="tl-text"><strong>Comte de Buffon</strong> drops needles on parallel lines to estimate &pi;. The first recorded use of randomness to solve a deterministic math problem.</div></div>
+    <div class="tl-item"><div class="tl-year">1946 &mdash; Ulam's Solitaire Epiphany</div><div class="tl-text"><strong>Stanislaw Ulam</strong>, recovering from illness at Los Alamos, realizes playing thousands of random solitaire games could give the win probability. He immediately applies the idea to <strong>neutron diffusion</strong> in fissile material &mdash; the core physics of the H-bomb.</div></div>
+    <div class="tl-item"><div class="tl-year">1947 &mdash; Von Neumann &amp; the Name</div><div class="tl-text">Ulam tells <strong>John von Neumann</strong>, who writes the first statistical neutron code in March 1947. <strong>Nicholas Metropolis</strong> dubs it the <em>"Monte Carlo method"</em> after Ulam's gambling uncle and the Monaco casino.</div></div>
+    <div class="tl-item"><div class="tl-year">1948 &mdash; ENIAC Runs It</div><div class="tl-text"><strong>Klara von Neumann</strong>, Metropolis, and team execute the first computerized MC on <strong>ENIAC</strong> &mdash; one of the first programs in the "stored program" paradigm. Enables the <strong>Teller-Ulam</strong> H-bomb design (1951).</div></div>
+    <div class="tl-item"><div class="tl-year">1949 &mdash; First Public Paper</div><div class="tl-text">Metropolis &amp; Ulam publish <em>"The Monte Carlo Method"</em> in the <strong>Journal of the American Statistical Association</strong> &mdash; the first unclassified paper. The method goes public.</div></div>
+    <div class="tl-item"><div class="tl-year">1980s+ &mdash; Business Adoption</div><div class="tl-text">Spreadsheets and tools like <strong>@RISK</strong>, <strong>Crystal Ball</strong>, and Excel bring MC to capital budgeting, option pricing, project risk &mdash; the standard today in <strong>engineering economy</strong>.</div></div>
+  </div>
+</div>
+
+<!-- SLIDE 6: How It Works -->
+<div class="slide" data-i="5">
+  <div class="s-label">The Method</div>
+  <div class="s-title">How Monte Carlo <em>Works</em></div>
+  <div class="s-sub" style="margin-bottom:20px">Instead of solving a problem analytically with fixed inputs, <strong>simulate it thousands of times</strong> with randomly sampled inputs and observe the distribution of outcomes.</div>
+  <div class="steps">
+    <div class="step"><div class="step-n">1</div><h4>Define Uncertainty</h4><p>Identify which inputs are uncertain and assign probability distributions (Normal, Triangular, Uniform)</p></div>
+    <div class="step"><div class="step-n">2</div><h4>Random Sampling</h4><p>Draw random values from each distribution using RNG (e.g., Box-Muller for Normal)</p></div>
+    <div class="step"><div class="step-n">3</div><h4>Compute Output</h4><p>Run your model (NPV, AW, IRR) with the sampled inputs to get one outcome</p></div>
+    <div class="step"><div class="step-n">4</div><h4>Repeat &amp; Analyze</h4><p>Do this 1,000-10,000+ times. Build histograms, find P(loss), percentiles, CI</p></div>
+  </div>
+  <div class="eq">Error shrinks as 1/&radic;n &nbsp;&rarr;&nbsp; <strong>10&times; more iterations = 3.16&times; more precise</strong></div>
+</div>
+
+<!-- SLIDE 7: Example 1 — Estimating Pi -->
+<div class="slide" data-i="6">
+  <div class="s-label">Classic Example</div>
+  <div class="s-title">Estimating <em>&pi;</em> with Random Darts</div>
+  <div class="two-col">
+    <div class="col">
+      <div class="s-sub">Throw random darts at a 1&times;1 square containing a quarter circle of radius 1. The fraction landing inside approximates &pi;/4.</div>
+      <div class="eq">&pi; &asymp; 4 &times; (points inside circle) / (total points)</div>
+      <div class="card">
+        <h3><span style="color:var(--gold)">&#128161;</span> Law of Large Numbers</h3>
+        <p>As samples grow, the sample ratio converges to the true area ratio. Try +1 first, then +1000 &mdash; watch the estimate stabilize.</p>
+      </div>
+    </div>
+    <div class="col">
+      <div class="sim-canvas" style="height:320px">
+        <canvas id="piCanvas"></canvas>
+        <div class="sim-result" id="piResult">&pi; &asymp; ?</div>
+        <div class="sim-controls">
+          <button class="sim-btn ghost" onclick="piSim(1)">+1</button>
+          <button class="sim-btn ghost" onclick="piSim(10)">+10</button>
+          <button class="sim-btn ghost" onclick="piSim(100)">+100</button>
+          <button class="sim-btn" onclick="piSim(1000)">+1000</button>
+          <button class="sim-btn ghost" onclick="piReset()">Reset</button>
+          <div class="sim-info" id="piInfo">0 points</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: MC in Engineering Economy -->
+<div class="slide" data-i="7">
+  <div class="s-label">Engineering Economy &bull; Capital Budgeting</div>
+  <div class="s-title">EDM Example: <em>DCF Under Risk</em></div>
+  <div class="two-col">
+    <div class="col">
+      <div class="s-sub" style="font-size:1.15rem;margin-bottom:4px">A firm is considering a <span class="hl-blue">$175,000 equipment purchase</span> with Year-1 revenue of $100K. Growth and costs are uncertain &mdash; is the project really as good as the single-number NPV suggests?</div>
+      <div class="card" style="padding:16px 22px">
+        <h3 style="font-size:1.18rem;margin-bottom:6px"><span style="color:var(--gold)">&#128202;</span> Problem Parameters</h3>
+        <table class="spec-table">
+          <tr><td>Initial Investment (Year 0)</td><td>&minus;$175,000</td></tr>
+          <tr><td>Year-1 Revenue</td><td>$100,000</td></tr>
+          <tr><td>Revenue Growth <em>g</em> ~ Normal</td><td>&mu;=5%, &sigma;=8%</td></tr>
+          <tr><td>Variable Cost % ~ Normal</td><td>&mu;=42%, &sigma;=5%</td></tr>
+          <tr><td>MARR (Discount Rate)</td><td>10%</td></tr>
+          <tr><td>Planning Horizon</td><td>6 years</td></tr>
+        </table>
+      </div>
+      <div class="card" style="padding:14px 20px;border-color:rgba(138,40,40,0.25);background:var(--crimson-soft)">
+        <h3 style="font-size:1.15rem;margin-bottom:4px"><span style="color:var(--crimson)">&#9888;</span> The Deterministic Trap</h3>
+        <p style="font-size:1rem">Single-point NPV = <span class="hl-green">+$41,913</span> &rarr; "Accept." But MC reveals <span class="hl-red">~43% chance of loss</span> and P(NPV&gt;$50K) is only <span class="hl-gold">~38%</span>. Run the sim &rarr;</p>
+      </div>
+    </div>
+    <div class="col">
+      <div class="sim-canvas" style="height:320px">
+        <canvas id="dcfCanvas"></canvas>
+        <div class="sim-result" id="dcfResult">P(NPV&lt;0) = ?</div>
+        <div class="sim-controls">
+          <button class="sim-btn ghost" onclick="dcfSim(1)">+1</button>
+          <button class="sim-btn ghost" onclick="dcfSim(50)">+50</button>
+          <button class="sim-btn ghost" onclick="dcfSim(500)">+500</button>
+          <button class="sim-btn" onclick="dcfSim(5000)">+5000</button>
+          <button class="sim-btn ghost" onclick="dcfReset()">Reset</button>
+          <div class="sim-info" id="dcfInfo">0 iterations</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: MC in Finance -->
+<div class="slide" data-i="8">
+  <div class="s-label">Finance Application</div>
+  <div class="s-title">Portfolio <em>Risk Analysis</em></div>
+  <div class="two-col">
+    <div class="col">
+      <div class="s-sub">A $100K portfolio with expected annual return of 8% and volatility of 15%. What's the probability of losing more than 10% in a year? MC simulates thousands of possible return scenarios.</div>
+      <div class="eq">Portfolio Value = $100K &times; (1 + r), &nbsp; r ~ Normal(8%, 15%)</div>
+      <div class="card">
+        <h3><span style="color:var(--gold)">&#128176;</span> Value at Risk (VaR)</h3>
+        <p>At the 5th percentile, the portfolio could lose up to <strong style="color:var(--crimson)">~$17K</strong>. This is the <strong>5% VaR</strong> &mdash; the loss exceeded only 5% of the time. Critical for risk management.</p>
+      </div>
+    </div>
+    <div class="col">
+      <div class="sim-canvas" style="height:320px">
+        <canvas id="finCanvas"></canvas>
+        <div class="sim-result" id="finResult">P(Loss>10%) = ?</div>
+        <div class="sim-controls">
+          <button class="sim-btn ghost" onclick="finSim(10)">+10</button>
+          <button class="sim-btn ghost" onclick="finSim(100)">+100</button>
+          <button class="sim-btn" onclick="finSim(5000)">+5000</button>
+          <button class="sim-btn ghost" onclick="finReset()">Reset</button>
+          <div class="sim-info" id="finInfo">0 scenarios</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: Numerical Integration -->
+<div class="slide" data-i="9">
+  <div class="s-label">Mathematical Example</div>
+  <div class="s-title">Numerical <em>Integration</em></div>
+  <div class="two-col">
+    <div class="col">
+      <div class="s-sub">Draw a rectangle (<strong>"bounding box"</strong>) that completely contains the curve. Throw random darts inside the box. The fraction landing below the curve &times; box area = the integral.</div>
+      <div class="eq" style="font-size:1.2rem;line-height:1.8">
+        <div style="margin-bottom:6px">&int;<sub>0</sub><sup>&pi;</sup> x&middot;sin(x) dx &nbsp;&asymp;&nbsp; <strong>A<sub>box</sub></strong> &times; (hits below curve) / (total darts)</div>
+        <div style="font-size:.95rem;color:var(--text-2);font-weight:400;font-style:normal">where &nbsp;<strong style="color:var(--crimson)">A<sub>box</sub> = width &times; height = &pi; &times; &pi; &asymp; 9.87</strong></div>
+      </div>
+      <div class="card">
+        <h3><span style="color:var(--gold)">&#128202;</span> Exact Answer = &pi;</h3>
+        <p>The rectangle has width &pi; (x-axis) and height &pi; (since max of x&middot;sin(x) on [0,&pi;] is &asymp;1.82, we use &pi; for a safe bound). <span class="hl-green">Green</span> = below curve, <span class="hl-red">red</span> = above.</p>
+      </div>
+    </div>
+    <div class="col">
+      <div class="sim-canvas" style="height:320px">
+        <canvas id="intCanvas"></canvas>
+        <div class="sim-result" id="intResult">Area &asymp; ?</div>
+        <div class="sim-controls">
+          <button class="sim-btn ghost" onclick="intSim(10)">+10</button>
+          <button class="sim-btn ghost" onclick="intSim(100)">+100</button>
+          <button class="sim-btn" onclick="intSim(1000)">+1000</button>
+          <button class="sim-btn ghost" onclick="intReset()">Reset</button>
+          <div class="sim-info" id="intInfo">0 points</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: Applications -->
+<div class="slide" data-i="10">
+  <div class="s-label">Real-World Impact</div>
+  <div class="s-title">Where MC is <em>Used Today</em></div>
+  <div class="app-grid">
+    <div class="app-card"><div class="app-icon">&#128176;</div><h4>Finance &amp; Banking</h4><p>Option pricing, portfolio VaR, credit risk, Basel III regulatory compliance, derivative valuation</p></div>
+    <div class="app-card"><div class="app-icon">&#127981;</div><h4>Engineering Economy</h4><p>NPV/IRR under uncertainty, equipment replacement, make-vs-buy decisions, project selection</p></div>
+    <div class="app-card"><div class="app-icon">&#128138;</div><h4>Healthcare &amp; Pharma</h4><p>Clinical trial design, epidemic modeling (COVID-19), cost-effectiveness of treatments</p></div>
+    <div class="app-card"><div class="app-icon">&#9889;</div><h4>Energy &amp; Resources</h4><p>Oil reserve estimation, renewable output forecasting, carbon pricing, grid reliability</p></div>
+    <div class="app-card"><div class="app-icon">&#128666;</div><h4>Supply Chain</h4><p>Demand uncertainty, lead time variability, inventory optimization, logistics risk assessment</p></div>
+    <div class="app-card"><div class="app-icon">&#129302;</div><h4>AI &amp; Machine Learning</h4><p>MCMC for Bayesian inference, reinforcement learning, hyperparameter tuning, generative models</p></div>
+  </div>
+</div>
+
+<!-- SLIDE 12: Deterministic vs Stochastic -->
+<div class="slide" data-i="11">
+  <div class="s-label">The Core Lesson</div>
+  <div class="s-title">Deterministic vs <em>Stochastic</em></div>
+  <div class="cmp-grid">
+    <div class="cmp-card det">
+      <h3><span style="color:var(--crimson)">&#10060;</span> Deterministic Model</h3>
+      <ul class="bullets">
+        <li>Single "best guess" for each input</li>
+        <li>One output: <strong>NPV = $41,913</strong></li>
+        <li>Decision: <strong>Accept</strong> &mdash; looks profitable</li>
+        <li>No visibility into risk or downside</li>
+        <li>False confidence in a single number</li>
+      </ul>
+    </div>
+    <div class="cmp-card mc">
+      <h3><span style="color:var(--olive)">&#9989;</span> Monte Carlo Model</h3>
+      <ul class="bullets">
+        <li>Distributions capture <strong>real uncertainty</strong></li>
+        <li>Full range: <strong>-$150K to +$250K</strong></li>
+        <li><strong style="color:var(--crimson)">43% chance of negative NPV</strong> revealed</li>
+        <li>P(Bonus) = 38% &mdash; bonus is unlikely</li>
+        <li>Decision made with <strong>eyes open</strong></li>
+      </ul>
+    </div>
+  </div>
+  <div class="eq" style="margin-top:16px;font-size:1.2rem">Uncertainty is not the enemy &mdash; <strong>ignoring it</strong> is.</div>
+</div>
+
+<!-- SLIDE 13: Workshop Preview -->
+<div class="slide" data-i="12">
+  <div class="s-label">Your Turn</div>
+  <div class="s-title">Build Your Own <em>MC Dashboard</em></div>
+  <div class="s-sub" style="margin-bottom:22px">Using 5 progressive AI prompts, you'll build a complete Monte Carlo DCF simulation tool &mdash; with live histograms, draggable confidence intervals, and decision analytics.</div>
+  <div class="steps">
+    <div class="step"><div class="step-n">1</div><h4>Foundation</h4><p>Dashboard layout, DCF table, AW/IRR bottom bar</p></div>
+    <div class="step"><div class="step-n">2</div><h4>Engine</h4><p>MC simulation, dice button, progress bar</p></div>
+    <div class="step"><div class="step-n">3</div><h4>Visualize</h4><p>Histograms, CI bar with draggable handles</p></div>
+    <div class="step"><div class="step-n">4</div><h4>Analyze</h4><p>Statistics KPIs, percentiles, sensitivity</p></div>
+  </div>
+  <div class="card" style="margin-top:22px;text-align:center;padding:28px">
+    <h3 style="justify-content:center;font-size:1.4rem"><span style="color:var(--gold)">&#127942;</span> Key Takeaway</h3>
+    <p style="font-size:1.12rem;margin-top:8px">Monte Carlo doesn't eliminate uncertainty &mdash; it <strong>quantifies</strong> it so you can make <strong style="color:var(--gold-d)">better engineering decisions</strong>.</p>
+  </div>
+</div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav">
+  <button class="nav-btn" id="prevBtn" onclick="nav(-1)" disabled>&#8592;</button>
+  <div class="nav-dots" id="dots"></div>
+  <div class="nav-info">IE 4512 &bull; Prof. Dehghani &bull; Northeastern</div>
+  <button class="nav-btn" id="nextBtn" onclick="nav(1)">&#8594;</button>
+</div>
+
+<script>
+/* ═══ NAVIGATION ═══ */
+let cur=0;
+const slides=document.querySelectorAll('.slide');
+const N=slides.length;
+const dotsEl=document.getElementById('dots');
+for(let i=0;i<N;i++){const d=document.createElement('div');d.className='nav-dot'+(i===0?' active':'');d.onclick=()=>goTo(i);dotsEl.appendChild(d)}
+
+function goTo(i){
+  if(i<0||i>=N)return;
+  slides[cur].classList.remove('active');slides[cur].classList.add('prev');
+  setTimeout(()=>{slides.forEach(s=>s.classList.remove('prev'))},500);
+  cur=i;
+  slides[cur].classList.add('active');
+  document.querySelectorAll('.nav-dot').forEach((d,j)=>d.classList.toggle('active',j===cur));
+  document.getElementById('prevBtn').disabled=cur===0;
+  document.getElementById('nextBtn').disabled=cur===N-1;
+}
+function nav(d){goTo(cur+d)}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')nav(1);if(e.key==='ArrowLeft')nav(-1)});
+
+/* ═══ EDITORIAL PALETTE (canvas) ═══ */
+const C={gold:'184,134,11',goldD:'138,101,8',olive:'92,122,74',crimson:'138,40,40',ink:'26,26,26',soft:'139,115,85'};
+
+/* ═══ HELPERS ═══ */
+function randn(){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+function initCanvas(id){const c=document.getElementById(id);const dpr=window.devicePixelRatio||1;const r=c.getBoundingClientRect();c.width=r.width*dpr;c.height=r.height*dpr;const ctx=c.getContext('2d');ctx.scale(dpr,dpr);return{ctx,W:r.width,H:r.height-40}}
+
+/* ═══ PI SIMULATION ═══ */
+const piData={inside:0,n:0,pts:[]};
+function piReset(){piData.inside=0;piData.n=0;piData.pts=[];drawPi();document.getElementById('piResult').textContent='π ≈ ?';document.getElementById('piInfo').textContent='0 points'}
+function piSim(count){
+  for(let i=0;i<count;i++){const x=Math.random(),y=Math.random();const ins=x*x+y*y<=1;if(ins)piData.inside++;piData.n++;if(piData.pts.length<6000)piData.pts.push({x,y,ins})}
+  drawPi();
+  document.getElementById('piResult').textContent='π ≈ '+(4*piData.inside/piData.n).toFixed(5);
+  document.getElementById('piInfo').textContent=piData.n.toLocaleString()+' points';
+}
+function drawPi(){
+  const{ctx,W,H}=initCanvas('piCanvas');const s=Math.min(W,H)-20;const ox=(W-s)/2,oy=10;
+  ctx.clearRect(0,0,W,H+40);
+  ctx.strokeStyle='rgba('+C.ink+',0.15)';ctx.lineWidth=1.5;ctx.strokeRect(ox,oy,s,s);
+  ctx.strokeStyle='rgba('+C.gold+',0.85)';ctx.lineWidth=3;ctx.beginPath();ctx.arc(ox,oy+s,s,Math.PI*1.5,0);ctx.stroke();
+  piData.pts.forEach(p=>{ctx.fillStyle=p.ins?'rgba('+C.olive+',0.8)':'rgba('+C.crimson+',0.55)';ctx.beginPath();ctx.arc(ox+p.x*s,oy+(1-p.y)*s,2.2,0,Math.PI*2);ctx.fill()});
+}
+
+/* ═══ INTEGRATION ═══ */
+const intData={below:0,n:0,pts:[]};
+const intF=x=>x*Math.sin(x);const intMaxY=Math.PI;const intXMax=Math.PI;
+function intReset(){intData.below=0;intData.n=0;intData.pts=[];drawInt();document.getElementById('intResult').textContent='Area ≈ ?';document.getElementById('intInfo').textContent='0 points'}
+function intSim(count){
+  for(let i=0;i<count;i++){const x=Math.random()*intXMax,y=Math.random()*intMaxY;const b=y<=intF(x);if(b)intData.below++;intData.n++;if(intData.pts.length<6000)intData.pts.push({x,y,b})}
+  drawInt();
+  const est=intXMax*intMaxY*intData.below/intData.n;
+  document.getElementById('intResult').textContent='Area ≈ '+est.toFixed(4)+' (exact: π)';
+  document.getElementById('intInfo').textContent=intData.n.toLocaleString()+' points';
+}
+function drawInt(){
+  const{ctx,W,H}=initCanvas('intCanvas');
+  const pad={l:30,r:10,t:10,b:10};const cw=W-pad.l-pad.r,ch=H-pad.t-pad.b;
+  ctx.clearRect(0,0,W,H+40);
+  // Curve
+  ctx.strokeStyle='rgba('+C.gold+',0.9)';ctx.lineWidth=3;ctx.beginPath();
+  for(let i=0;i<=200;i++){const x=i/200*intXMax;const y=intF(x);ctx.lineTo(pad.l+x/intXMax*cw,pad.t+ch-y/intMaxY*ch)}ctx.stroke();
+  // Fill under curve
+  ctx.fillStyle='rgba('+C.gold+',0.08)';ctx.beginPath();ctx.moveTo(pad.l,pad.t+ch);
+  for(let i=0;i<=200;i++){const x=i/200*intXMax;const y=intF(x);ctx.lineTo(pad.l+x/intXMax*cw,pad.t+ch-y/intMaxY*ch)}
+  ctx.lineTo(pad.l+cw,pad.t+ch);ctx.closePath();ctx.fill();
+  intData.pts.forEach(p=>{ctx.fillStyle=p.b?'rgba('+C.olive+',0.72)':'rgba('+C.crimson+',0.42)';ctx.beginPath();ctx.arc(pad.l+p.x/intXMax*cw,pad.t+ch-p.y/intMaxY*ch,1.8,0,Math.PI*2);ctx.fill()});
+}
+
+/* ═══ DCF SIMULATION ═══ */
+const dcfData={npvs:[],n:0};
+function dcfReset(){dcfData.npvs=[];dcfData.n=0;drawDcf();document.getElementById('dcfResult').textContent='P(NPV<0) = ?';document.getElementById('dcfInfo').textContent='0 iterations'}
+function dcfSim(count){
+  for(let it=0;it<count;it++){
+    const g=(5+8*randn())/100;const vc=Math.max(.01,Math.min(.99,(42+5*randn())/100));
+    let rev=100000;const cfs=[-175000];
+    for(let y=1;y<=6;y++){if(y>1)rev*=(1+g);cfs.push(rev*(1-vc))}
+    let npv=cfs[0];for(let y=1;y<=6;y++)npv+=cfs[y]/Math.pow(1.1,y);
+    dcfData.npvs.push(npv);dcfData.n++;
+  }
+  drawDcf();
+  const neg=dcfData.npvs.filter(v=>v<0).length;
+  document.getElementById('dcfResult').textContent='P(NPV<0) = '+(neg/dcfData.n*100).toFixed(1)+'%';
+  document.getElementById('dcfInfo').textContent=dcfData.n.toLocaleString()+' iterations';
+}
+function drawDcf(){drawHistogram('dcfCanvas',dcfData.npvs,C.gold)}
+
+/* ═══ FINANCE SIMULATION ═══ */
+const finData={vals:[],n:0};
+function finReset(){finData.vals=[];finData.n=0;drawFin();document.getElementById('finResult').textContent='P(Loss>10%) = ?';document.getElementById('finInfo').textContent='0 scenarios'}
+function finSim(count){
+  for(let i=0;i<count;i++){const r=(8+15*randn())/100;finData.vals.push(100000*(1+r));finData.n++}
+  drawFin();
+  const loss10=finData.vals.filter(v=>v<90000).length;
+  document.getElementById('finResult').textContent='P(Loss>10%) = '+(loss10/finData.n*100).toFixed(1)+'%';
+  document.getElementById('finInfo').textContent=finData.n.toLocaleString()+' scenarios';
+}
+function drawFin(){drawHistogram('finCanvas',finData.vals,C.olive,100000)}
+
+/* ═══ SHARED HISTOGRAM DRAWER ═══ */
+function drawHistogram(canvasId,data,rgb,zeroLine){
+  const{ctx,W,H}=initCanvas(canvasId);
+  ctx.clearRect(0,0,W,H+40);
+  if(!data||data.length===0){ctx.font='500 16px Outfit';ctx.fillStyle='rgba('+C.soft+',0.85)';ctx.textAlign='center';ctx.fillText('Click buttons to simulate',W/2,H/2);return}
+  const bins=35;const mn=Math.min(...data),mx=Math.max(...data),range=mx-mn||1,bw=range/bins;
+  const counts=new Array(bins).fill(0);
+  data.forEach(v=>{const i=Math.min(bins-1,Math.floor((v-mn)/bw));counts[i]++});
+  const maxC=Math.max(...counts);
+  const pad={l:48,r:12,t:12,b:28};const cw=W-pad.l-pad.r,ch=H-pad.t-pad.b;
+  const barW=Math.max(2,cw/bins-1);
+
+  // Subtle grid
+  ctx.strokeStyle='rgba('+C.ink+',0.06)';ctx.lineWidth=1;
+  for(let i=1;i<=3;i++){const y=pad.t+(ch/3)*i;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke()}
+
+  counts.forEach((c,i)=>{
+    if(c===0)return;
+    const x=pad.l+i*(barW+1);const h=Math.max(1,(c/maxC)*ch);const y=pad.t+ch-h;
+    const binC=mn+(i+0.5)*bw;
+    const isNeg=zeroLine?binC<zeroLine:binC<0;
+    const cr=Math.min(3,barW/2);
+    const grad=ctx.createLinearGradient(x,y,x,pad.t+ch);
+    if(isNeg){grad.addColorStop(0,'rgba('+C.crimson+',0.92)');grad.addColorStop(1,'rgba('+C.crimson+',0.35)')}
+    else{grad.addColorStop(0,'rgba('+rgb+',0.92)');grad.addColorStop(1,'rgba('+rgb+',0.35)')}
+    ctx.fillStyle=grad;
+    ctx.beginPath();ctx.moveTo(x+cr,y);ctx.lineTo(x+barW-cr,y);ctx.quadraticCurveTo(x+barW,y,x+barW,y+cr);ctx.lineTo(x+barW,pad.t+ch);ctx.lineTo(x,pad.t+ch);ctx.lineTo(x,y+cr);ctx.quadraticCurveTo(x,y,x+cr,y);ctx.closePath();ctx.fill();
+  });
+
+  // Zero/threshold line
+  const zv=zeroLine||0;
+  if(mn<zv&&mx>zv){
+    const zx=pad.l+((zv-mn)/range)*cw;
+    ctx.strokeStyle='rgba('+C.ink+',0.55)';ctx.lineWidth=2;ctx.setLineDash([5,4]);
+    ctx.beginPath();ctx.moveTo(zx,pad.t);ctx.lineTo(zx,H-pad.b);ctx.stroke();ctx.setLineDash([]);
+    ctx.font='700 12px Outfit';ctx.fillStyle='rgba('+C.ink+',0.8)';ctx.textAlign='center';
+    ctx.fillText(zeroLine?'$'+Math.round(zeroLine/1000)+'K':'$0',zx,pad.t+12);
+  }
+
+  // Mean chip bar
+  const mean=data.reduce((a,b)=>a+b,0)/data.length;
+  ctx.fillStyle='rgba('+C.gold+',0.1)';
+  ctx.beginPath();ctx.roundRect(pad.l,H-pad.b-20,cw,17,4);ctx.fill();
+  ctx.strokeStyle='rgba('+C.gold+',0.28)';ctx.lineWidth=1;ctx.stroke();
+  ctx.font='700 12px Outfit';ctx.fillStyle='rgba('+C.goldD+',0.95)';ctx.textAlign='center';
+  ctx.fillText('μ = $'+Math.round(mean).toLocaleString(),pad.l+cw/2,H-pad.b-9);
+  // Mean indicator
+  const meanX=pad.l+((mean-mn)/range)*cw;
+  ctx.strokeStyle='rgba('+C.goldD+',0.6)';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(meanX,pad.t+16);ctx.lineTo(meanX,H-pad.b-20);ctx.stroke();
+  ctx.fillStyle='rgba('+C.goldD+',1)';ctx.beginPath();ctx.arc(meanX,H-pad.b-20+8.5,3,0,Math.PI*2);ctx.fill();
+
+  // X-axis
+  ctx.font='600 11px Outfit';ctx.fillStyle='rgba('+C.soft+',0.95)';ctx.textAlign='center';
+  for(let i=0;i<=4;i++){const v=mn+range/4*i;ctx.fillText('$'+Math.round(v/1000)+'K',pad.l+(cw/4)*i,H-pad.b+16)}
+}
+
+/* ═══ INIT ═══ */
+function drawAll(){drawPi();drawInt();drawDcf();drawFin()}
+setTimeout(drawAll,100);
+window.addEventListener('resize',drawAll);
+</script>
+</body>
+</html>
