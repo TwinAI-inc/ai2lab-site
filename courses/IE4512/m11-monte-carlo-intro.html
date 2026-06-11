@@ -108,6 +108,11 @@ body{font-family:'Outfit',-apple-system,system-ui,sans-serif;background:linear-g
 .nav-dot.active{background:var(--gold);box-shadow:0 0 10px rgba(184,134,11,0.4);transform:scale(1.2)}
 .nav-info{font-family:'Lora',serif;font-style:italic;font-size:.96rem;color:var(--text-3);font-weight:500}
 
+/* Fullscreen toggle */
+.fs-btn{position:fixed;top:16px;right:16px;z-index:60;width:40px;height:40px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,0.88);backdrop-filter:blur(8px);color:var(--gold-d);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(90,82,71,0.14);transition:all .2s;opacity:.55}
+.fs-btn:hover{opacity:1;border-color:var(--gold);background:var(--gold);color:#fff;box-shadow:0 4px 14px rgba(184,134,11,0.35)}
+.fs-btn svg{width:20px;height:20px}
+
 /* Comparison grid */
 .cmp-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:12px}
 .cmp-card{padding:24px 28px;border-radius:12px}
@@ -153,6 +158,8 @@ body{font-family:'Outfit',-apple-system,system-ui,sans-serif;background:linear-g
 </style>
 </head>
 <body>
+
+<button class="fs-btn" id="fsBtn" onclick="toggleFS()" title="Fullscreen (F)" aria-label="Toggle fullscreen"></button>
 
 <div class="deck" id="deck">
 
@@ -450,7 +457,15 @@ function goTo(i){
   document.getElementById('nextBtn').disabled=cur===N-1;
 }
 function nav(d){goTo(cur+d)}
-document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')nav(1);if(e.key==='ArrowLeft')nav(-1)});
+
+/* ═══ FULLSCREEN ═══ */
+const FS_EXPAND='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 00-2 2v3M16 3h3a2 2 0 012 2v3M8 21H5a2 2 0 01-2-2v-3M16 21h3a2 2 0 002-2v-3"/></svg>';
+const FS_COMPRESS='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h3a2 2 0 002-2V3M21 8h-3a2 2 0 01-2-2V3M3 16h3a2 2 0 012 2v3M21 16h-3a2 2 0 00-2 2v3"/></svg>';
+document.getElementById('fsBtn').innerHTML=FS_EXPAND;
+function toggleFS(){if(!document.fullscreenElement){(document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen).call(document.documentElement)}else{(document.exitFullscreen||document.webkitExitFullscreen).call(document)}}
+document.addEventListener('fullscreenchange',()=>{document.getElementById('fsBtn').innerHTML=document.fullscreenElement?FS_COMPRESS:FS_EXPAND;setTimeout(drawAll,120)});
+
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')nav(1);if(e.key==='ArrowLeft')nav(-1);if(e.key==='f'||e.key==='F')toggleFS()});
 
 /* ═══ EDITORIAL PALETTE (canvas) ═══ */
 const C={gold:'184,134,11',goldD:'138,101,8',olive:'92,122,74',crimson:'138,40,40',ink:'26,26,26',soft:'139,115,85'};
