@@ -46,7 +46,7 @@
   // ============ STATE ============
   // pos: { x, y } in CSS pixels from the top-left of the viewport. null = default
   // bottom-right placement. Persisted across pages via localStorage.
-  let state = { trackIdx: -1, shuffle: false, volume: 60, expanded: false, isPlaying: false, currentTime: 0, pos: null };
+  let state = { trackIdx: -1, shuffle: false, repeatOne: false, volume: 60, expanded: false, isPlaying: false, currentTime: 0, pos: null };
   try { Object.assign(state, JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')); } catch (e) {}
   function save() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
@@ -233,6 +233,7 @@
     }
     .fm-controls button.play:hover { background: #4a6fe6; color: #fff; }
     .fm-controls button.shuf.active { background: #b8860b; color: #fff; }
+    .fm-controls button.rep.active { background: #1947d6; color: #fff; }
     .fm-controls button svg { width: 15px; height: 15px; }
     .fm-controls button.play svg { width: 17px; height: 17px; }
 
@@ -382,6 +383,9 @@
         <button id="fm-stop" title="Stop">
           <svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
         </button>
+        <button class="rep" id="fm-rep" title="Repeat one">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/><path d="M11 10h1v4"/></svg>
+        </button>
       </div>
 
       <div class="fm-vol">
@@ -406,6 +410,7 @@
     const elPlay      = $('fm-play');
     const elPlayIcon  = $('fm-play-icon');
     const elShuf      = $('fm-shuf');
+    const elRep       = $('fm-rep');
     const elVol       = $('fm-vol');
     const elProgBar   = $('fm-progress-bar');
     const elProgFill  = $('fm-progress-fill');
@@ -454,6 +459,7 @@
       }
       elArt.classList.toggle('playing', state.isPlaying);
       elShuf.classList.toggle('active', !!state.shuffle);
+      elRep.classList.toggle('active', !!state.repeatOne);
       elDot.classList.toggle('off', !state.isPlaying);
       elVol.style.setProperty('--pct', state.volume + '%');
       setPlayIcons(state.isPlaying);
@@ -650,6 +656,7 @@
     $('fm-prev').addEventListener('click', prev);
     $('fm-stop').addEventListener('click', stop);
     elShuf.addEventListener('click', () => { state.shuffle = !state.shuffle; save(); updateNow(); });
+    elRep.addEventListener('click', () => { state.repeatOne = !state.repeatOne; save(); updateNow(); });
     elVol.addEventListener('input', e => {
       state.volume = +e.target.value; save();
       audio.volume = state.volume / 100;
@@ -668,7 +675,14 @@
       elProgBar.style.setProperty('--seek-pct', pct + '%');
     });
 
-    audio.addEventListener('ended', next);
+    audio.addEventListener('ended', () => {
+      if (state.repeatOne && state.trackIdx >= 0) {
+        audio.currentTime = 0;
+        audio.play().then(() => { state.isPlaying = true; save(); updateNow(); }).catch(() => {});
+      } else {
+        next();
+      }
+    });
     audio.addEventListener('error', () => { state.isPlaying = false; save(); updateNow(); });
     audio.addEventListener('play',  () => { state.isPlaying = true;  save(); updateNow(); });
     audio.addEventListener('pause', () => { /* state set in togglePlay/stop */ });
