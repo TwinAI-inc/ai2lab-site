@@ -769,6 +769,11 @@
   @keyframes pulse-q { 0%,100% { box-shadow: 0 0 0 6px rgba(0,85,212,.15), 0 4px 14px rgba(0,85,212,.35); } 50% { box-shadow: 0 0 0 12px rgba(0,85,212,.1), 0 4px 18px rgba(0,85,212,.45); } }
 
   /* ====== Tool: ReAct Player ====== */
+  .react-scenario-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+  .rx-scene-lbl { font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--soft); white-space: nowrap; }
+  .rx-query { background: var(--blue-soft); border: 1px solid var(--border); border-radius: 9px; padding: 10px 14px; margin-bottom: 12px; font-size: 13px; color: var(--ink); }
+  .rx-q-lbl { font-weight: 700; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--blue); margin-right: 8px; }
+  .rx-q-txt { font-style: italic; color: var(--muted); }
   .react-controls { display: flex; align-items: center; gap: 12px; padding: 14px; background: var(--blue-soft); border-radius: 10px; margin-bottom: 14px; }
   .react-btn { width: 38px; height: 38px; border: none; border-radius: 50%; background: white; color: var(--blue); cursor: pointer; display: grid; place-items: center; box-shadow: 0 2px 6px rgba(0,0,0,.08); transition: all .15s; }
   .react-btn.play { background: linear-gradient(135deg, var(--ok), #34D399); color: white; width: 42px; height: 42px; }
@@ -3189,7 +3194,47 @@ function renderEmbeddings() {
    TOOL: REACT TRACE PLAYER (M06)
    ============================================================ */
 function renderReact() {
+  const RX_SCENARIOS = [
+    { label: 'Population comparison', query: 'How much larger is Brazil\'s population than Australia\'s?',
+      steps: [
+        { kind:'thought', t:'I need two numbers: Brazil\'s population and Australia\'s. Let me look up Brazil first.' },
+        { kind:'action', t:'search("population of Brazil 2024")' },
+        { kind:'observation', t:'~211 million people (UN World Population Prospects, 2024 revision).' },
+        { kind:'thought', t:'Got it. Now I need Australia.' },
+        { kind:'action', t:'search("population of Australia 2024")' },
+        { kind:'observation', t:'~27 million people (ABS, mid-2024).' },
+        { kind:'thought', t:'Divide. 211 / 27 ≈ 7.8. That is the ratio.' },
+        { kind:'final', t:'Brazil\'s population is about 7.8× larger than Australia\'s (211M vs 27M, mid-2024 estimates).' }
+      ]},
+    { label: 'ED wait time analysis', query: 'Is this hospital\'s ED wait time above the national benchmark?',
+      steps: [
+        { kind:'thought', t:'I need the national benchmark first, then this hospital\'s actual median wait.' },
+        { kind:'action', t:'lookup("CMS Emergency Department wait time benchmark 2024")' },
+        { kind:'observation', t:'CMS 2024 benchmark: 174 minutes median door-to-provider time in US EDs.' },
+        { kind:'thought', t:'Now I need the hospital\'s actual number from the QI dashboard.' },
+        { kind:'action', t:'query_dashboard("median door-to-provider minutes, Q1 2026, site=NorthEast ED")' },
+        { kind:'observation', t:'241 minutes, 95% CI [228, 255], N = 1,840 visits.' },
+        { kind:'thought', t:'Gap = 241 − 174 = 67 minutes. CI does not cross the benchmark, so the difference is significant.' },
+        { kind:'final', t:'Yes — this ED is 67 minutes (38%) above the CMS benchmark. Statistically significant at α = 0.05. Recommend a bottleneck audit at triage intake.' }
+      ]},
+    { label: 'Slow Python loop fix', query: 'Why is this loop slow, and how do I fix it?',
+      steps: [
+        { kind:'thought', t:'The user has a for-loop over a DataFrame. I should check how it accesses values.' },
+        { kind:'action', t:'code_analyze("for i in range(len(df)):\\n    total += df[\'price\'][i]")' },
+        { kind:'observation', t:'pandas `df[col][i]` inside a range-loop is O(n²): each access rebuilds a full Series then indexes it. On 10k rows: 336ms.' },
+        { kind:'thought', t:'The fix is vectorized summation. Let me verify the speedup.' },
+        { kind:'action', t:'benchmark("df[\'price\'].sum()", n=10000)' },
+        { kind:'observation', t:'Elapsed: 0.4ms. Speedup: 840×.' },
+        { kind:'thought', t:'Root cause confirmed; remedy verified. The answer is clear.' },
+        { kind:'final', t:'The loop uses O(n²) pandas indexing. Replace with `df[\'price\'].sum()` — confirmed 840× faster (0.4ms vs 336ms on 10k rows). For large DataFrames, always prefer vectorized operations or `.values` access.' }
+      ]}
+  ];
   $('tool-body').innerHTML = `
+    <div class="react-scenario-bar">
+      <span class="rx-scene-lbl">Scenario</span>
+      <div class="seg" id="rx-scenarios"></div>
+    </div>
+    <div class="rx-query" id="rx-query"></div>
     <div class="react-controls">
       <button class="react-btn" onclick="rx_back()" title="Restart"><svg><use href="#i-skip-back"/></svg></button>
       <button class="react-btn play" id="rx-play" onclick="rx_play()"><svg><use href="#i-play"/></svg></button>
@@ -3200,34 +3245,36 @@ function renderReact() {
       </div>
     </div>
     <div id="rx-out"></div>`;
-  window.RX = [
-    { kind:'thought', t:'I need two numbers: Brazil\'s population and Australia\'s. Let me look up Brazil first.' },
-    { kind:'action', t:'search("population of Brazil 2024")' },
-    { kind:'observation', t:'~211 million people (UN World Population Prospects, 2024 revision).' },
-    { kind:'thought', t:'Got it. Now I need Australia.' },
-    { kind:'action', t:'search("population of Australia 2024")' },
-    { kind:'observation', t:'~27 million people (ABS, mid-2024).' },
-    { kind:'thought', t:'Divide. 211 / 27 ≈ 7.8.' },
-    { kind:'final', t:'Brazil\'s population is about 7.8× larger than Australia\'s (211M vs 27M, mid-2024 estimates).' }
-  ];
-  window.rx_step = 0; window.rx_int = null;
+  window.RX_SCEN = 0; window.rx_step = 0; window.rx_int = null;
+  function loadScenario(idx) {
+    if (window.rx_int) { clearInterval(window.rx_int); window.rx_int = null; }
+    window.RX_SCEN = idx; window.rx_step = 0;
+    window.RX = RX_SCENARIOS[idx].steps;
+    $('rx-query').innerHTML = `<span class="rx-q-lbl">User query</span> <span class="rx-q-txt">${RX_SCENARIOS[idx].query}</span>`;
+    $('rx-range').max = window.RX.length;
+    $('rx-play').innerHTML = '<svg><use href="#i-play"/></svg>';
+    document.querySelectorAll('#rx-scenarios .seg-btn').forEach((b,i) => b.classList.toggle('active', i === idx));
+    paint();
+  }
+  $('rx-scenarios').innerHTML = RX_SCENARIOS.map((s,i) => `<button class="seg-btn${i===0?' active':''}" data-i="${i}">${s.label}</button>`).join('');
+  document.querySelectorAll('#rx-scenarios .seg-btn').forEach(b => b.addEventListener('click', () => loadScenario(+b.dataset.i)));
   window.rx_back = () => { window.rx_step = 0; paint(); };
-  window.rx_fwd = () => { if (window.rx_step < RX.length) window.rx_step++; paint(); };
+  window.rx_fwd = () => { if (window.rx_step < window.RX.length) window.rx_step++; paint(); };
   window.rx_play = () => {
     if (window.rx_int) { clearInterval(window.rx_int); window.rx_int = null; $('rx-play').innerHTML = '<svg><use href="#i-play"/></svg>'; return; }
     $('rx-play').innerHTML = '<svg><use href="#i-pause"/></svg>';
     window.rx_int = setInterval(() => {
-      if (window.rx_step >= RX.length) { clearInterval(window.rx_int); window.rx_int = null; $('rx-play').innerHTML = '<svg><use href="#i-play"/></svg>'; return; }
+      if (window.rx_step >= window.RX.length) { clearInterval(window.rx_int); window.rx_int = null; $('rx-play').innerHTML = '<svg><use href="#i-play"/></svg>'; return; }
       window.rx_step++; paint();
     }, 1100);
   };
   $('rx-range').addEventListener('input', e => { window.rx_step = parseInt(e.target.value); paint(); });
   function paint() {
-    $('rx-step').textContent = `Step ${window.rx_step} / ${RX.length}`;
+    $('rx-step').textContent = `Step ${window.rx_step} / ${window.RX.length}`;
     $('rx-range').value = window.rx_step;
-    $('rx-out').innerHTML = RX.slice(0, window.rx_step).map(s => `<div class="react-step ${s.kind}"><div class="lbl">${s.kind === 'final' ? 'Final Answer' : s.kind}</div><div class="txt">${s.t}</div></div>`).join('');
+    $('rx-out').innerHTML = window.RX.slice(0, window.rx_step).map(s => `<div class="react-step ${s.kind}"><div class="lbl">${s.kind === 'final' ? 'Final Answer' : s.kind}</div><div class="txt">${s.t}</div></div>`).join('');
   }
-  paint();
+  loadScenario(0);
 }
 
 /* ============================================================
