@@ -243,6 +243,7 @@
 
   /* ============ TOOL CARDS ============ */
   .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+  .tool-thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; background: var(--bg); }
   .tool-card {
     background: var(--paper); border: 1px solid var(--border); border-radius: 14px;
     overflow: hidden; cursor: pointer;
@@ -1018,6 +1019,69 @@
   .rr-clock.warn { background: linear-gradient(135deg, #FEF2F2, #FEF3C7); animation: rr-pulse 0.6s ease-in-out infinite; }
   .rr-clock.warn .n { color: var(--danger); }
   @keyframes rr-pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.03); } }
+
+  /* ============ APP LIBRARY (home) ============ */
+  .home-shell { padding: 30px 34px 60px; max-width: 1000px; margin: 0 auto; }
+  @media (max-width: 700px) { .home-shell { padding: 18px 14px 50px; } }
+  .home-head { margin-bottom: 8px; }
+  .home-head .kicker { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--blue); margin-bottom: 10px; }
+  .home-title { font-family: 'Lora', Georgia, serif; font-size: 38px; font-weight: 700; letter-spacing: -.01em; line-height: 1.08; }
+  .home-title em { font-style: italic; color: var(--blue); }
+  .home-sub { font-family: 'Lora', serif; font-style: italic; font-size: 15.5px; color: var(--muted); max-width: 60ch; margin-top: 8px; }
+
+  /* accent per color */
+  .crimson { --accent: var(--crimson); } .cyan { --accent: var(--cyan); } .blue { --accent: var(--blue); }
+  .olive { --accent: var(--olive); } .gold { --accent: var(--gold); } .purple { --accent: var(--purple); }
+
+  /* featured / main app */
+  .feat-card { position: relative; margin-top: 26px; border-radius: 22px; overflow: hidden; border: 1px solid var(--border);
+    background: linear-gradient(120deg, color-mix(in srgb, var(--accent) 10%, #fff) 0%, #fff 60%); box-shadow: 0 18px 44px color-mix(in srgb, var(--accent) 18%, transparent);
+    display: flex; gap: 28px; align-items: center; padding: 28px 30px; cursor: pointer; transition: .22s; }
+  .feat-card:hover { transform: translateY(-3px); box-shadow: 0 26px 56px color-mix(in srgb, var(--accent) 26%, transparent); }
+  .feat-icon { width: 142px; height: 142px; border-radius: 32px; flex-shrink: 0; overflow: hidden; box-shadow: 0 16px 34px color-mix(in srgb, var(--accent) 32%, transparent); }
+  .feat-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .feat-body { flex: 1; min-width: 0; }
+  .feat-cat { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 7px; }
+  .feat-body h2 { font-family: 'Lora', serif; font-size: 26px; font-weight: 700; line-height: 1.12; margin-bottom: 7px; }
+  .feat-body h2 em { font-style: italic; color: var(--accent); }
+  .feat-body p { font-family: 'Lora', serif; font-size: 14.5px; line-height: 1.6; color: var(--muted); max-width: 52ch; margin-bottom: 16px; }
+  .feat-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .feat-actions .btn-open { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: 13.5px; color: #fff; background: var(--accent); border-radius: 11px; padding: 10px 18px; }
+  .feat-actions .btn-open svg { width: 14px; height: 14px; fill: #fff; }
+  .feat-actions .feat-meta { font-family: 'Lora', serif; font-style: italic; font-size: 12.5px; color: var(--soft); }
+  @media (max-width: 700px) { .feat-card { flex-direction: column; text-align: center; align-items: center; gap: 18px; } .feat-body p { margin-left: auto; margin-right: auto; } }
+
+  /* section head */
+  .home-sec-head { display: flex; align-items: baseline; justify-content: space-between; margin: 40px 0 16px; }
+  .home-sec-head h3 { font-family: 'Lora', serif; font-size: 21px; font-weight: 700; }
+  .home-sec-head .count { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--soft); }
+
+  /* app grid */
+  .app-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  @media (max-width: 820px) { .app-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 540px) { .app-grid { grid-template-columns: 1fr; } }
+  .app-tile { position: relative; background: var(--paper); border: 1px solid var(--border); border-radius: 18px; padding: 20px; transition: .22s cubic-bezier(.2,.7,.2,1); cursor: pointer; overflow: hidden; text-decoration: none; color: inherit; display: block; }
+  .app-tile::after { content: ""; position: absolute; inset: 0 0 auto 0; height: 3px; background: var(--accent); opacity: 0; transition: .22s; }
+  .app-tile:hover { transform: translateY(-5px); box-shadow: 0 22px 46px rgba(15,23,42,.14); border-color: transparent; }
+  .app-tile:hover::after { opacity: 1; }
+  .tile-icon { width: 84px; height: 84px; border-radius: 19px; overflow: hidden; box-shadow: 0 10px 22px rgba(15,23,42,.16); margin-bottom: 14px; }
+  .tile-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .tile-cat { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: var(--accent); margin-bottom: 6px; }
+  .tile-title { font-family: 'Lora', serif; font-size: 17px; font-weight: 700; line-height: 1.15; margin-bottom: 6px; }
+  .tile-title em { font-style: italic; color: var(--accent); }
+  .tile-desc { font-family: 'Lora', serif; font-size: 12.5px; line-height: 1.5; color: var(--muted); margin-bottom: 14px; min-height: 54px; }
+  .tile-foot { display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--border); }
+  .tile-open { display: inline-flex; align-items: center; gap: 6px; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 12px; color: var(--accent); }
+  .tile-open svg { width: 13px; height: 13px; }
+  .tile-time { font-family: 'Lora', serif; font-style: italic; font-size: 11px; color: var(--soft); }
+
+  /* sidebar Home item */
+  .home-item { display: flex; align-items: center; gap: 9px; padding: 9px 11px; border-radius: 10px; cursor: pointer; margin-bottom: 8px; border: 1px solid transparent; transition: .18s; }
+  .home-item:hover { background: var(--blue-soft); }
+  .home-item.active { background: var(--blue-soft); border-color: #DCE6F8; }
+  .home-item svg { width: 16px; height: 16px; color: var(--blue); flex-shrink: 0; }
+  .home-item .label { font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 13px; color: var(--ink); }
+  .home-item .hint { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: var(--soft); }
 </style>
 </head>
 <body>
@@ -1052,6 +1116,11 @@
       <div class="code">DADS 5250</div>
       <div class="sub">Generative AI in Practice</div>
       <div class="tag">course platform &middot; 14 modules</div>
+    </div>
+    <div class="home-item" id="home-item" onclick="goHome()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      <span class="label">App Library</span>
+      <span class="hint">HOME</span>
     </div>
     <div class="phase-divider">Foundations</div>
     <nav class="nav-list" data-phase="found"></nav>
@@ -1128,7 +1197,10 @@ const MODULES = [
       { id: 'storyline-prompting', type: 'Story', icon: 'sparkle', title: 'The Art of the <em>Prompt</em>', desc: 'Turing test to ELIZA to chain-of-thought to Constitutional AI. How talking to the model became a discipline.', time: '~10 min', color: 'gold' },
       { id: 'prompt-anatomy', type: 'Builder', icon: 'puzzle', title: 'Prompt Anatomy <em>Builder</em>', desc: 'Drag role / task / context / format / examples blocks. Compare bare task vs structured prompt side by side.', time: '~15 min', color: 'blue' }
     ]},
-  { n: 3, phase: 'found', short: 'Structured Output', name: 'Structured Output and Function Calling', lede: 'Turn free text into a typed object. JSON, schemas, and tool calls.', meta: ['Phase 1', '~3 hrs'], tools: [] },
+  { n: 3, phase: 'found', short: 'Structured Output', name: 'Structured Output and Function Calling', lede: 'Turn free text into a typed object. JSON, schemas, and tool calls.', meta: ['Phase 1', '~3 hrs'],
+    tools: [
+      { id: 'schema-builder', type: 'Builder', icon: 'puzzle', title: 'JSON Schema <em>Builder</em>', desc: 'Click fields to capture them and watch unstructured invoice text become a typed, validated JSON object with its schema.', time: '~10 min', color: 'cyan' }
+    ]},
   { n: 4, phase: 'found', short: 'LangChain', name: 'LangChain and the Beer Game',
     lede: 'A LangChain "chain" is just a pipeline. Add nodes, hit run, watch data flow stage to stage.',
     meta: ['Phase 1', '~3 hrs'],
@@ -1154,9 +1226,18 @@ const MODULES = [
   { n: 7, phase: 'core', short: 'Hackathon', name: 'Hackathon', special: 'hackathon',
     lede: 'No lab. No notebook. Build something real with everything you have learned so far. 48 hours, your stack, your team, your demo.',
     meta: ['Phase 2', 'Hackathon · 48 hrs'], tools: [] },
-  { n: 8, phase: 'adv', short: 'Multi-Agent', name: 'Multi-Agent Systems with CrewAI', lede: 'Multiple agents, multiple roles, coordinated work. The CrewAI way.', meta: ['Phase 3', '~3 hrs'], tools: [] },
-  { n: 9, phase: 'adv', short: 'Vision & Eval', name: 'Vision and Evaluation', lede: 'Vision-language models, image inputs, and how you grade what these systems produce.', meta: ['Phase 3', '~3 hrs'], tools: [] },
-  { n: 10, phase: 'adv', short: 'GenAI Platforms', name: 'GenAI Platforms', lede: 'Survey the platform landscape. Hugging Face, OpenRouter, Bedrock. What each is for.', meta: ['Phase 3', '~3 hrs'], tools: [] },
+  { n: 8, phase: 'adv', short: 'Multi-Agent', name: 'Multi-Agent Systems with CrewAI', lede: 'Multiple agents, multiple roles, coordinated work. The CrewAI way.', meta: ['Phase 3', '~3 hrs'],
+    tools: [
+      { id: 'crew-router', type: 'Simulator', icon: 'robot', title: 'Crew <em>Router</em>', desc: 'Assign subtasks to Researcher, Analyst, and Writer agents, then run the crew and watch the hand-offs play out.', time: '~10 min', color: 'purple' }
+    ]},
+  { n: 9, phase: 'adv', short: 'Vision & Eval', name: 'Vision and Evaluation', lede: 'Vision-language models, image inputs, and how you grade what these systems produce.', meta: ['Phase 3', '~3 hrs'],
+    tools: [
+      { id: 'eval-arena', type: 'Game', icon: 'grid', title: 'Caption <em>Eval Arena</em>', desc: 'Play the judge. Score two model captions per image against what is actually visible, and learn to catch hallucinations.', time: '~12 min', color: 'crimson' }
+    ]},
+  { n: 10, phase: 'adv', short: 'GenAI Platforms', name: 'GenAI Platforms', lede: 'Survey the platform landscape. Hugging Face, OpenRouter, Bedrock. What each is for.', meta: ['Phase 3', '~3 hrs'],
+    tools: [
+      { id: 'platform-picker', type: 'Game', icon: 'puzzle', title: 'Platform <em>Picker</em>', desc: 'Match each real use-case to the right platform — Hugging Face, OpenRouter, Bedrock, or Together AI.', time: '~8 min', color: 'olive' }
+    ]},
   { n: 11, phase: 'adv', short: 'MCP & Guardrails', name: 'MCP, Guardrails and Safety',
     lede: 'Model Context Protocol. Guardrails. And the gamified Prompt Injection Lab where you attack one bot and defend another.',
     meta: ['Phase 3', '~3 hrs'],
@@ -1164,8 +1245,14 @@ const MODULES = [
       { id: 'storyline-security', type: 'Story', icon: 'sparkle', title: 'How Prompt Injection <em>Became a Discipline</em>', desc: 'From XSS to indirect injection to red-team olympiads. A short history of attacking language models.', time: '~10 min', color: 'gold' },
       { id: 'injection', type: 'Game', icon: 'shield', title: 'Prompt <em>Injection Lab</em>', desc: 'Ten attack cards across three tiers. Drag-to-fire at vulnerable and hardened bots. Live scoreboard. Hall of Fame.', time: '~20 min', color: 'crimson' }
     ]},
-  { n: 12, phase: 'prod', short: 'n8n Automation', name: 'Workflow Automation with n8n', lede: 'Move your prototype out of the notebook. Trigger flows, connect tools, ship a workflow.', meta: ['Phase 4', '~3 hrs'], tools: [] },
-  { n: 13, phase: 'prod', short: 'Fine-Tuning', name: 'Fine-Tuning and Deployment', lede: 'When to fine-tune, when not to. How to ship the result.', meta: ['Phase 4', '~3 hrs'], tools: [] },
+  { n: 12, phase: 'prod', short: 'n8n Automation', name: 'Workflow Automation with n8n', lede: 'Move your prototype out of the notebook. Trigger flows, connect tools, ship a workflow.', meta: ['Phase 4', '~3 hrs'],
+    tools: [
+      { id: 'flow-builder', type: 'Builder', icon: 'chain', title: 'Workflow <em>Builder</em>', desc: 'Drop trigger, LLM, and action nodes onto the canvas, run the flow, and watch a payload move node to node.', time: '~12 min', color: 'blue' }
+    ]},
+  { n: 13, phase: 'prod', short: 'Fine-Tuning', name: 'Fine-Tuning and Deployment', lede: 'When to fine-tune, when not to. How to ship the result.', meta: ['Phase 4', '~3 hrs'],
+    tools: [
+      { id: 'tune-or-not', type: 'Game', icon: 'shield', title: 'Tune <em>or Not?</em>', desc: 'Decision game: for each scenario, choose prompt, RAG, fine-tune, or tools — and learn when fine-tuning is actually the answer.', time: '~10 min', color: 'gold' }
+    ]},
   { n: 14, phase: 'prod', short: 'Final Project', name: 'Final Project', special: 'final', lede: 'Build something useful. Demonstrate it live. The same 4D arc applied to a real problem you care about.', meta: ['Phase 4', 'Capstone'], tools: [] }
 ];
 
@@ -1547,7 +1634,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('mode-modal').addEventListener('click', e => { if (e.target.id === 'mode-modal') closeModeModal(); });
 });
 
-let view = { kind: 'module', n: 1, toolId: null };
+let view = { kind: 'home' };
 
 function findTool(id) {
   for (const m of MODULES) for (const t of (m.tools||[])) if (t.id === id) return { tool: t, module: m };
@@ -1556,6 +1643,8 @@ function findTool(id) {
 
 /* ============ SIDEBAR ============ */
 function buildSidebar() {
+  const homeItem = document.getElementById('home-item');
+  if (homeItem) homeItem.classList.toggle('active', view.kind === 'home');
   document.querySelectorAll('.nav-list').forEach(nav => nav.innerHTML = '');
   MODULES.forEach(m => {
     const nav = document.querySelector(`.nav-list[data-phase="${m.phase}"]`);
@@ -1590,6 +1679,7 @@ function renderModule() {
         <div class="tools-grid">
          ${m.tools.map(t => `
            <a class="tool-card ${t.color || 'blue'}" data-toolid="${t.id}"${t.external ? ` data-external="${t.external}"` : ''}>
+             <img class="tool-thumb" src="images/apps/${t.id}.jpg" alt="${t.title.replace(/<[^>]*>/g,'')}" onerror="this.style.display='none'">
              <div class="tool-icon">${ICON[t.icon]}<div class="tool-type-row"><div class="tool-type">${t.type}</div><div class="tool-time">${t.time}</div></div></div>
              <div class="tool-title">${t.title}</div>
              <div class="tool-desc">${t.desc}</div>
@@ -1749,14 +1839,68 @@ function renderTool() {
     'embeddings': renderEmbeddings,
     'retrieval-race': renderRetrievalRace,
     'react-player': renderReact,
-    'injection': renderInjection
+    'injection': renderInjection,
+    'schema-builder': renderSchemaBuilder,
+    'crew-router': renderCrewRouter,
+    'eval-arena': renderEvalArena,
+    'platform-picker': renderPlatformPicker,
+    'flow-builder': renderFlowBuilder,
+    'tune-or-not': renderTuneOrNot
   };
   (renderers[tool.id] || renderStub)();
 }
 
 function goModule(n) { view = { kind: 'module', n, toolId: null }; render(); }
+function goHome() { view = { kind: 'home' }; render(); window.scrollTo(0, 0); }
+function openApp(id) { const f = findTool(id); if (!f) return; view = { kind: 'tool', n: f.module.n, toolId: id }; render(); window.scrollTo(0, 0); }
 
-function render() { buildSidebar(); view.kind === 'module' ? renderModule() : renderTool(); }
+function render() {
+  buildSidebar();
+  if (view.kind === 'home') renderHome();
+  else if (view.kind === 'module') renderModule();
+  else renderTool();
+}
+
+/* ============ APP LIBRARY (HOME) ============ */
+function renderHome() {
+  const apps = [];
+  MODULES.forEach(m => (m.tools || []).forEach(t => apps.push(Object.assign({}, t, { n: m.n, short: m.short }))));
+  const feat = apps.find(a => a.id === 'temperature') || apps[0];
+  const tile = a => `
+    <a class="app-tile ${a.color || 'blue'}" data-appid="${a.id}"${a.external ? ` data-ext="${a.external}"` : ''}>
+      <div class="tile-icon"><img src="images/apps/${a.id}.jpg" alt="" loading="lazy" onerror="this.style.display='none'"></div>
+      <div class="tile-cat">${a.type} &middot; M${a.n}</div>
+      <div class="tile-title">${a.title}</div>
+      <div class="tile-desc">${a.desc}</div>
+      <div class="tile-foot"><span class="tile-open">${a.external ? 'Open in new tab' : 'Open'}<svg><use href="#i-arrow-right"/></svg></span><span class="tile-time">${a.time}</span></div>
+    </a>`;
+  $('main').innerHTML = `
+    <div class="home-shell">
+      <div class="home-head">
+        <div class="kicker">DADS 5250 &middot; Generative AI in Practice</div>
+        <h1 class="home-title">The <em>App Library</em></h1>
+        <p class="home-sub">Every interactive in the course, in one place. Open any app and start playing &mdash; no module hunting, no setup.</p>
+      </div>
+      <div class="feat-card ${feat.color || 'blue'}" data-appid="${feat.id}">
+        <div class="feat-icon"><img src="images/apps/${feat.id}.jpg" alt="" onerror="this.style.display='none'"></div>
+        <div class="feat-body">
+          <div class="feat-cat">Featured &middot; ${feat.type} &middot; M${feat.n} ${feat.short}</div>
+          <h2>${feat.title}</h2>
+          <p>${feat.desc}</p>
+          <div class="feat-actions"><span class="btn-open"><svg><use href="#i-play"/></svg>Open app</span><span class="feat-meta">${feat.time} &middot; most-opened interactive</span></div>
+        </div>
+      </div>
+      <div class="home-sec-head"><h3>All apps</h3><span class="count">${apps.length} interactives</span></div>
+      <div class="app-grid">${apps.map(tile).join('')}</div>
+    </div>`;
+  document.querySelectorAll('.app-tile[data-appid], .feat-card[data-appid]').forEach(c => {
+    c.addEventListener('click', () => {
+      const ext = c.dataset.ext;
+      if (ext) { window.open(ext, '_blank', 'noopener'); return; }
+      openApp(c.dataset.appid);
+    });
+  });
+}
 
 document.addEventListener('keydown', e => {
   if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
@@ -1831,9 +1975,9 @@ function renderTemperature() {
               <text x="0" y="14" text-anchor="middle" font-family="JetBrains Mono" font-size="12" font-weight="700" fill="#0055D4" id="rou-center-T">T=0.70</text>
             </g>
             <g class="rou-pointer-grp">
-              <path class="rou-pointer-shadow" d="M 0 -178 L -13 -148 Q 0 -141 13 -148 Z" />
-              <path class="rou-pointer" d="M 0 -176 L -12 -148 Q 0 -141 12 -148 Z" />
-              <circle class="rou-pointer-dot" cx="0" cy="-148" r="4.5" />
+              <path class="rou-pointer-shadow" d="M 0 -148 L -13 -178 Q 0 -185 13 -178 Z" />
+              <path class="rou-pointer" d="M 0 -150 L -12 -178 Q 0 -185 12 -178 Z" />
+              <circle class="rou-pointer-dot" cx="0" cy="-176" r="4.5" />
             </g>
           </svg>
         </div>
@@ -2974,6 +3118,247 @@ function renderInjection() {
   }
   $('fire-v').addEventListener('click', () => fire('v'));
   $('fire-h').addEventListener('click', () => fire('h'));
+}
+
+/* ============================================================
+   NEW INTERACTIVE APPS — one gamified tool per previously-empty
+   module (M3, M8, M9, M10, M12, M13). Added 2026-06-12.
+   ============================================================ */
+const NX_CSS = `<style>
+.nx{font-size:14px;color:#2a3346;line-height:1.5}
+.nx-intro{font-size:13.5px;color:#475066;margin-bottom:14px}
+.nx-btn{cursor:pointer;border:none;border-radius:10px;background:#0055d4;color:#fff;font-weight:700;font-size:13.5px;padding:9px 18px;margin-top:4px}
+.nx-btn:disabled{opacity:.45;cursor:default}
+.nx-row{display:flex;align-items:center;gap:10px;background:#f6f8fc;border:1px solid #e4e9f2;border-radius:10px;padding:10px 12px;margin-bottom:8px}
+.nx-row .q{flex:1;font-size:13.5px;color:#33415a}
+.nx-sel{border:1px solid #c9d4e6;border-radius:8px;padding:7px 9px;font-size:13px;background:#fff;color:#1a2540}
+.nx-opt{cursor:pointer;border:1.5px solid #d3dcea;border-radius:10px;padding:12px 14px;font-size:14px;color:#2a3346;background:#fff;transition:.15s;margin-bottom:8px;display:block;width:100%;text-align:left}
+.nx-opt:hover{border-color:#0055d4}
+.nx-opt.right{border-color:#1c8c4a;background:#e9f7ee;color:#155f33;font-weight:600}
+.nx-opt.wrong{border-color:#d23f3f;background:#fdecec;color:#9b2222}
+.nx-opt.muted{opacity:.5}
+.nx-fb{margin-top:12px;padding:11px 13px;border-radius:10px;background:#eef3fb;border:1px solid #d6e2f5;font-size:13px;color:#22364f}
+.nx-score{font-weight:700;color:#0055d4}
+.nx-scene{font-size:60px;text-align:center;background:linear-gradient(135deg,#eef3fb,#e3ecfb);border:1px solid #dce6f7;border-radius:14px;padding:24px;margin-bottom:10px;letter-spacing:8px}
+.nx-pill{display:inline-block;background:#eef3fb;border:1px solid #d6e2f5;border-radius:999px;padding:3px 10px;font-size:12px;color:#34507a;font-weight:600}
+.nx-grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:760px){.nx-grid2{grid-template-columns:1fr}}
+.nx-mono{background:#0d1326;border:1px solid #20305a;border-radius:12px;padding:14px;color:#cfe3ff;font:12.5px/1.55 'JetBrains Mono',monospace;white-space:pre-wrap;min-height:90px}
+.nx-paper{background:#fff;border:1px solid #e3e8f0;border-radius:12px;padding:14px;white-space:pre-wrap;font:13px/1.6 ui-monospace,monospace;color:#222}
+.nx-h{font-weight:700;color:#1a2540;margin:2px 0 6px;font-size:13px}
+.nx-node{cursor:pointer;border:1.5px solid #d3dcea;border-radius:10px;padding:8px 12px;font-size:13px;font-weight:600;color:#33415a;background:#fff;display:inline-block;margin:0 6px 6px 0}
+.nx-node:hover{border-color:#0055d4}
+.nx-canvas{display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-height:54px;background:#f6f8fc;border:1px dashed #c9d4e6;border-radius:12px;padding:12px;margin:10px 0}
+.nx-chip{border:1px solid #c9d4e6;background:#f5f8fd;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;color:#33415a;cursor:pointer;user-select:none}
+.nx-chip.on{background:#0055d4;border-color:#0055d4;color:#fff}
+.nx-flow{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.nx-fnode{border:1.5px solid #d3dcea;border-radius:10px;padding:8px 12px;font-size:13px;font-weight:600;background:#fff;color:#33415a;transition:.2s}
+.nx-fnode.live{border-color:#0055d4;background:#0055d4;color:#fff;box-shadow:0 4px 14px rgba(0,85,212,.35)}
+.nx-arrow{color:#9fb0cc;font-weight:700}
+.nx-meter{height:8px;border-radius:6px;background:#e6ebf3;overflow:hidden;margin:8px 0 2px}
+.nx-meter > i{display:block;height:100%;background:linear-gradient(90deg,#0055d4,#19a0ff);width:0;transition:width .3s}
+.nx-cap{border:1.5px solid #d3dcea;border-radius:10px;padding:12px 14px;font-size:13.5px;color:#2a3346;background:#fff;cursor:pointer;transition:.15s}
+.nx-cap:hover{border-color:#0055d4}
+</style>`;
+
+// M3 — JSON Schema Builder
+function renderSchemaBuilder(){
+  const body = document.getElementById('tool-body');
+  const SAMPLE = `INVOICE — Acme Robotics LLC
+Date: 2026-03-14
+Bill to: Northeastern University
+LiDAR sensor x2 — $4,200.00
+Cabling kit x1 — $180.00
+Subtotal $4,380.00 · Tax (6.25%) $273.75
+TOTAL DUE: $4,653.75`;
+  const FIELDS = [
+    {k:'vendor', t:'string', v:'"Acme Robotics LLC"'},
+    {k:'invoice_date', t:'string', v:'"2026-03-14"'},
+    {k:'line_items', t:'array', v:'[{"item":"LiDAR sensor","qty":2,"unit_price":4200},{"item":"Cabling kit","qty":1,"unit_price":180}]'},
+    {k:'tax', t:'number', v:'273.75'},
+    {k:'total_due', t:'number', v:'4653.75'}
+  ];
+  const picked = new Set();
+  body.innerHTML = NX_CSS + `<div class="nx">
+    <div class="nx-intro">Click each field to capture it. Watch the free-text invoice become a typed, validated object — and see the JSON Schema that enforces it.</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">${FIELDS.map((f,i)=>`<span class="nx-chip" data-i="${i}">${f.k} <span style="color:#8a93a6;font-weight:500;font-size:11px">${f.t}</span></span>`).join('')}</div>
+    <div class="nx-meter"><i id="sb-bar"></i></div>
+    <div id="sb-stat" style="font-size:12px;color:#6a7488;margin-bottom:12px">0 / ${FIELDS.length} fields captured</div>
+    <div class="nx-grid2">
+      <div><div class="nx-h">Unstructured input</div><div class="nx-paper">${SAMPLE}</div></div>
+      <div><div class="nx-h">Extracted typed object</div><div class="nx-mono" id="sb-out">{ }</div>
+        <div class="nx-h" style="margin-top:12px">JSON Schema</div><div class="nx-mono" id="sb-schema">{ }</div></div>
+    </div></div>`;
+  function refresh(){
+    const arr = [...picked].sort((a,b)=>a-b).map(i=>FIELDS[i]);
+    document.getElementById('sb-out').textContent = arr.length ? '{\n'+arr.map(f=>`  "${f.k}": ${f.v}`).join(',\n')+'\n}' : '{ }';
+    document.getElementById('sb-schema').textContent = arr.length ? '{\n  "type": "object",\n  "properties": {\n'+arr.map(f=>`    "${f.k}": { "type": "${f.t}" }`).join(',\n')+'\n  },\n  "required": ['+arr.map(f=>`"${f.k}"`).join(', ')+']\n}' : '{ }';
+    document.getElementById('sb-bar').style.width = Math.round(picked.size/FIELDS.length*100)+'%';
+    document.getElementById('sb-stat').textContent = picked.size+' / '+FIELDS.length+' fields captured'+(picked.size===FIELDS.length?' · fully structured':'');
+  }
+  body.querySelectorAll('.nx-chip').forEach(c=>c.addEventListener('click',()=>{
+    const i=+c.dataset.i; if(picked.has(i)){picked.delete(i);c.classList.remove('on');}else{picked.add(i);c.classList.add('on');}
+    refresh();
+  }));
+  refresh();
+}
+
+// M8 — Crew Router
+function renderCrewRouter(){
+  const body = document.getElementById('tool-body');
+  const STEPS = [
+    {task:'Gather sources on EV adoption rates', ideal:'Researcher', out:'12 sources collected, 4 high-quality'},
+    {task:'Pull out the 3 strongest data points', ideal:'Analyst', out:'2026 EV share 18%, +6pp YoY, charging gap noted'},
+    {task:'Draft a one-paragraph executive summary', ideal:'Writer', out:'"EV adoption reached 18% in 2026, up 6 points..."'}
+  ];
+  const ROLES = ['Researcher','Analyst','Writer'];
+  body.innerHTML = NX_CSS + `<div class="nx">
+    <div class="nx-intro">A crew is a team of role-specialized agents. Assign each subtask to the right agent, then run the crew and watch the hand-offs.</div>
+    <div class="nx-pill">Goal: a market report on EV adoption</div>
+    <div style="margin:12px 0">${STEPS.map((s,i)=>`<div class="nx-row"><span class="q">${i+1}. ${s.task}</span><select class="nx-sel" data-i="${i}"><option value="">— assign agent —</option>${ROLES.map(r=>`<option>${r}</option>`).join('')}</select></div>`).join('')}</div>
+    <button class="nx-btn" id="cr-run">Run Crew</button>
+    <div id="cr-out" style="margin-top:14px"></div></div>`;
+  document.getElementById('cr-run').addEventListener('click',()=>{
+    const sels=[...body.querySelectorAll('.nx-sel')];
+    if(sels.some(s=>!s.value)){ document.getElementById('cr-out').innerHTML=`<div class="nx-fb">Assign an agent to every subtask first.</div>`; return; }
+    const correct = sels.every((s,i)=>s.value===STEPS[i].ideal);
+    const log=document.getElementById('cr-out'); log.innerHTML='';
+    STEPS.forEach((s,i)=>setTimeout(()=>{
+      const ok = sels[i].value===s.ideal;
+      const div=document.createElement('div'); div.className='nx-row'; div.style.animation='none';
+      div.innerHTML=`<span class="nx-pill" style="background:${ok?'#e9f7ee':'#fdecec'};border-color:${ok?'#bfe6cc':'#f3c9c9'};color:${ok?'#155f33':'#9b2222'}">${sels[i].value}</span><span class="q">${ok?'→ '+s.out:'mis-routed — '+s.ideal+' should own this step'}</span>`;
+      log.appendChild(div);
+      if(i===STEPS.length-1){ const f=document.createElement('div'); f.className='nx-fb'; f.innerHTML = correct?'<b>Crew shipped.</b> Clean hand-offs: each agent did the job it was best at, and the output flowed Researcher → Analyst → Writer.':'<b>The crew stumbled.</b> Multi-agent systems only beat a single agent when roles are matched to tasks. Re-assign and run again.'; log.appendChild(f); }
+    }, i*650));
+  });
+}
+
+// M9 — Caption Eval Arena
+function renderEvalArena(){
+  const body = document.getElementById('tool-body');
+  const R = [
+    {scene:'🚲🌧️', a:'A person rides a bicycle in the rain.', b:'A cyclist in a yellow jacket pedals down a wet city street at night under heavy rain.', better:'b', why:'B is more grounded and complete — setting, weather, and a visible detail — without inventing anything.'},
+    {scene:'🐕🎾', a:'A dog leaps to catch a green tennis ball above a grassy lawn.', b:'A happy dog playing outside, probably excited and thinking about treats.', better:'a', why:'B hallucinates the dog\'s thoughts and mood — a classic vision-eval failure. A describes only what is visible.'},
+    {scene:'📊💻', a:'Some data on a computer.', b:'A laptop screen displays a bar chart of quarterly sales figures.', better:'b', why:'A is vague and low-information; B is specific and accurate. Specific-but-true beats vague every time.'}
+  ];
+  let i=0, score=0;
+  function show(){
+    const r=R[i];
+    body.innerHTML = NX_CSS + `<div class="nx">
+      <div class="nx-intro">You are the judge. Pick the <b>better, more grounded</b> caption — accurate and complete, no hallucinations. <span class="nx-pill">Round ${i+1} / ${R.length}</span> <span class="nx-pill">Score <span class="nx-score">${score}</span></span></div>
+      <div class="nx-scene">${r.scene}</div>
+      <div class="nx-grid2">
+        <div class="nx-cap" data-c="a"><b>Caption A</b><br>${r.a}</div>
+        <div class="nx-cap" data-c="b"><b>Caption B</b><br>${r.b}</div>
+      </div>
+      <div id="ea-fb"></div></div>`;
+    body.querySelectorAll('.nx-cap').forEach(c=>c.addEventListener('click',()=>{
+      if(body.dataset.done) return; body.dataset.done='1';
+      const right = c.dataset.c===r.better;
+      body.querySelectorAll('.nx-cap').forEach(x=>{ x.style.cursor='default'; if(x.dataset.c===r.better){x.style.borderColor='#1c8c4a';x.style.background='#e9f7ee';} else {x.style.opacity='.55';} });
+      if(right) score++;
+      document.getElementById('ea-fb').innerHTML = `<div class="nx-fb">${right?'<b>Correct.</b> ':'<b>Not quite. </b>'}${r.why}</div><button class="nx-btn" id="ea-next">${i<R.length-1?'Next round':'See result'}</button>`;
+      document.getElementById('ea-next').addEventListener('click',()=>{ body.dataset.done=''; if(i<R.length-1){i++;show();} else {result();} });
+    }));
+  }
+  function result(){ body.innerHTML = NX_CSS + `<div class="nx"><div class="nx-fb" style="font-size:15px"><b>You scored ${score} / ${R.length}.</b><br>${score===R.length?'Sharp eye — you reward grounded, specific captions and reject hallucinations. That is exactly how LLM-as-judge evaluation works.':'Good start. The trick: a caption can sound confident and still be wrong. Grade on what is actually visible.'}</div><button class="nx-btn" id="ea-again">Play again</button></div>`; document.getElementById('ea-again').addEventListener('click',()=>{i=0;score=0;body.dataset.done='';show();}); }
+  show();
+}
+
+// M10 — Platform Picker
+function renderPlatformPicker(){
+  const body = document.getElementById('tool-body');
+  const Q = [
+    {use:'Host an open-source model with a free, shareable demo UI', ans:'Hugging Face'},
+    {use:'Call 100+ models (GPT, Claude, Llama) through one API and one bill', ans:'OpenRouter'},
+    {use:'Deploy models inside an AWS, enterprise-governed environment', ans:'Amazon Bedrock'},
+    {use:'Cheaply run and fine-tune open models at scale via a simple API', ans:'Together AI'}
+  ];
+  const OPTS = ['Hugging Face','OpenRouter','Amazon Bedrock','Together AI'];
+  const WHY = {'Hugging Face':'the open-model hub + free Spaces for demos','OpenRouter':'a single gateway/billing layer across many model providers','Amazon Bedrock':'managed foundation models inside AWS governance','Together AI':'low-cost inference and fine-tuning for open models'};
+  body.innerHTML = NX_CSS + `<div class="nx">
+    <div class="nx-intro">Each platform is good at one thing. Match every use-case to the right platform, then check your answers.</div>
+    ${Q.map((q,i)=>`<div class="nx-row"><span class="q">${q.use}</span><select class="nx-sel" data-i="${i}"><option value="">— pick —</option>${OPTS.map(o=>`<option>${o}</option>`).join('')}</select></div>`).join('')}
+    <button class="nx-btn" id="pp-check">Check answers</button>
+    <div id="pp-fb" style="margin-top:12px"></div></div>`;
+  document.getElementById('pp-check').addEventListener('click',()=>{
+    const sels=[...body.querySelectorAll('.nx-sel')]; let n=0;
+    const rows = Q.map((q,i)=>{ const ok=sels[i].value===q.ans; if(ok)n++; return `<div class="nx-opt ${ok?'right':'wrong'}">${q.use} → <b>${q.ans}</b> <span style="font-weight:400">— ${WHY[q.ans]}</span></div>`; }).join('');
+    document.getElementById('pp-fb').innerHTML = `<div class="nx-fb"><b>${n} / ${Q.length} matched.</b></div>${rows}`;
+  });
+}
+
+// M12 — Workflow (n8n) Builder
+function renderFlowBuilder(){
+  const body = document.getElementById('tool-body');
+  const PALETTE = [
+    {id:'trig-web', kind:'trigger', label:'Webhook trigger', payload:'{ email: "..." }'},
+    {id:'trig-sch', kind:'trigger', label:'Schedule trigger', payload:'{ time: "09:00" }'},
+    {id:'llm-sum', kind:'process', label:'LLM: summarize', payload:'{ summary: "..." }'},
+    {id:'llm-cls', kind:'process', label:'LLM: classify', payload:'{ label: "urgent" }'},
+    {id:'act-mail', kind:'action', label:'Send email', payload:'✓ email sent'},
+    {id:'act-sheet', kind:'action', label:'Append to Sheet', payload:'✓ row added'}
+  ];
+  const flow = [];
+  body.innerHTML = NX_CSS + `<div class="nx">
+    <div class="nx-intro">An n8n workflow is just nodes wired in order: a <b>trigger</b> starts it, <b>LLM</b> nodes process, an <b>action</b> ships the result. Click nodes to add them, then run the flow.</div>
+    <div class="nx-h">Node palette</div>
+    <div>${PALETTE.map(p=>`<span class="nx-node" data-id="${p.id}">${p.label}</span>`).join('')}</div>
+    <div class="nx-h" style="margin-top:12px">Canvas</div>
+    <div class="nx-canvas" id="fb-canvas"><span style="color:#9aa6bd;font-size:13px">Click nodes above to build the flow…</span></div>
+    <button class="nx-btn" id="fb-run">Run flow</button> <button class="nx-btn" id="fb-clear" style="background:#6a7488">Clear</button>
+    <div id="fb-out" style="margin-top:12px"></div></div>`;
+  function draw(){
+    const c=document.getElementById('fb-canvas');
+    if(!flow.length){ c.innerHTML='<span style="color:#9aa6bd;font-size:13px">Click nodes above to build the flow…</span>'; return; }
+    c.innerHTML = `<div class="nx-flow">`+flow.map((p,i)=>`${i?'<span class="nx-arrow">→</span>':''}<span class="nx-fnode" data-k="${i}">${p.label}</span>`).join('')+`</div>`;
+  }
+  body.querySelectorAll('.nx-node').forEach(n=>n.addEventListener('click',()=>{ flow.push(PALETTE.find(p=>p.id===n.dataset.id)); draw(); document.getElementById('fb-out').innerHTML=''; }));
+  document.getElementById('fb-clear').addEventListener('click',()=>{ flow.length=0; draw(); document.getElementById('fb-out').innerHTML=''; });
+  document.getElementById('fb-run').addEventListener('click',()=>{
+    if(!flow.length) return;
+    const out=document.getElementById('fb-out');
+    const valid = flow[0].kind==='trigger' && flow[flow.length-1].kind==='action' && flow.some(p=>p.kind==='process');
+    const nodes=[...document.querySelectorAll('.nx-fnode')];
+    nodes.forEach(n=>n.classList.remove('live'));
+    flow.forEach((p,i)=>setTimeout(()=>{
+      nodes.forEach(n=>n.classList.remove('live')); if(nodes[i]) nodes[i].classList.add('live');
+      out.innerHTML = `<div class="nx-mono">[node ${i+1}] ${p.label}\n  payload → ${p.payload}</div>`;
+      if(i===flow.length-1) setTimeout(()=>{ nodes.forEach(n=>n.classList.remove('live')); out.innerHTML += `<div class="nx-fb" style="margin-top:10px">${valid?'<b>Workflow valid + shipped.</b> Trigger → process → action: the payload moved through every node and the action fired. That is a runnable n8n flow.':'<b>Incomplete flow.</b> A valid automation starts with a <b>trigger</b>, has at least one <b>process</b> node, and ends with an <b>action</b>. Adjust and run again.'}</div>`; }, 500);
+    }, i*600));
+  });
+  draw();
+}
+
+// M13 — Tune or Not?
+function renderTuneOrNot(){
+  const body = document.getElementById('tool-body');
+  const R = [
+    {s:'Your bot must always reply in strict JSON for a downstream API.', ans:'Prompt', why:'A clear schema with structured output / few-shot examples fixes format. No training data or cost needed.'},
+    {s:"Answer questions about your company's 800-page internal handbook.", ans:'RAG', why:'The knowledge is large and changes. Retrieve the right passages at query time instead of baking them into weights.'},
+    {s:'Match a very specific brand voice across thousands of replies.', ans:'Fine-tune', why:'A consistent style/behavior learned from many labeled examples is the textbook fine-tuning case.'},
+    {s:"Give a customer their live order status from your database.", ans:'Tools', why:'Real-time, per-user data needs a tool/function call (or retrieval) — never model weights.'}
+  ];
+  const OPTS=['Prompt','RAG','Fine-tune','Tools'];
+  let i=0, score=0;
+  function show(){
+    const r=R[i];
+    body.innerHTML = NX_CSS + `<div class="nx">
+      <div class="nx-intro">Fine-tuning is rarely the first answer. For each scenario pick the <b>cheapest tool that works</b>. <span class="nx-pill">Round ${i+1} / ${R.length}</span> <span class="nx-pill">Score <span class="nx-score">${score}</span></span></div>
+      <div class="nx-card" style="margin-bottom:12px;font-size:14.5px;color:#1a2540">${r.s}</div>
+      ${OPTS.map(o=>`<button class="nx-opt" data-o="${o}">${o==='Tools'?'Tools / function calling':o}</button>`).join('')}
+      <div id="tn-fb"></div></div>`;
+    body.querySelectorAll('.nx-opt').forEach(b=>b.addEventListener('click',()=>{
+      if(body.dataset.done) return; body.dataset.done='1';
+      const right=b.dataset.o===r.ans;
+      body.querySelectorAll('.nx-opt').forEach(x=>{ x.style.cursor='default'; if(x.dataset.o===r.ans)x.classList.add('right'); else if(x===b)x.classList.add('wrong'); else x.classList.add('muted'); });
+      if(right) score++;
+      document.getElementById('tn-fb').innerHTML = `<div class="nx-fb">${right?'<b>Right call.</b> ':'<b>Costlier than it needs to be. </b>'}Best fit: <b>${r.ans==='Tools'?'Tools / function calling':r.ans}</b> — ${r.why}</div><button class="nx-btn" id="tn-next">${i<R.length-1?'Next scenario':'See result'}</button>`;
+      document.getElementById('tn-next').addEventListener('click',()=>{ body.dataset.done=''; if(i<R.length-1){i++;show();} else {result();} });
+    }));
+  }
+  function result(){ body.innerHTML = NX_CSS + `<div class="nx"><div class="nx-fb" style="font-size:15px"><b>You scored ${score} / ${R.length}.</b><br>${score>=3?'You reach for fine-tuning last — exactly right. Prompt, retrieve, or call a tool first; fine-tune only for durable style/behavior.':'Remember the ladder: prompt → RAG → tools → fine-tune. Fine-tuning is the expensive last resort, not the default.'}</div><button class="nx-btn" id="tn-again">Play again</button></div>`; document.getElementById('tn-again').addEventListener('click',()=>{i=0;score=0;body.dataset.done='';show();}); }
+  show();
 }
 
 /* ============================================================
