@@ -608,7 +608,15 @@
     cursor: pointer; transition: all 0.18s; font-size: 13px;
   }
   .pa-block:hover { border-color: var(--blue); background: var(--blue-soft); }
-  .pa-block.added { opacity: 0.4; border-style: dashed; }
+  .pa-block.added { border-style: solid; border-color: currentColor; opacity: 1; }
+  .pa-block.added.role { color: var(--blue); background: var(--blue-soft); }
+  .pa-block.added.task { color: var(--crimson); background: var(--crimson-soft); }
+  .pa-block.added.context { color: var(--olive); background: var(--olive-soft); }
+  .pa-block.added.format { color: var(--gold); background: var(--gold-soft); }
+  .pa-block.added.examples { color: var(--purple); background: var(--purple-soft); }
+  .pa-pts { font-family: 'JetBrains Mono', monospace; font-size: 11px; flex-shrink: 0; }
+  .pa-pts .on { color: var(--ok); font-weight: 700; }
+  .pa-pts .off { color: var(--soft); }
   .pa-block .ico { width: 36px; height: 36px; border-radius: 8px; display: grid; place-items: center; flex-shrink: 0; color: white; font-weight: 700; font-size: 14px; font-family: 'Lora', serif; font-style: italic; }
   .pa-block.role .ico { background: linear-gradient(135deg, var(--blue), var(--blue-light)); }
   .pa-block.task .ico { background: linear-gradient(135deg, var(--crimson), #E94560); }
@@ -621,11 +629,20 @@
   .pa-preview { background: linear-gradient(180deg, #fff, #FAFCFF); border: 1px solid var(--border); border-radius: 12px; padding: 18px; min-height: 200px; }
   .pa-prompt-out { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.7; color: var(--ink); white-space: pre-wrap; min-height: 140px; padding: 14px; background: var(--bg); border-radius: 8px; border: 1px dashed var(--line); }
   .pa-empty { color: var(--soft); font-style: italic; font-family: 'Lora', serif; text-align: center; padding: 30px; font-size: 13px; }
-  .pa-score { display: flex; align-items: center; gap: 14px; margin-top: 14px; }
-  .pa-score .label { font-size: 11px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; font-weight: 600; }
-  .pa-score .bar { flex: 1; height: 8px; background: var(--bg); border-radius: 999px; overflow: hidden; }
+  .pa-score { margin-top: 14px; }
+  .pa-score-top { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .pa-score .label { font-size: 11px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; font-weight: 600; flex: 1; }
+  .pa-score .bar { height: 8px; background: var(--bg); border-radius: 999px; overflow: hidden; }
   .pa-score .bar .f { height: 100%; background: linear-gradient(90deg, var(--crimson), var(--gold), var(--ok)); border-radius: 999px; transition: width .3s; }
-  .pa-score .val { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--blue); font-size: 14px; min-width: 60px; text-align: right; }
+  .pa-score .val { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--blue); font-size: 14px; }
+  .pa-msg { font-family: 'Lora', serif; font-style: italic; font-size: 12.5px; color: var(--muted); margin-top: 7px; }
+  .pa-tip { font-size: 11.5px; color: var(--ok); font-weight: 600; margin-top: 4px; }
+  .pa-tag { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; padding: 1px 5px; border-radius: 4px; }
+  .pa-tag.role { background: var(--blue-soft); color: var(--blue); }
+  .pa-tag.task { background: var(--crimson-soft); color: var(--crimson); }
+  .pa-tag.context { background: var(--olive-soft); color: var(--olive); }
+  .pa-tag.format { background: var(--gold-soft); color: var(--gold); }
+  .pa-tag.examples { background: var(--purple-soft); color: var(--purple); }
   .pa-reset { background: var(--bg); border: 1px solid var(--border); color: var(--muted); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; font-family: 'Outfit'; transition: all .15s; }
   .pa-reset:hover { background: var(--crimson-soft); color: var(--crimson); border-color: var(--crimson); }
 
@@ -779,25 +796,35 @@
   .stub-hero p { color: var(--muted); font-family: 'Lora', serif; font-style: italic; max-width: 460px; margin: 0 auto; }
 
   /* ====== Tool: Chain Visualizer (M04) ====== */
-  .cv-input { display: flex; gap: 10px; margin-bottom: 18px; }
-  .cv-input input { flex: 1; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--ink); background: #fff; }
-  .cv-input input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-soft); }
-  .cv-input button { padding: 10px 18px; border: none; border-radius: 10px; background: var(--blue); color: #fff; font-family: 'Outfit'; font-weight: 600; font-size: 13px; cursor: pointer; letter-spacing: .02em; }
-  .cv-input button:hover { background: var(--blue-deep); }
-  .cv-pipeline { display: grid; grid-template-columns: 1fr 28px 1fr 28px 1fr; align-items: center; gap: 6px; margin-bottom: 18px; }
-  .cv-node { background: #fff; border: 2px solid var(--line); border-radius: 14px; padding: 14px 12px; text-align: center; transition: all .25s; }
+  .cv-chain-tabs { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+  .cv-tab { padding: 7px 16px; border: 1.5px solid var(--border); border-radius: 8px; background: white; font-family: 'Outfit'; font-size: 12.5px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all .15s; }
+  .cv-tab.active { background: var(--blue); border-color: var(--blue); color: white; }
+  .cv-tab:hover:not(.active) { border-color: var(--blue); color: var(--blue); }
+  .cv-example-row { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .cv-ex-btn { padding: 6px 12px; border: 1.5px solid var(--border); border-radius: 7px; background: white; font-size: 11.5px; color: var(--muted); cursor: pointer; font-family: 'Outfit'; transition: all .15s; max-width: 260px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cv-ex-btn.active { border-color: var(--blue); color: var(--blue); background: var(--blue-soft); font-weight: 600; }
+  .cv-ex-btn:hover:not(.active) { border-color: var(--blue); }
+  .cv-pipeline { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+  .cv-pipeline .cv-node { flex: 1; }
+  .cv-node { background: #fff; border: 2px solid var(--border); border-radius: 14px; padding: 14px 12px; text-align: center; transition: all .25s; }
   .cv-node .lbl { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--soft); margin-bottom: 4px; }
-  .cv-node .name { font-family: 'Lora', serif; font-weight: 700; font-size: 14px; color: var(--ink); }
-  .cv-node .sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
-  .cv-node.active { border-color: var(--blue); background: var(--blue-soft); transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0,85,212,.15); }
+  .cv-node .name { font-family: 'Lora', serif; font-weight: 700; font-size: 13px; color: var(--ink); }
+  .cv-node .sub { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 4px; }
+  .cv-node.active { border-color: var(--nc, var(--blue)); background: color-mix(in srgb, var(--nc, var(--blue)) 8%, white); transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0,0,0,.1); }
   .cv-node.done { border-color: var(--ok); background: #ECFDF5; }
   .cv-node.done .lbl { color: var(--ok); }
-  .cv-arrow { color: var(--soft); font-weight: 700; font-size: 18px; text-align: center; }
+  .cv-arrow { color: var(--soft); font-weight: 700; font-size: 18px; text-align: center; flex-shrink: 0; width: 24px; }
   .cv-arrow.active { color: var(--blue); }
+  .cv-meta-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .cv-tokens { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--soft); }
+  #cv-run-btn { padding: 9px 20px; border: none; border-radius: 10px; background: var(--blue); color: #fff; font-family: 'Outfit'; font-weight: 700; font-size: 13px; cursor: pointer; letter-spacing: .02em; }
+  #cv-run-btn:hover { background: var(--blue-deep); }
   .cv-outputs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-  .cv-out { background: var(--blue-soft); border-left: 3px solid var(--blue); border-radius: 8px; padding: 10px 12px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--ink); line-height: 1.55; min-height: 80px; opacity: .35; transition: opacity .25s; }
+  @media(max-width:700px){ .cv-outputs { grid-template-columns:1fr; } .cv-pipeline { flex-direction: column; } }
+  .cv-out { background: var(--blue-soft); border-left: 3px solid var(--blue); border-radius: 8px; padding: 10px 12px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink); line-height: 1.6; min-height: 90px; opacity: .3; transition: opacity .3s; }
   .cv-out.visible { opacity: 1; }
   .cv-out .ttl { display: block; font-family: 'Outfit'; font-size: 9.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--blue-deep); margin-bottom: 6px; }
+  .cv-out pre { white-space: pre-wrap; word-break: break-word; margin: 0; font-family: inherit; font-size: inherit; }
 
   /* ====== Tool: Text Chunking Lab (M05) ====== */
   .ck-controls { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; background: var(--blue-soft); border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; }
@@ -2285,10 +2312,14 @@ function renderPromptAnatomy() {
         <div class="pa-preview">
           <div class="pa-prompt-out" id="pa-out"></div>
           <div class="pa-score">
-            <span class="label">Quality</span>
+            <div class="pa-score-top">
+              <span class="label">Quality score</span>
+              <span class="val"><span id="pa-pct">0</span> / 100</span>
+              <button class="pa-reset" onclick="pa_reset()">Reset</button>
+            </div>
             <div class="bar"><div class="f" id="pa-bar" style="width:0%"></div></div>
-            <span class="val"><span id="pa-pct">0</span> / 100</span>
-            <button class="pa-reset" onclick="pa_reset()">Reset</button>
+            <div class="pa-msg" id="pa-msg"></div>
+            <div class="pa-tip" id="pa-tip"></div>
           </div>
         </div>
       </div>
@@ -2300,32 +2331,64 @@ function renderPromptAnatomy() {
     { id:'format', cls:'format', glyph:'F', t:'Format', s:'How the answer should look.', text:'Return the edited paragraph first, then 3 bullet points listing the most important changes you made.' },
     { id:'examples', cls:'examples', glyph:'E', t:'Examples', s:'Show what good looks like.', text:'Example before: "It is shown that..." After: "We show that..." (Use the active voice.)' }
   ];
-  window.pa_state = { added: [] };
-  window.pa_reset = () => { window.pa_state.added = []; rebuild(); };
+  const QUALITY = {
+    role:     { pts: 20, tip: '+20 pts — a defined persona anchors tone and expertise' },
+    task:     { pts: 25, tip: '+25 pts — the task is the core; nothing else matters without it' },
+    context:  { pts: 20, tip: '+20 pts — context lets the model tailor the answer to your situation' },
+    format:   { pts: 20, tip: '+20 pts — output format control stops hallucinated structure' },
+    examples: { pts: 15, tip: '+15 pts — examples are the strongest signal; they show, not tell' }
+  };
+  const QUALITY_MSG = [
+    [0,  'Empty prompt — the model guesses everything.'],
+    [25, 'Bare task. The model has a job but no guardrails.'],
+    [45, 'Getting there. Add context or format to sharpen the answer.'],
+    [65, 'Solid prompt. A persona or examples would push it further.'],
+    [80, 'Strong prompt. Most production prompts live in this range.'],
+    [95, 'Full anatomy. Role + task + context + format + examples.']
+  ];
+  window.pa_state = { added: ['task'] };
+  window.pa_reset = () => { window.pa_state.added = ['task']; rebuild(); };
   function rebuild() {
     $('pa-blocks').innerHTML = COMPONENTS.map(c => {
       const added = window.pa_state.added.includes(c.id);
-      return `<div class="pa-block ${c.cls} ${added?'added':''}" data-id="${c.id}">
-        <div class="ico">${c.glyph}</div>
+      const q = QUALITY[c.id];
+      return `<div class="pa-block ${c.cls}${added?' added':''}" data-id="${c.id}" title="${added?'Click to remove':'Click to add'}">
+        <div class="ico">${added?'✓':c.glyph}</div>
         <div class="info"><div class="t">${c.t}</div><div class="s">${c.s}</div></div>
+        <div class="pa-pts">${added?'<span class="on">+'+q.pts+'</span>':'<span class="off">+'+q.pts+'</span>'}</div>
       </div>`;
     }).join('');
     document.querySelectorAll('.pa-block').forEach(b => {
       b.addEventListener('click', () => {
         const id = b.dataset.id;
-        if (!window.pa_state.added.includes(id)) window.pa_state.added.push(id);
+        const idx = window.pa_state.added.indexOf(id);
+        if (idx === -1) window.pa_state.added.push(id);
+        else if (id !== 'task') window.pa_state.added.splice(idx, 1);
         rebuild();
       });
     });
     const order = ['role','task','context','format','examples'];
-    const text = window.pa_state.added.sort((a,b) => order.indexOf(a)-order.indexOf(b))
-      .map(id => COMPONENTS.find(c=>c.id===id))
+    const active = window.pa_state.added.slice().sort((a,b) => order.indexOf(a)-order.indexOf(b));
+    const text = active.map(id => COMPONENTS.find(c=>c.id===id))
       .map(c => `[${c.t.toUpperCase()}]\n${c.text}`).join('\n\n');
-    if (text) $('pa-out').textContent = text;
-    else $('pa-out').innerHTML = `<div class="pa-empty">Click a component to add it. Watch the quality score climb.</div>`;
-    const pct = Math.min(100, window.pa_state.added.length * 20);
+    if (text) {
+      const colored = text
+        .replace(/\[ROLE\]/g,'<span class="pa-tag role">[ROLE]</span>')
+        .replace(/\[TASK\]/g,'<span class="pa-tag task">[TASK]</span>')
+        .replace(/\[CONTEXT\]/g,'<span class="pa-tag context">[CONTEXT]</span>')
+        .replace(/\[FORMAT\]/g,'<span class="pa-tag format">[FORMAT]</span>')
+        .replace(/\[EXAMPLES\]/g,'<span class="pa-tag examples">[EXAMPLES]</span>');
+      $('pa-out').innerHTML = colored;
+    } else {
+      $('pa-out').innerHTML = `<div class="pa-empty">Click a component to add it.</div>`;
+    }
+    const pct = active.reduce((s, id) => s + (QUALITY[id]?.pts||0), 0);
     $('pa-bar').style.width = pct + '%';
     $('pa-pct').textContent = pct;
+    const msg = QUALITY_MSG.slice().reverse().find(([t]) => pct >= t);
+    $('pa-msg').textContent = msg ? msg[1] : '';
+    const tip = COMPONENTS.find(c => !active.includes(c.id));
+    $('pa-tip').textContent = tip ? QUALITY[tip.id].tip : 'Full anatomy achieved.';
   }
   rebuild();
 }
@@ -2541,46 +2604,174 @@ function renderStoryline() {
    TOOL: CHAIN VISUALIZER (M04)
    ============================================================ */
 function renderChainViz() {
-  $('tool-body').innerHTML = `
-    <div class="cv-input">
-      <input id="cv-q" type="text" value="What is the weather in Boston today?" />
-      <button onclick="cv_run()">Run Chain</button>
-    </div>
-    <div class="cv-pipeline">
-      <div class="cv-node" id="cv-n1"><div class="lbl">Step 1</div><div class="name">Prompt Template</div><div class="sub">{question} → formatted prompt</div></div>
-      <div class="cv-arrow" id="cv-a1">→</div>
-      <div class="cv-node" id="cv-n2"><div class="lbl">Step 2</div><div class="name">Chat Model</div><div class="sub">gpt-4.1-mini</div></div>
-      <div class="cv-arrow" id="cv-a2">→</div>
-      <div class="cv-node" id="cv-n3"><div class="lbl">Step 3</div><div class="name">Output Parser</div><div class="sub">str → typed dict</div></div>
-    </div>
-    <div class="cv-outputs">
-      <div class="cv-out" id="cv-o1"><span class="ttl">Prompt</span>—</div>
-      <div class="cv-out" id="cv-o2"><span class="ttl">Raw Completion</span>—</div>
-      <div class="cv-out" id="cv-o3"><span class="ttl">Parsed</span>—</div>
-    </div>`;
-  window.cv_run = () => {
-    const q = $('cv-q').value || 'What is the weather in Boston today?';
-    ['cv-n1','cv-n2','cv-n3'].forEach(id => { const e = $(id); e.classList.remove('active'); e.classList.remove('done'); });
-    ['cv-a1','cv-a2'].forEach(id => $(id).classList.remove('active'));
-    ['cv-o1','cv-o2','cv-o3'].forEach(id => { const e = $(id); e.classList.remove('visible'); e.innerHTML = '<span class="ttl">'+e.querySelector('.ttl').textContent+'</span>—'; });
-    const stage1 = `Answer the user briefly.\n\nQ: ${q}\nA:`;
-    const stage2 = `Boston, June 4, partly cloudy, about 68°F, light wind from the west, 30% chance of an evening shower.`;
-    const stage3 = `{\n  "city": "Boston",\n  "temp_f": 68,\n  "summary": "partly cloudy",\n  "precip_chance": 0.30\n}`;
-    const seq = [
-      ['cv-n1','cv-o1', stage1, 'Prompt'],
-      ['cv-n2','cv-o2', stage2, 'Raw Completion'],
-      ['cv-n3','cv-o3', stage3, 'Parsed']
-    ];
-    seq.forEach(([nodeId, outId, text, title], i) => {
-      setTimeout(() => {
-        $(nodeId).classList.add('active');
-        if (i > 0) $('cv-a' + i).classList.add('active');
-        $(outId).innerHTML = `<span class="ttl">${title}</span>${text}`;
-        $(outId).classList.add('visible');
-        setTimeout(() => { $(nodeId).classList.remove('active'); $(nodeId).classList.add('done'); }, 700);
-      }, 200 + i * 900);
-    });
+  const CV_CHAINS = {
+    'qa': {
+      label: 'Q&A Chain', color: 'blue',
+      nodes: [
+        { lbl:'Step 1', name:'Prompt Template', sub:'System role + {question}' },
+        { lbl:'Step 2', name:'Chat Model', sub:'gpt-4.1-mini · temp 0.2' },
+        { lbl:'Step 3', name:'StrOutputParser', sub:'raw string → str' }
+      ],
+      examples: [
+        { q:'What is RAG in one sentence?',
+          prompt:'You are a concise technical instructor. Answer clearly in 1–2 sentences.\n\nQuestion: What is RAG in one sentence?\nAnswer:',
+          raw:'RAG (Retrieval-Augmented Generation) pairs a language model with a retrieval step so it can ground its answers in documents it looks up at inference time, rather than relying only on training memory.',
+          parsed:'What is RAG in one sentence?\n→ "RAG pairs a language model with a retrieval step so answers are grounded in fetched documents, not training memory."' },
+        { q:'How does temperature affect token sampling?',
+          prompt:'You are a concise technical instructor. Answer clearly in 1–2 sentences.\n\nQuestion: How does temperature affect token sampling?\nAnswer:',
+          raw:'Temperature rescales the logit distribution before softmax: a low value (near 0) concentrates probability on the top token, making output deterministic, while a high value (near 2) flattens the distribution so rare tokens get more chances.',
+          parsed:'How does temperature affect token sampling?\n→ "Temperature rescales logits before softmax: low = deterministic, high = diverse/random."' },
+        { q:'What is the difference between a token and a word?',
+          prompt:'You are a concise technical instructor. Answer clearly in 1–2 sentences.\n\nQuestion: What is the difference between a token and a word?\nAnswer:',
+          raw:'A token is the atomic unit a language model sees: it may be a whole word, a subword fragment, a punctuation mark, or a space. "unbelievable" is typically 3 tokens (un-believ-able), and " Boston" is 1 token different from "Boston" due to the leading space.',
+          parsed:'What is the difference between a token and a word?\n→ "A token is a subword unit — words may span 1–4 tokens, and whitespace counts."' }
+      ]
+    },
+    'extract': {
+      label: 'Extraction Chain', color: 'olive',
+      nodes: [
+        { lbl:'Step 1', name:'Prompt Template', sub:'Extract JSON from {text}' },
+        { lbl:'Step 2', name:'Chat Model', sub:'gpt-4.1-mini · temp 0.0' },
+        { lbl:'Step 3', name:'JSON OutputParser', sub:'str → typed dict' }
+      ],
+      examples: [
+        { q:'Extract order details from: "Hi, I need 40 units of SKU-2231 delivered to the Chicago DC by Friday, urgent."',
+          prompt:'You are a data extractor. Return ONLY valid JSON — no prose.\n\nText: "Hi, I need 40 units of SKU-2231 delivered to the Chicago DC by Friday, urgent."\n\nExtract: { "sku", "qty", "destination", "deadline", "priority" }',
+          raw:'{"sku":"SKU-2231","qty":40,"destination":"Chicago DC","deadline":"Friday","priority":"urgent"}',
+          parsed:'{\n  "sku": "SKU-2231",\n  "qty": 40,\n  "destination": "Chicago DC",\n  "deadline": "Friday",\n  "priority": "urgent"\n}' },
+        { q:'Extract from patient note: "67F, BP 138/88, prescribed metformin 500mg BID, follow-up in 3 months."',
+          prompt:'You are a clinical data extractor. Return ONLY valid JSON.\n\nNote: "67F, BP 138/88, prescribed metformin 500mg BID, follow-up in 3 months."\n\nExtract: { "age", "sex", "bp_systolic", "bp_diastolic", "medication", "dose", "followup_months" }',
+          raw:'{"age":67,"sex":"F","bp_systolic":138,"bp_diastolic":88,"medication":"metformin","dose":"500mg BID","followup_months":3}',
+          parsed:'{\n  "age": 67,\n  "sex": "F",\n  "bp_systolic": 138,\n  "bp_diastolic": 88,\n  "medication": "metformin",\n  "dose": "500mg BID",\n  "followup_months": 3\n}' },
+        { q:'Parse job posting: "Senior OR Analyst, remote, $120k–$145k, 5+ yrs simulation exp, Python required."',
+          prompt:'You are a recruitment data extractor. Return ONLY valid JSON.\n\nPosting: "Senior OR Analyst, remote, $120k–$145k, 5+ yrs simulation exp, Python required."\n\nExtract: { "title", "location", "salary_min", "salary_max", "exp_years", "skills" }',
+          raw:'{"title":"Senior OR Analyst","location":"remote","salary_min":120000,"salary_max":145000,"exp_years":5,"skills":["simulation","Python"]}',
+          parsed:'{\n  "title": "Senior OR Analyst",\n  "location": "remote",\n  "salary_min": 120000,\n  "salary_max": 145000,\n  "exp_years": 5,\n  "skills": ["simulation", "Python"]\n}' }
+      ]
+    },
+    'summarize': {
+      label: 'Summarization Chain', color: 'purple',
+      nodes: [
+        { lbl:'Step 1', name:'Prompt Template', sub:'Summarize in ≤{n} words: {doc}' },
+        { lbl:'Step 2', name:'Chat Model', sub:'gpt-4.1-mini · temp 0.3' },
+        { lbl:'Step 3', name:'StrOutputParser', sub:'raw string → str' }
+      ],
+      examples: [
+        { q:'Abstract: "We propose a RAG pipeline that retrieves simulation-model templates..." (truncated)',
+          prompt:'Summarize the following abstract in ≤40 words, preserving the key method and main finding.\n\nAbstract: "We propose a RAG pipeline that retrieves simulation-model templates from a curated OR/MS library, augments them with domain-specific constraints extracted from natural-language process descriptions, and generates runnable SimPy code. On 23 real case studies, LLM-generated models reached ≥92% structural accuracy vs. expert baselines."\n\nSummary:',
+          raw:'A RAG pipeline retrieves OR/MS simulation templates, augments them with process-description constraints, and auto-generates SimPy code — achieving ≥92% structural accuracy against expert baselines across 23 case studies.',
+          parsed:'Length check: 33 words ✓ (target ≤40)\nKey method: RAG + LLM code gen\nMain finding: ≥92% accuracy vs expert baseline' },
+        { q:'Summarize RLHF: "Reinforcement learning from human feedback fine-tunes..."',
+          prompt:'Summarize the following in ≤40 words, preserving the key method and main finding.\n\nText: "Reinforcement learning from human feedback (RLHF) fine-tunes a pre-trained language model using a reward model trained on human preference rankings. The policy model is updated via PPO to maximize expected reward, aligning outputs with human intent without requiring explicit rules."\n\nSummary:',
+          raw:'RLHF fine-tunes LLMs by training a reward model on human preferences, then optimizing the policy with PPO to maximize that reward — aligning outputs with human intent without hard-coded rules.',
+          parsed:'Length check: 33 words ✓ (target ≤40)\nKey method: reward model + PPO optimization\nMain finding: aligns LLM to human intent without explicit rules' }
+      ]
+    },
+    'classify': {
+      label: 'Classification Chain', color: 'crimson',
+      nodes: [
+        { lbl:'Step 1', name:'Prompt Template', sub:'Classify {text} → label + reason' },
+        { lbl:'Step 2', name:'Chat Model', sub:'gpt-4.1-mini · temp 0.0' },
+        { lbl:'Step 3', name:'PydanticOutputParser', sub:'str → ClassificationResult' }
+      ],
+      examples: [
+        { q:'Classify ticket: "The dashboard keeps crashing when I try to export to PDF."',
+          prompt:'You are a support-ticket classifier. Return ONLY valid JSON with keys: label (one of: BUG, FEATURE_REQUEST, QUESTION, BILLING), confidence (0.0–1.0), reason (≤15 words).\n\nTicket: "The dashboard keeps crashing when I try to export to PDF."\n\nClassification:',
+          raw:'{"label":"BUG","confidence":0.97,"reason":"Crash on specific user action is a reproducible software defect."}',
+          parsed:'ClassificationResult(\n  label    = "BUG",\n  confidence = 0.97,\n  reason   = "Crash on specific action → reproducible defect"\n)' },
+        { q:'Classify review: "Shipping was fast but the packaging was completely crushed."',
+          prompt:'You are a sentiment and issue classifier. Return ONLY valid JSON with keys: sentiment (POSITIVE/MIXED/NEGATIVE), issue_type (SHIPPING/PRODUCT/SERVICE/NONE), confidence (0.0–1.0).\n\nReview: "Shipping was fast but the packaging was completely crushed."\n\nClassification:',
+          raw:'{"sentiment":"MIXED","issue_type":"SHIPPING","confidence":0.91}',
+          parsed:'ClassificationResult(\n  sentiment   = "MIXED",\n  issue_type  = "SHIPPING",\n  confidence  = 0.91\n)' },
+        { q:'Classify email: "Can you schedule a 30-min call this week to discuss the Q2 forecast?"',
+          prompt:'You are an email intent classifier. Return ONLY valid JSON with keys: intent (MEETING_REQUEST/QUESTION/COMPLAINT/ANNOUNCEMENT/OTHER), urgency (HIGH/MEDIUM/LOW), confidence (0.0–1.0).\n\nEmail: "Can you schedule a 30-min call this week to discuss the Q2 forecast?"\n\nClassification:',
+          raw:'{"intent":"MEETING_REQUEST","urgency":"MEDIUM","confidence":0.99}',
+          parsed:'ClassificationResult(\n  intent    = "MEETING_REQUEST",\n  urgency   = "MEDIUM",\n  confidence = 0.99\n)' }
+      ]
+    }
   };
+
+  $('tool-body').innerHTML = `
+    <div class="cv-chain-tabs" id="cv-tabs"></div>
+    <div class="cv-example-row" id="cv-examples"></div>
+    <div class="cv-pipeline" id="cv-pipeline"></div>
+    <div class="cv-meta-row"><span class="cv-tokens" id="cv-tokens"></span><button id="cv-run-btn" onclick="cv_run()">▶ Run Chain</button></div>
+    <div class="cv-outputs">
+      <div class="cv-out" id="cv-o1"><span class="ttl">Formatted Prompt</span><span class="dash">—</span></div>
+      <div class="cv-out" id="cv-o2"><span class="ttl">Raw Completion</span><span class="dash">—</span></div>
+      <div class="cv-out" id="cv-o3"><span class="ttl">Parsed Output</span><span class="dash">—</span></div>
+    </div>`;
+
+  window.CV = { chain: 'qa', exIdx: 0 };
+
+  function buildTabs() {
+    $('cv-tabs').innerHTML = Object.entries(CV_CHAINS).map(([k,c]) =>
+      `<button class="cv-tab${window.CV.chain===k?' active':''}" data-chain="${k}">${c.label}</button>`
+    ).join('');
+    document.querySelectorAll('.cv-tab').forEach(b => b.addEventListener('click', () => {
+      window.CV.chain = b.dataset.chain; window.CV.exIdx = 0; buildAll();
+    }));
+  }
+
+  function buildExamples() {
+    const chain = CV_CHAINS[window.CV.chain];
+    $('cv-examples').innerHTML = chain.examples.map((ex, i) =>
+      `<button class="cv-ex-btn${i===window.CV.exIdx?' active':''}" data-i="${i}">${ex.q.length > 55 ? ex.q.slice(0,55)+'…' : ex.q}</button>`
+    ).join('');
+    document.querySelectorAll('.cv-ex-btn').forEach(b => b.addEventListener('click', () => {
+      window.CV.exIdx = parseInt(b.dataset.i); buildExamples(); resetOutputs();
+    }));
+  }
+
+  function buildPipeline() {
+    const chain = CV_CHAINS[window.CV.chain];
+    const col = `var(--${chain.color})`;
+    $('cv-pipeline').innerHTML = chain.nodes.map((n, i) =>
+      `${i>0?`<div class="cv-arrow" id="cv-a${i}">→</div>`:''}` +
+      `<div class="cv-node" id="cv-n${i+1}" style="--nc:${col}"><div class="lbl">Step ${i+1}</div><div class="name">${n.name}</div><div class="sub">${n.sub}</div></div>`
+    ).join('');
+  }
+
+  function resetOutputs() {
+    ['cv-o1','cv-o2','cv-o3'].forEach(id => {
+      const e = $(id); e.classList.remove('visible');
+      e.querySelector('.dash').textContent = '—'; e.querySelector('.dash').style.display='';
+    });
+    $('cv-tokens').textContent = '';
+    document.querySelectorAll('.cv-node').forEach(n => { n.classList.remove('active','done'); });
+    document.querySelectorAll('.cv-arrow').forEach(a => a.classList.remove('active'));
+  }
+
+  function buildAll() { buildTabs(); buildExamples(); buildPipeline(); resetOutputs(); }
+
+  window.cv_run = () => {
+    const chain = CV_CHAINS[window.CV.chain];
+    const ex = chain.examples[window.CV.exIdx];
+    const nodeCount = chain.nodes.length;
+    resetOutputs();
+    const outputs = [ex.prompt, ex.raw, ex.parsed];
+    const titles = ['Formatted Prompt','Raw Completion','Parsed Output'];
+    for (let i = 0; i < nodeCount; i++) {
+      setTimeout(() => {
+        $(`cv-n${i+1}`).classList.add('active');
+        if (i > 0) $(`cv-a${i}`).classList.add('active');
+        const out = $(`cv-o${i+1}`);
+        out.querySelector('.dash').style.display='none';
+        out.querySelector('.ttl').textContent = titles[i];
+        let pre = out.querySelector('pre');
+        if (!pre) { pre = document.createElement('pre'); out.appendChild(pre); }
+        pre.textContent = outputs[i];
+        out.classList.add('visible');
+        setTimeout(() => { $(`cv-n${i+1}`).classList.remove('active'); $(`cv-n${i+1}`).classList.add('done'); }, 700);
+        if (i === nodeCount - 1) {
+          const toks = Math.round(ex.prompt.length / 3.8);
+          $('cv-tokens').textContent = `~${toks} prompt tokens · ~${Math.round(ex.raw.length/4)} completion tokens`;
+        }
+      }, 300 + i * 950);
+    }
+  };
+
+  buildAll();
   if (window.AUTO_FILL) setTimeout(() => window.cv_run(), 80);
 }
 
