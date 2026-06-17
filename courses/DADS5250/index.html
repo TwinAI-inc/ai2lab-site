@@ -1625,8 +1625,8 @@ const MODULE_PLANS = {
   12: {
     tags: ['n8n', 'Zapier AI', 'LLM-in-pipeline'],
     labs: [
-      comingLab('Lab 1 — <em>n8n Workflow Automation</em>',
-        'Coming soon. Build an automated workflow that ingests email, calls an LLM, and writes back a structured response.')
+      lab('M12', 'M12_Lab1_n8n_Workflow_Automation.ipynb', 'Lab 1 — <em>n8n Workflow Automation</em>',
+        'Build trigger → LLM → action workflows in Python that mirror n8n\'s DAG model. Email triage bot, feedback digest, conditional branching, and n8n JSON export.')
     ],
     content: [
       'Workflow automation concepts: triggers, actions, conditions',
@@ -1640,10 +1640,10 @@ const MODULE_PLANS = {
     assignment: 'Build an <strong>automated workflow</strong> that processes incoming data using an LLM. Submit: workflow screenshot/export, demo video, analysis of when automation vs code is better.'
   },
   13: {
-    tags: ['LLM: gpt-4.1-mini (fine-tune target)', 'OpenAI API', 'Gradio'],
+    tags: ['LLM: gpt-4o-mini (fine-tune target)', 'OpenAI API', 'Gradio'],
     labs: [
-      comingLab('Lab 1 — <em>Fine-Tuning & Deployment</em>',
-        'Coming soon. Prep JSONL training data, fine-tune via OpenAI API, deploy a Gradio demo.')
+      lab('M13', 'M13_Lab1_Fine_Tuning_Deployment.ipynb', 'Lab 1 — <em>Fine-Tuning & Deployment</em>',
+        'Decision ladder (prompt vs RAG vs fine-tune), build a 20-example JSONL dataset, submit a fine-tune job via OpenAI API, evaluate base vs fine-tuned, deploy a Gradio demo.')
     ],
     content: [
       'When to fine-tune vs prompt engineering vs RAG (decision framework)',
