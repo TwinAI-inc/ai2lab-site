@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Letters of Support — INFORMS 2026 Teaching Prize Nomination</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #060A18;
+    --surface: rgba(255,255,255,.04);
+    --surface-hover: rgba(255,255,255,.07);
+    --border: rgba(255,255,255,.08);
+    --border-bright: rgba(255,255,255,.16);
+    --blue: #0055FF;
+    --blue-dim: rgba(0,85,255,.18);
+    --blue-glow: rgba(0,85,255,.35);
+    --teal: #00D9C0;
+    --teal-dim: rgba(0,217,192,.12);
+    --gold: #F59E0B;
+    --gold-dim: rgba(245,158,11,.12);
+    --violet: #8B5CF6;
+    --violet-dim: rgba(139,92,246,.12);
+    --rose: #F43F5E;
+    --rose-dim: rgba(244,63,94,.12);
+    --green: #10B981;
+    --green-dim: rgba(16,185,129,.12);
+    --text-1: #F1F5F9;
+    --text-2: #94A3B8;
+    --text-3: #64748B;
+    --radius: 16px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text-1);
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* === STARFIELD BG === */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 0%, rgba(0,85,255,.08) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 80% 100%, rgba(0,217,192,.06) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 60% 40%, rgba(139,92,246,.04) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* === HEADER === */
+  .page-header {
+    position: relative;
+    padding: 56px 48px 48px;
+    background: linear-gradient(135deg, rgba(0,85,255,.12) 0%, rgba(0,217,192,.06) 100%);
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,85,255,.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .page-header::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: 30%;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,217,192,.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .page-header h1 {
+    font-size: clamp(24px, 4vw, 36px);
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #fff 30%, rgba(0,217,192,.9) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+    position: relative;
+  }
+  .page-header .sub {
+    font-size: 14px;
+    color: var(--text-2);
+    margin-bottom: 24px;
+    max-width: 640px;
+    position: relative;
+  }
+  .header-chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    position: relative;
+  }
+  .chip {
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.12);
+    color: var(--text-2);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .3px;
+  }
+  .chip-blue { border-color: rgba(0,85,255,.4); color: #93C5FD; background: rgba(0,85,255,.1); }
+
+  /* === CONTAINER === */
+  .container {
+    position: relative;
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 48px 24px 100px;
+    z-index: 1;
+  }
+
+  /* === SECTION LABELS === */
+  .section-label {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* === INDEX TABLE === */
+  .index-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 56px;
+    backdrop-filter: blur(12px);
+  }
+  .index-table { width: 100%; border-collapse: collapse; }
+  .index-table thead tr {
+    background: rgba(0,85,255,.12);
+    border-bottom: 1px solid rgba(0,85,255,.25);
+  }
+  .index-table thead th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #93C5FD;
+  }
+  .index-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background .15s;
+  }
+  .index-table tbody tr:last-child { border-bottom: none; }
+  .index-table tbody tr:hover { background: var(--surface-hover); }
+  .index-table td { padding: 13px 16px; font-size: 13px; vertical-align: top; }
+  .td-num { font-weight: 900; color: var(--blue); font-size: 14px; width: 32px; }
+  .td-name a { font-weight: 700; color: var(--text-1); text-decoration: none; transition: color .15s; }
+  .td-name a:hover { color: var(--teal); }
+  .td-role { color: var(--text-2); font-size: 13px; }
+  .td-role .org { display: block; font-size: 11px; color: var(--text-3); margin-top: 2px; }
+  .td-rel { color: var(--text-2); font-size: 12px; }
+
+  /* === BADGES === */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .4px;
+    white-space: nowrap;
+    border: 1px solid transparent;
+  }
+  .badge-faculty  { background: rgba(0,85,255,.12);  border-color: rgba(0,85,255,.3);  color: #93C5FD; }
+  .badge-industry { background: rgba(245,158,11,.1); border-color: rgba(245,158,11,.3); color: #FCD34D; }
+  .badge-phd      { background: rgba(16,185,129,.1); border-color: rgba(16,185,129,.3); color: #6EE7B7; }
+  .badge-ta       { background: rgba(139,92,246,.1); border-color: rgba(139,92,246,.3); color: #C4B5FD; }
+  .badge-alumni   { background: rgba(244,63,94,.08); border-color: rgba(244,63,94,.25); color: #FDA4AF; }
+
+  /* === LETTER CARDS === */
+  .letters-list { display: flex; flex-direction: column; gap: 20px; }
+
+  .letter-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    scroll-margin-top: 28px;
+    backdrop-filter: blur(16px);
+    transition: border-color .2s, box-shadow .2s;
+    position: relative;
+  }
+  .letter-card:hover {
+    border-color: var(--border-bright);
+    box-shadow: 0 0 0 1px rgba(255,255,255,.04), 0 8px 32px rgba(0,0,0,.4);
+  }
+
+  /* Left accent bar by category */
+  .letter-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    border-radius: 3px 0 0 3px;
+  }
+  .card-faculty::before  { background: var(--blue); box-shadow: 0 0 12px var(--blue-glow); }
+  .card-industry::before { background: var(--gold);   box-shadow: 0 0 12px rgba(245,158,11,.4); }
+  .card-phd::before      { background: var(--green);  box-shadow: 0 0 12px rgba(16,185,129,.35); }
+  .card-ta::before       { background: var(--violet); box-shadow: 0 0 12px rgba(139,92,246,.35); }
+  .card-alumni::before   { background: var(--rose);   box-shadow: 0 0 12px rgba(244,63,94,.3); }
+
+  .letter-card-header {
+    padding: 20px 24px 16px 28px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .letter-num {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    background: var(--blue-dim);
+    border: 1px solid rgba(0,85,255,.3);
+    color: #93C5FD;
+    font-size: 15px;
+    font-weight: 900;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .card-faculty .letter-num  { background: rgba(0,85,255,.12); border-color: rgba(0,85,255,.3); color: #93C5FD; }
+  .card-industry .letter-num { background: rgba(245,158,11,.1); border-color: rgba(245,158,11,.3); color: #FCD34D; }
+  .card-phd .letter-num      { background: rgba(16,185,129,.1); border-color: rgba(16,185,129,.3); color: #6EE7B7; }
+  .card-ta .letter-num       { background: rgba(139,92,246,.1); border-color: rgba(139,92,246,.3); color: #C4B5FD; }
+  .card-alumni .letter-num   { background: rgba(244,63,94,.08); border-color: rgba(244,63,94,.25); color: #FDA4AF; }
+
+  .letter-meta { flex: 1; min-width: 0; }
+  .letter-name {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--text-1);
+    margin-bottom: 4px;
+    letter-spacing: -.2px;
+  }
+  .letter-title {
+    font-size: 12.5px;
+    color: var(--text-2);
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+  .letter-org {
+    font-size: 11.5px;
+    color: var(--text-3);
+    font-weight: 400;
+  }
+
+  .letter-card-body { padding: 18px 24px 20px 28px; }
+
+  .bio-label {
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-3);
+    margin-bottom: 8px;
+  }
+  .bio-text {
+    font-size: 13.5px;
+    color: var(--text-2);
+    line-height: 1.75;
+    margin-bottom: 16px;
+  }
+  .bio-text em { color: var(--teal); font-style: normal; font-weight: 600; }
+
+  .rel-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .rel-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: .8px;
+  }
+
+  .letter-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(0,85,255,.15);
+    border: 1px solid rgba(0,85,255,.35);
+    color: #93C5FD;
+    text-decoration: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 12.5px;
+    font-weight: 700;
+    transition: background .15s, border-color .15s, color .15s;
+    letter-spacing: .2px;
+  }
+  .letter-link:hover {
+    background: rgba(0,85,255,.28);
+    border-color: rgba(0,85,255,.6);
+    color: #BFDBFE;
+  }
+  .letter-link svg {
+    width: 13px; height: 13px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+  }
+
+  /* === RESPONSIVE === */
+  @media (max-width: 640px) {
+    .page-header { padding: 36px 24px 32px; }
+    .index-table thead th:nth-child(4),
+    .index-table tbody td:nth-child(4) { display: none; }
+    .letter-card-header { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="header-eyebrow">INFORMS Prize for the Teaching of OR/MS Practice · 2026</div>
+  <h1>Letters of Support</h1>
+  <div class="sub">Dr. Mohammad Dehghani · Northeastern University · 9 letters spanning faculty, industry, PhD mentees, teaching assistants, and course alumni</div>
+  <div class="header-chips">
+    <span class="chip chip-blue">9 Letters</span>
+    <span class="chip">Faculty</span>
+    <span class="chip">Industry</span>
+    <span class="chip">PhD Mentees</span>
+    <span class="chip">Teaching Assistants</span>
+    <span class="chip">Course Alumni</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="section-label">Index of Letters</div>
+
+  <div class="index-wrap">
+    <table class="index-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Current Role &amp; Organization</th>
+          <th>Relationship</th>
+          <th>Category</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="td-num">1</td>
+          <td class="td-name"><a href="#L01">Melachrinoudis, Emanuel</a></td>
+          <td class="td-role">Professor Emeritus <span class="org">Former Director, IE-OR Programs · Northeastern University</span></td>
+          <td class="td-rel">Supervised &amp; mentored MD for 20+ years as department director</td>
+          <td><span class="badge badge-faculty">Faculty</span></td>
+        </tr>
+        <tr>
+          <td class="td-num">2</td>
+          <td class="td-name"><a href="#L02">Profi, Marinela</a></td>
+          <td class="td-role">Global AI &amp; Generative AI Market Strategy Lead <span class="org">SAS Institute</span></td>
+          <td class="td-rel">Guest lecturer in DADS 5250; industry practitioner perspective</td>
+          <td><span class="badge badge-industry">Industry</span></td>
+        </tr>
+        <tr>
+          <td class="td-num">3</td>
+          <td class="td-name"><a href="#L03">Menahi, Shayan</a></td>
+          <td class="td-role">PM, AI Experiences <span class="org">2026 NEU Commencement Speaker · Inaugural DADS 5250 TA</span></td>
+          <td class="td-rel">Inaugural TA for 2 consecutive semesters; curriculum co-builder</td>
+          <td><span class="badge badge-ta">Teaching Assistant</span></td>
+        </tr>
+        <tr>
+          <td class="td-num">4</td>
+          <td class="td-name"><a href="#L04">Naik, Sheetal</a></td>
+          <td class="td-role">AI Solutions Engineer, Dynamics 365 AI <span class="org">Microsoft Corporation · M.S. Data Analytics Eng., NEU 2025</span></td>
+          <td class="td-rel">Former student (IE 5374); applying course skills at Microsoft AI</td>
+          <td><span class="badge badge-alumni">Alumni</span></td>
+        </tr>
+        <tr>
+          <td class="td-num">5</td>
+          <td class="td-name"><a href="#L05">Son, Hyoungseo</a></td>
+          <td class="td-role">Ph.D. Candidate, MIE <span class="org">Northeastern University · HackPrinceton 2026, 1st Place</span></td>
+          <td class="td-rel">PhD mentee; research in simulation &amp; AI</td>
+          <td><span class="badge badge-phd">PhD Mentee</span></td>
+        </tr>
+        <tr>
+          <td class="td-num">6</td>
+          <td class="td-name"><a href="#L06">Yadav, YashVardhan</a></td>
+          <td class="td-role">Engineer / Technical Specialist <span class="org">M.S. Engineering Management, NEU · Ex-Oracle, Tesla, NXP</span></td>
+          <td class="td-rel">Former student (Applied Generative AI, Spring 2025)</td>
+          <td><span class="badge badge-alumni">Alumni</span></td>
+        </tr>
+        <tr>
+          <td class="td-num">7</td>
+          <td class="td-name"><a href="#L07">Aleti, Snigdha</a></td>
+          <td class="td-role">Copilot Product Dev &amp; Management Intern <span class="org">BerryDunn · M.S. Data Analytics Engineering, NEU</span></td>
+          <td class="td-rel">Former student; applying RAG &amp; LLM in production AI</td>
+          <td><span class="badge badge-alumni">Alumni</span></td>
+        </tr>
+        <tr>
+          <td class="td-num">8</td>
+          <td class="td-name"><a href="#L08">Rao, Sanjana</a></td>
+          <td class="td-role">AI Project Manager <span class="org">Aosenuma · Previously Gaman AI (day-1 GPT tool adopted by eng. team)</span></td>
+          <td class="td-rel">Former student; immediate industry impact on day 1</td>
+          <td><span class="badge badge-alumni">Alumni</span></td>
+        </tr>
+        <tr>
+          <td class="td-num">9</td>
+          <td class="td-name"><a href="#L09">Sadeghi, Negar</a></td>
+          <td class="td-role">Ph.D. Student, MIE <span class="org">Northeastern University · GenAI in Healthcare research</span></td>
+          <td class="td-rel">Student → TA ×3 semesters → PhD researcher</td>
+          <td><span class="badge badge-ta">TA &amp; PhD</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-label">Letters</div>
+
+  <div class="letters-list">
+
+    <!-- L01 -->
+    <div class="letter-card card-faculty" id="L01">
+      <div class="letter-card-header">
+        <div class="letter-num">1</div>
+        <div class="letter-meta">
+          <div class="letter-name">Emanuel Melachrinoudis, Ph.D.</div>
+          <div class="letter-title">Professor Emeritus · Former Director, IE-OR Programs · Former Associate Chair, MIE</div>
+          <div class="letter-org">Northeastern University</div>
+        </div>
+        <span class="badge badge-faculty">Faculty</span>
+      </div>
+      <div class="letter-card-body">
+        <div class="bio-label">Background &amp; Perspective</div>
+        <p class="bio-text">Dr. Melachrinoudis directed the Industrial Engineering and Operations Research programs at Northeastern for over 20 years and served as Associate Chair of MIE. In that role he oversaw MD's appointment, observed his teaching development, and worked alongside him through course launches and curriculum design. His letter provides the longest institutional arc: a faculty perspective on MD's trajectory from early-career instructor to award-level educator.</p>
+        <div class="rel-row">
+          <span class="rel-label">Relationship</span>
+          <span class="badge badge-faculty">Faculty supervisor · 20+ year institutional view</span>
+        </div>
+        <a class="letter-link" href="01_SupportLetter_Melachrinoudis_Emanuel.pdf" target="_blank">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Open Letter (PDF)
+        </a>
+      </div>
+    </div>
+
+    <!-- L02 -->
+    <div class="letter-card card-industry" id="L02">
+      <div class="letter-card-header">
+        <div class="letter-num">2</div>
+        <div class="letter-meta">
+          <div class="letter-name">Marinela Profi</div>
+          <div class="letter-title">Global AI &amp; Generative AI Market Strategy Lead</div>
+          <div class="letter-org">SAS Institute</div>
+        </div>
+        <span class="badge badge-industry">Industry</span>
+      </div>
+      <div class="letter-card-body">
+        <div class="bio-label">Background &amp; Perspective</div>
+        <p class="bio-text">Marinela Profi leads global AI market strategy at SAS, working with enterprises worldwide on the adoption of Generative AI and Agentic AI technologies. She has a background spanning data science, AI consulting, and technology strategy. She served as a guest lecturer in DADS 5250 and evaluates the course from an enterprise-AI practitioner standpoint — offering a rare external voice that can compare MD's pedagogy against what industry actually needs from new hires.</p>
+        <div class="rel-row">
+          <span class="rel-label">Relationship</span>
+          <span class="badge badge-industry">Guest lecturer · SAS practitioner perspective</span>
+        </div>
+        <a class="letter-link" href="02_SupportLetter_Profi_Marinela.pdf" target="_blank">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Open Letter (PDF)
+        </a>
+      </div>
+    </div>
+
+    <!-- L03 -->
+    <div class="letter-card card-ta" id="L03">
+      <div class="letter-card-header">
+        <div class="letter-num">3</div>
+        <div class="letter-meta">
+          <div class="letter-name">Shayan Menahi</div>
+          <div class="letter-title">PM, AI Experiences · 2026 NEU Commencement Speaker · Inaugural DADS 5250 TA</div>
+          <div class="letter-org">Industry (AI product management)</div>
+        </div>
+        <span class="badge badge-ta">Teaching Assistant</span>
+      </div>
+      <div class="letter-card-body">
+        <div class="bio-label">Background &amp; Perspective</div>
+        <p class="bio-text">Shayan Menahi was the inaugural TA for DADS 5250, serving across two consecutive semesters. He helped shape the curriculum from the inside, ran all lab sessions, mentored final-project teams, and launched <em>The Buzz</em>, a weekly AI-news briefing now embedded in course culture. Selected as the 2026 NEU College of Engineering Commencement Speaker, his letter speaks to the course from the vantage of someone who both studied and built it — and whose career was directly launched by it.</p>
+        <div class="rel-row">
+          <span class="rel-label">Relationship</span>
+          <span class="badge badge-ta">Inaugural TA · 2 semesters · curriculum co-builder</span>
+        </div>
+        <a class="letter-link" href="03_SupportLetter_Menahi_Shayan.pdf" target="_blank">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Open Letter (PDF)
+        </a>
+      </div>
+    </div>
+
+    <!-- L04 -->
+    <div class="letter-card card-alumni" id="L04">
+      <div class="letter-card-header">
+        <div class="letter-num">4</div>
+        <div class="letter-meta">
+          <div class="letter-name">Sheetal Naik</div>
+          <div class="letter-title">AI Solutions Engineer, Dynamics 365 AI</div>
+          <div class="letter-org">Microsoft Corporation, Redmond, WA · M.S. Data Analytics Engineering, Northeastern University 2025</div>
+        </div>
+        <span class="badge badge-alumni">Alumni</span>
+      </div>
+      <div class="letter-card-body">
+        <div class="bio-label">Background &amp; Perspective</div>
+        <p class="bio-text">Sheetal Naik completed IE 5374 at Northeastern and is now an AI Solutions Engineer on Microsoft's Dynamics 365 AI team. She describes the course as the most practically formative of her graduate program, crediting it with equipping her to work on production AI systems rather than treating GenAI as a black-box tool. Her letter provides a concrete outcome data point: a named alumna in a high-signal role at a major technology employer, directly attributing her readiness to the course.</p>
+        <div class="rel-row">
+          <span class="rel-label">Relationship</span>
+          <span class="badge badge-alumni">Former student · now at Microsoft AI</span>
+        </div>
+        <a class="letter-link" href="04_SupportLetter_Naik_Sheetal.pdf" target="_blank">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Open Letter (PDF)
+        </a>
+      </div>
+    </div>
+
+    <!-- L05 -->
+    <div class="letter-card card-phd" id="L05">
+      <div class="letter-card-header">
+        <div class="letter-num">5</div>
+        <div class="letter-meta">
+          <div class="letter-name">Hyoungseo Son</div>
+          <div class="letter-title">Ph.D. Candidate, Mechanical and Industrial Engineering</div>
+          <div class="letter-org">Northeastern University · HackPrinceton 2026 — 1st Place, Knot Track</div>
+        </div>
+        <span class="badge badge-phd">PhD Mentee</span>
+      </div>
+      <div class="letter-card-body">
+        <div class="bio-label">Background &amp; Perspective</div>
+        <p class="bio-text">Hyoungseo Son is a PhD candidate in MIE at Northeastern, working under Dr. Dehghani's mentorship in simulation and AI research. He recently won first place in the Knot Track at HackPrinceton 2026. His letter speaks from the research-mentorship dimension: the way MD's teaching and advising approach shapes how PhD students think about applying GenAI methods to rigorous research problems in OR/MS.</p>
+        <div class="rel-row">
+          <span class="rel-label">Relationship</span>
+          <span class="badge badge-phd">PhD mentee · active researcher</span>
+        </div>
+        <a class="letter-link" href="05_SupportLetter_Son_Hyoungseo.pdf" target="_blank">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Open Letter (PDF)
+        </a>
+      </div>
+    </div>
+
+    <!-- L06 -->
+    <div class="letter-card card-alumni" id="L06">
+      <div class="letter-card-header">
+        <div class="letter-num">6</div>
+        <div class="letter-meta">
+          <div class="letter-name">Yash Vardhan Yadav</div>
+          <div class="letter-title">Technical Specialist / Engineer</div>
+          <div class="letter-org">M.S. Engineering Management, Northeastern University · Previously: Oracle, Tesla, NXP Semiconductors, Merge, Regal</div>
+        </div>
+        <span class="badge badge-alumni">Alumni</span>
+      </div>
+      <div class="letter-card-body">
+        <div class="bio-label">Background &amp; Perspective</div>
+        <p class="bio-text">Yash Vardhan Yadav completed Applied Generative AI in Spring 2025 while earning his M.S. in Engineering Management at Northeastern. With experience spanning Oracle, Tesla, NXP Semiconductors, and other technical environments, he writes as a practitioner who can verify whether what is taught in the course maps to real technical demands. He specifically notes the currency of the material and the contrast with courses that teach methods decades old.</p>
+        <div class="rel-row">
+          <span class="rel-label">Relationship</span>
+          <span class="badge badge-alumni">Former student · multi-industry engineering practitioner</span>
+        </div>
+        <a class="letter-link" href="06_SupportLetter_Yadav_YashVardhan.pdf" target="_blank">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Open Letter (PDF)
+        </a>
+      </div>
+    </div>
+
+    <!-- L07 -->
+    <div class="letter-card card-alumni" id="L07">
+      <div class="letter-card-header">
+        <div class="letter-num">7</div>
+        <div class="letter-meta">
+          <div class="letter-name">Snigdha Aleti</div>
+          <div class="letter-title">Copilot Product Development &amp; Management Intern</div>
+          <div class="letter-org">BerryDunn · M.S. Data Analytics Engineering, Northeastern University</div>
+        </div>
+        <span class="badge badge-alumni">Alumni</span>
+      </div>
+      <div class="letter-card-body">
+        <div class="bio-label">Background &amp; Perspective</div>
+        <p class="bio-text">Snigdha Aleti is currently a Copilot Product Development intern at BerryDunn, where she is building an AI-driven bid/no-bid decision system for government contracting using XGBoost, RAG pipelines, and LLM-based scoring. She speaks fluently about Copilot Studio, Azure AI Foundry, and AI governance frameworks. Her letter demonstrates concrete skills transfer: course concepts directly visible in her day-to-day work on production AI systems.</p>
+        <div class="rel-row">
+          <span class="rel-label">Relationship</span>
+          <span class="badge badge-alumni">Former student · applying RAG &amp; LLM skills in industry</span>
+        </div>
+        <a class="letter-link" href="07_SupportLetter_Aleti_Snigdha.pdf" target="_blank">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Open Letter (PDF)
+        </a>
+      </div>
+    </div>
+
+    <!-- L08 -->
+    <div class="letter-card card-alumni" id="L08">
+      <div class="letter-card-header">
+        <div class="letter-num">8</div>
+        <div class="letter-meta">
+          <div class="letter-name">Sanjana Rao</div>
+          <div class="letter-title">AI Project Manager (six-month co-op, Dec 2025)</div>
+          <div class="letter-org">Aosenuma · Previously: Gaman AI — Custom GPT Prompt Optimizer adopted by engineering team in week 1</div>
+        </div>
+        <span class="badge badge-alumni">Alumni</span>
+      </div>
+      <div class="letter-card-body">
+        <div class="bio-label">Background &amp; Perspective</div>
+        <p class="bio-text">Sanjana Rao built a Custom GPT Prompt Optimizer on her first day at Gaman AI — a tool adopted by the engineering team within one week. She credits DADS 5250 with making her job-ready in prompt engineering and RAG before she walked in the door. Currently an AI Project Manager at Aosenuma, her letter is one of the sharpest examples in the package of direct, employer-observed skill transfer from the course to production work.</p>
+        <div class="rel-row">
+          <span class="rel-label">Relationship</span>
+          <span class="badge badge-alumni">Former student · immediate industry impact on day 1</span>
+        </div>
+        <a class="letter-link" href="08_SupportLetter_Rao_Sanjana.pdf" target="_blank">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Open Letter (PDF)
+        </a>
+      </div>
+    </div>
+
+    <!-- L09 -->
+    <div class="letter-card card-ta" id="L09">
+      <div class="letter-card-header">
+        <div class="letter-num">9</div>
+        <div class="letter-meta">
+          <div class="letter-name">Negar Sadeghi</div>
+          <div class="letter-title">Ph.D. Student, MIE · GenAI in Healthcare Research</div>
+          <div class="letter-org">Northeastern University · TA for 3 consecutive semesters · Student, Summer 2025 cohort</div>
+        </div>
+        <span class="badge badge-ta">TA &amp; PhD</span>
+      </div>
+      <div class="letter-card-body">
+        <div class="bio-label">Background &amp; Perspective</div>
+        <p class="bio-text">Negar Sadeghi has the most multi-faceted relationship with the course in this package: she first took it as a student in the Summer 2025 cohort, then served as TA for three consecutive semesters, and is now a PhD student whose research on Generative AI in healthcare was directly shaped by the frameworks introduced in DADS 5250. She also personally witnessed a DADS 5250 cohort present at Google's Cambridge campus and receive direct feedback from Googlers. Her letter uniquely spans student, TA, and researcher perspectives in a single document.</p>
+        <div class="rel-row">
+          <span class="rel-label">Relationship</span>
+          <span class="badge badge-ta">Student · TA ×3 semesters · PhD researcher</span>
+        </div>
+        <a class="letter-link" href="09_SupportLetter_Sadeghi_Negar.pdf" target="_blank">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Open Letter (PDF)
+        </a>
+      </div>
+    </div>
+
+  </div><!-- /letters-list -->
+</div><!-- /container -->
+
+</body>
+</html>
