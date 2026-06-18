@@ -1401,10 +1401,8 @@ const MODULE_PLANS = {
   2: {
     tags: ['LLM: gpt-4.1-mini', 'gemini-2.5-flash (free)', 'System messages'],
     labs: [
-      lab('M02', 'M02_Lab1_Prompting_Techniques.ipynb',     'Lab 1 — <em>Prompting Techniques</em>',
+      lab('M03', 'M03_Lab1_Prompting_Techniques.ipynb',     'Lab 1 — <em>Prompting Techniques</em>',
           'Zero-shot, few-shot, chain-of-thought, role prompts. Side-by-side GPT vs Gemini.'),
-      lab('M02', 'M02_Lab2_System_Messages_Templates.ipynb','Lab 2 — <em>System Messages & Templates</em>',
-          'System message anatomy, prompt templating, parameterization across cases.'),
       lab('M02', 'M02_Lab1_Excel_GPT.ipynb',                'Bonus — <em>Excel + GPT</em>',
           'Use prompts to extract structure from a real spreadsheet of student records.'),
       lab('M02', 'M02_Lab2_Bitcoin_Analyzer.ipynb',         'Bonus — <em>Bitcoin Analyzer</em>',
@@ -1427,10 +1425,8 @@ const MODULE_PLANS = {
   3: {
     tags: ['LLM: gpt-4.1-mini', 'Pydantic', 'Function calling'],
     labs: [
-      lab('M03', 'M03_Lab1_JSON_Mode_Pydantic.ipynb', 'Lab 1 — <em>JSON Mode & Pydantic</em>',
-          'Force structured responses, validate against a Pydantic schema, handle malformed output.'),
-      lab('M03', 'M03_Lab2_Function_Calling.ipynb',   'Lab 2 — <em>Function Calling</em>',
-          'Define tools, parse tool-call responses, multi-turn tool use.')
+      lab('M03', 'M03_Lab2_JSON_Mode_Pydantic.ipynb', 'Lab 1 — <em>JSON Mode & Pydantic</em>',
+          'Force structured responses, validate against a Pydantic schema, handle malformed output.')
     ],
     content: [
       'JSON mode — forcing structured responses',
@@ -1558,9 +1554,9 @@ const MODULE_PLANS = {
   9: {
     tags: ['LLM: gpt-4.1-mini (vision)', 'gemini-2.5-flash', 'LLM-as-judge'],
     labs: [
-      lab('M11', 'M11_Lab1_Vision_Multimodal.ipynb','Lab 1 — <em>Vision & Multimodal</em>',
+      lab('M10', 'M10_Lab1_Vision_Multimodal.ipynb','Lab 1 — <em>Vision & Multimodal</em>',
           'Image input to GPT / Gemini, captioning, visual Q&A, OCR vs vision on invoices and charts.'),
-      lab('M11', 'M11_Lab2_LLM_Evaluation.ipynb',   'Lab 2 — <em>LLM Evaluation</em>',
+      lab('M10', 'M10_Lab2_LLM_Evaluation.ipynb',   'Lab 2 — <em>LLM Evaluation</em>',
           'Metrics, benchmarking, the LLM-as-judge pattern, building an end-to-end eval pipeline.')
     ],
     content: [
@@ -1580,10 +1576,8 @@ const MODULE_PLANS = {
   10: {
     tags: ['Claude Agent SDK', 'Google ADK', 'No-code platforms'],
     labs: [
-      lab('M12', 'M12_Workshop1_Claude_Agent_SDK.ipynb','Workshop 1 — <em>Claude Agent SDK</em>',
-          'Build a tool-using agent on the Anthropic SDK. Pattern: skills, sub-agents, hooks.'),
-      lab('M12', 'M12_Workshop2_Google_ADK.ipynb',      'Workshop 2 — <em>Google ADK</em>',
-          'Walk through Google\'s Agent Development Kit and compare its primitives to Claude\'s.')
+      lab('M12', 'M12_Lab1_Claude_API_Tools.ipynb',    'Lab 1 — <em>Claude API & Tools</em>',
+          'Build a tool-using agent with the Anthropic SDK. Pattern: tool definitions, tool-call parsing, multi-turn.')
     ],
     content: [
       'Survey of GenAI platforms: napkin.ai (visual), GenBI (analytics), v0.dev (UI)',
@@ -1603,10 +1597,10 @@ const MODULE_PLANS = {
   11: {
     tags: ['LLM: gpt-4.1-mini', 'MCP', 'Guardrails'],
     labs: [
-      lab('M10', 'M10_Lab1_MCP_Servers.ipynb',      'Lab 1 — <em>MCP Servers</em>',
-          'Build a Model Context Protocol server, register tools, connect to a Claude or GPT client.'),
-      lab('M10', 'M10_Lab2_Guardrails_Safety.ipynb','Lab 2 — <em>Guardrails & Safety</em>',
-          'Input validation, output filtering, content policies, prompt-injection detection patterns.')
+      lab('M13', 'M13_Lab1_Prompt_Injection_PII.ipynb',      'Lab 1 — <em>Prompt Injection & PII</em>',
+          'Attack and defend: prompt injection patterns, PII detection and redaction, adversarial inputs.'),
+      lab('M13', 'M13_Lab2_Output_Filtering_Guardrails.ipynb','Lab 2 — <em>Output Filtering & Guardrails</em>',
+          'Input validation, output filtering, content policies, safe-completion patterns.')
     ],
     content: [
       'Model Context Protocol (MCP) — architecture, servers, tool registration',
@@ -1640,7 +1634,7 @@ const MODULE_PLANS = {
     assignment: 'Build an <strong>automated workflow</strong> that processes incoming data using an LLM. Submit: workflow screenshot/export, demo video, analysis of when automation vs code is better.'
   },
   13: {
-    tags: ['LLM: gpt-4o-mini (fine-tune target)', 'OpenAI API', 'Gradio'],
+    tags: ['LLM: gpt-4.1-mini (fine-tune target)', 'OpenAI API', 'Gradio'],
     labs: [
       lab('M13', 'M13_Lab1_Fine_Tuning_Deployment.ipynb', 'Lab 1 — <em>Fine-Tuning & Deployment</em>',
         'Decision ladder (prompt vs RAG vs fine-tune), build a 20-example JSONL dataset, submit a fine-tune job via OpenAI API, evaluate base vs fine-tuned, deploy a Gradio demo.')
