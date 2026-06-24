@@ -1,0 +1,6 @@
+
+# local secrets
+.gemini*
+**/key
+talks/**/_*.html
+.DS_Store

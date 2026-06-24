@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>From Graph to Crew · A Hands-On Tour of Agentic AI Frameworks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --lg:#004F49; --lgDeep:#003D38; --lgPanel:#0A5C55; --cream:#F0EBE1; --mint:#7FD8C8;
+    --coral:#EB6658; --coralDeep:#D9543F; --coralPaper:#FFF5F1; --coralTint:#FDE2DC;
+    --ink:#1A1A1A; --paper:#FBFAF7; --muted:#6B7280; --line:#E3E0D8;
+    --greenTint:#D8EFE9;
+    --serif:"Fraunces", Georgia, serif;
+    --sans:"Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{font-family:var(--sans);color:var(--ink);background:#dcdad3;overflow:hidden;}
+  .deck{position:fixed;inset:0;display:grid;place-items:center;background:#dcdad3;}
+  .stage{width:1280px;height:720px;position:relative;transform-origin:center center;background:var(--paper);box-shadow:0 14px 60px rgba(20,30,40,.25);overflow:hidden;}
+  .slide{position:absolute;inset:0;padding:62px 74px;display:none;flex-direction:column;background:var(--paper);}
+  .slide.active{display:flex;}
+
+  /* worlds */
+  .slide.graph{background:var(--lg);color:var(--cream);}
+  .slide.crew{background:var(--coralPaper);color:var(--ink);}
+
+  h1,h2,h3,.serif{font-family:var(--serif);}
+  .eyebrow{font-family:var(--sans);font-weight:600;font-size:14px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);}
+  .graph .eyebrow{color:var(--mint);}
+  .crew .eyebrow{color:var(--coralDeep);}
+  .heading{font-family:var(--serif);font-weight:700;font-size:46px;line-height:1.05;color:var(--ink);letter-spacing:-.5px;}
+  .graph .heading{color:var(--cream);}
+  .slide-head{margin-bottom:26px;}
+  p,li{font-size:21px;line-height:1.45;text-align:left;}
+  .muted{color:var(--muted);} .graph .muted{color:#9DBDB8;} .crew .muted{color:#9A6A60;}
+  .small{font-size:17px;} .tiny{font-size:14px;}
+
+  /* highlighter motif (brand) */
+  .gph{font-weight:700;color:var(--lg);background:var(--greenTint);padding:0 .15em;border-radius:4px;white-space:nowrap;}
+  .crw{font-weight:700;color:var(--coralDeep);background:var(--coralTint);padding:0 .15em;border-radius:4px;white-space:nowrap;}
+  .graph .gph{color:#fff;background:rgba(255,255,255,.16);}
+  .graph .crw{color:#FFC7BD;background:rgba(235,102,88,.26);}
+  .gph-t{color:var(--lg);font-weight:700;} .crw-t{color:var(--coralDeep);font-weight:700;}
+  .graph .gph-t{color:var(--mint);}
+
+  .cols{display:grid;gap:34px;flex:1;min-height:0;}
+  .cols-2{grid-template-columns:1fr 1fr;}
+  .col{min-width:0;}
+  ul{list-style:none;}
+  ul.dotted li{position:relative;padding-left:23px;margin:10px 0;}
+  ul.dotted li::before{content:"";position:absolute;left:3px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--muted);}
+  ul.dotted.g li::before{background:var(--lg);}
+  .graph ul.dotted.g li::before{background:var(--mint);}
+  ul.dotted.c li::before{background:var(--coral);}
+
+  .card{border:1px solid var(--line);border-radius:16px;padding:22px 24px;background:#fff;}
+  .card.g{border:1px solid #BfDdD8;background:#F3FAF8;}
+  .card.c{border:1px solid #FACDC4;background:#FFF1EC;}
+  .card-title{font-family:var(--serif);font-weight:600;font-size:23px;margin-bottom:9px;}
+
+  .code{font-family:var(--mono);font-size:15px;line-height:1.65;border-radius:14px;padding:18px 20px;white-space:pre;overflow:hidden;}
+  .code.dark{background:var(--lgDeep);color:#CFE9E3;border:1px solid #0A5C55;}
+  .code.light{background:#fff;color:#3a3a3a;border:1px solid var(--line);}
+  .code .k{color:#C8A2F0;} .code.light .k{color:#7A4DC9;}
+  .code .gt{color:var(--mint);font-weight:600;} .code.light .gt{color:var(--lg);font-weight:600;}
+  .code .ct{color:#FF9486;font-weight:600;} .code.light .ct{color:var(--coralDeep);font-weight:600;}
+  .code .cm{color:#7FA39D;} .code.light .cm{color:#9aa39a;}
+
+  .pill{display:inline-block;font-size:14px;font-weight:600;padding:5px 13px;border-radius:20px;border:1px solid var(--line);color:var(--muted);}
+  .pill.g{border-color:#BfDdD8;color:var(--lg);background:#F3FAF8;}
+  .pill.c{border-color:#FACDC4;color:var(--coralDeep);background:#FFF1EC;}
+
+  .callout{border:1px solid var(--line);border-radius:14px;padding:15px 19px;background:#fff;font-size:19px;}
+  .graph .callout{background:var(--lgPanel);border-color:#0A6C63;color:var(--cream);}
+  .crew .callout{background:#fff;border-color:#FACDC4;}
+
+  /* clickable quiz cards */
+  .quiz-card{cursor:pointer;border:1px solid var(--line);border-radius:16px;padding:20px 22px;background:#fff;transition:.18s;position:relative;display:flex;flex-direction:column;justify-content:space-between;}
+  .quiz-card:hover{box-shadow:0 6px 18px rgba(20,30,40,.1);transform:translateY(-2px);}
+  .quiz-card .q{font-size:20px;line-height:1.4;}
+  .quiz-card .hint{position:absolute;top:13px;right:15px;font-size:12px;color:#b3b3b3;font-weight:600;}
+  .quiz-card.revealed .hint{display:none;}
+  .quiz-card .ans{margin-top:14px;font-weight:700;font-size:17px;opacity:0;transform:translateY(6px);transition:.22s;display:inline-flex;align-items:center;gap:8px;}
+  .quiz-card.revealed .ans{opacity:1;transform:none;}
+  .quiz-card.revealed.g{background:#F3FAF8;border-color:#BfDdD8;} .quiz-card .ans.g{color:var(--lg);}
+  .quiz-card.revealed.c{background:#FFF1EC;border-color:#FACDC4;} .quiz-card .ans.c{color:var(--coralDeep);}
+  .quiz-card .badge{width:24px;height:24px;border-radius:7px;display:inline-grid;place-items:center;color:#fff;font-size:13px;}
+  .quiz-card .ans.g .badge{background:var(--lg);} .quiz-card .ans.c .badge{background:var(--coralDeep);}
+
+  /* flip-card quiz */
+  .flip{perspective:1200px;cursor:pointer;height:100%;}
+  .flip-in{position:relative;width:100%;height:100%;transition:transform .55s cubic-bezier(.4,.2,.2,1);transform-style:preserve-3d;}
+  .flip.on .flip-in{transform:rotateY(180deg);}
+  .flip-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:16px;border:1px solid var(--line);padding:26px;display:flex;flex-direction:column;justify-content:center;background:#fff;box-shadow:0 4px 14px rgba(20,30,40,.06);}
+  .flip-face .qn{font-size:22px;font-weight:600;line-height:1.35;}
+  .flip-face .hint{position:absolute;bottom:16px;right:18px;font-size:13px;color:#b3b3b3;font-weight:600;}
+  .flip-back{transform:rotateY(180deg);}
+  .flip-back.g{background:#EAF4F1;border-color:#BfDdD8;} .flip-back.c{background:#FDECE8;border-color:#FACDC4;}
+  .flip-back .aw{font-weight:800;font-size:26px;display:flex;align-items:center;gap:10px;} .flip-back.g .aw{color:var(--lg);} .flip-back.c .aw{color:var(--coralDeep);}
+  .flip-back .aw .b{width:30px;height:30px;border-radius:8px;display:inline-grid;place-items:center;color:#fff;font-size:15px;}
+  .flip-back.g .aw .b{background:var(--lg);} .flip-back.c .aw .b{background:var(--coralDeep);}
+  .flip-back .rs{font-size:18px;color:#555;margin-top:10px;}
+
+  /* role rows with icons */
+  .rolerow{display:flex;gap:13px;align-items:center;margin:13px 0;font-size:19px;}
+  .roleicon{width:40px;height:40px;border-radius:11px;background:#FFF1EC;border:1px solid #FACDC4;display:inline-grid;place-items:center;flex-shrink:0;}
+
+  table.cmp{width:100%;border-collapse:collapse;font-size:19px;}
+  table.cmp th,table.cmp td{text-align:left;padding:14px 16px;vertical-align:top;border-bottom:1px solid var(--line);}
+  table.cmp thead th{font-family:var(--serif);font-size:22px;}
+  table.cmp td:first-child,table.cmp th:first-child{color:var(--muted);font-size:16px;width:155px;}
+
+  .qr-card{display:inline-flex;flex-direction:column;align-items:center;gap:8px;border:1px solid var(--line);border-radius:16px;padding:16px;background:#fff;}
+  .qr-card svg{display:block;}
+  .qr-label{font-size:13px;color:var(--muted);font-weight:600;text-align:center;}
+  .qr-url{font-size:11.5px;color:var(--ink);font-family:var(--mono);text-align:center;line-height:1.4;}
+
+  .logo-chip{display:inline-flex;align-items:center;gap:9px;background:#fff;border:1px solid var(--line);border-radius:30px;padding:6px 14px 6px 8px;}
+  .logo-chip img{height:24px;display:block;}
+  .logo-chip span{font-size:14px;font-weight:600;color:var(--ink);}
+
+  /* AI2Lab logo lockup (recreated from ai2lab.ai) */
+  .ai2logo{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);line-height:1;}
+  .ai2logo .br{font-size:32px;color:#c5c8cc;font-weight:300;}
+  .ai2logo .ai{font-size:27px;font-weight:800;color:#1a1a2e;}
+  .ai2logo .ai sup{font-size:12px;color:#C41230;font-weight:800;}
+  .ai2logo .dv{width:2px;height:24px;background:linear-gradient(to bottom,rgba(196,18,48,.45),rgba(26,26,46,.28));}
+  .ai2logo .lab{font-size:15px;color:#64748b;font-weight:600;letter-spacing:4px;}
+
+  /* story slides (IE4512 image-left / text-right discipline) */
+  .slide.story{padding:52px 74px;}
+  .story-grid{display:grid;grid-template-columns:minmax(0,420px) 1fr;gap:46px;align-items:center;flex:1;min-height:0;}
+  .story-img{width:100%;aspect-ratio:1;border-radius:18px;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.16);position:relative;}
+  .story-img img{width:100%;height:100%;object-fit:cover;display:block;}
+  .story-img.g{border:3px solid var(--lg);} .story-img.c{border:3px solid var(--coral);}
+  .story-badge{position:absolute;top:-14px;left:-10px;font-family:var(--sans);font-size:13px;font-weight:700;letter-spacing:.5px;color:#fff;padding:7px 15px;border-radius:30px;border:2px solid #fff;}
+  .story-badge.g{background:var(--lg);} .story-badge.c{background:var(--coralDeep);}
+  .story-text .label{font-size:13px;letter-spacing:.22em;text-transform:uppercase;font-weight:700;margin-bottom:10px;}
+  .story-text .label.g{color:var(--lg);} .story-text .label.c{color:var(--coralDeep);}
+  .story-text h2{font-family:var(--serif);font-size:40px;font-weight:700;line-height:1.05;letter-spacing:-.5px;margin-bottom:16px;}
+  .story-text .lede{font-size:20px;line-height:1.55;color:var(--ink);margin-bottom:18px;}
+  .story-text .lede .g{color:var(--lg);font-weight:700;} .story-text .lede .c{color:var(--coralDeep);font-weight:700;}
+  .fact{padding:14px 18px;border-radius:0 12px 12px 0;font-size:15px;line-height:1.55;color:#3a3a3a;}
+  .fact.g{background:#EAF4F1;border-left:3px solid var(--lg);} .fact.c{background:#FDECE8;border-left:3px solid var(--coral);}
+  .fact .tag{display:block;font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;margin-bottom:6px;}
+  .fact.g .tag{color:var(--lg);} .fact.c .tag{color:var(--coralDeep);}
+  .fact .src{display:block;font-size:11px;font-weight:600;letter-spacing:.04em;margin-top:8px;color:var(--muted);}
+
+  .foot{position:absolute;left:74px;right:74px;bottom:28px;display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--muted);}
+  .graph .foot{color:#7FA39D;} .crew .foot{color:#B08077;}
+
+  .nav{position:fixed;bottom:16px;right:20px;display:flex;gap:8px;align-items:center;z-index:20;}
+  .nav button{border:1px solid #c7c4bc;background:#fff;color:var(--ink);width:38px;height:34px;border-radius:8px;cursor:pointer;font-size:16px;}
+  .nav button:hover{background:#f3f1ea;}
+  .counter{font-size:14px;color:#555;min-width:54px;text-align:center;}
+  .progress{position:fixed;left:0;top:0;height:4px;z-index:30;transition:width .25s;background:linear-gradient(90deg,var(--lg),var(--coral));}
+  body.embed .nav, body.embed .notes-hint, body.embed .progress{display:none!important;}
+  body.embed, body.embed .deck{background:#fff;}
+  body.embed .stage{box-shadow:none;}
+
+  /* section dividers */
+  .slide.divider{padding:0;}
+  .divider .bg{position:absolute;inset:0;overflow:hidden;}
+  .divider .bg img{width:100%;height:100%;object-fit:cover;display:block;}
+  .divider .scrim{position:absolute;inset:0;background:linear-gradient(95deg,rgba(0,32,29,.84) 0%,rgba(0,32,29,.52) 55%,rgba(0,32,29,.2) 100%);}
+  .divider .content{position:absolute;left:90px;top:50%;transform:translateY(-50%);color:#fff;max-width:780px;}
+  .divider .secnum{font-family:var(--mono);font-size:21px;letter-spacing:4px;opacity:.85;}
+  .divider h2{font-family:var(--serif);font-size:74px;font-weight:900;line-height:1;margin:12px 0 18px;letter-spacing:-1px;color:#fff;}
+  .divider p{font-size:24px;opacity:.93;max-width:660px;}
+  .divider .foot{color:rgba(255,255,255,.6);}
+  .divider.center .scrim{background:rgba(0,28,25,.62);}
+  .divider.center .content{left:0;right:0;text-align:center;max-width:none;padding:0 150px;display:flex;flex-direction:column;align-items:center;}
+  .divider.center .secnum{letter-spacing:8px;}
+  .divider.center p{max-width:680px;}
+  .slide.story.v4{padding:0;}
+  .sv4{display:grid;grid-template-columns:1fr 540px;height:100%;}
+  .sv4.flip{grid-template-columns:540px 1fr;}
+  .sv4-L{padding:60px;display:flex;flex-direction:column;justify-content:center;}
+  .sv4-h{font-family:var(--serif);font-size:50px;font-weight:700;line-height:1.05;letter-spacing:-.5px;color:var(--ink);}
+  .sv4-R{position:relative;overflow:hidden;}
+  .sv4-R img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+
+  /* hamburger + agenda */
+  .menu-btn{position:fixed;top:16px;left:16px;z-index:40;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:30px;padding:6px 14px 6px 9px;cursor:pointer;backdrop-filter:blur(8px);box-shadow:0 2px 10px rgba(20,30,40,.09);}
+  .menu-btn:hover{background:#fff;}
+  .menu-btn .bars{display:flex;flex-direction:column;gap:3px;padding:3px;}
+  .menu-btn .bars span{width:15px;height:2px;background:var(--ink);border-radius:2px;}
+  .menu-btn .seclabel{font-size:12.5px;font-weight:600;color:var(--ink);white-space:nowrap;}
+  .menu-btn .seclabel small{color:var(--lg);font-family:var(--mono);font-weight:600;margin-right:5px;}
+  body.embed .menu-btn{display:none!important;}
+  .agenda{position:fixed;inset:0;background:rgba(0,20,18,.42);backdrop-filter:blur(2px);display:none;z-index:45;}
+  .agenda.open{display:block;}
+  .agenda .panel{position:absolute;top:0;left:0;bottom:0;width:350px;background:#fff;box-shadow:4px 0 34px rgba(0,0,0,.22);padding:32px 26px;transform:translateX(-100%);transition:transform .28s cubic-bezier(.16,1,.3,1);overflow-y:auto;}
+  .agenda.open .panel{transform:translateX(0);}
+  .agenda .ttl{font-family:var(--mono);font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:2.5px;margin-bottom:20px;}
+  .agenda .item{display:flex;gap:13px;align-items:baseline;padding:13px 12px;border-radius:11px;cursor:pointer;transition:.12s;}
+  .agenda .item:hover{background:#f3f1ea;}
+  .agenda .item.active{background:#EAF4F1;}
+  .agenda .item .num{font-family:var(--mono);font-size:13px;color:var(--lg);font-weight:600;min-width:22px;}
+  .agenda .item .ti{font-family:var(--serif);font-size:20px;font-weight:600;color:var(--ink);}
+  .agenda .item.active .ti{color:var(--lg);}
+  .agenda .ag-group{display:flex;align-items:baseline;gap:9px;cursor:pointer;padding:14px 10px 6px;margin-top:6px;border-top:1px solid var(--line);}
+  .agenda .ag-group:first-child{border-top:0;margin-top:0;}
+  .agenda .ag-group .ag-n{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--lg);}
+  .agenda .ag-group .ag-gt{font-family:var(--mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:700;}
+  .agenda .ag-item{display:flex;align-items:baseline;gap:11px;padding:7px 10px 7px 14px;border-radius:9px;cursor:pointer;transition:.1s;}
+  .agenda .ag-item:hover{background:#f3f1ea;}
+  .agenda .ag-item.active{background:#EAF4F1;}
+  .agenda .ag-item .ag-num{font-family:var(--mono);font-size:12px;color:var(--muted);min-width:20px;}
+  .agenda .ag-item .ag-ti{font-size:15px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .agenda .ag-item.active .ag-ti{color:var(--lg);font-weight:600;}
+  .notes-hint{position:fixed;bottom:18px;left:20px;font-size:12px;color:#8a877f;z-index:20;}
+  .notes-overlay{position:fixed;inset:0;background:rgba(0,20,18,.78);display:none;place-items:center;z-index:50;padding:40px;}
+  .notes-overlay.show{display:grid;}
+  .notes-box{background:#fff;max-width:760px;border-radius:18px;padding:30px 34px;}
+  .notes-box h4{font-family:var(--serif);font-size:23px;margin-bottom:12px;color:var(--lg);}
+  .notes-box p{font-size:18px;line-height:1.5;}
+</style>
+</head>
+<body>
+<div class="progress" id="progressbar" style="width:0;"></div>
+<div class="deck"><div class="stage" id="stage">
+
+  <!-- 1 COVER (Roman hero image, variant B) -->
+  <section class="slide" style="padding:0;" data-notes="Welcome. You all know agents already. Today is two frameworks and how the choice changes behavior. We end by building a World Cup match analysis system twice, once in each world.">
+    <div style="position:absolute;inset:0;"><img src="assets/story/appian-way.png" alt="" style="width:100%;height:100%;object-fit:cover;"></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,30,28,.84),rgba(0,30,28,.52) 46%,rgba(0,30,28,.12));"></div>
+    <div style="position:absolute;left:88px;top:50%;transform:translateY(-50%);color:#fff;max-width:860px;">
+      <div class="eyebrow" style="color:#fff;opacity:.92;">International summer school on generative AI · Rome 2026</div>
+      <h1 style="font-family:var(--serif);font-weight:900;font-size:92px;line-height:.98;letter-spacing:-1.5px;margin-top:16px;text-shadow:0 2px 22px rgba(0,0,0,.32);">From Graph<br>to <span style="color:#FFB3A8;">Crew</span></h1>
+      <p style="font-size:26px;margin-top:22px;opacity:.95;font-weight:500;text-shadow:0 1px 12px rgba(0,0,0,.3);">A hands-on tour of agentic AI frameworks</p>
+    </div>
+    <div style="position:absolute;left:88px;bottom:54px;color:#fff;">
+      <div style="font-family:var(--serif);font-weight:600;font-size:23px;">Mohammad Dehghani</div>
+      <div style="font-size:16px;opacity:.9;margin-top:2px;">Teaching Professor, Northeastern University · Director, AI2Lab</div>
+    </div>
+    <div style="position:absolute;right:74px;bottom:54px;color:#fff;opacity:.85;font-size:15px;text-align:right;">Rome · June 25, 2026</div>
+  </section>
+
+  <!-- 2 ABOUT (layout L3: full photo panel left) -->
+  <section class="slide" style="padding:0;" data-notes="Quick intro: who I am and what the lab does, then we move fast.">
+    <div style="display:grid;grid-template-columns:480px 1fr;height:100%;">
+      <div style="position:relative;overflow:hidden;"><img src="../../assets/headshots/mohammad-dehghani.jpg" alt="Mohammad Dehghani" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"></div>
+      <div style="padding:62px 60px;display:flex;flex-direction:column;justify-content:center;">
+        <div class="eyebrow">Speaker</div>
+        <div style="font-family:var(--serif);font-weight:900;font-size:50px;line-height:1.04;margin-top:8px;letter-spacing:-.5px;">Mohammad Dehghani</div>
+        <div style="font-size:20px;color:var(--muted);margin-top:7px;">Teaching Professor, Northeastern University · Director, AI2Lab</div>
+        <p style="font-size:20px;line-height:1.55;margin-top:20px;max-width:640px;">Working where generative AI, simulation, and decision making meet. He teaches graduate courses on generative AI, reinforcement learning, and storytelling with data, and builds hands-on tools that help students learn by doing.</p>
+        <div style="margin-top:18px;display:flex;flex-wrap:wrap;gap:8px;">
+          <span class="pill">Generative AI & simulation</span>
+          <span class="pill">Reinforcement learning</span>
+          <span class="pill">Simulation-optimization</span>
+          <span class="pill">Agentic AI</span>
+        </div>
+        <div style="display:flex;gap:34px;align-items:center;margin-top:30px;">
+          <img src="../../assets/logos/Northeastern-University-Logo.png" alt="Northeastern University" style="height:34px;">
+          <span class="ai2logo"><span class="br">[</span><span class="ai">AI<sup>2</sup></span><span class="dv"></span><span class="lab">LAB</span><span class="br">]</span></span>
+          <img src="assets/qr/ai2lab-qr.png" alt="ai2lab.ai" style="height:64px;width:64px;border-radius:9px;margin-left:auto;">
+        </div>
+      </div>
+    </div>
+    <div class="foot"><span></span><span></span></div>
+  </section>
+
+  <!-- DIVIDER 01 -->
+  <section class="slide divider" data-notes="Section 1. We open in ancient Rome, which already solved coordination at scale, in two different ways.">
+    <div class="bg"><img src="assets/story/appian-way.png" alt=""></div>
+    <div class="scrim"></div>
+    <div class="content"><div class="secnum">01</div><h2>Where it began</h2><p>Rome already solved coordination at scale, in two very different ways.</p></div>
+    <div class="foot"><span>From Graph to Crew</span><span></span></div>
+  </section>
+
+  <!-- 2 STORY: roads = the Graph -->
+  <section class="slide story v4" data-notes="Open in ancient Rome. The road network is a graph: fixed structure, reliable routing. This sets up LangGraph.">
+    <div class="sv4">
+      <div class="sv4-L">
+        <div class="eyebrow">Where it began · ancient Rome</div>
+        <h2 class="sv4-h">All roads lead to Rome</h2>
+        <div class="label g" style="margin-top:8px;">The original graph</div>
+        <p class="lede" style="margin-top:10px;">Cities were the <span class="g">nodes</span>, roads were the <span class="g">edges</span>, and any message could be routed along fixed, reliable paths. Build it once, and traffic flows the same way every time. That is a <span class="g">graph</span>.</p>
+        <div class="fact g" style="margin-top:18px;"><span class="tag">Cool fact</span>At its height the Roman road network ran about <b>400,000 km</b>, more than <b>80,000 km</b> stone paved, enough to circle the Earth twice.<span class="src">Source · Wikipedia, "Roman roads"</span></div>
+      </div>
+      <div class="sv4-R"><img src="assets/story/roads-graph.png" alt="Roman road network drawn as a graph"></div>
+    </div>
+    <div class="foot"><span>From Graph to Crew</span><span></span></div>
+  </section>
+
+  <!-- 3 STORY: crew = the Crew -->
+  <section class="slide story v4" data-notes="Cross to the crew. A galley moves only when rowers act as one team, coordinated by a process. This sets up CrewAI. Bridge: two ways to coordinate many agents toward one goal.">
+    <div class="sv4 flip">
+      <div class="sv4-R"><img src="assets/story/legion-crew.png" alt="Roman galley crew rowing in unison"></div>
+      <div class="sv4-L">
+        <div class="eyebrow">Where it began · ancient Rome</div>
+        <h2 class="sv4-h">The crew that moved an empire</h2>
+        <div class="label c" style="margin-top:8px;">The original crew</div>
+        <p class="lede" style="margin-top:10px;">A galley moved only when scores of rowers pulled together, each with a <span class="c">role</span>, coordinated by a <span class="c">process</span>: a drummer set the pace, an officer called the goal. No fixed map, just a team that adapts as one. That is a <span class="c">crew</span>.</p>
+        <div class="fact c" style="margin-top:18px;"><span class="tag">Cool fact</span>A trireme carried about <b>170 oarsmen</b> on three stacked tiers, who had to row in near perfect unison or the oars would clash.<span class="src">Source · Wikipedia, "Trireme"</span></div>
+      </div>
+    </div>
+    <div class="foot"><span>From Graph to Crew</span><span></span></div>
+  </section>
+
+  <!-- DIVIDER 02 -->
+  <section class="slide divider" data-notes="Section 2. From single messengers to coordinated agents. Quick intro, the football hook, and the timeline.">
+    <div class="bg"><img src="assets/story/forum-senate.png" alt=""></div>
+    <div class="scrim"></div>
+    <div class="content"><div class="secnum">02</div><h2>From messengers to agents</h2><p>You have met agents all week. Now the layer that orchestrates them.</p></div>
+    <div class="foot"><span>From Graph to Crew</span><span></span></div>
+  </section>
+
+  <!-- 3 HOOK -->
+  <section class="slide" data-notes="Pair, think, share. Give 60 seconds. Collect two or three answers out loud before moving on.">
+    <div class="slide-head"><div class="eyebrow">Hook</div><div class="heading">Football, the oldest multi-agent system</div></div>
+    <p class="serif" style="font-size:31px;line-height:1.22;margin-bottom:22px;max-width:1000px;">"Eleven agents, one objective, and a coach who never touches the ball."</p>
+    <div class="cols cols-2" style="gap:30px;">
+      <div class="col">
+        <ul class="dotted">
+          <li>Roles map to agents with jobs</li>
+          <li>Passes map to messages and shared state</li>
+          <li>Formation and coach map to orchestration</li>
+        </ul>
+        <div class="callout" style="margin-top:16px;"><b style="font-family:var(--sans);">Pair, think, share.</b> Name one task that needs strict structure, and one that thrives on free collaboration.</div>
+      </div>
+      <div class="col" style="display:flex;flex-direction:column;gap:14px;">
+        <div class="card c"><div class="card-title crw-t">Tiki-taka</div><p class="small">Fluid collaboration, players read each other and improvise. This is a <span class="crw">Crew</span>.</p></div>
+        <div class="card g"><div class="card-title gph-t">Catenaccio</div><p class="small">Structured flow, every move follows the plan. This is a <span class="gph">Graph</span>.</p></div>
+      </div>
+    </div>
+    <p class="small muted" style="margin-top:14px;">Tie-in: World Cup 2026, 48 teams. Later we build a match-analysis crew.</p>
+    <div class="foot"><span>From Graph to Crew</span><span>3 / 14</span></div>
+  </section>
+
+  <!-- 4 TIMELINE -->
+  <section class="slide" data-notes="Dates are approximate. The point is two philosophies crystallized into two popular frameworks in 2024.">
+    <div class="slide-head"><div class="eyebrow">Context</div><div class="heading">How we got to agentic frameworks</div></div>
+    <div style="flex:1;display:flex;align-items:center;">
+      <svg viewBox="0 0 1130 250" style="width:100%;height:auto;">
+        <line x1="20" y1="125" x2="1110" y2="125" stroke="#D5DEE8" stroke-width="2"/>
+        <g font-family="Outfit, sans-serif">
+          <circle cx="60" cy="125" r="9" fill="#6B7280"/><text x="60" y="100" font-size="17" font-weight="600" text-anchor="middle" fill="#1A1A1A">2022</text><text x="60" y="160" font-size="15" text-anchor="middle" fill="#6B7280">ReAct</text>
+          <circle cx="240" cy="125" r="9" fill="#6B7280"/><text x="240" y="100" font-size="17" font-weight="600" text-anchor="middle" fill="#1A1A1A">2023</text><text x="240" y="160" font-size="15" text-anchor="middle" fill="#6B7280">AutoGPT, BabyAGI</text>
+          <circle cx="420" cy="125" r="9" fill="#6B7280"/><text x="420" y="100" font-size="17" font-weight="600" text-anchor="middle" fill="#1A1A1A">late 2023</text><text x="420" y="160" font-size="15" text-anchor="middle" fill="#6B7280">AutoGen</text>
+          <circle cx="600" cy="125" r="12" fill="#004F49"/><text x="600" y="96" font-size="17" font-weight="700" text-anchor="middle" fill="#004F49">2024</text><text x="600" y="162" font-size="16" font-weight="700" text-anchor="middle" fill="#004F49">LangGraph</text>
+          <circle cx="740" cy="125" r="12" fill="#EB6658"/><text x="740" y="180" font-size="17" font-weight="700" text-anchor="middle" fill="#D9543F">2024</text><text x="740" y="205" font-size="16" font-weight="700" text-anchor="middle" fill="#D9543F">CrewAI</text>
+          <circle cx="930" cy="125" r="9" fill="#6B7280"/><text x="930" y="100" font-size="17" font-weight="600" text-anchor="middle" fill="#1A1A1A">2025</text><text x="930" y="160" font-size="15" text-anchor="middle" fill="#6B7280">OpenAI Agents SDK, Google ADK</text>
+          <circle cx="1085" cy="125" r="9" fill="#1A1A1A"/><text x="1085" y="100" font-size="17" font-weight="600" text-anchor="middle" fill="#1A1A1A">2026</text><text x="1085" y="160" font-size="15" text-anchor="middle" fill="#6B7280">consolidation</text>
+        </g>
+      </svg>
+    </div>
+    <p style="margin-top:6px;">Takeaway: two philosophies, two frameworks. Today we compare them.</p>
+    <div class="foot"><span>From Graph to Crew</span><span>4 / 14</span></div>
+  </section>
+
+  <!-- 5 REFRAME -->
+  <section class="slide" data-notes="You met agents all week. The new idea today is the orchestration layer and how it changes behavior.">
+    <div class="slide-head"><div class="eyebrow">Reframe</div><div class="heading">You have met agents all week. Today we compare the frameworks.</div></div>
+    <div class="cols cols-2" style="align-items:center;">
+      <div class="col">
+        <p style="margin-bottom:14px;">The agent is the same. What changes is the layer around it: how control flows, where state lives, and who decides what happens next.</p>
+        <p>Reach for a <span class="gph">Graph</span> when you want to draw the flow. Reach for a <span class="crw">Crew</span> when you want to assemble a team. The choice changes how the system behaves.</p>
+      </div>
+      <div class="col">
+        <svg viewBox="0 0 460 300" style="width:100%;">
+          <circle cx="100" cy="150" r="36" fill="#fff" stroke="#1A1A1A" stroke-width="2.5"/><text x="100" y="156" font-size="16" text-anchor="middle" font-family="Outfit" fill="#1A1A1A">agent</text>
+          <path d="M140 138 C 230 90, 300 80, 392 70" stroke="#004F49" stroke-width="3.5" fill="none"/>
+          <path d="M140 162 C 230 210, 300 220, 392 230" stroke="#EB6658" stroke-width="3.5" fill="none"/>
+          <circle cx="408" cy="68" r="24" fill="#004F49"/><text x="408" y="73" font-size="13" text-anchor="middle" font-weight="700" fill="#fff">Graph</text>
+          <circle cx="408" cy="232" r="24" fill="#EB6658"/><text x="408" y="237" font-size="14" text-anchor="middle" font-weight="700" fill="#fff">Crew</text>
+        </svg>
+      </div>
+    </div>
+    <div class="foot"><span>From Graph to Crew</span><span>5 / 14</span></div>
+  </section>
+
+  <!-- AGENTS VS AGENTIC AI (researched) -->
+  <section class="slide" data-notes="Grounding from the literature: Sapkota, Roumeliotis and Karkee (2025), Information Fusion. AI agents are single, tool-using, task-specific. Agentic AI is multi-agent, coordinated, with memory. LangGraph and CrewAI are how we build the right side.">
+    <div class="slide-head"><div class="eyebrow">Landscape</div><div class="heading">AI agents vs Agentic AI</div></div>
+    <div class="cols cols-2">
+      <div class="col card" style="display:flex;flex-direction:column;border-color:#D9DEE6;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#5A6B82" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M5 21a7 7 0 0 1 14 0"/></svg>
+          <div class="card-title" style="margin:0;color:#3A4658;">AI agent</div>
+        </div>
+        <p class="small muted" style="margin-bottom:10px;">A single agent, an LLM with tools, for task-specific automation.</p>
+        <ul class="dotted small">
+          <li>One agent plus tool use and reasoning</li>
+          <li>Limited autonomy, no persistent memory</li>
+          <li>Support, scheduling, summarization</li>
+        </ul>
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;margin-top:6px;">
+          <svg viewBox="0 0 360 130" style="width:90%;" font-family="Outfit" font-size="13">
+            <circle cx="90" cy="65" r="30" fill="#EEF1F5" stroke="#5A6B82" stroke-width="2"/><text x="90" y="70" text-anchor="middle" fill="#3A4658" font-weight="600">agent</text>
+            <line x1="120" y1="50" x2="210" y2="30" stroke="#9AA6B8" stroke-width="1.6"/><line x1="120" y1="65" x2="210" y2="65" stroke="#9AA6B8" stroke-width="1.6"/><line x1="120" y1="80" x2="210" y2="100" stroke="#9AA6B8" stroke-width="1.6"/>
+            <rect x="210" y="16" width="92" height="28" rx="7" fill="#fff" stroke="#9AA6B8"/><text x="256" y="34" text-anchor="middle" fill="#5A6B82">search</text>
+            <rect x="210" y="51" width="92" height="28" rx="7" fill="#fff" stroke="#9AA6B8"/><text x="256" y="69" text-anchor="middle" fill="#5A6B82">calculator</text>
+            <rect x="210" y="86" width="92" height="28" rx="7" fill="#fff" stroke="#9AA6B8"/><text x="256" y="104" text-anchor="middle" fill="#5A6B82">API</text>
+          </svg>
+        </div>
+      </div>
+      <div class="col card g" style="display:flex;flex-direction:column;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#004F49" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="6" r="3"/><circle cx="5" cy="18" r="3"/><circle cx="19" cy="18" r="3"/><path d="M10.5 8.5 6.5 15.5M13.5 8.5 17.5 15.5M8 18h8"/></svg>
+          <div class="card-title gph-t" style="margin:0;">Agentic AI</div>
+        </div>
+        <p class="small muted" style="margin-bottom:10px;">Many agents, coordinated, with memory and shared goals.</p>
+        <ul class="dotted g small">
+          <li>Multi-agent collaboration and delegation</li>
+          <li>Dynamic task decomposition, persistent memory</li>
+          <li>Research, robotics, decision support</li>
+        </ul>
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;margin-top:6px;">
+          <svg viewBox="0 0 360 130" style="width:90%;" font-family="Outfit" font-size="13">
+            <rect x="130" y="6" width="100" height="30" rx="15" fill="#E7F4F1" stroke="#004F49" stroke-width="2"/><text x="180" y="26" text-anchor="middle" fill="#004F49" font-weight="600">orchestrator</text>
+            <line x1="180" y1="36" x2="60" y2="92" stroke="#1A1A1A" stroke-width="1.5"/><line x1="180" y1="36" x2="180" y2="92" stroke="#1A1A1A" stroke-width="1.5"/><line x1="180" y1="36" x2="300" y2="92" stroke="#1A1A1A" stroke-width="1.5"/>
+            <circle cx="60" cy="104" r="18" fill="#E7F4F1" stroke="#004F49" stroke-width="2"/><text x="60" y="108" text-anchor="middle" fill="#004F49">agent</text>
+            <circle cx="180" cy="104" r="18" fill="#E7F4F1" stroke="#004F49" stroke-width="2"/><text x="180" y="108" text-anchor="middle" fill="#004F49">agent</text>
+            <circle cx="300" cy="104" r="18" fill="#E7F4F1" stroke="#004F49" stroke-width="2"/><text x="300" y="108" text-anchor="middle" fill="#004F49">agent</text>
+            <path d="M332 96 a14 6 0 1 0 0 .1" fill="none"/>
+            <ellipse cx="338" cy="20" rx="15" ry="6" fill="#fff" stroke="#004F49"/><path d="M323 20 v16 a15 6 0 0 0 30 0 V20" fill="#fff" stroke="#004F49"/><text x="338" y="52" text-anchor="middle" font-size="11" fill="#004F49">memory</text>
+            <line x1="230" y1="20" x2="322" y2="22" stroke="#9AA6B8" stroke-width="1.4" stroke-dasharray="4 3"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:16px;font-size:18px;">Today's frameworks build the right side: <span class="gph">LangGraph</span> and <span class="crw">CrewAI</span> orchestrate many agents. <span class="muted small" style="display:block;margin-top:4px;">Source: Sapkota, Roumeliotis & Karkee (2025), "AI Agents vs. Agentic AI: A Conceptual Taxonomy," Information Fusion · arXiv:2505.10468</span></div>
+    <div class="foot"><span>From Graph to Crew</span><span></span></div>
+  </section>
+
+  <!-- DIVIDER 03 (variant D2, centered) -->
+  <section class="slide divider center" data-notes="Section 3. The two frameworks: LangGraph and CrewAI, two philosophies of control.">
+    <div class="bg"><img src="assets/story/aqueduct.png" alt=""></div>
+    <div class="scrim"></div>
+    <div class="content"><div class="secnum">03</div><h2>The two frameworks</h2><p>Two philosophies of control: a graph you draw, and a crew you assemble.</p></div>
+    <div class="foot"><span>From Graph to Crew</span><span></span></div>
+  </section>
+
+  <!-- 6 MENTAL MODEL -->
+  <section class="slide" data-notes="Core slide. If they remember one thing, it is the bottom line: control versus convenience.">
+    <div class="slide-head"><div class="eyebrow">Mental model</div><div class="heading">Two ways to think about orchestration</div></div>
+    <div class="cols cols-2">
+      <div class="col card g" style="display:flex;flex-direction:column;">
+        <div style="display:flex;align-items:center;gap:13px;margin-bottom:10px;">
+          <svg width="34" height="34" viewBox="0 0 32 32" fill="none" stroke="#004F49" stroke-width="2"><line x1="7" y1="9" x2="25" y2="9"/><line x1="7" y1="9" x2="16" y2="24"/><line x1="25" y1="9" x2="16" y2="24"/><circle cx="7" cy="9" r="3.6" fill="#004F49"/><circle cx="25" cy="9" r="3.6" fill="#004F49"/><circle cx="16" cy="24" r="3.6" fill="#004F49"/></svg>
+          <div class="card-title gph-t" style="margin:0;">Graph, a state machine you draw</div>
+        </div>
+        <ul class="dotted g small">
+          <li>Explicit control flow: nodes, edges, branches, loops</li>
+          <li>A shared State object updates at each node</li>
+          <li>Strength: control, reliability, branching and loops</li>
+        </ul>
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;">
+          <svg viewBox="0 0 420 150" style="width:92%;" font-family="Outfit" font-size="15">
+            <rect x="8" y="55" width="104" height="42" rx="9" fill="#E7F4F1" stroke="#004F49" stroke-width="2"/><text x="60" y="81" text-anchor="middle" fill="#004F49" font-weight="600">scout</text>
+            <rect x="158" y="55" width="104" height="42" rx="9" fill="#E7F4F1" stroke="#004F49" stroke-width="2"/><text x="210" y="81" text-anchor="middle" fill="#004F49" font-weight="600">stats</text>
+            <rect x="308" y="55" width="104" height="42" rx="9" fill="#E7F4F1" stroke="#004F49" stroke-width="2"/><text x="360" y="81" text-anchor="middle" fill="#004F49" font-weight="600">write</text>
+            <line x1="112" y1="76" x2="156" y2="76" stroke="#1A1A1A" stroke-width="2" marker-end="url(#ah)"/>
+            <line x1="262" y1="76" x2="306" y2="76" stroke="#1A1A1A" stroke-width="2" marker-end="url(#ah)"/>
+            <path d="M210 55 C 210 18, 60 18, 60 53" stroke="#EB6658" stroke-width="2" fill="none" stroke-dasharray="5 4" marker-end="url(#ahr)"/>
+            <text x="135" y="30" text-anchor="middle" font-size="12" fill="#D9543F">loop</text>
+            <defs><marker id="ah" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#1A1A1A"/></marker><marker id="ahr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#EB6658"/></marker></defs>
+          </svg>
+        </div>
+      </div>
+      <div class="col card c" style="display:flex;flex-direction:column;">
+        <div style="display:flex;align-items:center;gap:13px;margin-bottom:10px;">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#D9543F" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="7" r="3.2"/><path d="M3.4 20a5.6 5.6 0 0 1 11.2 0"/><circle cx="17.5" cy="8" r="2.6"/><path d="M16.5 14.4a5 5 0 0 1 4.1 5.6"/></svg>
+          <div class="card-title crw-t" style="margin:0;">Crew, a team you assemble</div>
+        </div>
+        <ul class="dotted c small">
+          <li>Roles, the agents, plus tasks to complete</li>
+          <li>A process coordinates who acts and when</li>
+          <li>Strength: speed, role decomposition, delegation</li>
+        </ul>
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;">
+          <svg viewBox="0 0 420 150" style="width:92%;" font-family="Outfit" font-size="14">
+            <rect x="150" y="8" width="120" height="40" rx="20" fill="#FDE7E2" stroke="#D9543F" stroke-width="2"/><text x="210" y="33" text-anchor="middle" fill="#D9543F" font-weight="600">process</text>
+            <line x1="210" y1="48" x2="70" y2="108" stroke="#1A1A1A" stroke-width="1.6"/>
+            <line x1="210" y1="48" x2="210" y2="108" stroke="#1A1A1A" stroke-width="1.6"/>
+            <line x1="210" y1="48" x2="350" y2="108" stroke="#1A1A1A" stroke-width="1.6"/>
+            <g><circle cx="70" cy="122" r="22" fill="#FDE7E2" stroke="#D9543F" stroke-width="2"/><text x="70" y="127" text-anchor="middle" fill="#D9543F" font-weight="600">agent</text></g>
+            <g><circle cx="210" cy="122" r="22" fill="#FDE7E2" stroke="#D9543F" stroke-width="2"/><text x="210" y="127" text-anchor="middle" fill="#D9543F" font-weight="600">agent</text></g>
+            <g><circle cx="350" cy="122" r="22" fill="#FDE7E2" stroke="#D9543F" stroke-width="2"/><text x="350" y="127" text-anchor="middle" fill="#D9543F" font-weight="600">agent</text></g>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:20px;font-size:20px;">Bottom line: <span class="gph">Graph</span> trades convenience for control. <span class="crw">Crew</span> trades control for convenience.</div>
+    <div class="foot"><span>From Graph to Crew</span><span>6 / 14</span></div>
+  </section>
+
+  <!-- 7 LANGGRAPH (GREEN WORLD) -->
+  <section class="slide graph" data-notes="We enter the Graph world. Anchor on State as a typed shared object. The loop back to scout is what makes graphs powerful.">
+    <div class="slide-head" style="display:flex;align-items:center;gap:16px;">
+      <span style="background:#fff;border-radius:13px;padding:11px 16px;display:inline-flex;align-items:center;box-shadow:0 4px 14px rgba(0,0,0,.18);"><img src="assets/logos/langgraph-mark.png" alt="LangGraph" style="height:30px;display:block;"></span>
+      <div><div class="eyebrow">Framework one · the Graph world</div><div class="heading"><span class="gph">LangGraph</span>: nodes, edges, state</div></div>
+    </div>
+    <div class="cols cols-2">
+      <div class="col">
+        <ul class="dotted g small">
+          <li><b>State</b>: a typed shared object</li>
+          <li><b>Node</b>: a function that updates State</li>
+          <li><b>Edge</b>: a fixed step in the flow</li>
+          <li><b>Conditional edge</b>: routing decided at runtime</li>
+          <li>Cycles are allowed, so loops are first class</li>
+          <li>Built-ins: checkpointers, human-in-the-loop</li>
+        </ul>
+        <p class="small" style="margin-top:12px;">If you can draw the flowchart, you can build the graph.</p>
+      </div>
+      <div class="col">
+        <div class="code dark"><span class="cm"># scout to stats to write, with a loop back</span>
+g = <span class="gt">StateGraph</span>(State)
+g.<span class="k">add_node</span>("scout", scout)
+g.<span class="k">add_node</span>("stats", stats)
+g.<span class="k">add_node</span>("write", write)
+g.<span class="k">add_edge</span>("scout", "stats")
+g.<span class="k">add_conditional_edges</span>(
+    "stats", need_more,
+    {"yes": "scout", "no": "write"})
+app = g.<span class="k">compile</span>()</div>
+      </div>
+    </div>
+    <div class="foot"><span>From Graph to Crew</span><span>7 / 14</span></div>
+  </section>
+
+  <!-- 8 CREWAI (CORAL WORLD) -->
+  <section class="slide crew" data-notes="We cross into the Crew world. Mirror of slide 7. Anchor on role, goal, backstory. The process picks sequential or hierarchical.">
+    <div class="slide-head" style="display:flex;align-items:center;gap:16px;">
+      <img src="assets/logos/crewai.png" alt="CrewAI" style="height:34px;">
+      <div><div class="eyebrow">Framework two · the Crew world</div><div class="heading"><span class="crw">CrewAI</span>: agents, tasks, crew</div></div>
+    </div>
+    <div class="cols cols-2">
+      <div class="col">
+        <ul class="dotted c small">
+          <li><b>Agent</b>: role, goal, backstory, tools, LLM</li>
+          <li><b>Task</b>: description plus expected output</li>
+          <li><b>Crew</b>: the agents plus the tasks</li>
+          <li><b>Process</b>: sequential or hierarchical</li>
+          <li>Built-ins: tools, memory, Flows</li>
+        </ul>
+        <p class="small" style="margin-top:12px;">If you can write the job descriptions, you can build the crew.</p>
+      </div>
+      <div class="col">
+        <div class="code light"><span class="cm"># four roles, run in sequence</span>
+scout = <span class="ct">Agent</span>(role, goal, backstory, tools)
+task1 = <span class="ct">Task</span>(description, expected_output,
+              agent=scout)
+crew = <span class="ct">Crew</span>(
+    agents=[scout, stats, tactics, writer],
+    tasks=[task1, task2, task3, task4],
+    process="sequential")
+result = crew.<span class="k">kickoff</span>()</div>
+      </div>
+    </div>
+    <div class="foot"><span>From Graph to Crew</span><span>8 / 14</span></div>
+  </section>
+
+  <!-- 9 WHEN TO USE -->
+  <section class="slide" data-notes="They are not enemies. End on the reality check: a crew can live inside a graph node.">
+    <div class="slide-head"><div class="eyebrow">Decision</div><div class="heading">Which one, and when</div></div>
+    <table class="cmp">
+      <thead><tr><th></th><th class="gph-t"><img src="assets/logos/langgraph-mark.png" style="height:28px;vertical-align:-8px;margin-right:9px;">LangGraph</th><th class="crw-t"><img src="assets/logos/crewai.png" style="height:21px;vertical-align:-3px;margin-right:9px;">CrewAI</th></tr></thead>
+      <tbody>
+        <tr><td>Think in</td><td>nodes, edges, state</td><td>agents, tasks, process</td></tr>
+        <tr><td>Best for</td><td>branching, loops, human-in-the-loop, strict reliability</td><td>quick teams, role decomposition</td></tr>
+        <tr><td>Learning curve</td><td>steeper</td><td>gentler</td></tr>
+      </tbody>
+    </table>
+    <div class="callout" style="margin-top:22px;">Reality check: not enemies. You can wrap a <span class="crw">Crew</span> inside a <span class="gph">Graph</span> node.</div>
+    <div class="foot"><span>From Graph to Crew</span><span>9 / 14</span></div>
+  </section>
+
+  <!-- DIVIDER 04 -->
+  <section class="slide divider" data-notes="Section 4. Build it yourself. The interactive round, then the World Cup lab in Colab.">
+    <div class="bg"><img src="assets/story/builders.png" alt=""></div>
+    <div class="scrim"></div>
+    <div class="content"><div class="secnum">04</div><h2>Build it yourself</h2><p>One World Cup task, two architectures, live in a Colab notebook.</p></div>
+    <div class="foot"><span>From Graph to Crew</span><span></span></div>
+  </section>
+
+  <!-- 10 INTERACTIVE -->
+  <section class="slide" data-notes="Answers: 1 Graph, 2 Crew, 3 Graph, 4 Crew. The axis is control versus collaboration. Have them vote by hand before revealing.">
+    <div class="slide-head"><div class="eyebrow">Interactive · quiz</div><div class="heading"><span class="gph">Graph</span> or <span class="crw">Crew</span>? Vote, then flip</div></div>
+    <div class="cols" style="grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:16px;">
+      <div class="flip" onclick="this.classList.toggle('on')"><div class="flip-in"><div class="flip-face"><div class="qn"><b>1.</b> A strict approval workflow with a human sign-off step.</div><span class="hint">flip</span></div><div class="flip-face flip-back g"><div class="aw"><span class="b">G</span>Graph</div><div class="rs">needs control and a human in the loop</div></div></div></div>
+      <div class="flip" onclick="this.classList.toggle('on')"><div class="flip-in"><div class="flip-face"><div class="qn"><b>2.</b> A campaign by a researcher, a writer, and an editor.</div><span class="hint">flip</span></div><div class="flip-face flip-back c"><div class="aw"><span class="b">C</span>Crew</div><div class="rs">clean role decomposition</div></div></div></div>
+      <div class="flip" onclick="this.classList.toggle('on')"><div class="flip-in"><div class="flip-face"><div class="qn"><b>3.</b> A loop that retries until the tests pass.</div><span class="hint">flip</span></div><div class="flip-face flip-back g"><div class="aw"><span class="b">G</span>Graph</div><div class="rs">an explicit loop</div></div></div></div>
+      <div class="flip" onclick="this.classList.toggle('on')"><div class="flip-in"><div class="flip-face"><div class="qn"><b>4.</b> A quick travel-planner team.</div><span class="hint">flip</span></div><div class="flip-face flip-back c"><div class="aw"><span class="b">C</span>Crew</div><div class="rs">a fast, simple team</div></div></div></div>
+    </div>
+    <div class="callout" style="margin-top:18px;">Vote by hand first, then flip each card. The axis is <b>control</b> versus <b>collaboration</b>.</div>
+    <div class="foot"><span>From Graph to Crew</span><span>10 / 14</span></div>
+  </section>
+
+  <!-- WORLD CUP SUB-COVER -->
+  <section class="slide" style="padding:0;" data-notes="Sub-cover for the World Cup case study. Italy vs Brazil. We build a scouting report twice, once as a Crew and once as a Graph.">
+    <div style="position:absolute;inset:0;"><img src="assets/story/worldcup.png" alt="" style="width:100%;height:100%;object-fit:cover;"></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,32,29,.84),rgba(0,32,29,.46) 60%,rgba(0,32,29,.15));"></div>
+    <div style="position:absolute;left:90px;top:50%;transform:translateY(-50%);color:#fff;max-width:840px;">
+      <div class="eyebrow" style="color:#fff;opacity:.9;">Case study</div>
+      <h2 style="font-family:var(--serif);font-weight:900;font-size:82px;line-height:1;margin-top:10px;text-shadow:0 2px 18px rgba(0,0,0,.3);">The World Cup lab</h2>
+      <p style="font-size:26px;margin-top:18px;opacity:.95;max-width:680px;text-shadow:0 1px 10px rgba(0,0,0,.3);">Italy vs Brazil. Build a match scouting report twice: once as a <span style="color:#FFC7BD;font-weight:700;">Crew</span>, once as a <span style="color:#9FE6D6;font-weight:700;">Graph</span>.</p>
+    </div>
+    <div class="foot"><span></span><span></span></div>
+  </section>
+
+  <!-- 11 WORLD CUP LAB -->
+  <section class="slide" data-notes="The payoff. Same task, two builds. Scout can use real web search or mock data so it works offline.">
+    <div class="slide-head"><div class="eyebrow">Lab</div><div class="heading">A World Cup match-analysis crew</div></div>
+    <div class="cols cols-2">
+      <div class="col">
+        <p style="margin-bottom:14px;"><b>Input:</b> two teams, for example Italy vs Brazil.  <b>Output:</b> a scouting report.</p>
+        <div class="rolerow"><span class="roleicon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D9543F" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg></span><div><b>Scout</b> · web search or mock data</div></div>
+        <div class="rolerow"><span class="roleicon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D9543F" stroke-width="2" stroke-linecap="round"><line x1="6" y1="20" x2="6" y2="13"/><line x1="12" y1="20" x2="12" y2="6"/><line x1="18" y1="20" x2="18" y2="10"/></svg></span><div><b>Stats Analyst</b> · reads the numbers</div></div>
+        <div class="rolerow"><span class="roleicon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D9543F" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="1" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="23"/></svg></span><div><b>Tactics Analyst</b> · reads the shape and style</div></div>
+        <div class="rolerow"><span class="roleicon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D9543F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v5h5"/><path d="M19 8v11a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h8Z"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="16" x2="13" y2="16"/></svg></span><div><b>Report Writer</b> · assembles the report</div></div>
+      </div>
+      <div class="col">
+        <div class="card" style="height:100%;display:flex;flex-direction:column;justify-content:center;">
+          <div class="card-title">The twist</div>
+          <p>Build the same task twice: once with <span class="crw">CrewAI</span>, once with <span class="gph">LangGraph</span>. Same goal, two architectures, and you feel the difference.</p>
+        </div>
+      </div>
+    </div>
+    <div class="foot"><span>From Graph to Crew</span><span>11 / 14</span></div>
+  </section>
+
+  <!-- 12 LAB ARCHITECTURE -->
+  <section class="slide" data-notes="Left makes the loop explicit with a conditional edge. Right hides the loop inside a sequential process.">
+    <div class="slide-head"><div class="eyebrow">Lab</div><div class="heading">One task, two architectures</div></div>
+    <div class="cols cols-2">
+      <div class="col">
+        <span class="pill g" style="margin-bottom:10px;">LangGraph</span>
+        <svg viewBox="0 0 470 300" style="width:100%;">
+          <g font-family="Outfit" font-size="14">
+            <rect x="20" y="20" width="90" height="40" rx="9" fill="#fff" stroke="#1A1A1A" stroke-width="2"/><text x="65" y="45" text-anchor="middle" fill="#1A1A1A">START</text>
+            <rect x="160" y="20" width="110" height="40" rx="9" fill="#E7F4F1" stroke="#004F49" stroke-width="2"/><text x="215" y="45" text-anchor="middle" fill="#004F49" font-weight="600">scout</text>
+            <rect x="160" y="100" width="110" height="40" rx="9" fill="#E7F4F1" stroke="#004F49" stroke-width="2"/><text x="215" y="125" text-anchor="middle" fill="#004F49" font-weight="600">stats</text>
+            <rect x="160" y="180" width="110" height="40" rx="9" fill="#E7F4F1" stroke="#004F49" stroke-width="2"/><text x="215" y="205" text-anchor="middle" fill="#004F49" font-weight="600">tactics</text>
+            <rect x="160" y="260" width="110" height="40" rx="9" fill="#E7F4F1" stroke="#004F49" stroke-width="2"/><text x="215" y="285" text-anchor="middle" fill="#004F49" font-weight="600">write</text>
+            <rect x="340" y="260" width="90" height="40" rx="9" fill="#fff" stroke="#1A1A1A" stroke-width="2"/><text x="385" y="285" text-anchor="middle" fill="#1A1A1A">END</text>
+            <line x1="110" y1="40" x2="158" y2="40" stroke="#1A1A1A" stroke-width="2"/>
+            <line x1="215" y1="60" x2="215" y2="98" stroke="#1A1A1A" stroke-width="2"/>
+            <line x1="215" y1="140" x2="215" y2="178" stroke="#1A1A1A" stroke-width="2"/>
+            <line x1="215" y1="220" x2="215" y2="258" stroke="#1A1A1A" stroke-width="2"/>
+            <line x1="270" y1="280" x2="338" y2="280" stroke="#1A1A1A" stroke-width="2"/>
+            <path d="M270 120 C 330 120, 330 40, 272 40" stroke="#EB6658" stroke-width="2" fill="none" stroke-dasharray="5 4"/>
+            <text x="336" y="84" font-size="12" fill="#D9543F">need more data?</text>
+          </g>
+        </svg>
+      </div>
+      <div class="col">
+        <span class="pill c" style="margin-bottom:10px;">CrewAI</span>
+        <svg viewBox="0 0 470 300" style="width:100%;">
+          <g font-family="Outfit" font-size="14">
+            <rect x="130" y="14" width="210" height="44" rx="10" fill="#FDE7E2" stroke="#D9543F" stroke-width="2"/><text x="235" y="41" text-anchor="middle" fill="#D9543F" font-weight="600">Scout agent</text>
+            <rect x="130" y="92" width="210" height="44" rx="10" fill="#FDE7E2" stroke="#D9543F" stroke-width="2"/><text x="235" y="119" text-anchor="middle" fill="#D9543F" font-weight="600">Stats Analyst</text>
+            <rect x="130" y="170" width="210" height="44" rx="10" fill="#FDE7E2" stroke="#D9543F" stroke-width="2"/><text x="235" y="197" text-anchor="middle" fill="#D9543F" font-weight="600">Tactics Analyst</text>
+            <rect x="130" y="248" width="210" height="44" rx="10" fill="#FDE7E2" stroke="#D9543F" stroke-width="2"/><text x="235" y="275" text-anchor="middle" fill="#D9543F" font-weight="600">Report Writer</text>
+            <line x1="235" y1="58" x2="235" y2="90" stroke="#1A1A1A" stroke-width="2"/>
+            <line x1="235" y1="136" x2="235" y2="168" stroke="#1A1A1A" stroke-width="2"/>
+            <line x1="235" y1="214" x2="235" y2="246" stroke="#1A1A1A" stroke-width="2"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+    <p class="small muted" style="margin-top:8px;">Caption: the <span class="gph">graph</span> makes the loop explicit. The <span class="crw">crew</span> hides it inside the process.</p>
+    <div class="foot"><span>From Graph to Crew</span><span>12 / 14</span></div>
+  </section>
+
+  <!-- 13 LIVE COLAB -->
+  <section class="slide" data-notes="Open the notebook now. Each person uses their own API key, stored as a Colab secret, never committed to the repo.">
+    <div class="slide-head"><div class="eyebrow">Hands-on</div><div class="heading">Let us build it</div></div>
+    <div class="cols cols-2">
+      <div class="col">
+        <ul class="dotted small">
+          <li>Setup and install</li>
+          <li>Tools: web search or mock data</li>
+          <li>Build 1: the <span class="crw">CrewAI</span> version</li>
+          <li>Build 2: the <span class="gph">LangGraph</span> version</li>
+          <li>Pair, think, share</li>
+          <li>Stretch: add a tool or a new role</li>
+        </ul>
+        <div class="callout small" style="margin-top:14px;">Each person adds their own API key as a Colab secret. Keys never go into the repo.</div>
+      </div>
+      <div class="col" style="display:flex;align-items:center;justify-content:center;">
+        <div class="qr-card"><img src="assets/qr/lab-qr.png" alt="lab repo" style="width:150px;height:150px;display:block;border-radius:8px;"><div class="qr-label">Notebook and code</div><div class="qr-url">github.com/mdehghani86/<br>graph-to-crew-lab</div></div>
+      </div>
+    </div>
+    <div class="foot"><span>From Graph to Crew</span><span>13 / 14</span></div>
+  </section>
+
+  <!-- 14 TAKEAWAYS -->
+  <section class="slide" data-notes="Land the plane. The hard part is the architecture decision, not the framework syntax.">
+    <div class="slide-head"><div class="eyebrow">Wrap up</div><div class="heading">What to take home</div></div>
+    <div class="cols cols-2">
+      <div class="col">
+        <ul class="dotted">
+          <li><span class="gph">Graph</span> is a state machine you draw. <span class="crw">Crew</span> is a team you assemble.</li>
+          <li>Choose by control versus convenience</li>
+          <li>Start simple, add structure only when you need it</li>
+          <li>The hard part is the architecture, not the framework</li>
+        </ul>
+        <p class="serif" style="font-size:28px;margin-top:24px;color:var(--coralDeep);">"Now go build your crew."</p>
+      </div>
+      <div class="col">
+        <div style="display:flex;gap:16px;">
+          <div class="qr-card"><img src="assets/qr/ai2lab-qr.png" alt="ai2lab.ai" style="width:112px;height:112px;display:block;border-radius:8px;"><div class="qr-label">AI2Lab</div><div class="qr-url">ai2lab.ai</div></div>
+          <div class="qr-card"><img src="assets/qr/lab-qr.png" alt="lab repo" style="width:112px;height:112px;display:block;border-radius:8px;"><div class="qr-label">Lab repo</div><div class="qr-url">graph-to-crew-lab</div></div>
+        </div>
+        <p class="small muted" style="margin-top:14px;">Contact: m.dehghani@northeastern.edu</p>
+      </div>
+    </div>
+    <div class="foot"><span>From Graph to Crew</span><span>14 / 14</span></div>
+  </section>
+
+</div></div>
+
+<button class="menu-btn" id="menuBtn"><span class="bars"><span></span><span></span><span></span></span><span class="seclabel" id="seclabel">Intro</span></button>
+<div class="agenda" id="agenda"><div class="panel"><div class="ttl">Agenda</div><div id="agendaList"></div></div></div>
+<div class="notes-hint">arrows or space to move · N for speaker notes</div>
+<div class="nav"><button id="prev" title="Previous">‹</button><span class="counter" id="counter">1 / 14</span><button id="next" title="Next">›</button><button id="fs" title="Fullscreen (F)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button></div>
+<div class="notes-overlay" id="notesOverlay"><div class="notes-box"><h4>Speaker notes</h4><p id="notesText"></p></div></div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total = slides.length; let i = 0;
+  const stage = document.getElementById('stage'), counter = document.getElementById('counter'), bar = document.getElementById('progressbar');
+  const notesOverlay = document.getElementById('notesOverlay'), notesText = document.getElementById('notesText');
+  function fit(){ const s = Math.min(window.innerWidth/1280, window.innerHeight/720); stage.style.transform = 'scale(' + s + ')'; }
+  function show(n){
+    i = Math.max(0, Math.min(total-1, n));
+    slides.forEach((s,k)=>s.classList.toggle('active', k===i));
+    counter.textContent = (i+1)+' / '+total;
+    bar.style.width = (i/(total-1)*100)+'%';
+    if(notesOverlay.classList.contains('show')) notesText.textContent = slides[i].dataset.notes || '';
+    updateSectionUI();
+  }
+  // ===== section agenda (hamburger) =====
+  // sections derived from the divider slides, so inserting slides never breaks numbering
+  const SECTIONS=[...slides].map((s,idx)=>({s,idx})).filter(x=>x.s.classList.contains('divider'))
+    .map(x=>({n:(x.s.querySelector('.secnum')||{}).textContent||'', title:(x.s.querySelector('.content h2')||{}).textContent||'Section', go:x.idx+1}));
+  SECTIONS.push({n:'05',title:'Takeaways',go:slides.length});
+  const menuBtn=document.getElementById('menuBtn'), agenda=document.getElementById('agenda'),
+        seclabel=document.getElementById('seclabel'), agendaList=document.getElementById('agendaList');
+  function slideTitle(s, idx){
+    if(idx===0) return 'Cover';
+    if(s.classList.contains('divider')){ const h=s.querySelector('.content h2'); const n=s.querySelector('.secnum'); return (n?n.textContent+' · ':'')+(h?h.textContent:'Section'); }
+    const h=s.querySelector('.heading')||s.querySelector('.sv4-h')||s.querySelector('h2');
+    return h ? h.textContent.trim() : ('Slide '+(idx+1));
+  }
+  const groups=[{n:'',title:'Intro',start:1,items:[]}];
+  SECTIONS.forEach(sec=>groups.push({n:sec.n,title:sec.title,start:sec.go,items:[]}));
+  slides.forEach((s,idx)=>{ const num=idx+1; let g=groups[0]; for(const gr of groups){ if(num>=gr.start) g=gr; } g.items.push({num,title:slideTitle(s,idx)}); });
+  groups.forEach(gr=>{
+    if(!gr.items.length) return;
+    const head=document.createElement('div'); head.className='ag-group';
+    head.innerHTML=(gr.n?'<span class="ag-n">'+gr.n+'</span>':'')+'<span class="ag-gt">'+gr.title+'</span>';
+    head.onclick=()=>{ show(gr.start-1); agenda.classList.remove('open'); };
+    agendaList.appendChild(head);
+    gr.items.forEach(it=>{
+      const el=document.createElement('div'); el.className='ag-item'; el.dataset.go=it.num;
+      el.innerHTML='<span class="ag-num">'+it.num+'</span><span class="ag-ti">'+it.title+'</span>';
+      el.onclick=()=>{ show(it.num-1); agenda.classList.remove('open'); };
+      agendaList.appendChild(el);
+    });
+  });
+  const agItems=[...agendaList.querySelectorAll('.ag-item')];
+  menuBtn.onclick=(e)=>{ e.stopPropagation(); agenda.classList.toggle('open'); };
+  agenda.onclick=(e)=>{ if(e.target===agenda) agenda.classList.remove('open'); };
+  function currentSection(idx1){ let s=null; for(const sec of SECTIONS){ if(idx1>=sec.go) s=sec; } return s; }
+  function updateSectionUI(){
+    const sec=currentSection(i+1);
+    seclabel.innerHTML = sec ? ('<small>'+sec.n+'</small>'+sec.title) : 'Intro';
+    agItems.forEach(el=>el.classList.toggle('active', +el.dataset.go===i+1));
+  }
+  const next=()=>show(i+1), prev=()=>show(i-1);
+  function toggleFS(){ if(!document.fullscreenElement){ (document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen).call(document.documentElement); } else { (document.exitFullscreen||document.webkitExitFullscreen).call(document); } }
+  document.getElementById('next').onclick=next; document.getElementById('prev').onclick=prev;
+  document.getElementById('fs').onclick=(e)=>{e.stopPropagation();toggleFS();};
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){e.preventDefault();next();}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();prev();}
+    else if(e.key==='Home')show(0); else if(e.key==='End')show(total-1);
+    else if(e.key.toLowerCase()==='f'){e.preventDefault();toggleFS();}
+    else if(e.key.toLowerCase()==='n'){notesOverlay.classList.toggle('show');notesText.textContent=slides[i].dataset.notes||'';}
+    else if(e.key==='Escape')notesOverlay.classList.remove('show');
+  });
+  document.addEventListener('fullscreenchange', fit);
+  const embedded = window.self !== window.top;
+  if(embedded) document.body.classList.add('embed');
+  stage.addEventListener('click',()=>{ if(!embedded && window.innerWidth>700) next(); });
+  notesOverlay.addEventListener('click',()=>notesOverlay.classList.remove('show'));
+  slides.forEach((s,k)=>{ const f=s.querySelector('.foot span:last-child'); if(f) f.textContent=(k+1)+' / '+total; });
+  window.addEventListener('resize',fit); fit();
+  const _m = location.hash.match(/s=(\d+)/); show(_m ? (+_m[1]-1) : 0);
+  window.addEventListener('hashchange',()=>{ const m=location.hash.match(/s=(\d+)/); if(m) show(+m[1]-1); });
+</script>
+</body>
+</html>
