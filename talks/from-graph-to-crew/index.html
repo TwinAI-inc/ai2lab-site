@@ -171,6 +171,20 @@
   body.embed, body.embed .deck{background:#fff;}
   body.embed .stage{box-shadow:none;}
 
+  /* overview / macro grid (press O) */
+  .overview{position:fixed;inset:0;background:rgba(18,24,38,.94);z-index:60;display:none;overflow:auto;padding:26px 30px;}
+  .overview.open{display:block;}
+  .overview .ohead{color:#fff;font-family:var(--serif);font-size:21px;text-align:center;margin-bottom:18px;}
+  .overview .ohead small{font-family:var(--sans);font-size:13px;opacity:.7;display:block;margin-top:4px;}
+  .overview .ogrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;max-width:1320px;margin:0 auto;}
+  .overview .ocell{background:#fff;border-radius:8px;overflow:hidden;cursor:pointer;position:relative;border:3px solid transparent;transition:.12s;}
+  .overview .ocell:hover{border-color:var(--coral);transform:translateY(-2px);}
+  .overview .ocell.cur{border-color:var(--mint);}
+  .overview .ofw{width:100%;aspect-ratio:16/9;position:relative;overflow:hidden;background:#fff;}
+  .overview .ocell iframe{width:1280px;height:720px;border:0;transform-origin:top left;position:absolute;top:0;left:0;pointer-events:none;}
+  .overview .onum{position:absolute;top:5px;left:5px;background:#1A1A1A;color:#fff;font-size:11px;font-weight:700;padding:1px 8px;border-radius:10px;z-index:3;}
+  body.embed .overview, body.embed .menu-btn{display:none!important;}
+
   /* section dividers */
   .slide.divider{padding:0;}
   .divider .bg{position:absolute;inset:0;overflow:hidden;}
@@ -553,6 +567,40 @@
     <div class="foot"><span>From Graph to Crew</span><span></span></div>
   </section>
 
+  <!-- PAIR-THINK-SHARE: SINGLE VS MULTI-AGENT -->
+  <section class="slide" data-notes="Pair, think, share. For a real task, would you reach for a single agent or a multi-agent system? Two minutes, a show of hands, then flip each card for what the research says. Single agents often match or beat multi-agent at equal compute (arXiv 2604.02460). Multi-agent helps for collaborative multi-domain work but has 14 known failure modes (Cemri et al. 2025). The honest answer: it depends, and single often wins on cost.">
+    <div class="pts"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="8.5" r="2.3"/><circle cx="17" cy="8.5" r="2.3"/><path d="M3 18a4 4 0 0 1 8 0"/><path d="M13 18a4 4 0 0 1 8 0"/></svg>Pair · Think · Share</div>
+    <div class="slide-head"><div class="heading">To build it for real, which would you reach for?</div></div>
+    <div class="cols cols-2">
+      <div class="flip" onclick="this.classList.toggle('on')"><div class="flip-in">
+        <div class="flip-face" style="justify-content:space-between;align-items:center;">
+          <div style="flex:1;display:flex;align-items:center;justify-content:center;"><svg width="116" height="116" viewBox="0 0 24 24" fill="none" stroke="#004F49" stroke-width="1.6" stroke-linecap="round"><rect x="5" y="8" width="14" height="11" rx="3"/><line x1="12" y1="4" x2="12" y2="8"/><circle cx="12" cy="3.4" r="1.4" fill="#004F49"/><circle cx="9.5" cy="13" r="1.3" fill="#004F49"/><circle cx="14.5" cy="13" r="1.3" fill="#004F49"/><line x1="9.5" y1="16.5" x2="14.5" y2="16.5"/></svg></div>
+          <div class="card-title" style="margin:0;align-self:center;">Single agent</div>
+          <span style="align-self:flex-end;color:#aaa;font-size:14px;font-weight:600;">click to flip</span>
+        </div>
+        <div class="flip-face flip-back g" style="justify-content:center;align-items:flex-start;">
+          <div class="aw">Often the efficient choice</div>
+          <div class="rs">At equal compute, single agents match or beat multi-agent on many tasks.</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:12px;">Source: "Single-Agent LLMs Outperform Multi-Agent…" arXiv:2604.02460</div>
+        </div>
+      </div></div>
+      <div class="flip" onclick="this.classList.toggle('on')"><div class="flip-in">
+        <div class="flip-face" style="justify-content:space-between;align-items:center;">
+          <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#D9543F" stroke-width="1.6" stroke-linecap="round"><rect x="6" y="9" width="12" height="9" rx="2.5"/><line x1="12" y1="6" x2="12" y2="9"/><circle cx="12" cy="5.4" r="1.2" fill="#D9543F"/><circle cx="10" cy="13" r="1.1" fill="#D9543F"/><circle cx="14" cy="13" r="1.1" fill="#D9543F"/></svg><svg width="76" height="76" viewBox="0 0 24 24" fill="none" stroke="#D9543F" stroke-width="1.6" stroke-linecap="round"><rect x="6" y="9" width="12" height="9" rx="2.5"/><line x1="12" y1="6" x2="12" y2="9"/><circle cx="12" cy="5.4" r="1.2" fill="#D9543F"/><circle cx="10" cy="13" r="1.1" fill="#D9543F"/><circle cx="14" cy="13" r="1.1" fill="#D9543F"/></svg><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#D9543F" stroke-width="1.6" stroke-linecap="round"><rect x="6" y="9" width="12" height="9" rx="2.5"/><line x1="12" y1="6" x2="12" y2="9"/><circle cx="12" cy="5.4" r="1.2" fill="#D9543F"/><circle cx="10" cy="13" r="1.1" fill="#D9543F"/><circle cx="14" cy="13" r="1.1" fill="#D9543F"/></svg></div>
+          <div class="card-title" style="margin:0;align-self:center;">Multi-agent</div>
+          <span style="align-self:flex-end;color:#aaa;font-size:14px;font-weight:600;">click to flip</span>
+        </div>
+        <div class="flip-face flip-back c" style="justify-content:center;align-items:flex-start;">
+          <div class="aw">Wins on collaboration</div>
+          <div class="rs">Better for multi-domain, collaborative tasks, but watch the 14 known failure modes.</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:12px;">Source: Cemri et al. (2025), "Why Do Multi-Agent LLM Systems Fail?"</div>
+        </div>
+      </div></div>
+    </div>
+    <div class="callout" style="margin-top:18px;">Discuss for two minutes, then flip each card. The honest answer: <b>it depends, and single often wins on cost.</b></div>
+    <div class="foot"><span>From Graph to Crew</span><span></span></div>
+  </section>
+
   <!-- STORY OF AGENTS 3/3: FROM ONE AGENT TO MANY -->
   <section class="slide" data-notes="Story 3 of 3. Multi-agent systems come in topologies: single, supervisor, hierarchical, network. A real run: input hits the orchestrator, fans out to teams and their agents, then merges to one output.">
     <div class="slide-head"><div class="eyebrow" style="color:var(--lg);">The story of agents · 3 of 3</div><div class="heading">From one agent to many</div></div>
@@ -595,39 +643,7 @@
     <div class="foot"><span>From Graph to Crew</span><span></span></div>
   </section>
 
-  <!-- PAIR-THINK-SHARE: SINGLE VS MULTI-AGENT -->
-  <section class="slide" data-notes="Pair, think, share. For a real task, would you reach for a single agent or a multi-agent system? Two minutes, a show of hands, then flip each card for what the research says. Single agents often match or beat multi-agent at equal compute (arXiv 2604.02460). Multi-agent helps for collaborative multi-domain work but has 14 known failure modes (Cemri et al. 2025). The honest answer: it depends, and single often wins on cost.">
-    <div class="pts"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="8.5" r="2.3"/><circle cx="17" cy="8.5" r="2.3"/><path d="M3 18a4 4 0 0 1 8 0"/><path d="M13 18a4 4 0 0 1 8 0"/></svg>Pair · Think · Share</div>
-    <div class="slide-head"><div class="heading">To build it for real, which would you reach for?</div></div>
-    <div class="cols cols-2">
-      <div class="flip" onclick="this.classList.toggle('on')"><div class="flip-in">
-        <div class="flip-face" style="justify-content:space-between;align-items:center;">
-          <div style="flex:1;display:flex;align-items:center;justify-content:center;"><svg width="116" height="116" viewBox="0 0 24 24" fill="none" stroke="#004F49" stroke-width="1.6" stroke-linecap="round"><rect x="5" y="8" width="14" height="11" rx="3"/><line x1="12" y1="4" x2="12" y2="8"/><circle cx="12" cy="3.4" r="1.4" fill="#004F49"/><circle cx="9.5" cy="13" r="1.3" fill="#004F49"/><circle cx="14.5" cy="13" r="1.3" fill="#004F49"/><line x1="9.5" y1="16.5" x2="14.5" y2="16.5"/></svg></div>
-          <div class="card-title" style="margin:0;align-self:center;">Single agent</div>
-          <span style="align-self:flex-end;color:#aaa;font-size:14px;font-weight:600;">click to flip</span>
-        </div>
-        <div class="flip-face flip-back g" style="justify-content:center;align-items:flex-start;">
-          <div class="aw">Often the efficient choice</div>
-          <div class="rs">At equal compute, single agents match or beat multi-agent on many tasks.</div>
-          <div style="font-size:13px;color:var(--muted);margin-top:12px;">Source: "Single-Agent LLMs Outperform Multi-Agent…" arXiv:2604.02460</div>
-        </div>
-      </div></div>
-      <div class="flip" onclick="this.classList.toggle('on')"><div class="flip-in">
-        <div class="flip-face" style="justify-content:space-between;align-items:center;">
-          <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#D9543F" stroke-width="1.6" stroke-linecap="round"><rect x="6" y="9" width="12" height="9" rx="2.5"/><line x1="12" y1="6" x2="12" y2="9"/><circle cx="12" cy="5.4" r="1.2" fill="#D9543F"/><circle cx="10" cy="13" r="1.1" fill="#D9543F"/><circle cx="14" cy="13" r="1.1" fill="#D9543F"/></svg><svg width="76" height="76" viewBox="0 0 24 24" fill="none" stroke="#D9543F" stroke-width="1.6" stroke-linecap="round"><rect x="6" y="9" width="12" height="9" rx="2.5"/><line x1="12" y1="6" x2="12" y2="9"/><circle cx="12" cy="5.4" r="1.2" fill="#D9543F"/><circle cx="10" cy="13" r="1.1" fill="#D9543F"/><circle cx="14" cy="13" r="1.1" fill="#D9543F"/></svg><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#D9543F" stroke-width="1.6" stroke-linecap="round"><rect x="6" y="9" width="12" height="9" rx="2.5"/><line x1="12" y1="6" x2="12" y2="9"/><circle cx="12" cy="5.4" r="1.2" fill="#D9543F"/><circle cx="10" cy="13" r="1.1" fill="#D9543F"/><circle cx="14" cy="13" r="1.1" fill="#D9543F"/></svg></div>
-          <div class="card-title" style="margin:0;align-self:center;">Multi-agent</div>
-          <span style="align-self:flex-end;color:#aaa;font-size:14px;font-weight:600;">click to flip</span>
-        </div>
-        <div class="flip-face flip-back c" style="justify-content:center;align-items:flex-start;">
-          <div class="aw">Wins on collaboration</div>
-          <div class="rs">Better for multi-domain, collaborative tasks, but watch the 14 known failure modes.</div>
-          <div style="font-size:13px;color:var(--muted);margin-top:12px;">Source: Cemri et al. (2025), "Why Do Multi-Agent LLM Systems Fail?"</div>
-        </div>
-      </div></div>
-    </div>
-    <div class="callout" style="margin-top:18px;">Discuss for two minutes, then flip each card. The honest answer: <b>it depends, and single often wins on cost.</b></div>
-    <div class="foot"><span>From Graph to Crew</span><span></span></div>
-  </section>
+
 
   <!-- TOOLKIT: THREE SDKS -->
   <section class="slide" data-notes="The toolkit. Three SDKs, three philosophies. LangChain chains prompts and tools. LangGraph is a controllable state graph. CrewAI is role-based crews. We build with all three.">
@@ -986,7 +1002,8 @@ result = crew.<span class="k">kickoff</span>()</div>
 
 <button class="menu-btn" id="menuBtn"><span class="bars"><span></span><span></span><span></span></span><span class="seclabel" id="seclabel">Intro</span></button>
 <div class="agenda" id="agenda"><div class="panel"><div class="ttl">Agenda</div><div id="agendaList"></div></div></div>
-<div class="nav"><button id="prev" title="Previous">‹</button><span class="counter" id="counter">1 / 14</span><button id="next" title="Next">›</button><button id="fs" title="Fullscreen (F)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button></div>
+<div class="overview" id="overview"></div>
+<div class="nav"><button id="ov" title="Overview (O)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></button><button id="prev" title="Previous">‹</button><span class="counter" id="counter">1 / 14</span><button id="next" title="Next">›</button><button id="fs" title="Fullscreen (F)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button></div>
 <div class="notes-overlay" id="notesOverlay"><div class="notes-box"><h4>Speaker notes</h4><p id="notesText"></p></div></div>
 
 <script>
@@ -1053,7 +1070,8 @@ result = crew.<span class="k">kickoff</span>()</div>
     else if(e.key==='Home')show(0); else if(e.key==='End')show(total-1);
     else if(e.key.toLowerCase()==='f'){e.preventDefault();toggleFS();}
     else if(e.key.toLowerCase()==='n'){notesOverlay.classList.toggle('show');notesText.textContent=slides[i].dataset.notes||'';}
-    else if(e.key==='Escape')notesOverlay.classList.remove('show');
+    else if(e.key.toLowerCase()==='o'){e.preventDefault();toggleOverview();}
+    else if(e.key==='Escape'){notesOverlay.classList.remove('show');toggleOverview(false);}
   });
   document.addEventListener('fullscreenchange', fit);
   const embedded = window.self !== window.top;
@@ -1062,6 +1080,26 @@ result = crew.<span class="k">kickoff</span>()</div>
   // (click is reserved for interactive elements like flip cards and quizzes)
   notesOverlay.addEventListener('click',()=>notesOverlay.classList.remove('show'));
   slides.forEach((s,k)=>{ const f=s.querySelector('.foot span:last-child'); if(f) f.textContent=(k+1)+' / '+total; });
+  // ===== overview / macro grid (press O) =====
+  const overview=document.getElementById('overview'); let ovBuilt=false;
+  function scaleOv(){ overview.querySelectorAll('.ofw').forEach(fw=>{ const f=fw.querySelector('iframe'); if(f) f.style.transform='scale('+(fw.clientWidth/1280)+')'; }); }
+  function buildOverview(){
+    if(ovBuilt) return; ovBuilt=true;
+    const head=document.createElement('div'); head.className='ohead'; head.innerHTML='Overview<small>click a slide to jump · O or Esc to close</small>';
+    const grid=document.createElement('div'); grid.className='ogrid';
+    for(let n=1;n<=total;n++){ const c=document.createElement('div'); c.className='ocell'; c.dataset.n=n;
+      c.innerHTML='<span class="onum">'+n+'</span><div class="ofw"><iframe loading="lazy" src="index.html#s='+n+'"></iframe></div>';
+      c.onclick=()=>{ show(n-1); toggleOverview(false); }; grid.appendChild(c); }
+    overview.appendChild(head); overview.appendChild(grid); setTimeout(scaleOv,120); setTimeout(scaleOv,700);
+  }
+  function toggleOverview(force){
+    const open = force===undefined ? !overview.classList.contains('open') : force;
+    if(open){ buildOverview(); overview.classList.add('open'); scaleOv();
+      overview.querySelectorAll('.ocell').forEach(c=>c.classList.toggle('cur',+c.dataset.n===i+1)); }
+    else overview.classList.remove('open');
+  }
+  document.getElementById('ov').onclick=(e)=>{ e.stopPropagation(); toggleOverview(); };
+  window.addEventListener('resize',scaleOv);
   window.addEventListener('resize',fit); fit();
   const _m = location.hash.match(/s=(\d+)/); show(_m ? (+_m[1]-1) : 0);
   window.addEventListener('hashchange',()=>{ const m=location.hash.match(/s=(\d+)/); if(m) show(+m[1]-1); });
