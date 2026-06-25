@@ -6,15 +6,15 @@
 <title>From Graph to Crew · A Hands-On Tour of Agentic AI Frameworks</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700;8..60,900&family=Source+Sans+3:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --lg:#004F49; --lgDeep:#003D38; --lgPanel:#0A5C55; --cream:#F0EBE1; --mint:#7FD8C8;
     --coral:#EB6658; --coralDeep:#D9543F; --coralPaper:#FFF5F1; --coralTint:#FDE2DC;
     --ink:#1A1A1A; --paper:#FBFAF7; --muted:#6B7280; --line:#E3E0D8;
     --greenTint:#D8EFE9;
-    --serif:"Fraunces", Georgia, serif;
-    --sans:"Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --serif:"Source Serif 4", Georgia, serif;
+    --sans:"Source Sans 3", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
@@ -113,6 +113,101 @@
   /* build fragments (reveal one at a time with the arrow key) */
   .frag{opacity:0;transform:translateY(14px);transition:opacity .4s ease, transform .4s cubic-bezier(.16,1,.3,1);}
   .frag.on{opacity:1;transform:none;}
+  /* timeline right-side detail cards (fade in with each reveal) */
+  .tlcard{position:absolute;inset:0;opacity:0;transform:translateY(14px);transition:opacity .4s ease, transform .4s cubic-bezier(.16,1,.3,1);pointer-events:none;}
+  .tlcard.show{opacity:1;transform:none;}
+  .tlcard .tlc-inner{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 34px rgba(20,30,40,.1);padding:30px 32px;height:100%;display:flex;flex-direction:column;justify-content:center;}
+  .tlcard.g .tlc-inner{border-color:#BfDdD8;background:#F6FBFA;} .tlcard.c .tlc-inner{border-color:#FACDC4;background:#FFF7F4;}
+  .tlcard .tlc-head{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+  .tlcard .tlc-yr{font-family:var(--mono);font-weight:700;font-size:16px;color:var(--muted);}
+  .tlcard .tlc-title{font-family:var(--serif);font-weight:700;font-size:30px;line-height:1.05;}
+  .tlcard .tlc-body{font-size:20px;line-height:1.55;color:#333;}
+
+  /* ============ framework slides (LangChain / LangGraph / CrewAI), reference-matched ============ */
+  .fw{padding:46px 64px 30px;}
+  .fw{--ac:#34526B; --acBg:#EEF2F6; --acBd:#CBD6E0;}   /* LangChain default: slate */
+  .fw.lg2{--ac:var(--lg); --acBg:#E9F4F1; --acBd:#BfDdD8;}
+  .fw.cw{--ac:var(--coralDeep); --acBg:#FDECE7; --acBd:#FACDC4;}
+  .fw .eyebrow{color:var(--ac);}
+  .fw-head{margin-bottom:14px;}
+  .fw-head .heading{font-size:40px;}
+  .fw-sub{font-size:18px;color:var(--muted);margin-top:7px;}
+  .fwlogo{position:absolute;top:34px;right:54px;display:inline-flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 18px;box-shadow:0 6px 20px rgba(20,30,40,.07);z-index:4;}
+  .fwlogo img{display:block;}
+  .fwlogo .wm{font-family:var(--sans);font-weight:700;font-size:20px;color:var(--ink);letter-spacing:-.3px;}
+  .livecode{position:absolute;left:64px;bottom:30px;display:inline-flex;align-items:center;gap:9px;border:1.5px solid var(--ac);color:var(--ac);border-radius:30px;padding:8px 17px;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;background:#fff;z-index:4;}
+  .livecode svg{width:14px;height:14px;}
+  /* framework slide body — distribute content down the full slide height */
+  .fw .fwbody{flex:1;display:flex;flex-direction:column;justify-content:space-between;min-height:0;}
+  .fw .fwbody>.chain{margin:0;}
+  .fw .fwbody>.statline{margin:0;}
+  /* chain of steps (LangChain) */
+  .chain{display:flex;align-items:stretch;gap:0;margin:6px 0 22px;}
+  .chain .step{flex:1;border:1px solid var(--line);border-radius:14px;background:#fff;padding:20px 8px 18px;text-align:center;box-shadow:0 3px 12px rgba(20,30,40,.05);}
+  .chain .step .si{width:30px;height:30px;margin:0 auto 7px;color:var(--ac);}
+  .chain .step b{font-family:var(--serif);font-size:21px;font-weight:700;display:block;}
+  .chain .step .cap{font-size:13px;color:#444;margin-top:3px;}
+  .chain .step .mn{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-top:4px;}
+  .chain .arrow{display:flex;align-items:center;color:var(--ac);flex:0 0 30px;justify-content:center;}
+  .chain .arrow svg{width:22px;height:22px;}
+  /* generic framework card */
+  .fcard{border:1px solid var(--line);border-radius:16px;background:#fff;padding:18px 22px;box-shadow:0 5px 18px rgba(20,30,40,.05);}
+  .fcard .badge{display:inline-block;background:var(--ac);color:#fff;font-size:11.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;border-radius:20px;padding:4px 13px;margin-bottom:11px;}
+  .fbul{list-style:none;}
+  .fbul li{position:relative;padding-left:20px;margin:8px 0;font-size:16px;line-height:1.3;}
+  .fbul li::before{content:"";position:absolute;left:2px;top:8px;width:7px;height:7px;border-radius:50%;background:var(--ac);}
+  .statrow{display:flex;gap:0;}
+  .statrow .st{flex:1;}
+  .statrow .st .num{font-family:var(--serif);font-weight:700;font-size:30px;color:var(--ac);line-height:1;}
+  .statrow .st .lbl{font-size:13px;color:var(--muted);margin-top:5px;}
+  .statrow.sm{gap:14px;flex-wrap:wrap;}
+  .statrow.sm .st{flex:0 0 auto;}
+  .statrow.sm .st .num{font-size:21px;}
+  .statrow.sm .st .lbl{font-size:11.5px;margin-top:3px;}
+  .statline{font-size:15px;color:var(--muted);}
+  .statline b{color:var(--ink);font-weight:700;}
+  /* when-to-use comparison cards */
+  .cmp2{display:grid;grid-template-columns:1fr 1fr;gap:26px;flex:1;min-height:0;}
+  .cmpcard{border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;background:#fff;box-shadow:0 7px 22px rgba(20,30,40,.07);}
+  .cmpcard .ch{display:flex;align-items:center;gap:12px;padding:17px 24px;border-bottom:1px solid var(--line);}
+  .cmpcard.g .ch{background:#E9F4F1;} .cmpcard.c .ch{background:#FDECE7;}
+  .cmpcard .ch img{display:block;}
+  .cmpcard .ch .nm{font-family:var(--serif);font-weight:700;font-size:25px;}
+  .cmpcard.g .ch .nm{color:var(--lg);} .cmpcard.c .ch .nm{color:var(--coralDeep);}
+  .cmpcard .ch .tl{font-size:12.5px;color:var(--muted);margin-left:auto;text-align:right;line-height:1.25;}
+  .cmprow{padding:15px 24px;border-bottom:1px solid var(--line);}
+  .cmprow:last-child{border-bottom:none;}
+  .cmprow .k{font-size:11.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:5px;}
+  .cmprow .v{font-size:17.5px;line-height:1.35;}
+  /* numbered steps */
+  .steps{counter-reset:st;list-style:none;}
+  .steps li{position:relative;padding-left:44px;margin:14px 0;font-size:19px;line-height:1.3;}
+  .steps li::before{counter-increment:st;content:counter(st);position:absolute;left:0;top:-3px;width:29px;height:29px;border-radius:8px;background:var(--ink);color:#fff;font-size:14px;font-weight:700;display:grid;place-items:center;font-family:var(--mono);}
+  /* build badge rows */
+  .buildrow{display:flex;align-items:center;gap:14px;padding:15px 18px;border-radius:14px;border:1px solid var(--line);background:#fff;}
+  .buildrow.g{border-color:#BfDdD8;background:#F3FAF8;} .buildrow.c{border-color:#FACDC4;background:#FFF1EC;}
+  .buildrow .bn{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);}
+  .buildrow .bt{font-family:var(--serif);font-weight:700;font-size:21px;}
+  /* bar chart (LangChain github stars) */
+  .bars{display:flex;flex-direction:column;gap:11px;margin-top:6px;}
+  .bars .bar{display:flex;align-items:center;gap:10px;font-size:14px;}
+  .bars .bar .nm{width:78px;text-align:right;color:#333;font-weight:600;}
+  .bars .bar .track{height:15px;border-radius:8px;}
+  .bars .bar .val{font-weight:700;font-size:14px;}
+
+  /* two-paper evidence slide */
+  .papergrid{display:grid;grid-template-columns:1fr 1fr;gap:34px;flex:1;min-height:0;position:relative;}
+  .papercard{--ac:#34526B;border:1px solid var(--line);border-top:5px solid var(--ac);border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 10px 30px rgba(20,30,40,.09);display:flex;flex-direction:column;position:relative;}
+  .papercard.g{--ac:var(--lg);} .papercard.c{--ac:var(--coralDeep);}
+  .papercard .pcovwrap{background:#F4F2EC;padding:15px 18px 0;}
+  .papercard .pcover{width:100%;height:148px;object-fit:cover;object-position:top center;display:block;border:1px solid #D9D5CB;border-bottom:none;border-radius:7px 7px 0 0;box-shadow:0 8px 18px rgba(20,30,40,.14);}
+  .papercard .pbody{padding:16px 22px 18px;display:flex;flex-direction:column;flex:1;}
+  .papercard .ptag{align-self:flex-start;display:inline-flex;align-items:center;gap:7px;background:var(--ac);color:#fff;font-size:11.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;border-radius:20px;padding:5px 13px;margin-bottom:11px;}
+  .papercard .ptitle{font-family:var(--serif);font-weight:700;font-size:21px;line-height:1.13;margin-bottom:11px;}
+  .papercard .ptitle .a{color:var(--ac);}
+  .papercard .pcite{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-top:auto;padding-top:12px;border-top:1px solid var(--line);margin-top:14px;}
+  .papervs{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);width:50px;height:50px;border-radius:50%;background:#fff;border:1px solid var(--line);box-shadow:0 6px 18px rgba(20,30,40,.16);display:grid;place-items:center;font-family:var(--serif);font-weight:800;font-size:17px;color:var(--ink);z-index:3;opacity:0;transition:opacity .45s ease;}
+  .papergrid .frag.on ~ .papervs{opacity:1;}
 
   /* role rows with icons */
   .rolerow{display:flex;gap:13px;align-items:center;margin:13px 0;font-size:19px;}
@@ -266,8 +361,8 @@
       <circle cx="58" cy="55" r="11" fill="var(--lg)"/><circle cx="58" cy="115" r="11" fill="var(--lg)"/><circle cx="58" cy="175" r="11" fill="var(--lg)"/>
       <circle cx="160" cy="115" r="13" fill="#1A1A1A"/>
       <circle cx="262" cy="55" r="11" fill="var(--coral)"/><circle cx="262" cy="115" r="11" fill="var(--coral)"/><circle cx="262" cy="175" r="11" fill="var(--coral)"/>
-      <text x="58" y="212" text-anchor="middle" font-family="Outfit" font-size="14" font-weight="600" fill="var(--lg)">graph</text>
-      <text x="262" y="212" text-anchor="middle" font-family="Outfit" font-size="14" font-weight="600" fill="var(--coralDeep)">crew</text>
+      <text x="58" y="212" text-anchor="middle" font-family="Source Sans 3, sans-serif" font-size="14" font-weight="600" fill="var(--lg)">graph</text>
+      <text x="262" y="212" text-anchor="middle" font-family="Source Sans 3, sans-serif" font-size="14" font-weight="600" fill="var(--coralDeep)">crew</text>
     </svg>
     <div style="position:absolute;left:74px;bottom:54px;">
       <div style="font-family:var(--serif);font-weight:600;font-size:23px;color:var(--ink);">Mohammad Dehghani</div>
@@ -369,21 +464,20 @@
   </section>
 
   <!-- PAIR-THINK-SHARE (two approaches) -->
-  <section class="slide" data-notes="Pair, think, share. Two approaches to the build. Give 2 minutes in groups of 2 to 3, then a show of hands. After the vote, click each card to flip it: A reveals a graph (LangGraph), B reveals a crew (CrewAI). Both are valid, that is the point. Then move to the general agents vs Agentic AI slide.">
+  <section class="slide" data-notes="Pair, think, share. Two approaches to the build. Give 2 minutes in groups of 2 to 3, then a show of hands. After the vote, reveal each card: A is a graph (LangGraph), B is a crew (CrewAI). Both are valid, that is the point. Then move to the general agents vs Agentic AI slide.">
     <div class="pts"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="8.5" r="2.3"/><circle cx="17" cy="8.5" r="2.3"/><path d="M3 18a4 4 0 0 1 8 0"/><path d="M13 18a4 4 0 0 1 8 0"/></svg>Pair · Think · Share</div>
     <div class="slide-head"><div class="heading">If you were the emperor, which approach would you use?</div></div>
     <div class="cols cols-2">
       <div class="flip" onclick="this.classList.toggle('on')"><div class="flip-in">
         <div class="flip-face" style="justify-content:space-between;align-items:stretch;">
           <div style="display:flex;align-items:center;gap:14px;"><span style="width:42px;height:42px;border-radius:11px;background:var(--ink);color:#fff;display:inline-grid;place-items:center;font-size:22px;font-weight:800;font-family:var(--serif);">A</span><div class="card-title" style="margin:0;">Follow one master plan</div></div>
-          <svg viewBox="0 0 300 168" style="width:100%;max-height:210px;" font-family="Outfit" font-size="14">
+          <svg viewBox="0 0 300 168" style="width:100%;max-height:210px;" font-family="Source Sans 3, sans-serif" font-size="14">
             <rect x="86" y="4" width="128" height="32" rx="8" fill="#fff" stroke="#1A1A1A" stroke-width="1.6"/><text x="150" y="25" text-anchor="middle">Design</text>
             <rect x="86" y="48" width="128" height="32" rx="8" fill="#fff" stroke="#1A1A1A" stroke-width="1.6"/><text x="150" y="69" text-anchor="middle">Foundation</text>
             <rect x="86" y="92" width="128" height="32" rx="8" fill="#fff" stroke="#1A1A1A" stroke-width="1.6"/><text x="150" y="113" text-anchor="middle">Structure</text>
             <rect x="86" y="136" width="128" height="32" rx="8" fill="#fff" stroke="#1A1A1A" stroke-width="1.6"/><text x="150" y="157" text-anchor="middle">Finish</text>
             <g stroke="#1A1A1A" stroke-width="1.6"><line x1="150" y1="36" x2="150" y2="46"/><line x1="150" y1="80" x2="150" y2="90"/><line x1="150" y1="124" x2="150" y2="134"/></g>
           </svg>
-          <span style="align-self:flex-end;color:#aaa;font-size:14px;font-weight:600;">click to flip</span>
         </div>
         <div class="flip-face flip-back g" style="justify-content:center;align-items:flex-start;">
           <span style="background:#fff;border-radius:12px;padding:10px 15px;display:inline-flex;box-shadow:0 4px 14px rgba(0,0,0,.12);"><img src="assets/logos/langgraph-mark.png" alt="LangGraph" style="height:26px;display:block;"></span>
@@ -394,13 +488,12 @@
       <div class="flip" onclick="this.classList.toggle('on')"><div class="flip-in">
         <div class="flip-face" style="justify-content:space-between;align-items:stretch;">
           <div style="display:flex;align-items:center;gap:14px;"><span style="width:42px;height:42px;border-radius:11px;background:var(--ink);color:#fff;display:inline-grid;place-items:center;font-size:22px;font-weight:800;font-family:var(--serif);">B</span><div class="card-title" style="margin:0;">Assemble specialist teams</div></div>
-          <svg viewBox="0 0 300 168" style="width:100%;max-height:210px;" font-family="Outfit" font-size="13">
+          <svg viewBox="0 0 300 168" style="width:100%;max-height:210px;" font-family="Source Sans 3, sans-serif" font-size="13">
             <rect x="95" y="6" width="110" height="30" rx="15" fill="#fff" stroke="#1A1A1A" stroke-width="1.6"/><text x="150" y="26" text-anchor="middle">lead</text>
             <g stroke="#1A1A1A" stroke-width="1.4"><line x1="150" y1="36" x2="55" y2="112"/><line x1="150" y1="36" x2="150" y2="112"/><line x1="150" y1="36" x2="245" y2="112"/></g>
             <g fill="#fff" stroke="#1A1A1A" stroke-width="1.6"><circle cx="55" cy="128" r="20"/><circle cx="150" cy="128" r="20"/><circle cx="245" cy="128" r="20"/></g>
             <g text-anchor="middle" font-size="12"><text x="55" y="132">eng</text><text x="150" y="132">build</text><text x="245" y="132">check</text></g>
           </svg>
-          <span style="align-self:flex-end;color:#aaa;font-size:14px;font-weight:600;">click to flip</span>
         </div>
         <div class="flip-face flip-back c" style="justify-content:center;align-items:flex-start;">
           <img src="assets/logos/crewai.png" alt="CrewAI" style="height:30px;display:block;">
@@ -423,23 +516,9 @@
 
   <!-- DIVIDER 02 (Agentic AI, concept divider) -->
   <section class="slide divider" data-notes="Section 2. Agentic AI. The research-grounded part: how we got here, the distinction between AI agents and Agentic AI, then a bridge into the two frameworks.">
-    <div style="position:absolute;inset:0;background:var(--lg);"></div>
+    <div class="bg"><img src="assets/story/forum-senate.png" alt="Roman senate in session"></div>
+    <div class="scrim"></div>
     <div class="content"><div class="secnum">01</div><h2>Agentic AI</h2><p>From single agents to coordinated systems.</p></div>
-    <svg style="position:absolute;right:96px;top:50%;transform:translateY(-50%);width:340px;height:280px;" viewBox="0 0 340 280" fill="none">
-      <!-- single agent -->
-      <circle cx="60" cy="140" r="30" fill="none" stroke="#F0EBE1" stroke-width="2.5"/>
-      <text x="60" y="146" text-anchor="middle" font-family="Outfit" font-size="14" fill="#F0EBE1">agent</text>
-      <!-- arrow -->
-      <line x1="98" y1="140" x2="150" y2="140" stroke="#7FD8C8" stroke-width="2.5"/>
-      <path d="M150 134 L162 140 L150 146 Z" fill="#7FD8C8"/>
-      <!-- coordinated cluster -->
-      <line x1="250" y1="140" x2="210" y2="70" stroke="#9FE6D6" stroke-width="1.6"/>
-      <line x1="250" y1="140" x2="300" y2="80" stroke="#9FE6D6" stroke-width="1.6"/>
-      <line x1="250" y1="140" x2="205" y2="210" stroke="#9FE6D6" stroke-width="1.6"/>
-      <line x1="250" y1="140" x2="305" y2="205" stroke="#9FE6D6" stroke-width="1.6"/>
-      <circle cx="250" cy="140" r="22" fill="#F0EBE1"/><text x="250" y="145" text-anchor="middle" font-family="Outfit" font-size="12" fill="#004F49" font-weight="700">lead</text>
-      <g fill="#7FD8C8"><circle cx="210" cy="70" r="15"/><circle cx="300" cy="80" r="15"/><circle cx="205" cy="210" r="15"/><circle cx="305" cy="205" r="15"/></g>
-    </svg>
     <div class="foot"><span>From Graph to Crew</span><span></span></div>
   </section>
 
@@ -448,49 +527,26 @@
   <!-- 4 TIMELINE (reveal one at a time) -->
   <section class="slide" data-notes="How we got here. Press the arrow to reveal each milestone one at a time. The two frameworks we focus on, LangGraph and CrewAI, both arrive in 2024.">
     <div class="slide-head"><div class="eyebrow">Context</div><div class="heading">How we got here</div></div>
-    <div style="position:relative;flex:1;min-height:0;padding-left:40px;display:flex;flex-direction:column;justify-content:center;gap:2px;">
-      <div style="position:absolute;left:13px;top:14px;bottom:14px;width:2px;background:var(--line);"></div>
-      <div class="frag" style="display:flex;align-items:center;gap:18px;padding:9px 0;position:relative;">
-        <span style="position:absolute;left:-32px;width:13px;height:13px;border-radius:50%;background:#9AA6B8;border:3px solid var(--paper);"></span>
-        <span style="font-family:var(--mono);font-weight:700;font-size:19px;color:var(--muted);width:92px;flex-shrink:0;">2022</span>
-        <span style="font-family:var(--serif);font-weight:700;font-size:23px;width:215px;flex-shrink:0;">ReAct</span>
-        <span style="font-size:18px;color:#555;">reasoning + acting: LLMs that think, then use tools</span>
+    <p class="muted small" style="margin-top:-16px;margin-bottom:14px;">Press the arrow to walk the timeline.</p>
+    <div class="cols cols-2" style="gap:46px;align-items:stretch;flex:1;min-height:0;">
+      <div class="col" style="position:relative;padding-left:32px;display:flex;flex-direction:column;justify-content:center;gap:3px;">
+        <div style="position:absolute;left:11px;top:12px;bottom:12px;width:2px;background:var(--line);"></div>
+        <div class="frag" style="display:flex;align-items:center;gap:15px;padding:10px 0;position:relative;"><span style="position:absolute;left:-28px;width:13px;height:13px;border-radius:50%;background:#9AA6B8;border:3px solid var(--paper);"></span><span style="font-family:var(--mono);font-weight:700;font-size:18px;color:var(--muted);width:58px;flex-shrink:0;">2022</span><span style="font-family:var(--serif);font-weight:700;font-size:23px;">ReAct</span></div>
+        <div class="frag" style="display:flex;align-items:center;gap:15px;padding:10px 0;position:relative;"><span style="position:absolute;left:-28px;width:13px;height:13px;border-radius:50%;background:#9AA6B8;border:3px solid var(--paper);"></span><span style="font-family:var(--mono);font-weight:700;font-size:18px;color:var(--muted);width:58px;flex-shrink:0;">2023</span><span style="font-family:var(--serif);font-weight:700;font-size:23px;">AutoGPT, BabyAGI</span></div>
+        <div class="frag" style="display:flex;align-items:center;gap:15px;padding:10px 0;position:relative;"><span style="position:absolute;left:-28px;width:13px;height:13px;border-radius:50%;background:#9AA6B8;border:3px solid var(--paper);"></span><span style="font-family:var(--mono);font-weight:700;font-size:18px;color:var(--muted);width:58px;flex-shrink:0;">2023</span><span style="font-family:var(--serif);font-weight:700;font-size:23px;">AutoGen</span></div>
+        <div class="frag" style="display:flex;align-items:center;gap:15px;padding:10px 0;position:relative;"><span style="position:absolute;left:-29px;width:15px;height:15px;border-radius:50%;background:var(--lg);border:3px solid var(--paper);"></span><span style="font-family:var(--mono);font-weight:700;font-size:18px;color:var(--lg);width:58px;flex-shrink:0;">2024</span><span style="font-family:var(--serif);font-weight:700;font-size:23px;color:var(--lg);">LangGraph</span></div>
+        <div class="frag" style="display:flex;align-items:center;gap:15px;padding:10px 0;position:relative;"><span style="position:absolute;left:-29px;width:15px;height:15px;border-radius:50%;background:var(--coral);border:3px solid var(--paper);"></span><span style="font-family:var(--mono);font-weight:700;font-size:18px;color:var(--coralDeep);width:58px;flex-shrink:0;">2024</span><span style="font-family:var(--serif);font-weight:700;font-size:23px;color:var(--coralDeep);">CrewAI</span></div>
+        <div class="frag" style="display:flex;align-items:center;gap:15px;padding:10px 0;position:relative;"><span style="position:absolute;left:-28px;width:13px;height:13px;border-radius:50%;background:#9AA6B8;border:3px solid var(--paper);"></span><span style="font-family:var(--mono);font-weight:700;font-size:18px;color:var(--muted);width:58px;flex-shrink:0;">2025</span><span style="font-family:var(--serif);font-weight:700;font-size:23px;">OpenAI SDK, Google ADK</span></div>
+        <div class="frag" style="display:flex;align-items:center;gap:15px;padding:10px 0;position:relative;"><span style="position:absolute;left:-28px;width:13px;height:13px;border-radius:50%;background:#1A1A1A;border:3px solid var(--paper);"></span><span style="font-family:var(--mono);font-weight:700;font-size:18px;color:var(--ink);width:58px;flex-shrink:0;">2026</span><span style="font-family:var(--serif);font-weight:700;font-size:23px;">Agentic AI</span></div>
       </div>
-      <div class="frag" style="display:flex;align-items:center;gap:18px;padding:9px 0;position:relative;">
-        <span style="position:absolute;left:-32px;width:13px;height:13px;border-radius:50%;background:#9AA6B8;border:3px solid var(--paper);"></span>
-        <span style="font-family:var(--mono);font-weight:700;font-size:19px;color:var(--muted);width:92px;flex-shrink:0;">2023</span>
-        <span style="font-family:var(--serif);font-weight:700;font-size:23px;width:215px;flex-shrink:0;">AutoGPT, BabyAGI</span>
-        <span style="font-size:18px;color:#555;">autonomous goal-chasing agents go viral</span>
-      </div>
-      <div class="frag" style="display:flex;align-items:center;gap:18px;padding:9px 0;position:relative;">
-        <span style="position:absolute;left:-32px;width:13px;height:13px;border-radius:50%;background:#9AA6B8;border:3px solid var(--paper);"></span>
-        <span style="font-family:var(--mono);font-weight:700;font-size:19px;color:var(--muted);width:92px;flex-shrink:0;">2023</span>
-        <span style="font-family:var(--serif);font-weight:700;font-size:23px;width:215px;flex-shrink:0;">AutoGen</span>
-        <span style="font-size:18px;color:#555;">Microsoft: agents that talk to each other</span>
-      </div>
-      <div class="frag" style="display:flex;align-items:center;gap:18px;padding:9px 0;position:relative;">
-        <span style="position:absolute;left:-33px;width:15px;height:15px;border-radius:50%;background:var(--lg);border:3px solid var(--paper);"></span>
-        <span style="font-family:var(--mono);font-weight:700;font-size:19px;color:var(--lg);width:92px;flex-shrink:0;">2024</span>
-        <span style="font-family:var(--serif);font-weight:700;font-size:23px;width:215px;flex-shrink:0;color:var(--lg);">LangGraph</span>
-        <span style="font-size:18px;color:#444;">agents as an explicit graph you draw</span>
-      </div>
-      <div class="frag" style="display:flex;align-items:center;gap:18px;padding:9px 0;position:relative;">
-        <span style="position:absolute;left:-33px;width:15px;height:15px;border-radius:50%;background:var(--coral);border:3px solid var(--paper);"></span>
-        <span style="font-family:var(--mono);font-weight:700;font-size:19px;color:var(--coralDeep);width:92px;flex-shrink:0;">2024</span>
-        <span style="font-family:var(--serif);font-weight:700;font-size:23px;width:215px;flex-shrink:0;color:var(--coralDeep);">CrewAI</span>
-        <span style="font-size:18px;color:#444;">agents as role-based crews you assemble</span>
-      </div>
-      <div class="frag" style="display:flex;align-items:center;gap:18px;padding:9px 0;position:relative;">
-        <span style="position:absolute;left:-32px;width:13px;height:13px;border-radius:50%;background:#9AA6B8;border:3px solid var(--paper);"></span>
-        <span style="font-family:var(--mono);font-weight:700;font-size:19px;color:var(--muted);width:92px;flex-shrink:0;">2025</span>
-        <span style="font-family:var(--serif);font-weight:700;font-size:23px;width:215px;flex-shrink:0;">OpenAI SDK, Google ADK</span>
-        <span style="font-size:18px;color:#555;">the big labs ship their own agent frameworks</span>
-      </div>
-      <div class="frag" style="display:flex;align-items:center;gap:18px;padding:9px 0;position:relative;">
-        <span style="position:absolute;left:-32px;width:13px;height:13px;border-radius:50%;background:#1A1A1A;border:3px solid var(--paper);"></span>
-        <span style="font-family:var(--mono);font-weight:700;font-size:19px;color:var(--ink);width:92px;flex-shrink:0;">2026</span>
-        <span style="font-family:var(--serif);font-weight:700;font-size:23px;width:215px;flex-shrink:0;">Agentic AI, mainstream</span>
-        <span style="font-size:18px;color:#555;">you are here</span>
+      <div class="col" style="position:relative;min-height:420px;">
+        <div class="tlcard" data-tlcard><div class="tlc-inner"><div class="tlc-head"><svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#5A6B82" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v5h-5"/></svg><span class="tlc-yr">2022</span></div><div class="tlc-title">ReAct</div><div class="tlc-body">Reason and act, in a loop. The paper that taught LLMs to think, then use tools. The blueprint behind every agent since.</div></div></div>
+        <div class="tlcard" data-tlcard><div class="tlc-inner"><div class="tlc-head"><svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#5A6B82" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.6" fill="#5A6B82"/></svg><span class="tlc-yr">2023</span></div><div class="tlc-title">AutoGPT, BabyAGI</div><div class="tlc-body">Give it a goal and it invents its own subtasks, then chases them. Viral in 2023, equal parts promise and chaos.</div></div></div>
+        <div class="tlcard" data-tlcard><div class="tlc-inner"><div class="tlc-head"><svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#5A6B82" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 10.5a6.5 6.5 0 1 1 6.5 6.5H7l-3 3v-4.6A6.5 6.5 0 0 1 8 10.5Z"/></svg><span class="tlc-yr">2023</span></div><div class="tlc-title">AutoGen</div><div class="tlc-body">Microsoft's framework for agents that converse to solve a task together. One of the first real multi-agent toolkits.</div></div></div>
+        <div class="tlcard g" data-tlcard><div class="tlc-inner"><div class="tlc-head"><span style="background:#fff;border:1px solid var(--line);border-radius:11px;padding:7px 11px;display:inline-flex;"><img src="assets/logos/langgraph-mark.png" alt="LangGraph" style="height:24px;"></span><span class="tlc-yr">2024</span></div><div class="tlc-title" style="color:var(--lg);">LangGraph</div><div class="tlc-body">Agents as an explicit graph: nodes, edges, state, and loops. Fine-grained control. One of our two focus frameworks.</div></div></div>
+        <div class="tlcard c" data-tlcard><div class="tlc-inner"><div class="tlc-head"><img src="assets/logos/crewai.png" alt="CrewAI" style="height:26px;"><span class="tlc-yr">2024</span></div><div class="tlc-title" style="color:var(--coralDeep);">CrewAI</div><div class="tlc-body">Agents as role-based crews. Write the job descriptions and a process runs them. Our other focus framework.</div></div></div>
+        <div class="tlcard" data-tlcard><div class="tlc-inner"><div class="tlc-head"><svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#5A6B82" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V8l8-5 8 5v13"/><path d="M9 21v-6h6v6"/></svg><span class="tlc-yr">2025</span></div><div class="tlc-title">OpenAI SDK, Google ADK</div><div class="tlc-body">The big labs ship official agent frameworks. Agents go mainstream, and standardized.</div></div></div>
+        <div class="tlcard" data-tlcard><div class="tlc-inner"><div class="tlc-head"><svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#D9543F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg><span class="tlc-yr">2026</span></div><div class="tlc-title">Agentic AI, mainstream</div><div class="tlc-body">Agentic AI is everywhere. You are here, about to build with two of these tools.</div></div></div>
       </div>
     </div>
     <div class="foot"><span>From Graph to Crew</span><span></span></div>
@@ -503,7 +559,7 @@
     <div class="slide-head"><div class="eyebrow" style="color:var(--lg);">The story of agents · 1 of 3</div><div class="heading">Single-agent models</div></div>
     <div class="cols cols-2" style="gap:44px;align-items:center;">
       <div class="col" style="display:flex;align-items:center;justify-content:center;">
-        <svg viewBox="0 0 360 360" style="width:92%;max-height:430px;" font-family="Outfit">
+        <svg viewBox="0 0 360 360" style="width:92%;max-height:430px;" font-family="Source Sans 3, sans-serif">
           <circle cx="180" cy="158" r="116" fill="none" stroke="#E3E0D8" stroke-width="2"/>
           <!-- clockwise arrows -->
           <g stroke="#004F49" stroke-width="3" fill="none"><path d="M210 58 A116 116 0 0 1 274 196" marker-end="url(#ra)"/><path d="M250 250 A116 116 0 0 1 110 250" marker-end="url(#ra)"/><path d="M86 196 A116 116 0 0 1 150 58" marker-end="url(#ra)"/></g>
@@ -540,7 +596,7 @@
     <div class="slide-head"><div class="eyebrow" style="color:var(--coralDeep);">The story of agents · 2 of 3</div><div class="heading">Multi-agent models</div></div>
     <div class="cols cols-2" style="gap:44px;align-items:center;">
       <div class="col" style="display:flex;align-items:center;justify-content:center;">
-        <svg viewBox="0 0 360 330" style="width:88%;max-height:420px;" font-family="Outfit">
+        <svg viewBox="0 0 360 330" style="width:88%;max-height:420px;" font-family="Source Sans 3, sans-serif">
           <defs><g id="bot2"><rect x="-15" y="-11" width="30" height="23" rx="7" fill="#fff" stroke="#1A1A1A" stroke-width="2"/><line x1="0" y1="-11" x2="0" y2="-17" stroke="#1A1A1A" stroke-width="2"/><circle cx="0" cy="-19" r="2.5" fill="#1A1A1A"/><circle cx="-6" cy="1" r="2.3" fill="#1A1A1A"/><circle cx="6" cy="1" r="2.3" fill="#1A1A1A"/></g></defs>
           <g stroke="#1A1A1A" stroke-width="1.6"><line x1="180" y1="100" x2="70" y2="230"/><line x1="180" y1="100" x2="180" y2="230"/><line x1="180" y1="100" x2="290" y2="230"/></g>
           <circle cx="180" cy="60" r="40" fill="#FDE7E2" stroke="#D9543F" stroke-width="2.5"/><use href="#bot2" x="180" y="58"/><rect x="128" y="106" width="104" height="23" rx="8" fill="#FDE7E2" stroke="#F2C4BC"/><text x="180" y="121" text-anchor="middle" font-size="14" font-weight="700" fill="#D9543F">coordinator</text>
@@ -564,19 +620,19 @@
         </div>
       </div>
     </div>
+    <div style="text-align:center;margin-top:10px;font-size:14.5px;color:var(--muted);">A group's performance tracks its <b style="color:var(--ink);font-weight:600;">coordination</b>, not its smartest member — <b style="color:var(--ink);font-weight:600;">Woolley et al., <i>Science</i> 2010</b></div>
     <div class="foot"><span>From Graph to Crew</span><span></span></div>
   </section>
 
   <!-- PAIR-THINK-SHARE: SINGLE VS MULTI-AGENT -->
-  <section class="slide" data-notes="Pair, think, share. For a real task, would you reach for a single agent or a multi-agent system? Two minutes, a show of hands, then flip each card for what the research says. Single agents often match or beat multi-agent at equal compute (arXiv 2604.02460). Multi-agent helps for collaborative multi-domain work but has 14 known failure modes (Cemri et al. 2025). The honest answer: it depends, and single often wins on cost.">
+  <section class="slide" data-notes="Pair, think, share. For a real task, would you reach for a single agent or a multi-agent system? Two minutes, a show of hands, then reveal each card for what the research says. Single agents often match or beat multi-agent at equal compute (arXiv 2604.02460). Multi-agent helps for collaborative multi-domain work but has 14 known failure modes (Cemri et al. 2025). The honest answer: it depends, and single often wins on cost.">
     <div class="pts"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="8.5" r="2.3"/><circle cx="17" cy="8.5" r="2.3"/><path d="M3 18a4 4 0 0 1 8 0"/><path d="M13 18a4 4 0 0 1 8 0"/></svg>Pair · Think · Share</div>
     <div class="slide-head"><div class="heading">To build it for real, which would you reach for?</div></div>
     <div class="cols cols-2">
       <div class="flip" onclick="this.classList.toggle('on')"><div class="flip-in">
         <div class="flip-face" style="justify-content:space-between;align-items:center;">
-          <div style="flex:1;display:flex;align-items:center;justify-content:center;"><svg width="116" height="116" viewBox="0 0 24 24" fill="none" stroke="#004F49" stroke-width="1.6" stroke-linecap="round"><rect x="5" y="8" width="14" height="11" rx="3"/><line x1="12" y1="4" x2="12" y2="8"/><circle cx="12" cy="3.4" r="1.4" fill="#004F49"/><circle cx="9.5" cy="13" r="1.3" fill="#004F49"/><circle cx="14.5" cy="13" r="1.3" fill="#004F49"/><line x1="9.5" y1="16.5" x2="14.5" y2="16.5"/></svg></div>
-          <div class="card-title" style="margin:0;align-self:center;">Single agent</div>
-          <span style="align-self:flex-end;color:#aaa;font-size:14px;font-weight:600;">click to flip</span>
+          <div style="flex:1;display:flex;align-items:center;justify-content:center;"><div style="width:152px;height:152px;border-radius:50%;background:#EAF4F1;display:grid;place-items:center;"><svg width="82" height="82" viewBox="0 0 24 24" fill="none" stroke="#004F49" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="3.5"/><line x1="12" y1="4" x2="12" y2="8"/><circle cx="12" cy="3.4" r="1.5" fill="#004F49"/><circle cx="9.5" cy="13" r="1.4" fill="#004F49"/><circle cx="14.5" cy="13" r="1.4" fill="#004F49"/><line x1="9.5" y1="16.5" x2="14.5" y2="16.5"/></svg></div></div>
+          <div class="card-title" style="margin:0;align-self:center;font-size:27px;">Single agent</div>
         </div>
         <div class="flip-face flip-back g" style="justify-content:center;align-items:flex-start;">
           <div class="aw">Often the efficient choice</div>
@@ -586,9 +642,8 @@
       </div></div>
       <div class="flip" onclick="this.classList.toggle('on')"><div class="flip-in">
         <div class="flip-face" style="justify-content:space-between;align-items:center;">
-          <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#D9543F" stroke-width="1.6" stroke-linecap="round"><rect x="6" y="9" width="12" height="9" rx="2.5"/><line x1="12" y1="6" x2="12" y2="9"/><circle cx="12" cy="5.4" r="1.2" fill="#D9543F"/><circle cx="10" cy="13" r="1.1" fill="#D9543F"/><circle cx="14" cy="13" r="1.1" fill="#D9543F"/></svg><svg width="76" height="76" viewBox="0 0 24 24" fill="none" stroke="#D9543F" stroke-width="1.6" stroke-linecap="round"><rect x="6" y="9" width="12" height="9" rx="2.5"/><line x1="12" y1="6" x2="12" y2="9"/><circle cx="12" cy="5.4" r="1.2" fill="#D9543F"/><circle cx="10" cy="13" r="1.1" fill="#D9543F"/><circle cx="14" cy="13" r="1.1" fill="#D9543F"/></svg><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#D9543F" stroke-width="1.6" stroke-linecap="round"><rect x="6" y="9" width="12" height="9" rx="2.5"/><line x1="12" y1="6" x2="12" y2="9"/><circle cx="12" cy="5.4" r="1.2" fill="#D9543F"/><circle cx="10" cy="13" r="1.1" fill="#D9543F"/><circle cx="14" cy="13" r="1.1" fill="#D9543F"/></svg></div>
-          <div class="card-title" style="margin:0;align-self:center;">Multi-agent</div>
-          <span style="align-self:flex-end;color:#aaa;font-size:14px;font-weight:600;">click to flip</span>
+          <div style="flex:1;display:flex;align-items:center;justify-content:center;"><div style="width:210px;height:152px;border-radius:26px;background:#FDECE8;display:flex;align-items:center;justify-content:center;gap:8px;"><svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#D9543F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="9" width="12" height="9" rx="2.8"/><line x1="12" y1="6" x2="12" y2="9"/><circle cx="12" cy="5.4" r="1.3" fill="#D9543F"/><circle cx="10" cy="13" r="1.2" fill="#D9543F"/><circle cx="14" cy="13" r="1.2" fill="#D9543F"/></svg><svg width="66" height="66" viewBox="0 0 24 24" fill="none" stroke="#D9543F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="9" width="12" height="9" rx="2.8"/><line x1="12" y1="6" x2="12" y2="9"/><circle cx="12" cy="5.4" r="1.3" fill="#D9543F"/><circle cx="10" cy="13" r="1.2" fill="#D9543F"/><circle cx="14" cy="13" r="1.2" fill="#D9543F"/></svg><svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#D9543F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="9" width="12" height="9" rx="2.8"/><line x1="12" y1="6" x2="12" y2="9"/><circle cx="12" cy="5.4" r="1.3" fill="#D9543F"/><circle cx="10" cy="13" r="1.2" fill="#D9543F"/><circle cx="14" cy="13" r="1.2" fill="#D9543F"/></svg></div></div>
+          <div class="card-title" style="margin:0;align-self:center;font-size:27px;">Multi-agent</div>
         </div>
         <div class="flip-face flip-back c" style="justify-content:center;align-items:flex-start;">
           <div class="aw">Wins on collaboration</div>
@@ -597,46 +652,87 @@
         </div>
       </div></div>
     </div>
-    <div class="callout" style="margin-top:18px;">Discuss for two minutes, then flip each card. The honest answer: <b>it depends, and single often wins on cost.</b></div>
+    <div class="callout" style="margin-top:18px;">Decide with your group.</div>
+    <div class="foot"><span>From Graph to Crew</span><span></span></div>
+  </section>
+
+  <!-- TWO-PAPER EVIDENCE (single vs multi-agent) -->
+  <section class="slide" data-notes="What the research actually says. Two papers, opposite lessons. Left: Tran and Kiela at Stanford show that, given the same thinking-token budget, a single agent beats a multi-agent system on multi-hop reasoning, because coordination overhead eats the gains. Right: Burton and colleagues in Nature Human Behaviour show the wisdom of crowds, that diverse groups of estimators beat any individual, and that LLMs can aggregate and reshape that collective intelligence. The honest takeaway: more agents add real coordination cost, so reach for a team only when the task genuinely needs diverse roles, not by default.">
+    <div class="slide-head" style="margin-bottom:16px;"><div class="eyebrow">What the research says</div><div class="heading" style="font-size:40px;">One strong agent, or a coordinated team?</div></div>
+    <div class="papergrid">
+      <div class="papercard">
+        <div class="pcovwrap"><img class="pcover" src="assets/papers/cover-single-agent.png" alt="Single-Agent LLMs Outperform Multi-Agent Systems"></div>
+        <div class="pbody">
+          <span class="ptag">The case for one</span>
+          <div class="ptitle"><span class="a">Single</span> agents can beat a team</div>
+          <ul class="fbul">
+            <li>At an <b>equal thinking-token budget</b>, one agent outperforms a multi-agent system on multi-hop reasoning</li>
+            <li>Coordination and message-passing overhead often eats the gains</li>
+          </ul>
+          <div class="pcite">Tran &amp; Kiela, Stanford · arXiv 2026</div>
+        </div>
+      </div>
+      <div class="papercard c frag">
+        <div class="pcovwrap"><img class="pcover" src="assets/papers/cover-collective.png" alt="How large language models can reshape collective intelligence"></div>
+        <div class="pbody">
+          <span class="ptag">The case for many</span>
+          <div class="ptitle">A <span class="a">crowd</span> can beat any expert</div>
+          <ul class="fbul">
+            <li>Diverse groups outperform any individual — the <b>wisdom of crowds</b></li>
+            <li>LLMs can aggregate and reshape that collective intelligence at scale</li>
+          </ul>
+          <div class="pcite">Burton et al. · Nature Human Behaviour, 2024</div>
+        </div>
+      </div>
+      <div class="papervs">vs</div>
+    </div>
     <div class="foot"><span>From Graph to Crew</span><span></span></div>
   </section>
 
   <!-- STORY OF AGENTS 3/3: FROM ONE AGENT TO MANY -->
-  <section class="slide" data-notes="Story 3 of 3. Multi-agent systems come in topologies: single, supervisor, hierarchical, network. A real run: input hits the orchestrator, fans out to teams and their agents, then merges to one output.">
+  <section class="slide" data-notes="Story 3 of 3. Build the figure up with the arrow, one topology at a time. You start with a Single agent (Input to Orchestrator). Press once: Supervisor adds three dept leads it delegates to. Press again: Hierarchical, each lead runs its own sub-team. Press again: Network, the sub-agents merge through a Synthesizer, with shared memory, to one Output. Each press also reveals the matching card on the left, so the left pattern and the figure layer come in together. The left cards are the four patterns; the figure is one real run that uses all of them.">
     <div class="slide-head"><div class="eyebrow" style="color:var(--lg);">The story of agents · 3 of 3</div><div class="heading">From one agent to many</div></div>
     <div class="cols" style="grid-template-columns:300px 1fr;gap:30px;align-items:center;">
       <div class="col" style="display:flex;flex-direction:column;gap:12px;">
         <div class="card" style="display:flex;align-items:center;gap:14px;padding:12px 16px;"><svg width="58" height="44" viewBox="0 0 58 44"><circle cx="14" cy="22" r="8" fill="#3B73C4"/><circle cx="34" cy="14" r="3.5" fill="#3B73C4"/><circle cx="34" cy="30" r="3.5" fill="#3B73C4"/></svg><div><b>Single</b><div class="muted small">one agent + its tools</div></div></div>
-        <div class="card" style="display:flex;align-items:center;gap:14px;padding:12px 16px;"><svg width="58" height="44" viewBox="0 0 58 44"><g stroke="#3B73C4" stroke-width="1.4"><line x1="29" y1="12" x2="14" y2="32"/><line x1="29" y1="12" x2="29" y2="32"/><line x1="29" y1="12" x2="44" y2="32"/></g><circle cx="29" cy="10" r="5" fill="#3B73C4"/><g fill="#3B73C4"><circle cx="14" cy="34" r="4"/><circle cx="29" cy="34" r="4"/><circle cx="44" cy="34" r="4"/></g></svg><div><b>Supervisor</b><div class="muted small">a lead delegates to workers</div></div></div>
-        <div class="card" style="display:flex;align-items:center;gap:14px;padding:12px 16px;"><svg width="58" height="44" viewBox="0 0 58 44"><g stroke="#3B73C4" stroke-width="1.2"><line x1="29" y1="8" x2="18" y2="22"/><line x1="29" y1="8" x2="40" y2="22"/><line x1="18" y1="22" x2="11" y2="36"/><line x1="18" y1="22" x2="25" y2="36"/><line x1="40" y1="22" x2="33" y2="36"/><line x1="40" y1="22" x2="47" y2="36"/></g><circle cx="29" cy="7" r="4.5" fill="#1A1A1A"/><g fill="#3B73C4"><circle cx="18" cy="22" r="4"/><circle cx="40" cy="22" r="4"/><circle cx="11" cy="37" r="3"/><circle cx="25" cy="37" r="3"/><circle cx="33" cy="37" r="3"/><circle cx="47" cy="37" r="3"/></g></svg><div><b>Hierarchical</b><div class="muted small">leads run sub-teams</div></div></div>
-        <div class="card" style="display:flex;align-items:center;gap:14px;padding:12px 16px;"><svg width="58" height="44" viewBox="0 0 58 44"><g stroke="#1E8C7A" stroke-width="1.2" stroke-dasharray="3 2"><line x1="29" y1="10" x2="12" y2="26"/><line x1="29" y1="10" x2="46" y2="26"/><line x1="12" y1="26" x2="20" y2="38"/><line x1="46" y1="26" x2="38" y2="38"/><line x1="20" y1="38" x2="38" y2="38"/><line x1="12" y1="26" x2="46" y2="26"/><line x1="29" y1="10" x2="20" y2="38"/></g><g fill="#1E8C7A"><circle cx="29" cy="10" r="4"/><circle cx="12" cy="26" r="4"/><circle cx="46" cy="26" r="4"/><circle cx="20" cy="38" r="4"/><circle cx="38" cy="38" r="4"/></g></svg><div><b>Network</b><div class="muted small">agents talk peer-to-peer</div></div></div>
+        <div class="card frag" data-fg="g1" style="display:flex;align-items:center;gap:14px;padding:12px 16px;"><svg width="58" height="44" viewBox="0 0 58 44"><g stroke="#3B73C4" stroke-width="1.4"><line x1="29" y1="12" x2="14" y2="32"/><line x1="29" y1="12" x2="29" y2="32"/><line x1="29" y1="12" x2="44" y2="32"/></g><circle cx="29" cy="10" r="5" fill="#3B73C4"/><g fill="#3B73C4"><circle cx="14" cy="34" r="4"/><circle cx="29" cy="34" r="4"/><circle cx="44" cy="34" r="4"/></g></svg><div><b>Supervisor</b><div class="muted small">a lead delegates to workers</div></div></div>
+        <div class="card frag" data-fg="g2" style="display:flex;align-items:center;gap:14px;padding:12px 16px;"><svg width="58" height="44" viewBox="0 0 58 44"><g stroke="#3B73C4" stroke-width="1.2"><line x1="29" y1="8" x2="18" y2="22"/><line x1="29" y1="8" x2="40" y2="22"/><line x1="18" y1="22" x2="11" y2="36"/><line x1="18" y1="22" x2="25" y2="36"/><line x1="40" y1="22" x2="33" y2="36"/><line x1="40" y1="22" x2="47" y2="36"/></g><circle cx="29" cy="7" r="4.5" fill="#1A1A1A"/><g fill="#3B73C4"><circle cx="18" cy="22" r="4"/><circle cx="40" cy="22" r="4"/><circle cx="11" cy="37" r="3"/><circle cx="25" cy="37" r="3"/><circle cx="33" cy="37" r="3"/><circle cx="47" cy="37" r="3"/></g></svg><div><b>Hierarchical</b><div class="muted small">leads run sub-teams</div></div></div>
+        <div class="card frag" data-fg="g3" style="display:flex;align-items:center;gap:14px;padding:12px 16px;"><svg width="58" height="44" viewBox="0 0 58 44"><g stroke="#1E8C7A" stroke-width="1.2" stroke-dasharray="3 2"><line x1="29" y1="10" x2="12" y2="26"/><line x1="29" y1="10" x2="46" y2="26"/><line x1="12" y1="26" x2="20" y2="38"/><line x1="46" y1="26" x2="38" y2="38"/><line x1="20" y1="38" x2="38" y2="38"/><line x1="12" y1="26" x2="46" y2="26"/><line x1="29" y1="10" x2="20" y2="38"/></g><g fill="#1E8C7A"><circle cx="29" cy="10" r="4"/><circle cx="12" cy="26" r="4"/><circle cx="46" cy="26" r="4"/><circle cx="20" cy="38" r="4"/><circle cx="38" cy="38" r="4"/></g></svg><div><b>Network</b><div class="muted small">agents talk peer-to-peer</div></div></div>
       </div>
       <div class="col" style="display:flex;align-items:center;justify-content:center;">
-        <svg viewBox="0 0 740 600" style="width:100%;max-height:540px;" font-family="Outfit" font-size="13">
+        <svg viewBox="0 0 740 600" style="width:100%;max-height:540px;" font-family="Source Sans 3, sans-serif" font-size="13">
           <defs><g id="b"><rect x="-14" y="-11" width="28" height="22" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.8"/><line x1="0" y1="-11" x2="0" y2="-16" stroke="#1A1A1A" stroke-width="1.8"/><circle cx="0" cy="-18" r="2.2" fill="#1A1A1A"/><circle cx="-5.5" cy="0.5" r="2" fill="#1A1A1A"/><circle cx="5.5" cy="0.5" r="2" fill="#1A1A1A"/></g></defs>
-          <g stroke="#8B97A8" stroke-width="1.6" fill="none">
-            <line x1="370" y1="44" x2="370" y2="74"/>
-            <line x1="370" y1="144" x2="160" y2="206"/><line x1="370" y1="144" x2="370" y2="206"/><line x1="370" y1="144" x2="590" y2="206"/>
-            <line x1="150" y1="262" x2="95" y2="356"/><line x1="150" y1="262" x2="215" y2="356"/>
-            <line x1="370" y1="262" x2="315" y2="356"/><line x1="370" y1="262" x2="430" y2="356"/>
-            <line x1="590" y1="262" x2="535" y2="356"/><line x1="590" y1="262" x2="650" y2="356"/>
-            <line x1="95" y1="396" x2="345" y2="486"/><line x1="215" y1="396" x2="358" y2="486"/><line x1="315" y1="396" x2="368" y2="486"/><line x1="430" y1="396" x2="378" y2="486"/><line x1="535" y1="396" x2="392" y2="486"/><line x1="650" y1="396" x2="402" y2="486"/>
-            <line x1="408" y1="510" x2="556" y2="510"/>
-          </g>
+          <!-- Layer 0 · Single (always visible): input + orchestrator -->
+          <line x1="370" y1="44" x2="370" y2="74" stroke="#8B97A8" stroke-width="1.6"/>
           <rect x="320" y="10" width="100" height="32" rx="8" fill="#fff" stroke="#1A1A1A" stroke-width="1.6"/><text x="370" y="31" text-anchor="middle" font-weight="700">Input</text>
           <circle cx="370" cy="110" r="34" fill="#CFE0F2" stroke="#3B73C4" stroke-width="2"/><use href="#b" x="370" y="112"/><rect x="410" y="100" width="120" height="24" rx="8" fill="#EAF1FA" stroke="#C2D5EC"/><text x="470" y="116" text-anchor="middle" font-weight="700" fill="#2A5A9E">Orchestrator</text>
-          <circle cx="150" cy="234" r="28" fill="#F6E0C8" stroke="#E0913A" stroke-width="2"/><use href="#b" x="150" y="236"/><rect x="112" y="268" width="76" height="23" rx="8" fill="#FBEFDD" stroke="#EAD2AE"/><text x="150" y="284" text-anchor="middle" font-weight="700" fill="#C2761F">Finance</text>
-          <circle cx="370" cy="234" r="28" fill="#E2EFD4" stroke="#6FA84A" stroke-width="2"/><use href="#b" x="370" y="236"/><rect x="350" y="268" width="40" height="23" rx="8" fill="#E9F3DD" stroke="#C8DEAE"/><text x="370" y="284" text-anchor="middle" font-weight="700" fill="#4E8030">IT</text>
-          <circle cx="590" cy="234" r="28" fill="#E7DCF5" stroke="#8A5FC4" stroke-width="2"/><use href="#b" x="590" y="236"/><rect x="562" y="268" width="56" height="23" rx="8" fill="#F1E9FA" stroke="#D6C4ED"/><text x="590" y="284" text-anchor="middle" font-weight="700" fill="#6B41A6">Risk</text>
-          <g><circle cx="95" cy="376" r="20" fill="#FBF1E3" stroke="#E0913A" stroke-width="1.6"/><use href="#b" x="95" y="378"/><rect x="62" y="402" width="66" height="23" rx="8" fill="#fff" stroke="#E3E0D8"/><text x="95" y="417" text-anchor="middle" font-size="12.5" fill="#1A1A1A">Research</text></g>
-          <g><circle cx="215" cy="376" r="20" fill="#FBF1E3" stroke="#E0913A" stroke-width="1.6"/><use href="#b" x="215" y="378"/><rect x="183" y="402" width="64" height="23" rx="8" fill="#fff" stroke="#E3E0D8"/><text x="215" y="417" text-anchor="middle" font-size="12.5" fill="#1A1A1A">Forecast</text></g>
-          <g><circle cx="315" cy="376" r="20" fill="#EFF6E6" stroke="#6FA84A" stroke-width="1.6"/><use href="#b" x="315" y="378"/><rect x="284" y="402" width="62" height="23" rx="8" fill="#fff" stroke="#E3E0D8"/><text x="315" y="417" text-anchor="middle" font-size="12.5" fill="#1A1A1A">Pipeline</text></g>
-          <g><circle cx="430" cy="376" r="20" fill="#EFF6E6" stroke="#6FA84A" stroke-width="1.6"/><use href="#b" x="430" y="378"/><rect x="399" y="402" width="62" height="23" rx="8" fill="#fff" stroke="#E3E0D8"/><text x="430" y="417" text-anchor="middle" font-size="12.5" fill="#1A1A1A">Security</text></g>
-          <g><circle cx="535" cy="376" r="20" fill="#F2EBFA" stroke="#8A5FC4" stroke-width="1.6"/><use href="#b" x="535" y="378"/><rect x="503" y="402" width="64" height="23" rx="8" fill="#fff" stroke="#E3E0D8"/><text x="535" y="417" text-anchor="middle" font-size="12.5" fill="#1A1A1A">Risk an.</text></g>
-          <g><circle cx="650" cy="376" r="20" fill="#F2EBFA" stroke="#8A5FC4" stroke-width="1.6"/><use href="#b" x="650" y="378"/><rect x="619" y="402" width="62" height="23" rx="8" fill="#fff" stroke="#E3E0D8"/><text x="650" y="417" text-anchor="middle" font-size="12.5" fill="#1A1A1A">Comply</text></g>
-          <circle cx="375" cy="510" r="30" fill="#CDEAE3" stroke="#1E8C7A" stroke-width="2"/><use href="#b" x="375" y="512"/><rect x="206" y="500" width="92" height="24" rx="8" fill="#DEF1EC" stroke="#B5DDD3"/><text x="252" y="516" text-anchor="middle" font-weight="700" fill="#176B5D">Synthesizer</text>
-          <rect x="556" y="492" width="100" height="34" rx="8" fill="#fff" stroke="#1A1A1A" stroke-width="1.6"/><text x="606" y="514" text-anchor="middle" font-weight="700">Output</text>
-          <g><rect x="14" y="360" width="66" height="34" rx="8" fill="#fff" stroke="#3B73C4" stroke-width="1.6"/><text x="47" y="382" text-anchor="middle" font-size="12" fill="#3B73C4">memory</text><line x1="80" y1="377" x2="368" y2="377" stroke="#7FB0D9" stroke-width="1.4" stroke-dasharray="4 3"/></g>
+
+          <!-- Layer 1 · Supervisor: orchestrator delegates to dept leads -->
+          <g class="frag" data-fg="g1">
+            <g stroke="#8B97A8" stroke-width="1.6" fill="none"><line x1="370" y1="144" x2="160" y2="206"/><line x1="370" y1="144" x2="370" y2="206"/><line x1="370" y1="144" x2="590" y2="206"/></g>
+            <circle cx="150" cy="234" r="28" fill="#F6E0C8" stroke="#E0913A" stroke-width="2"/><use href="#b" x="150" y="236"/><rect x="112" y="268" width="76" height="23" rx="8" fill="#FBEFDD" stroke="#EAD2AE"/><text x="150" y="284" text-anchor="middle" font-weight="700" fill="#C2761F">Finance</text>
+            <circle cx="370" cy="234" r="28" fill="#E2EFD4" stroke="#6FA84A" stroke-width="2"/><use href="#b" x="370" y="236"/><rect x="350" y="268" width="40" height="23" rx="8" fill="#E9F3DD" stroke="#C8DEAE"/><text x="370" y="284" text-anchor="middle" font-weight="700" fill="#4E8030">IT</text>
+            <circle cx="590" cy="234" r="28" fill="#E7DCF5" stroke="#8A5FC4" stroke-width="2"/><use href="#b" x="590" y="236"/><rect x="562" y="268" width="56" height="23" rx="8" fill="#F1E9FA" stroke="#D6C4ED"/><text x="590" y="284" text-anchor="middle" font-weight="700" fill="#6B41A6">Risk</text>
+          </g>
+
+          <!-- Layer 2 · Hierarchical: each lead runs a sub-team -->
+          <g class="frag" data-fg="g2">
+            <g stroke="#8B97A8" stroke-width="1.6" fill="none"><line x1="150" y1="262" x2="95" y2="356"/><line x1="150" y1="262" x2="215" y2="356"/><line x1="370" y1="262" x2="315" y2="356"/><line x1="370" y1="262" x2="430" y2="356"/><line x1="590" y1="262" x2="535" y2="356"/><line x1="590" y1="262" x2="650" y2="356"/></g>
+            <g><circle cx="95" cy="376" r="20" fill="#FBF1E3" stroke="#E0913A" stroke-width="1.6"/><use href="#b" x="95" y="378"/><rect x="62" y="402" width="66" height="23" rx="8" fill="#fff" stroke="#E3E0D8"/><text x="95" y="417" text-anchor="middle" font-size="12.5" fill="#1A1A1A">Research</text></g>
+            <g><circle cx="215" cy="376" r="20" fill="#FBF1E3" stroke="#E0913A" stroke-width="1.6"/><use href="#b" x="215" y="378"/><rect x="183" y="402" width="64" height="23" rx="8" fill="#fff" stroke="#E3E0D8"/><text x="215" y="417" text-anchor="middle" font-size="12.5" fill="#1A1A1A">Forecast</text></g>
+            <g><circle cx="315" cy="376" r="20" fill="#EFF6E6" stroke="#6FA84A" stroke-width="1.6"/><use href="#b" x="315" y="378"/><rect x="284" y="402" width="62" height="23" rx="8" fill="#fff" stroke="#E3E0D8"/><text x="315" y="417" text-anchor="middle" font-size="12.5" fill="#1A1A1A">Pipeline</text></g>
+            <g><circle cx="430" cy="376" r="20" fill="#EFF6E6" stroke="#6FA84A" stroke-width="1.6"/><use href="#b" x="430" y="378"/><rect x="399" y="402" width="62" height="23" rx="8" fill="#fff" stroke="#E3E0D8"/><text x="430" y="417" text-anchor="middle" font-size="12.5" fill="#1A1A1A">Security</text></g>
+            <g><circle cx="535" cy="376" r="20" fill="#F2EBFA" stroke="#8A5FC4" stroke-width="1.6"/><use href="#b" x="535" y="378"/><rect x="503" y="402" width="64" height="23" rx="8" fill="#fff" stroke="#E3E0D8"/><text x="535" y="417" text-anchor="middle" font-size="12.5" fill="#1A1A1A">Risk an.</text></g>
+            <g><circle cx="650" cy="376" r="20" fill="#F2EBFA" stroke="#8A5FC4" stroke-width="1.6"/><use href="#b" x="650" y="378"/><rect x="619" y="402" width="62" height="23" rx="8" fill="#fff" stroke="#E3E0D8"/><text x="650" y="417" text-anchor="middle" font-size="12.5" fill="#1A1A1A">Comply</text></g>
+          </g>
+
+          <!-- Layer 3 · Network: agents merge, synthesizer + shared memory -> output -->
+          <g class="frag" data-fg="g3">
+            <g stroke="#8B97A8" stroke-width="1.6" fill="none"><line x1="95" y1="396" x2="345" y2="486"/><line x1="215" y1="396" x2="358" y2="486"/><line x1="315" y1="396" x2="368" y2="486"/><line x1="430" y1="396" x2="378" y2="486"/><line x1="535" y1="396" x2="392" y2="486"/><line x1="650" y1="396" x2="402" y2="486"/><line x1="375" y1="540" x2="375" y2="556"/></g>
+            <circle cx="375" cy="510" r="30" fill="#CDEAE3" stroke="#1E8C7A" stroke-width="2"/><use href="#b" x="375" y="512"/><rect x="206" y="500" width="92" height="24" rx="8" fill="#DEF1EC" stroke="#B5DDD3"/><text x="252" y="516" text-anchor="middle" font-weight="700" fill="#176B5D">Synthesizer</text>
+            <rect x="314" y="556" width="112" height="34" rx="8" fill="#fff" stroke="#1A1A1A" stroke-width="1.6"/><text x="370" y="578" text-anchor="middle" font-weight="700">Output</text>
+            <line x1="86" y1="458" x2="348" y2="500" stroke="#7FB0D9" stroke-width="1.5" stroke-dasharray="5 4"/><rect x="18" y="438" width="68" height="32" rx="8" fill="#fff" stroke="#3B73C4" stroke-width="1.6"/><text x="52" y="459" text-anchor="middle" font-size="12" fill="#3B73C4">memory</text>
+          </g>
         </svg>
       </div>
     </div>
@@ -646,33 +742,33 @@
 
 
   <!-- TOOLKIT: THREE SDKS -->
-  <section class="slide" data-notes="The toolkit. Three SDKs, three philosophies. LangChain chains prompts and tools. LangGraph is a controllable state graph. CrewAI is role-based crews. We build with all three.">
+  <section class="slide" data-notes="The toolkit. Three SDKs, three philosophies. Reveal each with the arrow: LangChain chains prompts and tools; LangGraph is a controllable state graph; CrewAI is role-based crews. Then the closing line: we build with all three today.">
     <div class="slide-head"><div class="eyebrow" style="color:var(--lg);">The toolkit</div><div class="heading">Three SDKs, three philosophies</div></div>
     <p class="muted" style="margin-top:-14px;margin-bottom:18px;font-size:19px;">The patterns you just saw, now in code. We build with all three today.</p>
     <div class="cols" style="grid-template-columns:1fr 1fr 1fr;gap:20px;">
-      <div class="card" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:9px;padding:24px;">
+      <div class="card frag" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:9px;padding:24px;">
         <svg viewBox="0 0 220 60" style="width:100%;max-height:80px;"><g stroke="#1A1A1A" stroke-width="2"><line x1="40" y1="30" x2="66" y2="30" marker-end="url(#c1)"/><line x1="92" y1="30" x2="118" y2="30" marker-end="url(#c1)"/><line x1="144" y1="30" x2="170" y2="30" marker-end="url(#c1)"/></g><defs><marker id="c1" markerWidth="8" markerHeight="8" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#1A1A1A"/></marker></defs><g fill="#fff" stroke="#9AA6B8" stroke-width="2"><circle cx="28" cy="30" r="12"/><circle cx="80" cy="30" r="12"/><circle cx="132" cy="30" r="12"/><circle cx="184" cy="30" r="12"/></g></svg>
         <div style="font-family:var(--serif);font-size:26px;font-weight:700;">LangChain</div>
         <span style="background:#EEF0F5;color:#5A6B82;font-size:12px;font-weight:700;letter-spacing:1.5px;padding:4px 12px;border-radius:20px;">CHAIN</span>
         <div style="font-size:18px;">Chain prompts, models, tools</div>
         <div class="muted small">linear pipelines, 700+ integrations</div>
       </div>
-      <div class="card g" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:9px;padding:24px;">
+      <div class="card g frag" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:9px;padding:24px;">
         <svg viewBox="0 0 220 64" style="width:100%;max-height:84px;"><g stroke="#004F49" stroke-width="2" fill="none"><line x1="40" y1="32" x2="62" y2="32"/><line x1="86" y1="27" x2="114" y2="18"/><line x1="86" y1="37" x2="114" y2="46"/><line x1="138" y1="18" x2="166" y2="27"/><line x1="138" y1="46" x2="166" y2="37"/></g><path d="M120 48 C 100 57, 86 48, 80 40" stroke="#EB6658" stroke-width="1.8" fill="none" stroke-dasharray="4 3"/><g fill="#E7F4F1" stroke="#004F49" stroke-width="2"><circle cx="28" cy="32" r="12"/><circle cx="74" cy="32" r="12"/><circle cx="126" cy="16" r="12"/><circle cx="126" cy="48" r="12"/><circle cx="178" cy="32" r="12"/></g></svg>
         <div style="font-family:var(--serif);font-size:26px;font-weight:700;color:var(--lg);">LangGraph</div>
         <span style="background:#E7F4F1;color:var(--lg);font-size:12px;font-weight:700;letter-spacing:1.5px;padding:4px 12px;border-radius:20px;">GRAPH</span>
         <div style="font-size:18px;">Workflow as a state graph</div>
         <div class="muted small">fine control: branches, loops, retries</div>
       </div>
-      <div class="card c" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:9px;padding:24px;">
-        <svg viewBox="0 0 220 60" style="width:100%;max-height:80px;" font-family="Outfit"><defs><g id="bot3"><rect x="-13" y="-10" width="26" height="20" rx="6" fill="#fff" stroke="#D9543F" stroke-width="2"/><line x1="0" y1="-10" x2="0" y2="-15" stroke="#D9543F" stroke-width="2"/><circle cx="0" cy="-17" r="2" fill="#D9543F"/><circle cx="-5" cy="0" r="2" fill="#D9543F"/><circle cx="5" cy="0" r="2" fill="#D9543F"/></g></defs><g stroke="#1A1A1A" stroke-width="2"><line x1="48" y1="30" x2="78" y2="30" marker-end="url(#c2)"/><line x1="142" y1="30" x2="172" y2="30" marker-end="url(#c2)"/></g><defs><marker id="c2" markerWidth="8" markerHeight="8" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#1A1A1A"/></marker></defs><use href="#bot3" x="30" y="32"/><use href="#bot3" x="110" y="32"/><use href="#bot3" x="190" y="32"/></svg>
+      <div class="card c frag" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:9px;padding:24px;">
+        <svg viewBox="0 0 220 60" style="width:100%;max-height:80px;" font-family="Source Sans 3, sans-serif"><defs><g id="bot3"><rect x="-13" y="-10" width="26" height="20" rx="6" fill="#fff" stroke="#D9543F" stroke-width="2"/><line x1="0" y1="-10" x2="0" y2="-15" stroke="#D9543F" stroke-width="2"/><circle cx="0" cy="-17" r="2" fill="#D9543F"/><circle cx="-5" cy="0" r="2" fill="#D9543F"/><circle cx="5" cy="0" r="2" fill="#D9543F"/></g></defs><g stroke="#1A1A1A" stroke-width="2"><line x1="48" y1="30" x2="78" y2="30" marker-end="url(#c2)"/><line x1="142" y1="30" x2="172" y2="30" marker-end="url(#c2)"/></g><defs><marker id="c2" markerWidth="8" markerHeight="8" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#1A1A1A"/></marker></defs><use href="#bot3" x="30" y="32"/><use href="#bot3" x="110" y="32"/><use href="#bot3" x="190" y="32"/></svg>
         <div style="font-family:var(--serif);font-size:26px;font-weight:700;color:var(--coralDeep);">CrewAI</div>
         <span style="background:#FDE7E2;color:var(--coralDeep);font-size:12px;font-weight:700;letter-spacing:1.5px;padding:4px 12px;border-radius:20px;">CREW</span>
         <div style="font-size:18px;">Agents with roles, on a team</div>
         <div class="muted small">multi-agent crews, minimal wiring</div>
       </div>
     </div>
-    <p style="text-align:center;margin-top:18px;font-size:20px;">From <span class="gph">Graph</span> to <span class="crw">Crew</span> · a hands-on tour of each comes next.</p>
+    <p class="frag" style="text-align:center;margin-top:18px;font-size:20px;">From <span class="gph">Graph</span> to <span class="crw">Crew</span> · a hands-on tour of each comes next.</p>
     <div class="foot"><span>From Graph to Crew</span><span></span></div>
   </section>
 
@@ -704,7 +800,7 @@
           <li>Strength: control, reliability, branching and loops</li>
         </ul>
         <div style="flex:1;display:flex;align-items:center;justify-content:center;">
-          <svg viewBox="0 0 420 150" style="width:92%;" font-family="Outfit" font-size="15">
+          <svg viewBox="0 0 420 150" style="width:92%;" font-family="Source Sans 3, sans-serif" font-size="15">
             <rect x="8" y="55" width="104" height="42" rx="9" fill="#E7F4F1" stroke="#004F49" stroke-width="2"/><text x="60" y="81" text-anchor="middle" fill="#004F49" font-weight="600">scout</text>
             <rect x="158" y="55" width="104" height="42" rx="9" fill="#E7F4F1" stroke="#004F49" stroke-width="2"/><text x="210" y="81" text-anchor="middle" fill="#004F49" font-weight="600">stats</text>
             <rect x="308" y="55" width="104" height="42" rx="9" fill="#E7F4F1" stroke="#004F49" stroke-width="2"/><text x="360" y="81" text-anchor="middle" fill="#004F49" font-weight="600">write</text>
@@ -727,7 +823,7 @@
           <li>Strength: speed, role decomposition, delegation</li>
         </ul>
         <div style="flex:1;display:flex;align-items:center;justify-content:center;">
-          <svg viewBox="0 0 420 150" style="width:92%;" font-family="Outfit" font-size="14">
+          <svg viewBox="0 0 420 150" style="width:92%;" font-family="Source Sans 3, sans-serif" font-size="14">
             <rect x="150" y="8" width="120" height="40" rx="20" fill="#FDE7E2" stroke="#D9543F" stroke-width="2"/><text x="210" y="33" text-anchor="middle" fill="#D9543F" font-weight="600">process</text>
             <line x1="210" y1="48" x2="70" y2="108" stroke="#1A1A1A" stroke-width="1.6"/>
             <line x1="210" y1="48" x2="210" y2="108" stroke="#1A1A1A" stroke-width="1.6"/>
@@ -744,114 +840,261 @@
   </section>
 
   <!-- LANGCHAIN (the foundation) -->
-  <section class="slide" data-notes="LangChain, where it began. The foundation: chain prompts, models, and tools into a pipeline. LCEL: prompt, pipe, model, pipe, parser. 700+ integrations. Great for a straight line, awkward for branches and loops, which is exactly why LangGraph came next.">
-    <div class="slide-head" style="display:flex;align-items:center;gap:16px;">
-      <span style="background:#EEF0F5;color:#5A6B82;font-size:14px;font-weight:700;letter-spacing:2px;padding:7px 16px;border-radius:24px;">CHAIN</span>
-      <div><div class="eyebrow">The toolkit · the foundation</div><div class="heading">LangChain: chain it together</div></div>
+  <section class="slide fw" data-notes="LangChain, where it began. The foundation: a chain runs left to right, each step's output becomes the next step's input. Prompt, model, parser, tool, output. Started as Harrison Chase's side project in Oct 2022, days before ChatGPT, and became the default toolkit: 700+ integrations, used across a third of the Fortune 500. Great for a straight line, awkward for branches and loops, which is exactly why LangGraph came next.">
+    <div class="fwlogo">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#34526B" stroke-width="2" stroke-linecap="round"><path d="M9 13a4 4 0 0 1 0-5.6l2-2a4 4 0 0 1 5.6 5.6l-1 1"/><path d="M15 11a4 4 0 0 1 0 5.6l-2 2A4 4 0 0 1 7.4 13l1-1"/></svg>
+      <span class="wm">LangChain</span>
     </div>
-    <div class="cols cols-2">
-      <div class="col">
-        <ul class="dotted small">
-          <li><b>Chain</b>: prompt to model to parser, piped in a line</li>
-          <li>Runnables compose with the <b>|</b> operator (LCEL)</li>
-          <li><b>700+ integrations</b>: models, tools, vector stores</li>
-          <li>Best for linear pipelines; branches and loops get awkward</li>
-        </ul>
-        <p class="small" style="margin-top:12px;">If your task is a straight line, a chain is enough. When you need control, you reach for a <span class="gph">graph</span>.</p>
+    <div class="slide-head fw-head">
+      <div class="eyebrow">Framework 1 · the foundation</div>
+      <div class="heading">LangChain — where it began</div>
+      <div class="fw-sub">A chain runs left to right — each step's output becomes the next step's input.</div>
+    </div>
+
+    <div class="fwbody">
+    <div class="chain">
+      <div class="step"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><line x1="3" y1="8.5" x2="21" y2="8.5"/></svg><b>Prompt</b><div class="cap">wraps your question</div><div class="mn">"weather in Rome?"</div></div>
+      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg></div>
+      <div class="step"><svg class="si" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l7 9-7 9-7-9z"/></svg><b>LLM</b><div class="cap">the model responds</div><div class="mn">&rarr; "use a tool"</div></div>
+      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg></div>
+      <div class="step"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4C5.5 4 5.5 8 5.5 9.5S5 12 3 12c2 0 2.5 1 2.5 2.5S5.5 20 8 20"/><path d="M16 4c2.5 0 2.5 4 2.5 5.5S19 12 21 12c-2 0-2.5 1-2.5 2.5S18.5 20 16 20"/></svg><b>Parser</b><div class="cap">turns text into data</div><div class="mn">{ city: Rome }</div></div>
+      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg></div>
+      <div class="step"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L19 8.3l-3.8 3.4L16.3 17 12 14.4 7.7 17l1.1-5.3L5 8.3l5.1-.7z"/></svg><b>Tool</b><div class="cap">runs the action</div><div class="mn">get_weather()</div></div>
+      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg></div>
+      <div class="step"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg><b>Output</b><div class="cap">returns the answer</div><div class="mn">24&deg;C, sunny</div></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:20px;">
+      <div class="fcard">
+        <div style="display:flex;align-items:baseline;gap:11px;margin-bottom:14px;"><span class="badge" style="margin:0;">Founder story</span><b style="font-family:var(--serif);font-size:19px;">Harrison Chase</b><span style="color:var(--muted);font-size:15px;">· LangChain's creator</span></div>
+        <div style="position:relative;display:grid;grid-template-columns:repeat(4,1fr);">
+          <div style="position:absolute;left:6%;right:6%;top:7px;height:2px;background:var(--line);"></div>
+          <div style="position:relative;text-align:center;padding:0 4px;"><div style="width:14px;height:14px;border-radius:50%;background:var(--ac);margin:0 auto 9px;border:3px solid #fff;box-shadow:0 0 0 1px var(--acBd);"></div><div style="font-size:13px;font-weight:700;color:var(--ac);">Oct 2022</div><div style="font-size:14px;font-weight:700;margin-top:3px;">A side project</div><div style="font-size:12px;color:var(--muted);">glue for LLM plumbing</div></div>
+          <div style="position:relative;text-align:center;padding:0 4px;"><div style="width:14px;height:14px;border-radius:50%;background:#C7CFD8;margin:0 auto 9px;border:3px solid #fff;box-shadow:0 0 0 1px var(--line);"></div><div style="font-size:13px;font-weight:700;color:var(--muted);">Nov 2022</div><div style="font-size:14px;font-weight:700;margin-top:3px;">ChatGPT lands</div><div style="font-size:12px;color:var(--muted);">just weeks later</div></div>
+          <div style="position:relative;text-align:center;padding:0 4px;"><div style="width:14px;height:14px;border-radius:50%;background:#C7CFD8;margin:0 auto 9px;border:3px solid #fff;box-shadow:0 0 0 1px var(--line);"></div><div style="font-size:13px;font-weight:700;color:var(--muted);">2023</div><div style="font-size:14px;font-weight:700;margin-top:3px;">Becomes a company</div><div style="font-size:12px;color:var(--muted);">+ Ankush Gola</div></div>
+          <div style="position:relative;text-align:center;padding:0 4px;"><div style="width:14px;height:14px;border-radius:50%;background:var(--ac);margin:0 auto 9px;border:3px solid #fff;box-shadow:0 0 0 1px var(--acBd);"></div><div style="font-size:13px;font-weight:700;color:var(--ac);">today</div><div style="font-size:14px;font-weight:700;margin-top:3px;">The default toolkit</div><div style="font-size:12px;color:var(--muted);">+ LangGraph, LangSmith</div></div>
+        </div>
       </div>
-      <div class="col">
-        <div class="code light"><span class="cm"># the pipe IS the chain (LCEL)</span>
-from langchain_core.prompts import ChatPromptTemplate
-
-prompt = ChatPromptTemplate.from_template(
-    "Summarize in 3 bullets: {text}")
-
-chain  = prompt | model | parser
-
-result = chain.<span class="k">invoke</span>({"text": article})</div>
+      <div class="fcard">
+        <div style="font-family:var(--serif);font-weight:700;font-size:18px;">GitHub stars <span style="font-family:var(--sans);font-weight:400;font-size:13px;color:var(--muted);">· approx. 2026</span></div>
+        <div class="bars">
+          <div class="bar"><span class="nm">LangChain</span><span class="track" style="width:150px;background:var(--ac);"></span><span class="val">130k</span></div>
+          <div class="bar"><span class="nm">LangGraph</span><span class="track" style="width:58px;background:var(--lg);"></span><span class="val">50k</span></div>
+          <div class="bar"><span class="nm">CrewAI</span><span class="track" style="width:53px;background:var(--coral);"></span><span class="val">46k</span></div>
+        </div>
       </div>
+    </div>
+
+    <div class="statline"><b>~130k+</b> stars · <b>700+</b> integrations · <b>35%</b> of the Fortune 500 · <b>1B+</b> downloads</div>
     </div>
     <div class="foot"><span>From Graph to Crew</span><span></span></div>
   </section>
 
-  <!-- 7 LANGGRAPH (GREEN WORLD) -->
-  <section class="slide graph" data-notes="We enter the Graph world. Anchor on State as a typed shared object. The loop back to scout is what makes graphs powerful.">
-    <div class="slide-head" style="display:flex;align-items:center;gap:16px;">
-      <span style="background:#fff;border-radius:13px;padding:11px 16px;display:inline-flex;align-items:center;box-shadow:0 4px 14px rgba(0,0,0,.18);"><img src="assets/logos/langgraph-mark.png" alt="LangGraph" style="height:30px;display:block;"></span>
-      <div><div class="eyebrow">Framework one · the Graph world</div><div class="heading"><span class="gph">LangGraph</span>: nodes, edges, state</div></div>
+  <!-- ROMAN STORY: ROADS = GRAPH (bridge into LangGraph), Colosseum-style full-bleed -->
+  <section class="slide" style="padding:0;" data-notes="A quick Roman parallel before we meet LangGraph. Rome's road network was the original graph: each city a node, each road an edge, the topology fixed so the same route behaved the same way every time. Press the arrow to reveal each number. About 400,000 km of road at its peak, some 80,000 km of it stone-paved, all one fixed network — exactly how a graph works, and the mental model for LangGraph.">
+    <div style="position:absolute;inset:0;"><img src="assets/story/roman-roads.png" alt="An ancient Roman road leading to the distant city of Rome" style="width:100%;height:100%;object-fit:cover;"></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(95deg,rgba(0,28,25,.82) 0%,rgba(0,28,25,.5) 44%,rgba(0,28,25,.12) 78%,transparent);"></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,20,18,.66),rgba(0,20,18,.05) 52%,transparent);"></div>
+    <div style="position:absolute;left:80px;top:60px;color:#fff;max-width:640px;">
+      <div class="eyebrow" style="color:var(--mint);">A Roman parallel &middot; ancient Rome</div>
+      <h2 style="font-family:var(--serif);font-weight:900;font-size:62px;line-height:1.02;letter-spacing:-1px;margin-top:10px;text-shadow:0 2px 24px rgba(0,0,0,.45);">All roads lead<br>to Rome</h2>
+      <div style="display:inline-block;margin-top:16px;font-size:13px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:#0c2b27;background:var(--mint);border-radius:30px;padding:6px 16px;">The original graph</div>
+      <p style="font-size:22px;line-height:1.5;margin-top:16px;opacity:.96;max-width:560px;text-shadow:0 1px 14px rgba(0,0,0,.55);">Every city a <b>node</b>, every road an <b>edge</b> — a fixed network, so the same route behaved the same way every time.</p>
     </div>
-    <div class="cols cols-2">
-      <div class="col">
-        <ul class="dotted g small">
-          <li><b>State</b>: a typed shared object</li>
-          <li><b>Node</b>: a function that updates State</li>
-          <li><b>Edge</b>: a fixed step in the flow</li>
-          <li><b>Conditional edge</b>: routing decided at runtime</li>
-          <li>Cycles are allowed, so loops are first class</li>
-          <li>Built-ins: checkpointers, human-in-the-loop</li>
-        </ul>
-        <p class="small" style="margin-top:12px;">If you can draw the flowchart, you can build the graph.</p>
+    <div style="position:absolute;left:0;right:0;bottom:54px;display:flex;justify-content:center;gap:24px;">
+      <div class="frag" style="background:rgba(255,255,255,.13);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:26px 38px;color:#fff;text-align:center;min-width:230px;">
+        <div style="font-family:var(--serif);font-weight:900;font-size:58px;line-height:1;">400,000</div>
+        <div style="font-size:18px;opacity:.85;margin-top:6px;">km of road at its peak</div>
       </div>
-      <div class="col">
-        <div class="code dark"><span class="cm"># scout to stats to write, with a loop back</span>
-g = <span class="gt">StateGraph</span>(State)
-g.<span class="k">add_node</span>("scout", scout)
-g.<span class="k">add_node</span>("stats", stats)
-g.<span class="k">add_node</span>("write", write)
-g.<span class="k">add_edge</span>("scout", "stats")
-g.<span class="k">add_conditional_edges</span>(
-    "stats", need_more,
-    {"yes": "scout", "no": "write"})
-app = g.<span class="k">compile</span>()</div>
+      <div class="frag" style="background:rgba(255,255,255,.13);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:26px 38px;color:#fff;text-align:center;min-width:230px;">
+        <div style="font-family:var(--serif);font-weight:900;font-size:58px;line-height:1;">~80,000</div>
+        <div style="font-size:18px;opacity:.85;margin-top:6px;">km stone-paved, built to last</div>
+      </div>
+      <div class="frag" style="background:rgba(255,255,255,.13);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:26px 38px;color:#fff;text-align:center;min-width:230px;">
+        <div style="font-family:var(--serif);font-weight:900;font-size:58px;line-height:1;">1</div>
+        <div style="font-size:18px;opacity:.85;margin-top:6px;">fixed network — like a graph</div>
       </div>
     </div>
-    <div class="foot"><span>From Graph to Crew</span><span>7 / 14</span></div>
+    <div style="position:absolute;left:80px;bottom:24px;color:rgba(255,255,255,.6);font-size:12px;">Source &middot; Wikipedia, "Roman roads"</div>
+    <div class="foot" style="left:auto;right:74px;"><span></span><span></span></div>
   </section>
 
-  <!-- 8 CREWAI (CORAL WORLD) -->
-  <section class="slide crew" data-notes="We cross into the Crew world. Mirror of slide 7. Anchor on role, goal, backstory. The process picks sequential or hierarchical.">
-    <div class="slide-head" style="display:flex;align-items:center;gap:16px;">
-      <img src="assets/logos/crewai.png" alt="CrewAI" style="height:34px;">
-      <div><div class="eyebrow">Framework two · the Crew world</div><div class="heading"><span class="crw">CrewAI</span>: agents, tasks, crew</div></div>
+  <!-- LANGGRAPH (the agent core) -->
+  <section class="slide fw lg2" data-notes="LangGraph, the agent core. Built by the LangChain team as the answer to chains' limits. One agent orchestrates everything: it talks to the UI, calls the LLM, runs an auth handshake for tokens, and calls tools like Gmail, a calculator, and web search. The power is in nodes and conditional edges, cycles and retries, a persistent inspectable state, and human-in-the-loop approval. Launched Jan 2024, in production at Klarna, Replit, Elastic.">
+    <div class="fwlogo"><img src="assets/logos/langgraph-mark.png" alt="" style="height:26px;"><span class="wm">LangGraph</span></div>
+    <div class="slide-head fw-head">
+      <div class="eyebrow">Framework 2 · control</div>
+      <div class="heading"><span class="gph">LangGraph</span> — the agent core</div>
+      <div class="fw-sub">One LangGraph agent orchestrates everything: the UI, the LLM, auth, and tool calls.</div>
     </div>
-    <div class="cols cols-2">
-      <div class="col">
-        <ul class="dotted c small">
-          <li><b>Agent</b>: role, goal, backstory, tools, LLM</li>
-          <li><b>Task</b>: description plus expected output</li>
-          <li><b>Crew</b>: the agents plus the tasks</li>
-          <li><b>Process</b>: sequential or hierarchical</li>
-          <li>Built-ins: tools, memory, Flows</li>
+
+    <div style="display:flex;gap:22px;flex:1;min-height:0;align-items:stretch;">
+      <div style="flex:1;min-width:0;">
+        <svg viewBox="0 0 720 415" style="width:100%;height:100%;" font-family="Source Sans 3, sans-serif">
+          <defs>
+            <g id="lgbot"><rect x="-13" y="-10" width="26" height="20" rx="6" fill="#fff" stroke="#004F49" stroke-width="2"/><line x1="0" y1="-10" x2="0" y2="-15" stroke="#004F49" stroke-width="2"/><circle cx="0" cy="-17" r="2.2" fill="#004F49"/><circle cx="-5" cy="0" r="1.9" fill="#004F49"/><circle cx="5" cy="0" r="1.9" fill="#004F49"/></g>
+            <marker id="ga" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#5A6B82"/></marker>
+            <marker id="gad" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#004F49"/></marker>
+          </defs>
+
+          <!-- top: auth handshake -->
+          <text x="405" y="20" text-anchor="middle" font-size="12" fill="#004F49" font-weight="600">token exchange</text>
+          <rect x="250" y="28" width="130" height="42" rx="9" fill="#fff" stroke="#CBD6E0"/><path d="M283 41l7 4v8l-7 4-7-4v-8z" fill="none" stroke="#004F49" stroke-width="1.6"/><text x="323" y="54" text-anchor="middle" font-size="15" font-weight="700">Auth0</text>
+          <rect x="430" y="28" width="130" height="42" rx="9" fill="#fff" stroke="#CBD6E0"/><circle cx="463" cy="49" r="9" fill="none" stroke="#004F49" stroke-width="1.6"/><text x="463" y="54" text-anchor="middle" font-size="11" font-weight="800" fill="#004F49">G</text><text x="503" y="54" text-anchor="middle" font-size="15" font-weight="700">Google</text>
+          <line x1="380" y1="49" x2="428" y2="49" stroke="#5A6B82" stroke-width="1.6" marker-end="url(#ga)" marker-start="url(#ga)"/>
+
+          <!-- assistant0 boundary -->
+          <rect x="92" y="150" width="392" height="120" rx="14" fill="none" stroke="#7FB8B0" stroke-width="1.6" stroke-dasharray="6 5"/>
+          <text x="104" y="144" font-size="13" fill="#004F49" font-weight="700">Assistant0</text>
+
+          <!-- user -->
+          <circle cx="42" cy="200" r="13" fill="#5A6B82"/><path d="M22 233a20 20 0 0 1 40 0z" fill="#5A6B82"/>
+          <text x="42" y="252" text-anchor="middle" font-size="14" font-weight="700">User</text>
+
+          <!-- UI -->
+          <rect x="108" y="182" width="112" height="60" rx="11" fill="#fff" stroke="#CBD6E0"/><text x="164" y="210" text-anchor="middle" font-size="15" font-weight="700">UI</text><text x="164" y="228" text-anchor="middle" font-size="11.5" fill="#5A6B82">Vercel AI SDK</text>
+
+          <!-- AI Agent hero -->
+          <rect x="288" y="170" width="168" height="84" rx="14" fill="#E9F4F1" stroke="#004F49" stroke-width="2.4"/>
+          <use href="#lgbot" x="372" y="198"/>
+          <text x="372" y="227" text-anchor="middle" font-size="16" font-weight="700">AI Agent</text>
+          <text x="372" y="245" text-anchor="middle" font-size="14" font-weight="700" fill="#004F49">LangGraph</text>
+
+          <!-- LLM -->
+          <rect x="556" y="182" width="112" height="60" rx="11" fill="#fff" stroke="#BfDdD8"/><path d="M612 197l8 12-8 12-8-12z" fill="#004F49"/><text x="612" y="232" text-anchor="middle" font-size="12.5" fill="#5A6B82" font-weight="600">LLM · OpenAI</text>
+
+          <!-- horizontal arrows -->
+          <line x1="64" y1="212" x2="106" y2="212" stroke="#5A6B82" stroke-width="1.8" marker-end="url(#ga)" marker-start="url(#ga)"/>
+          <line x1="222" y1="212" x2="286" y2="212" stroke="#5A6B82" stroke-width="1.8" marker-end="url(#ga)" marker-start="url(#ga)"/>
+          <line x1="458" y1="212" x2="554" y2="212" stroke="#5A6B82" stroke-width="1.8" marker-end="url(#ga)" marker-start="url(#ga)"/>
+
+          <!-- token request: agent up to auth0 -->
+          <path d="M360 170 C 345 130, 320 100, 315 72" fill="none" stroke="#004F49" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#gad)"/>
+          <text x="300" y="120" text-anchor="end" font-size="11.5" fill="#004F49" font-weight="600">token request</text>
+
+          <!-- tools row (dashed) -->
+          <rect x="150" y="338" width="120" height="56" rx="11" fill="#fff" stroke="#CBD6E0"/><rect x="186" y="356" width="20" height="14" rx="2" fill="none" stroke="#004F49" stroke-width="1.5"/><path d="M186 357l10 7 10-7" fill="none" stroke="#004F49" stroke-width="1.5"/><text x="232" y="368" text-anchor="middle" font-size="14.5" font-weight="700">Gmail</text><text x="210" y="384" text-anchor="middle" font-size="11" fill="#5A6B82">access token</text>
+          <rect x="312" y="338" width="120" height="56" rx="11" fill="#fff" stroke="#CBD6E0"/><text x="372" y="364" text-anchor="middle" font-size="14.5" font-weight="700">Calculator</text><text x="372" y="382" text-anchor="middle" font-size="11" fill="#5A6B82">a tool</text>
+          <rect x="474" y="338" width="120" height="56" rx="11" fill="#fff" stroke="#CBD6E0"/><text x="534" y="364" text-anchor="middle" font-size="14.5" font-weight="700">SerpApi</text><text x="534" y="382" text-anchor="middle" font-size="11" fill="#5A6B82">API key</text>
+          <path d="M340 254 C 300 300, 250 310, 215 336" fill="none" stroke="#7FB8B0" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#gad)"/>
+          <path d="M372 254 L 372 336" fill="none" stroke="#7FB8B0" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#gad)"/>
+          <path d="M404 254 C 444 300, 500 310, 530 336" fill="none" stroke="#7FB8B0" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#gad)"/>
+          <text x="430" y="300" text-anchor="middle" font-size="11.5" fill="#004F49" font-weight="600">tool calling</text>
+        </svg>
+      </div>
+
+      <div class="fcard" style="flex:0 0 326px;display:flex;flex-direction:column;justify-content:center;">
+        <div style="font-family:var(--serif);font-weight:700;font-size:21px;line-height:1.1;">Built by the LangChain team</div>
+        <div style="font-size:14px;color:var(--muted);margin:5px 0 14px;">— the answer to chains' limits.</div>
+        <ul class="fbul">
+          <li>Nodes &amp; conditional edges</li>
+          <li>Cycles, retries, durable runs</li>
+          <li>Persistent, inspectable state</li>
+          <li>Human-in-the-loop approval</li>
         </ul>
-        <p class="small" style="margin-top:12px;">If you can write the job descriptions, you can build the crew.</p>
-      </div>
-      <div class="col">
-        <div class="code light"><span class="cm"># four roles, run in sequence</span>
-scout = <span class="ct">Agent</span>(role, goal, backstory, tools)
-task1 = <span class="ct">Task</span>(description, expected_output,
-              agent=scout)
-crew = <span class="ct">Crew</span>(
-    agents=[scout, stats, tactics, writer],
-    tasks=[task1, task2, task3, task4],
-    process="sequential")
-result = crew.<span class="k">kickoff</span>()</div>
+        <div class="statrow sm" style="margin-top:18px;">
+          <div class="st"><div class="num">Jan&nbsp;2024</div><div class="lbl">launched</div></div>
+          <div class="st"><div class="num">v1.0</div><div class="lbl">late 2024</div></div>
+          <div class="st"><div class="num">38.8M</div><div class="lbl">downloads / mo</div></div>
+        </div>
+        <div style="font-size:13px;color:var(--muted);margin-top:16px;">In production: <b style="color:var(--ink);">Klarna · Replit · Elastic</b></div>
       </div>
     </div>
-    <div class="foot"><span>From Graph to Crew</span><span>8 / 14</span></div>
+
+    <div class="foot"><span>From Graph to Crew</span><span></span></div>
+  </section>
+
+  <!-- ROMAN STORY: GALLEY = CREW (bridge into CrewAI) -->
+  <section class="slide story v4" data-notes="And the Roman parallel for CrewAI. A galley had no single driver. Many rowers each did one role, kept in time by a drummer and an officer, the process, and together they produced the result. Roles, a process, a shared goal: that is a crew, and the mental model for CrewAI.">
+    <div class="sv4 flip"><div class="sv4-R"><img src="assets/story/legion-crew.png" alt=""></div><div class="sv4-L"><div class="eyebrow">A Roman parallel &middot; ancient Rome</div><h2 class="sv4-h">The crew that moved an empire</h2><div class="label c" style="margin-top:8px;">The original crew</div><p class="lede" style="margin-top:10px;">A galley had no single driver. Many rowers each did one <span class="c">role</span>, kept in time by a drummer and an officer, the <span class="c">process</span>. The team produced the result together. That is the idea behind a <span class="c">crew</span>.</p><div class="fact c" style="margin-top:18px;"><span class="tag">Cool fact</span>A trireme carried about <b>170 oarsmen</b> on three stacked tiers, rowing in near perfect unison.<span class="src">Source &middot; Wikipedia, "Trireme"</span></div></div></div>
+    <div class="foot"><span>From Graph to Crew</span><span></span></div>
+  </section>
+
+  <!-- CREWAI (role-based crews) -->
+  <section class="slide fw cw" data-notes="CrewAI, role-based crews. A crew of role-playing agents runs tasks in sequence, sharing knowledge, memory, and tools to finish one job: researcher, then writer, then editor. The twist: unlike LangGraph, CrewAI is its own framework, independent of LangChain. Founded Dec 2023, 45.9k GitHub stars, over 12 million daily agent runs, 18 million dollars raised from Insight and Andrew Ng.">
+    <div class="fwlogo"><img src="assets/logos/crewai.png" alt="CrewAI" style="height:30px;"></div>
+    <div class="slide-head fw-head">
+      <div class="eyebrow">Framework 3 · teams</div>
+      <div class="heading"><span class="crw">CrewAI</span> — role-based crews</div>
+      <div class="fw-sub">A crew of role-playing agents runs tasks in sequence — sharing knowledge, memory &amp; tools — to finish one job.</div>
+    </div>
+
+    <div class="fwbody">
+    <svg viewBox="0 0 1080 256" style="width:100%;" font-family="Source Sans 3, sans-serif">
+      <defs>
+        <g id="cperson"><circle cx="0" cy="0" r="12"/><path d="M-18 31 a18 18 0 0 1 36 0z"/></g>
+        <marker id="cga" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#8A8A8A"/></marker>
+        <marker id="cgc" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#D9543F"/></marker>
+      </defs>
+
+      <!-- top resource chips -->
+      <rect x="316" y="6" width="170" height="48" rx="11" fill="#fff" stroke="#BfDdD8"/><circle cx="338" cy="24" r="5" fill="#004F49"/><text x="352" y="29" font-size="15" font-weight="700">Knowledge</text><text x="332" y="46" font-size="11.5" fill="#5A6B82">PDF · CSV · vectors</text>
+      <rect x="502" y="6" width="170" height="48" rx="11" fill="#fff" stroke="#D6CCE8"/><circle cx="524" cy="24" r="5" fill="#7A5BCB"/><text x="538" y="29" font-size="15" font-weight="700">Memory</text><text x="518" y="46" font-size="11.5" fill="#5A6B82">short &amp; long-term</text>
+      <rect x="688" y="6" width="160" height="48" rx="11" fill="#fff" stroke="#CBD6E0"/><circle cx="710" cy="24" r="5" fill="#5A6B82"/><text x="724" y="29" font-size="15" font-weight="700">Tools</text><text x="704" y="46" font-size="11.5" fill="#5A6B82">search · APIs</text>
+      <line x1="401" y1="54" x2="401" y2="86" stroke="#C9C4BC" stroke-width="1.4" stroke-dasharray="4 4"/>
+      <line x1="587" y1="54" x2="587" y2="86" stroke="#C9C4BC" stroke-width="1.4" stroke-dasharray="4 4"/>
+      <line x1="768" y1="54" x2="720" y2="86" stroke="#C9C4BC" stroke-width="1.4" stroke-dasharray="4 4"/>
+
+      <!-- crew boundary -->
+      <rect x="290" y="86" width="560" height="150" rx="16" fill="none" stroke="#E5876F" stroke-width="1.8" stroke-dasharray="7 5"/>
+      <text x="306" y="106" font-size="15" fill="#D9543F" font-weight="700">Crew</text>
+
+      <!-- roles + their tasks -->
+      <use href="#cperson" x="400" y="130" fill="#6B7280"/><text x="400" y="178" text-anchor="middle" font-size="14.5" font-weight="700">Researcher</text>
+      <use href="#cperson" x="580" y="130" fill="#D9543F"/><text x="580" y="178" text-anchor="middle" font-size="14.5" font-weight="700">Writer</text>
+      <use href="#cperson" x="740" y="130" fill="#6B7280"/><text x="740" y="178" text-anchor="middle" font-size="14.5" font-weight="700">Editor</text>
+
+      <!-- bottom flow: Job -> tasks -> Result -->
+      <rect x="150" y="198" width="96" height="40" rx="9" fill="#fff" stroke="#CBD6E0"/><text x="198" y="223" text-anchor="middle" font-size="14.5" font-weight="700">Job</text>
+      <rect x="352" y="198" width="96" height="40" rx="9" fill="#FBF1EE" stroke="#E5876F"/><text x="400" y="223" text-anchor="middle" font-size="14.5" font-weight="700">Task 1</text>
+      <rect x="532" y="198" width="96" height="40" rx="9" fill="#FBF1EE" stroke="#E5876F"/><text x="580" y="223" text-anchor="middle" font-size="14.5" font-weight="700">Task 2</text>
+      <rect x="692" y="198" width="96" height="40" rx="9" fill="#FBF1EE" stroke="#E5876F"/><text x="740" y="223" text-anchor="middle" font-size="14.5" font-weight="700">Task 3</text>
+      <rect x="900" y="198" width="110" height="40" rx="9" fill="#fff" stroke="#D9543F" stroke-width="2"/><text x="955" y="223" text-anchor="middle" font-size="14.5" font-weight="700">Result</text>
+
+      <!-- person -> task connectors -->
+      <line x1="400" y1="186" x2="400" y2="196" stroke="#C9C4BC" stroke-width="1.4" marker-end="url(#cga)"/>
+      <line x1="580" y1="186" x2="580" y2="196" stroke="#C9C4BC" stroke-width="1.4" marker-end="url(#cga)"/>
+      <line x1="740" y1="186" x2="740" y2="196" stroke="#C9C4BC" stroke-width="1.4" marker-end="url(#cga)"/>
+
+      <!-- flow arrows -->
+      <line x1="246" y1="218" x2="350" y2="218" stroke="#8A8A8A" stroke-width="1.8" marker-end="url(#cga)"/>
+      <line x1="448" y1="218" x2="530" y2="218" stroke="#D9543F" stroke-width="2" marker-end="url(#cgc)"/><text x="489" y="210" text-anchor="middle" font-size="12" fill="#D9543F" font-weight="600">then</text>
+      <line x1="628" y1="218" x2="690" y2="218" stroke="#D9543F" stroke-width="2" marker-end="url(#cgc)"/><text x="659" y="210" text-anchor="middle" font-size="12" fill="#D9543F" font-weight="600">then</text>
+      <line x1="788" y1="218" x2="898" y2="218" stroke="#8A8A8A" stroke-width="1.8" marker-end="url(#cga)"/>
+    </svg>
+
+    <div class="fcard" style="background:#FBF3F1;border-color:#F2D3CB;padding:16px 24px;margin-top:6px;">
+      <div style="display:flex;align-items:center;gap:13px;margin-bottom:12px;"><span class="badge" style="margin:0;">The twist</span><b style="font-size:18px;">CrewAI is its own framework — independent of LangChain.</b></div>
+      <div class="statrow">
+        <div class="st"><div class="num">Dec&nbsp;2023</div><div class="lbl">founded</div></div>
+        <div class="st"><div class="num">45.9k</div><div class="lbl">GitHub stars</div></div>
+        <div class="st"><div class="num">12M+</div><div class="lbl">daily agent runs</div></div>
+        <div class="st"><div class="num">$18M</div><div class="lbl">raised · Insight, A. Ng</div></div>
+      </div>
+    </div>
+    </div>
+
+    <div class="foot"><span>From Graph to Crew</span><span></span></div>
   </section>
 
   <!-- 9 WHEN TO USE -->
   <section class="slide" data-notes="They are not enemies. End on the reality check: a crew can live inside a graph node.">
-    <div class="slide-head"><div class="eyebrow">Decision</div><div class="heading">Which one, and when</div></div>
-    <table class="cmp">
-      <thead><tr><th></th><th class="gph-t"><img src="assets/logos/langgraph-mark.png" style="height:28px;vertical-align:-8px;margin-right:9px;">LangGraph</th><th class="crw-t"><img src="assets/logos/crewai.png" style="height:21px;vertical-align:-3px;margin-right:9px;">CrewAI</th></tr></thead>
-      <tbody>
-        <tr><td>Think in</td><td>nodes, edges, state</td><td>agents, tasks, process</td></tr>
-        <tr><td>Best for</td><td>branching, loops, human-in-the-loop, strict reliability</td><td>quick teams, role decomposition</td></tr>
-        <tr><td>Learning curve</td><td>steeper</td><td>gentler</td></tr>
-      </tbody>
-    </table>
-    <div class="callout" style="margin-top:22px;">Reality check: not enemies. You can wrap a <span class="crw">Crew</span> inside a <span class="gph">Graph</span> node.</div>
+    <div class="slide-head" style="margin-bottom:18px;"><div class="eyebrow">Decision</div><div class="heading">Which one, and when</div></div>
+    <div class="cmp2">
+      <div class="cmpcard g">
+        <div class="ch"><img src="assets/logos/langgraph-mark.png" alt="" style="height:30px;"><span class="nm">LangGraph</span><span class="tl">fine-grained<br>control</span></div>
+        <div class="cmprow"><div class="k">Think in</div><div class="v">nodes, edges, state</div></div>
+        <div class="cmprow"><div class="k">Reach for it when</div><div class="v">branching, loops, human-in-the-loop, strict reliability</div></div>
+        <div class="cmprow"><div class="k">Learning curve</div><div class="v">steeper — you wire the flow yourself</div></div>
+      </div>
+      <div class="cmpcard c">
+        <div class="ch"><img src="assets/logos/crewai.png" alt="" style="height:23px;"><span class="nm">CrewAI</span><span class="tl">higher-level<br>convenience</span></div>
+        <div class="cmprow"><div class="k">Think in</div><div class="v">agents, tasks, process</div></div>
+        <div class="cmprow"><div class="k">Reach for it when</div><div class="v">quick teams, clean role decomposition, fast wins</div></div>
+        <div class="cmprow"><div class="k">Learning curve</div><div class="v">gentler — write the job descriptions</div></div>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:20px;">Reality check: not enemies. You can wrap a <span class="crw">Crew</span> inside a <span class="gph">Graph</span> node.</div>
     <div class="foot"><span>From Graph to Crew</span><span>9 / 14</span></div>
   </section>
 
@@ -865,14 +1108,14 @@ result = crew.<span class="k">kickoff</span>()</div>
 
   <!-- 10 INTERACTIVE -->
   <section class="slide" data-notes="Answers: 1 Graph, 2 Crew, 3 Graph, 4 Crew. The axis is control versus collaboration. Have them vote by hand before revealing.">
-    <div class="slide-head"><div class="eyebrow">Interactive · quiz</div><div class="heading"><span class="gph">Graph</span> or <span class="crw">Crew</span>? Vote, then flip</div></div>
+    <div class="slide-head"><div class="eyebrow">Interactive · quiz</div><div class="heading"><span class="gph">Graph</span> or <span class="crw">Crew</span>? Vote</div></div>
     <div class="cols" style="grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:16px;">
-      <div class="flip" onclick="this.classList.toggle('on')"><div class="flip-in"><div class="flip-face"><div class="qn"><b>1.</b> A strict approval workflow with a human sign-off step.</div><span class="hint">flip</span></div><div class="flip-face flip-back g"><div class="aw"><span class="b">G</span>Graph</div><div class="rs">needs control and a human in the loop</div></div></div></div>
-      <div class="flip" onclick="this.classList.toggle('on')"><div class="flip-in"><div class="flip-face"><div class="qn"><b>2.</b> A campaign by a researcher, a writer, and an editor.</div><span class="hint">flip</span></div><div class="flip-face flip-back c"><div class="aw"><span class="b">C</span>Crew</div><div class="rs">clean role decomposition</div></div></div></div>
-      <div class="flip" onclick="this.classList.toggle('on')"><div class="flip-in"><div class="flip-face"><div class="qn"><b>3.</b> A loop that retries until the tests pass.</div><span class="hint">flip</span></div><div class="flip-face flip-back g"><div class="aw"><span class="b">G</span>Graph</div><div class="rs">an explicit loop</div></div></div></div>
-      <div class="flip" onclick="this.classList.toggle('on')"><div class="flip-in"><div class="flip-face"><div class="qn"><b>4.</b> A quick travel-planner team.</div><span class="hint">flip</span></div><div class="flip-face flip-back c"><div class="aw"><span class="b">C</span>Crew</div><div class="rs">a fast, simple team</div></div></div></div>
+      <div class="flip" onclick="this.classList.toggle('on')"><div class="flip-in"><div class="flip-face"><div class="qn"><b>1.</b> A strict approval workflow with a human sign-off step.</div></div><div class="flip-face flip-back g"><div class="aw"><span class="b">G</span>Graph</div><div class="rs">needs control and a human in the loop</div></div></div></div>
+      <div class="flip" onclick="this.classList.toggle('on')"><div class="flip-in"><div class="flip-face"><div class="qn"><b>2.</b> A campaign by a researcher, a writer, and an editor.</div></div><div class="flip-face flip-back c"><div class="aw"><span class="b">C</span>Crew</div><div class="rs">clean role decomposition</div></div></div></div>
+      <div class="flip" onclick="this.classList.toggle('on')"><div class="flip-in"><div class="flip-face"><div class="qn"><b>3.</b> A loop that retries until the tests pass.</div></div><div class="flip-face flip-back g"><div class="aw"><span class="b">G</span>Graph</div><div class="rs">an explicit loop</div></div></div></div>
+      <div class="flip" onclick="this.classList.toggle('on')"><div class="flip-in"><div class="flip-face"><div class="qn"><b>4.</b> A quick travel-planner team.</div></div><div class="flip-face flip-back c"><div class="aw"><span class="b">C</span>Crew</div><div class="rs">a fast, simple team</div></div></div></div>
     </div>
-    <div class="callout" style="margin-top:18px;">Vote by hand first, then flip each card. The axis is <b>control</b> versus <b>collaboration</b>.</div>
+    <div class="callout" style="margin-top:18px;">Vote by hand first. The axis is <b>control</b> versus <b>collaboration</b>.</div>
     <div class="foot"><span>From Graph to Crew</span><span>10 / 14</span></div>
   </section>
 
@@ -899,11 +1142,11 @@ result = crew.<span class="k">kickoff</span>()</div>
         <div class="rolerow"><span class="roleicon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D9543F" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="1" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="23"/></svg></span><div><b>Tactics Analyst</b> · reads the shape and style</div></div>
         <div class="rolerow"><span class="roleicon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D9543F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v5h5"/><path d="M19 8v11a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h8Z"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="16" x2="13" y2="16"/></svg></span><div><b>Report Writer</b> · assembles the report</div></div>
       </div>
-      <div class="col">
-        <div class="card" style="height:100%;display:flex;flex-direction:column;justify-content:center;">
-          <div class="card-title">The twist</div>
-          <p>Build the same task twice: once with <span class="crw">CrewAI</span>, once with <span class="gph">LangGraph</span>. Same goal, two architectures, and the contrast is clear.</p>
-        </div>
+      <div class="col" style="display:flex;flex-direction:column;justify-content:center;gap:14px;">
+        <div style="font-family:var(--serif);font-weight:700;font-size:23px;">The twist: same task, built twice</div>
+        <div class="buildrow c"><img src="assets/logos/crewai.png" alt="" style="height:26px;"><div><div class="bn">Build 1</div><div class="bt"><span class="crw">CrewAI</span></div></div><div class="muted small" style="margin-left:auto;text-align:right;">a role-based crew</div></div>
+        <div class="buildrow g"><span style="display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:9px;padding:5px 8px;"><img src="assets/logos/langgraph-mark.png" alt="" style="height:22px;display:block;"></span><div><div class="bn">Build 2</div><div class="bt"><span class="gph">LangGraph</span></div></div><div class="muted small" style="margin-left:auto;text-align:right;">an explicit graph</div></div>
+        <p class="small" style="color:var(--muted);">Same goal, two architectures — feeling the contrast is the whole lesson.</p>
       </div>
     </div>
     <div class="foot"><span>From Graph to Crew</span><span>11 / 14</span></div>
@@ -916,7 +1159,7 @@ result = crew.<span class="k">kickoff</span>()</div>
       <div class="col">
         <span class="pill g" style="margin-bottom:10px;">LangGraph</span>
         <svg viewBox="0 0 470 300" style="width:100%;">
-          <g font-family="Outfit" font-size="14">
+          <g font-family="Source Sans 3, sans-serif" font-size="14">
             <rect x="20" y="20" width="90" height="40" rx="9" fill="#fff" stroke="#1A1A1A" stroke-width="2"/><text x="65" y="45" text-anchor="middle" fill="#1A1A1A">START</text>
             <rect x="160" y="20" width="110" height="40" rx="9" fill="#E7F4F1" stroke="#004F49" stroke-width="2"/><text x="215" y="45" text-anchor="middle" fill="#004F49" font-weight="600">scout</text>
             <rect x="160" y="100" width="110" height="40" rx="9" fill="#E7F4F1" stroke="#004F49" stroke-width="2"/><text x="215" y="125" text-anchor="middle" fill="#004F49" font-weight="600">stats</text>
@@ -936,7 +1179,7 @@ result = crew.<span class="k">kickoff</span>()</div>
       <div class="col">
         <span class="pill c" style="margin-bottom:10px;">CrewAI</span>
         <svg viewBox="0 0 470 300" style="width:100%;">
-          <g font-family="Outfit" font-size="14">
+          <g font-family="Source Sans 3, sans-serif" font-size="14">
             <rect x="130" y="14" width="210" height="44" rx="10" fill="#FDE7E2" stroke="#D9543F" stroke-width="2"/><text x="235" y="41" text-anchor="middle" fill="#D9543F" font-weight="600">Scout agent</text>
             <rect x="130" y="92" width="210" height="44" rx="10" fill="#FDE7E2" stroke="#D9543F" stroke-width="2"/><text x="235" y="119" text-anchor="middle" fill="#D9543F" font-weight="600">Stats Analyst</text>
             <rect x="130" y="170" width="210" height="44" rx="10" fill="#FDE7E2" stroke="#D9543F" stroke-width="2"/><text x="235" y="197" text-anchor="middle" fill="#D9543F" font-weight="600">Tactics Analyst</text>
@@ -955,20 +1198,24 @@ result = crew.<span class="k">kickoff</span>()</div>
   <!-- 13 LIVE COLAB -->
   <section class="slide" data-notes="Open the notebook now. Each person uses their own API key, stored as a Colab secret, never committed to the repo.">
     <div class="slide-head"><div class="eyebrow">Hands-on</div><div class="heading">Let us build it</div></div>
-    <div class="cols cols-2">
+    <div class="cols" style="grid-template-columns:1.25fr 1fr;gap:40px;align-items:center;">
       <div class="col">
-        <ul class="dotted small">
+        <ol class="steps">
           <li>Setup and install</li>
           <li>Tools: web search or mock data</li>
-          <li>Build 1: the <span class="crw">CrewAI</span> version</li>
-          <li>Build 2: the <span class="gph">LangGraph</span> version</li>
-          <li>Pair, think, share</li>
-          <li>Stretch: add a tool or a new role</li>
-        </ul>
-        <div class="callout small" style="margin-top:14px;">Each person adds their own API key as a Colab secret. Keys never go into the repo.</div>
+          <li>Build 1 — the <span class="crw">CrewAI</span> version</li>
+          <li>Build 2 — the <span class="gph">LangGraph</span> version</li>
+          <li>Pair, think, share — then stretch: a new tool or role</li>
+        </ol>
+        <div class="callout small" style="margin-top:16px;">Each person adds their own API key as a Colab secret. Keys never go into the repo.</div>
       </div>
       <div class="col" style="display:flex;align-items:center;justify-content:center;">
-        <div class="qr-card"><img src="assets/qr/lab-qr.png" alt="lab repo" style="width:150px;height:150px;display:block;border-radius:8px;"><div class="qr-label">Notebook and code</div><div class="qr-url">github.com/mdehghani86/<br>graph-to-crew-lab</div></div>
+        <div class="qr-card" style="padding:22px;box-shadow:0 12px 34px rgba(20,30,40,.12);">
+          <div style="font-family:var(--serif);font-weight:700;font-size:20px;margin-bottom:4px;text-align:center;">Open the notebook</div>
+          <img src="assets/qr/lab-qr.png" alt="lab repo" style="width:172px;height:172px;display:block;border-radius:8px;">
+          <div style="display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:#fff;border-radius:9px;padding:8px 15px;font-size:14px;font-weight:600;margin-top:4px;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>Open in Colab</div>
+          <div class="qr-url" style="margin-top:4px;">github.com/mdehghani86/<br>graph-to-crew-lab</div>
+        </div>
       </div>
     </div>
     <div class="foot"><span>From Graph to Crew</span><span>13 / 14</span></div>
@@ -1019,6 +1266,7 @@ result = crew.<span class="k">kickoff</span>()</div>
     bar.style.width = (i/(total-1)*100)+'%';
     if(notesOverlay.classList.contains('show')) notesText.textContent = slides[i].dataset.notes || '';
     slides[i].querySelectorAll('.frag').forEach(f=>f.classList.remove('on')); // reset builds on entry
+    slides[i].querySelectorAll('[data-tlcard]').forEach(c=>c.classList.remove('show'));
     updateSectionUI();
   }
   // ===== section agenda (hamburger) =====
@@ -1059,8 +1307,9 @@ result = crew.<span class="k">kickoff</span>()</div>
     seclabel.innerHTML = sec ? ('<small>'+sec.n+'</small>'+sec.title) : 'Intro';
     agItems.forEach(el=>el.classList.toggle('active', +el.dataset.go===i+1));
   }
-  function next(){ const f=slides[i].querySelector('.frag:not(.on)'); if(f){ f.classList.add('on'); return; } show(i+1); }
-  function prev(){ const shown=slides[i].querySelectorAll('.frag.on'); if(shown.length){ shown[shown.length-1].classList.remove('on'); return; } show(i-1); }
+  function afterFrag(){ const s=slides[i]; const cards=s.querySelectorAll('[data-tlcard]'); if(!cards.length) return; const n=s.querySelectorAll('.frag.on').length; cards.forEach((c,k)=>c.classList.toggle('show', k===n-1)); }
+  function next(){ const s=slides[i]; const f=s.querySelector('.frag:not(.on)'); if(f){ const g=f.getAttribute('data-fg'); if(g){ s.querySelectorAll('.frag[data-fg="'+g+'"]').forEach(e=>e.classList.add('on')); } else { f.classList.add('on'); } afterFrag(); return; } show(i+1); }
+  function prev(){ const s=slides[i]; const shown=s.querySelectorAll('.frag.on'); if(shown.length){ const last=shown[shown.length-1]; const g=last.getAttribute('data-fg'); if(g){ s.querySelectorAll('.frag[data-fg="'+g+'"]').forEach(e=>e.classList.remove('on')); } else { last.classList.remove('on'); } afterFrag(); return; } show(i-1); }
   function toggleFS(){ if(!document.fullscreenElement){ (document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen).call(document.documentElement); } else { (document.exitFullscreen||document.webkitExitFullscreen).call(document); } }
   document.getElementById('next').onclick=next; document.getElementById('prev').onclick=prev;
   document.getElementById('fs').onclick=(e)=>{e.stopPropagation();toggleFS();};
