@@ -7,3 +7,7 @@ talks/**/_*.html
 
 # reference papers kept local (not published)
 talks/from-graph-to-crew/assets/papers/*.pdf
+
+# sparkhub deck copy: keep helpers/PDFs out
+sparkhub/talks/**/_*.html
+sparkhub/talks/from-graph-to-crew/assets/papers/*.pdf
