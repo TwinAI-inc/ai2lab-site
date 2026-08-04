@@ -1,0 +1,564 @@
+{
+  "routes": [
+    {
+      "route": "/RomeGenAI/index.html",
+      "redirect": "/RomeGenAI/",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/DADS5250/index.html",
+      "redirect": "/courses/DADS5250/",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/DADS5250/scripts/M00_Script.html",
+      "redirect": "/courses/DADS5250/scripts/M00_Script",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/DADS5250/scripts/M01_Script.html",
+      "redirect": "/courses/DADS5250/scripts/M01_Script",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/DADS5250/scripts/M02_Script.html",
+      "redirect": "/courses/DADS5250/scripts/M02_Script",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/DADS5250/scripts/M03_Script.html",
+      "redirect": "/courses/DADS5250/scripts/M03_Script",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/DADS5250/scripts/M04_Script.html",
+      "redirect": "/courses/DADS5250/scripts/M04_Script",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/DADS5250/scripts/M05_Script.html",
+      "redirect": "/courses/DADS5250/scripts/M05_Script",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/DADS5250/scripts/M06_Script.html",
+      "redirect": "/courses/DADS5250/scripts/M06_Script",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/DADS5250/scripts/M07_Script.html",
+      "redirect": "/courses/DADS5250/scripts/M07_Script",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/DADS5250/scripts/M08_Script.html",
+      "redirect": "/courses/DADS5250/scripts/M08_Script",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/DADS5250/scripts/M09_Script.html",
+      "redirect": "/courses/DADS5250/scripts/M09_Script",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/DADS5250/scripts/M10_Script.html",
+      "redirect": "/courses/DADS5250/scripts/M10_Script",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/DADS5250/scripts/M11_Script.html",
+      "redirect": "/courses/DADS5250/scripts/M11_Script",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/DADS5250/scripts/M12_Script.html",
+      "redirect": "/courses/DADS5250/scripts/M12_Script",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/DADS5250/scripts/M13_Script.html",
+      "redirect": "/courses/DADS5250/scripts/M13_Script",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/DADS5250/scripts/M14_Script.html",
+      "redirect": "/courses/DADS5250/scripts/M14_Script",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/DADS5250/scripts/index.html",
+      "redirect": "/courses/DADS5250/scripts/",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/DOC_Italy/costs.html",
+      "redirect": "/courses/DOC_Italy/costs",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/DOC_Italy/itinerary.html",
+      "redirect": "/courses/DOC_Italy/itinerary",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/DOC_Italy/program.html",
+      "redirect": "/courses/DOC_Italy/program",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/IE4512_Games_M1to3.html",
+      "redirect": "/courses/IE4512/IE4512_Games_M1to3",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/IE4512_Home_Canvas.html",
+      "redirect": "/courses/IE4512/IE4512_Home_Canvas",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/IE4512_Module1_Announcement_Canvas.html",
+      "redirect": "/courses/IE4512/IE4512_Module1_Announcement_Canvas",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/IE4512_Module1_Announcement_Simple_Canvas.html",
+      "redirect": "/courses/IE4512/IE4512_Module1_Announcement_Simple_Canvas",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/IE4512_Syllabus_Canvas.html",
+      "redirect": "/courses/IE4512/IE4512_Syllabus_Canvas",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/index.html",
+      "redirect": "/courses/IE4512/",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m1-bingo.html",
+      "redirect": "/courses/IE4512/m1-bingo",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m1-mystery-quest.html",
+      "redirect": "/courses/IE4512/m1-mystery-quest",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m1-storyline.html",
+      "redirect": "/courses/IE4512/m1-storyline",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m10-breakeven-workshop.html",
+      "redirect": "/courses/IE4512/m10-breakeven-workshop",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m11-build-your-own-risk-tool.html",
+      "redirect": "/courses/IE4512/m11-build-your-own-risk-tool",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m11-monte-carlo-intro.html",
+      "redirect": "/courses/IE4512/m11-monte-carlo-intro",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m11-monte-carlo.html",
+      "redirect": "/courses/IE4512/m11-monte-carlo",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m2-cash-flow-builder.html",
+      "redirect": "/courses/IE4512/m2-cash-flow-builder",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m2-cash-flow-decoder.html",
+      "redirect": "/courses/IE4512/m2-cash-flow-decoder",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m3-buy-or-rent.html",
+      "redirect": "/courses/IE4512/m3-buy-or-rent",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m3-cashflow-quiz.html",
+      "redirect": "/courses/IE4512/m3-cashflow-quiz",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m3-loan-lab.html",
+      "redirect": "/courses/IE4512/m3-loan-lab",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m4-build-your-own-wacc.html",
+      "redirect": "/courses/IE4512/m4-build-your-own-wacc",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m4-planning-horizon.html",
+      "redirect": "/courses/IE4512/m4-planning-horizon",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m4-pw-quest.html",
+      "redirect": "/courses/IE4512/m4-pw-quest",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m4-pw-sim.html",
+      "redirect": "/courses/IE4512/m4-pw-sim",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m4-wacc-builder.html",
+      "redirect": "/courses/IE4512/m4-wacc-builder",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m5-capitalized-cost.html",
+      "redirect": "/courses/IE4512/m5-capitalized-cost",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m5-discounted-payback.html",
+      "redirect": "/courses/IE4512/m5-discounted-payback",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m5-which-method.html",
+      "redirect": "/courses/IE4512/m5-which-method",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m6-incremental-irr-playoff.html",
+      "redirect": "/courses/IE4512/m6-incremental-irr-playoff",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m6-internal-rate-of-return.html",
+      "redirect": "/courses/IE4512/m6-internal-rate-of-return",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m6-three-rates.html",
+      "redirect": "/courses/IE4512/m6-three-rates",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m7-boeing-sln-vs-ddb.html",
+      "redirect": "/courses/IE4512/m7-boeing-sln-vs-ddb",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m7-half-year-convention.html",
+      "redirect": "/courses/IE4512/m7-half-year-convention",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m7-macrs-explorer.html",
+      "redirect": "/courses/IE4512/m7-macrs-explorer",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m7-sensitivity.html",
+      "redirect": "/courses/IE4512/m7-sensitivity",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m7-three-assets.html",
+      "redirect": "/courses/IE4512/m7-three-assets",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m8-1986-vs-2017.html",
+      "redirect": "/courses/IE4512/m8-1986-vs-2017",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m8-after-tax-npv.html",
+      "redirect": "/courses/IE4512/m8-after-tax-npv",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m8-tax-shield-stacker.html",
+      "redirect": "/courses/IE4512/m8-tax-shield-stacker",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m8-tax-timeline.html",
+      "redirect": "/courses/IE4512/m8-tax-timeline",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m9-inflation-lab.html",
+      "redirect": "/courses/IE4512/m9-inflation-lab",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/m9-replacement-esl.html",
+      "redirect": "/courses/IE4512/m9-replacement-esl",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/sparkhub/index.html",
+      "redirect": "/courses/IE4512/sparkhub/",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE4512/syllabus_style_picker.html",
+      "redirect": "/courses/IE4512/syllabus_style_picker",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE5374/course-outline.html",
+      "redirect": "/courses/IE5374/course-outline",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE6400/assignments/Project4_CI_HT.html",
+      "redirect": "/courses/IE6400/assignments/Project4_CI_HT",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE6400/course-outline.html",
+      "redirect": "/courses/IE6400/course-outline",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE6400/decks/ANOVA.html",
+      "redirect": "/courses/IE6400/decks/ANOVA",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE6400/decks/ConfidenceIntervals_HypothesisTesting.html",
+      "redirect": "/courses/IE6400/decks/ConfidenceIntervals_HypothesisTesting",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE6400/decks/Distributions.html",
+      "redirect": "/courses/IE6400/decks/Distributions",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE6400/decks/PascalStory.html",
+      "redirect": "/courses/IE6400/decks/PascalStory",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE6400/decks/ProbabilityDistributions.html",
+      "redirect": "/courses/IE6400/decks/ProbabilityDistributions",
+      "statusCode": 301
+    },
+    {
+      "route": "/gallery.html",
+      "redirect": "/gallery",
+      "statusCode": 301
+    },
+    {
+      "route": "/index.html",
+      "redirect": "/",
+      "statusCode": 301
+    },
+    {
+      "route": "/news/dais-teaching-award.html",
+      "redirect": "/news/dais-teaching-award",
+      "statusCode": 301
+    },
+    {
+      "route": "/news/negar-wsc-diversity-award.html",
+      "redirect": "/news/negar-wsc-diversity-award",
+      "statusCode": 301
+    },
+    {
+      "route": "/news/sahil-eurosim-thesis-award.html",
+      "redirect": "/news/sahil-eurosim-thesis-award",
+      "statusCode": 301
+    },
+    {
+      "route": "/papers/simgpt-caie-2026/index.html",
+      "redirect": "/papers/simgpt-caie-2026/",
+      "statusCode": 301
+    },
+    {
+      "route": "/prototypes/alumni-backgrounds-20.html",
+      "redirect": "/prototypes/alumni-backgrounds-20",
+      "statusCode": 301
+    },
+    {
+      "route": "/prototypes/alumni-creative-20.html",
+      "redirect": "/prototypes/alumni-creative-20",
+      "statusCode": 301
+    },
+    {
+      "route": "/prototypes/alumni-designs.html",
+      "redirect": "/prototypes/alumni-designs",
+      "statusCode": 301
+    },
+    {
+      "route": "/prototypes/card-background-colors-demo.html",
+      "redirect": "/prototypes/card-background-colors-demo",
+      "statusCode": 301
+    },
+    {
+      "route": "/prototypes/new-publication-slide-final.html",
+      "redirect": "/prototypes/new-publication-slide-final",
+      "statusCode": 301
+    },
+    {
+      "route": "/prototypes/new-publication-slide-options.html",
+      "redirect": "/prototypes/new-publication-slide-options",
+      "statusCode": 301
+    },
+    {
+      "route": "/prototypes/new-publication-slide-v2.html",
+      "redirect": "/prototypes/new-publication-slide-v2",
+      "statusCode": 301
+    },
+    {
+      "route": "/prototypes/new-publication-slide-v3.html",
+      "redirect": "/prototypes/new-publication-slide-v3",
+      "statusCode": 301
+    },
+    {
+      "route": "/prototypes/new-publication-slide-v4.html",
+      "redirect": "/prototypes/new-publication-slide-v4",
+      "statusCode": 301
+    },
+    {
+      "route": "/prototypes/new-publication-slide-v5.html",
+      "redirect": "/prototypes/new-publication-slide-v5",
+      "statusCode": 301
+    },
+    {
+      "route": "/prototypes/new-publication-slide-v6.html",
+      "redirect": "/prototypes/new-publication-slide-v6",
+      "statusCode": 301
+    },
+    {
+      "route": "/prototypes/new-publication-slide-v7.html",
+      "redirect": "/prototypes/new-publication-slide-v7",
+      "statusCode": 301
+    },
+    {
+      "route": "/prototypes/new-publication-slide-v8.html",
+      "redirect": "/prototypes/new-publication-slide-v8",
+      "statusCode": 301
+    },
+    {
+      "route": "/prototypes/new-publication-slide.html",
+      "redirect": "/prototypes/new-publication-slide",
+      "statusCode": 301
+    },
+    {
+      "route": "/prototypes/phd-committee-10-styles.html",
+      "redirect": "/prototypes/phd-committee-10-styles",
+      "statusCode": 301
+    },
+    {
+      "route": "/prototypes/phd-committee-creative-v2.html",
+      "redirect": "/prototypes/phd-committee-creative-v2",
+      "statusCode": 301
+    },
+    {
+      "route": "/prototypes/phd-committee-creative.html",
+      "redirect": "/prototypes/phd-committee-creative",
+      "statusCode": 301
+    },
+    {
+      "route": "/prototypes/phd-committee-demo.html",
+      "redirect": "/prototypes/phd-committee-demo",
+      "statusCode": 301
+    },
+    {
+      "route": "/prototypes/phd-committee-final-v2.html",
+      "redirect": "/prototypes/phd-committee-final-v2",
+      "statusCode": 301
+    },
+    {
+      "route": "/prototypes/phd-committee-final.html",
+      "redirect": "/prototypes/phd-committee-final",
+      "statusCode": 301
+    },
+    {
+      "route": "/prototypes/phd-committee-options.html",
+      "redirect": "/prototypes/phd-committee-options",
+      "statusCode": 301
+    },
+    {
+      "route": "/prototypes/phd-committee-phd2.html",
+      "redirect": "/prototypes/phd-committee-phd2",
+      "statusCode": 301
+    },
+    {
+      "route": "/prototypes/phd-committee-vertical-final.html",
+      "redirect": "/prototypes/phd-committee-vertical-final",
+      "statusCode": 301
+    },
+    {
+      "route": "/prototypes/phd-committee-vertical.html",
+      "redirect": "/prototypes/phd-committee-vertical",
+      "statusCode": 301
+    },
+    {
+      "route": "/prototypes/student-card-background-demo.html",
+      "redirect": "/prototypes/student-card-background-demo",
+      "statusCode": 301
+    },
+    {
+      "route": "/prototypes/student-card-designs.html",
+      "redirect": "/prototypes/student-card-designs",
+      "statusCode": 301
+    },
+    {
+      "route": "/prototypes/team-card-options.html",
+      "redirect": "/prototypes/team-card-options",
+      "statusCode": 301
+    },
+    {
+      "route": "/sparkhub/RomeGenAI/index.html",
+      "redirect": "/sparkhub/RomeGenAI/",
+      "statusCode": 301
+    },
+    {
+      "route": "/sparkhub/dataviz/index.html",
+      "redirect": "/sparkhub/dataviz/",
+      "statusCode": 301
+    },
+    {
+      "route": "/sparkhub/genai/index.html",
+      "redirect": "/sparkhub/genai/",
+      "statusCode": 301
+    },
+    {
+      "route": "/sparkhub/index.html",
+      "redirect": "/sparkhub/",
+      "statusCode": 301
+    },
+    {
+      "route": "/sparkhub/picker.html",
+      "redirect": "/sparkhub/picker",
+      "statusCode": 301
+    },
+    {
+      "route": "/sparkhub/talks/from-graph-to-crew/index.html",
+      "redirect": "/sparkhub/talks/from-graph-to-crew/",
+      "statusCode": 301
+    },
+    {
+      "route": "/talks/from-graph-to-crew/index.html",
+      "redirect": "/talks/from-graph-to-crew/",
+      "statusCode": 301
+    },
+    {
+      "route": "/talks/index.html",
+      "redirect": "/talks/",
+      "statusCode": 301
+    }
+  ]
+}
