@@ -554,6 +554,27 @@ a{color:#006064}
   text-align:center !important;font-size: 11px;color:#a8b0b6;font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
   background:#fff;border-radius:0 !important}
 </style>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  function go(){
+    if (!window.renderMathInElement) { setTimeout(go, 60); return; }
+    renderMathInElement(document.body, {
+      delimiters: [{left: '$$', right: '$$', display: true},
+                   {left: '\\(', right: '\\)', display: false}],
+      throwOnError: false
+    });
+  }
+  go();
+});
+</script>
+<style>
+.katex{font-size:1.06em}
+.katex-display{margin:.35em 0}
+</style>
 </head>
 <body>
 <div class="ie7295-band"><h1>Value Convergence Microscope</h1><div class="sub">Module 4 &middot; chapter 4</div></div>
@@ -663,8 +684,7 @@ a{color:#006064}
                             </div>
                         </div>
                         
-                        <div class="equation-box">
-                            <div class="equation">V(s) = R + γ × avg(neighbors)</div>
+                        <div class="equation-box">$$V(s) = R + \gamma \cdot \mathrm{avg}\big(\text{neighbours}\big)$$</div>
                             <div class="equation" id="calcDetail">= -0.04 + 0.9 × 0.000</div>
                             <div class="equation-result" id="calcResult">= 0.000</div>
                         </div>
@@ -937,7 +957,7 @@ a{color:#006064}
 <div class="ie7295-foot">IE7295: Applied Reinforcement Learning &middot; Prof. Dehghani</div>
 
 <style>
-/* sync_tools v8 ---------------------------------------------------------------------
+/* sync_tools v12 ---------------------------------------------------------------------
    Appended, never substituted. Everything here is a decision taken on the
    Module 1 Grid World tool and carried across so the set reads as one course.
    ---------------------------------------------------------------------- */
@@ -1053,7 +1073,7 @@ h2{margin-top:12px !important}
 // scaled down to fit. The floor is deliberate: below it the type stops being
 // readable and scrolling is the better answer, so the stage scrolls instead.
 (function(){
-  var MIN = 0.66;
+  var MIN = document.body.dataset.fitFloor ? +document.body.dataset.fitFloor : 0.66;
   function fit(){
     var st = document.querySelector('.ie7295-stage');
     if (!st) return;
@@ -1068,13 +1088,16 @@ h2{margin-top:12px !important}
     // zoom, not transform: a scale() leaves the layout box at full size, so
     // the container carries on scrolling. zoom reflows, which is the point.
     inner.style.zoom = 1;
-    // zoom reflows, so the height it needs changes as it shrinks. Converge on
-    // it instead of guessing once: three passes settles every tool here.
+    // zoom reflows, so what it needs changes as it shrinks. Measure the stage
+    // itself after each pass rather than predicting: the earlier version scaled
+    // an already scaled height and stalled a few pixels short every time.
     var k = 1;
-    for (var i = 0; i < 3; i++) {
-      var need = inner.scrollHeight * k, have = st.clientHeight;
-      if (need <= have) break;
-      k = Math.max(MIN, k * (have - 6) / need);
+    for (var i = 0; i < 6; i++) {
+      var over = st.scrollHeight - st.clientHeight;
+      if (over <= 0) break;
+      var next = Math.max(MIN, k * (st.clientHeight - 2) / st.scrollHeight);
+      if (next >= k - 0.002) break;          // at the floor, or converged
+      k = next;
       inner.style.zoom = k.toFixed(3);
     }
   }

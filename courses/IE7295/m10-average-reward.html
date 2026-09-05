@@ -62,6 +62,27 @@ a{color:#006064;font-weight:700;text-decoration:none}
 .why-label{font-size: 11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
   color:#006064;margin-bottom:4px}
 </style>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  function go(){
+    if (!window.renderMathInElement) { setTimeout(go, 60); return; }
+    renderMathInElement(document.body, {
+      delimiters: [{left: '$$', right: '$$', display: true},
+                   {left: '\\(', right: '\\)', display: false}],
+      throwOnError: false
+    });
+  }
+  go();
+});
+</script>
+<style>
+.katex{font-size:1.06em}
+.katex-display{margin:.35em 0}
+</style>
 </head>
 <body>
 <div class="ie7295-band"><h1>Average Reward</h1><div class="sub">Chapter 10 &middot; when discounting stops making sense</div></div>
@@ -105,9 +126,7 @@ a{color:#006064;font-weight:700;text-decoration:none}
 
                     <div class="why"><div class="why-label">Reading the equations</div><p>Three of the four symbols below are doing one job: separating <i>how well the agent does per step</i> from <i>how much better one state is than another</i>. The reward rate <code>r(&pi;)</code> is the first, a single number for the whole policy. The differential value is the second, and it is a difference rather than a total &mdash; how much extra reward you collect by starting here rather than in an average state.</p><p>If a value ever looked like a strange quantity to you, this is the version where it becomes concrete: it is measured in reward-steps of advantage, and the worked example further down does the arithmetic on a two-state problem you can check by hand.</p></div><div class="equation-box">
                         <div class="equation-label">Average Reward Rate</div>
-                        <div class="equation">
-                            r(π) = lim<sub>h</sub> (1/h) Σ<sub>t=1</sub><sup>h</sup> E[R<sub>t</sub> | S<sub>0</sub>, A<sub>0:t-1</sub> ~ π]
-                        </div>
+                        <div class="equation">$$r(\pi) = \lim_{h \to \infty} \frac{1}{h} \sum_{t=1}^{h} \mathbb{E}\!\left[R_t \mid S_0,\, A_{0:t-1} \sim \pi\right]$$</div>
                         <div class="equation-desc">The long-run expected reward per time step under policy π</div>
                     </div>
 
@@ -115,9 +134,7 @@ a{color:#006064;font-weight:700;text-decoration:none}
 
                     <div class="equation-box">
                         <div class="equation-label">Differential Value Function</div>
-                        <div class="equation">
-                            v<sub>π</sub>(s) = Σ<sub>t=1</sub><sup></sup> E[R<sub>t</sub> - r(π) | S<sub>0</sub> = s, A<sub>0:t-1</sub> ~ π]
-                        </div>
+                        <div class="equation">$$v_\pi(s) = \sum_{t=1}^{\infty} \mathbb{E}\!\left[R_t - r(\pi) \mid S_0 = s,\, A_{0:t-1} \sim \pi\right]$$</div>
                         <div class="equation-desc">Expected sum of differences between rewards and average reward</div>
                     </div>
 
@@ -125,25 +142,19 @@ a{color:#006064;font-weight:700;text-decoration:none}
 
                     <div class="equation-box">
                         <div class="equation-label">Differential Bellman Equation</div>
-                        <div class="equation">
-                            v<sub>π</sub>(s) = Σ<sub>a</sub> π(a|s) Σ<sub>s',r</sub> p(s',r|s,a)[r - r(π) + v<sub>π</sub>(s')]
-                        </div>
+                        <div class="equation">$$v_\pi(s) = \sum_{a} \pi(a \mid s) \sum_{s',r} p(s',r \mid s,a)\left[\, r - r(\pi) + v_\pi(s') \,\right]$$</div>
                         <div class="equation-desc">Bellman equation without discounting</div>
                     </div>
 
                     <div class="equation-box">
                         <div class="equation-label">Optimal Bellman Equation</div>
-                        <div class="equation">
-                            v<sub>*</sub>(s) = max<sub>a</sub> Σ<sub>s',r</sub> p(s',r|s,a)[r - r<sub>*</sub> + v<sub>*</sub>(s')]
-                        </div>
+                        <div class="equation">$$v_*(s) = \max_{a} \sum_{s',r} p(s',r \mid s,a)\left[\, r - r_* + v_*(s') \,\right]$$</div>
                         <div class="equation-desc">Bellman optimality equation for average reward</div>
                     </div>
 
                     <div class="equation-box">
                         <div class="equation-label">Differential TD Error</div>
-                        <div class="equation">
-                            δ<sub>t</sub> = R<sub>t+1</sub> - r̄<sub>t</sub> + v(S<sub>t+1</sub>) - v(S<sub>t</sub>)
-                        </div>
+                        <div class="equation">$$\delta_t = R_{t+1} - \bar{R}_t + v(S_{t+1}) - v(S_t)$$</div>
                         <div class="equation-desc">TD error using average reward estimate r̄<sub>t</sub></div>
                     </div>
                 </div>
@@ -157,17 +168,13 @@ a{color:#006064;font-weight:700;text-decoration:none}
 
                     <div class="equation-box">
                         <div class="equation-label">R-Learning: Average Reward Update</div>
-                        <div class="equation">
-                            r̄<sub>t+1</sub> = r̄<sub>t</sub> + β[R<sub>t+1</sub> - r̄<sub>t</sub> + max<sub>a</sub> Q(S<sub>t+1</sub>,a) - max<sub>a</sub> Q(S<sub>t</sub>,a)]
-                        </div>
+                        <div class="equation">$$\bar{R}_{t+1} = \bar{R}_t + \beta\left[\, R_{t+1} - \bar{R}_t + \max_{a} Q(S_{t+1},a) - \max_{a} Q(S_t,a) \,\right]$$</div>
                         <div class="equation-desc">Update average reward estimate (β is step size for average reward)</div>
                     </div>
 
                     <div class="equation-box">
                         <div class="equation-label">R-Learning: Action-Value Update</div>
-                        <div class="equation">
-                            Q(S<sub>t</sub>,A<sub>t</sub>)  Q(S<sub>t</sub>,A<sub>t</sub>) + α[R<sub>t+1</sub> - r̄<sub>t</sub> + max<sub>a</sub> Q(S<sub>t+1</sub>,a) - Q(S<sub>t</sub>,A<sub>t</sub>)]
-                        </div>
+                        <div class="equation">$$Q(S_t,A_t) \leftarrow Q(S_t,A_t) + \alpha\left[\, R_{t+1} - \bar{R}_t + \max_{a} Q(S_{t+1},a) - Q(S_t,A_t) \,\right]$$</div>
                         <div class="equation-desc">Update differential Q-values (α is step size for Q-values)</div>
                     </div>
 
@@ -395,17 +402,13 @@ a{color:#006064;font-weight:700;text-decoration:none}
 
                     <div class="equation-box">
                         <div class="equation-label">Differential SARSA</div>
-                        <div class="equation">
-                            Q(S<sub>t</sub>,A<sub>t</sub>)  Q(S<sub>t</sub>,A<sub>t</sub>) + α[R<sub>t+1</sub> - r̄<sub>t</sub> + Q(S<sub>t+1</sub>,A<sub>t+1</sub>) - Q(S<sub>t</sub>,A<sub>t</sub>)]
-                        </div>
+                        <div class="equation">$$Q(S_t,A_t) \leftarrow Q(S_t,A_t) + \alpha\left[\, R_{t+1} - \bar{R}_t + Q(S_{t+1},A_{t+1}) - Q(S_t,A_t) \,\right]$$</div>
                         <div class="equation-desc">On-policy TD control using the action actually taken</div>
                     </div>
 
                     <div class="equation-box">
                         <div class="equation-label">Differential Expected SARSA</div>
-                        <div class="equation">
-                            Q(S<sub>t</sub>,A<sub>t</sub>)  Q(S<sub>t</sub>,A<sub>t</sub>) + α[R<sub>t+1</sub> - r̄<sub>t</sub> + Σ<sub>a</sub> π(a|S<sub>t+1</sub>)Q(S<sub>t+1</sub>,a) - Q(S<sub>t</sub>,A<sub>t</sub>)]
-                        </div>
+                        <div class="equation">$$Q(S_t,A_t) \leftarrow Q(S_t,A_t) + \alpha\left[\, R_{t+1} - \bar{R}_t + \sum_{a} \pi(a \mid S_{t+1}) Q(S_{t+1},a) - Q(S_t,A_t) \,\right]$$</div>
                         <div class="equation-desc">Uses expected value over next actions instead of sampled or max</div>
                     </div>
 
@@ -452,7 +455,7 @@ a{color:#006064;font-weight:700;text-decoration:none}
 <div class="ie7295-foot">IE7295: Applied Reinforcement Learning &middot; Prof. Dehghani</div>
 
 <style>
-/* sync_tools v8 ---------------------------------------------------------------------
+/* sync_tools v12 ---------------------------------------------------------------------
    Appended, never substituted. Everything here is a decision taken on the
    Module 1 Grid World tool and carried across so the set reads as one course.
    ---------------------------------------------------------------------- */

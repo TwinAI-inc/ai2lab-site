@@ -910,7 +910,7 @@ a{color:#006064}
 <div class="ie7295-foot">IE7295: Applied Reinforcement Learning &middot; Prof. Dehghani</div>
 
 <style>
-/* sync_tools v8 ---------------------------------------------------------------------
+/* sync_tools v12 ---------------------------------------------------------------------
    Appended, never substituted. Everything here is a decision taken on the
    Module 1 Grid World tool and carried across so the set reads as one course.
    ---------------------------------------------------------------------- */
@@ -1009,6 +1009,27 @@ body{display:flex;flex-direction:column;overflow:hidden}
 h2{margin-top:12px !important}
 </style>
 
+<style>
+@media (min-width: 1000px){
+  .ie7295-fit{display:grid;grid-template-columns:1fr 1fr;gap:11px;align-items:start}
+  .ie7295-fit > .header,
+  .ie7295-fit > .instructions,
+  .ie7295-fit > .controls,
+  .ie7295-fit > .control-panel,
+  .ie7295-fit > .phase-banner,
+  .ie7295-fit > .status-bar{grid-column:1 / -1}
+  .ie7295-fit > *{margin-bottom:0 !important;min-width:0}
+
+  /* two of these tools put everything inside one tall main-panel, so splitting
+     at the top level changes nothing. The columns go inside it instead. */
+  .ie7295-fit > .main-panel{display:grid;grid-template-columns:1fr 1fr;
+    gap:11px;align-items:start}
+  .ie7295-fit > .main-panel > h2:first-child,
+  .ie7295-fit > .main-panel > .section-title:first-child{grid-column:1 / -1}
+  .ie7295-fit > .main-panel > *{min-width:0}
+}
+</style>
+<script>document.body.dataset.fitFloor="0.54";</script>
 <script>
 (function(){
   var band = document.querySelector('.ie7295-band'),
@@ -1026,7 +1047,7 @@ h2{margin-top:12px !important}
 // scaled down to fit. The floor is deliberate: below it the type stops being
 // readable and scrolling is the better answer, so the stage scrolls instead.
 (function(){
-  var MIN = 0.66;
+  var MIN = document.body.dataset.fitFloor ? +document.body.dataset.fitFloor : 0.66;
   function fit(){
     var st = document.querySelector('.ie7295-stage');
     if (!st) return;
@@ -1041,13 +1062,16 @@ h2{margin-top:12px !important}
     // zoom, not transform: a scale() leaves the layout box at full size, so
     // the container carries on scrolling. zoom reflows, which is the point.
     inner.style.zoom = 1;
-    // zoom reflows, so the height it needs changes as it shrinks. Converge on
-    // it instead of guessing once: three passes settles every tool here.
+    // zoom reflows, so what it needs changes as it shrinks. Measure the stage
+    // itself after each pass rather than predicting: the earlier version scaled
+    // an already scaled height and stalled a few pixels short every time.
     var k = 1;
-    for (var i = 0; i < 3; i++) {
-      var need = inner.scrollHeight * k, have = st.clientHeight;
-      if (need <= have) break;
-      k = Math.max(MIN, k * (have - 6) / need);
+    for (var i = 0; i < 6; i++) {
+      var over = st.scrollHeight - st.clientHeight;
+      if (over <= 0) break;
+      var next = Math.max(MIN, k * (st.clientHeight - 2) / st.scrollHeight);
+      if (next >= k - 0.002) break;          // at the floor, or converged
+      k = next;
       inner.style.zoom = k.toFixed(3);
     }
   }

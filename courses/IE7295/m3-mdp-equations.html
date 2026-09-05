@@ -789,6 +789,27 @@ a{color:#006064}
   text-align:center !important;font-size: 11px;color:#a8b0b6;font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
   background:#fff;border-radius:0 !important}
 </style>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  function go(){
+    if (!window.renderMathInElement) { setTimeout(go, 60); return; }
+    renderMathInElement(document.body, {
+      delimiters: [{left: '$$', right: '$$', display: true},
+                   {left: '\\(', right: '\\)', display: false}],
+      throwOnError: false
+    });
+  }
+  go();
+});
+</script>
+<style>
+.katex{font-size:1.06em}
+.katex-display{margin:.35em 0}
+</style>
 </head>
 <body>
 <div class="ie7295-band"><h1>MDP Equations</h1><div class="sub">Module 3 &middot; chapter 3</div></div>
@@ -886,8 +907,7 @@ a{color:#006064}
         <div class="main-panel">
             <div class="panel-header">Transition Probability Function</div>
             
-            <div class="equation-box">
-                <div class="equation">p(s', r | s, a) = Pr{S<sub>t</sub> = s', R<sub>t</sub> = r | S<sub>t-1</sub> = s, A<sub>t-1</sub> = a}</div>
+            <div class="equation-box">$$p(s', r \mid s, a) = \Pr\{S_t = s',\, R_t = r \mid S_{t-1} = s,\, A_{t-1} = a\}$$</div>
                 <div class="equation-desc">Probability of reaching state s' with reward r from state s taking action a</div>
             </div>
 
@@ -993,8 +1013,7 @@ a{color:#006064}
         <div class="main-panel">
             <div class="panel-header">Return Calculation</div>
             
-            <div class="equation-box">
-                <div class="equation">G<sub>t</sub> = R<sub>t+1</sub> + γR<sub>t+2</sub> + γ²R<sub>t+3</sub> + ... = Σ<sub>k=0</sub><sup></sup> γ<sup>k</sup>R<sub>t+k+1</sub></div>
+            <div class="equation-box">$$G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \cdots = \sum_{k=0}^{\infty} \gamma^{k} R_{t+k+1}$$</div>
                 <div class="equation-desc">Total discounted reward from time t onwards</div>
             </div>
 
@@ -1078,8 +1097,7 @@ a{color:#006064}
         <div class="main-panel">
             <div class="panel-header">Bellman Equation Visualization</div>
             
-            <div class="equation-box">
-                <div class="equation">V(s) = R(s) + γ × max<sub>s'</sub> V(s')</div>
+            <div class="equation-box">$$V(s) = R(s) + \gamma \max_{s'} V(s')$$</div>
                 <div class="equation-desc">State value = Immediate reward + Discounted best future value</div>
             </div>
 
@@ -1494,7 +1512,7 @@ a{color:#006064}
 <div class="ie7295-foot">IE7295: Applied Reinforcement Learning &middot; Prof. Dehghani</div>
 
 <style>
-/* sync_tools v8 ---------------------------------------------------------------------
+/* sync_tools v12 ---------------------------------------------------------------------
    Appended, never substituted. Everything here is a decision taken on the
    Module 1 Grid World tool and carried across so the set reads as one course.
    ---------------------------------------------------------------------- */
@@ -1610,7 +1628,7 @@ h2{margin-top:12px !important}
 // scaled down to fit. The floor is deliberate: below it the type stops being
 // readable and scrolling is the better answer, so the stage scrolls instead.
 (function(){
-  var MIN = 0.66;
+  var MIN = document.body.dataset.fitFloor ? +document.body.dataset.fitFloor : 0.66;
   function fit(){
     var st = document.querySelector('.ie7295-stage');
     if (!st) return;
@@ -1625,13 +1643,16 @@ h2{margin-top:12px !important}
     // zoom, not transform: a scale() leaves the layout box at full size, so
     // the container carries on scrolling. zoom reflows, which is the point.
     inner.style.zoom = 1;
-    // zoom reflows, so the height it needs changes as it shrinks. Converge on
-    // it instead of guessing once: three passes settles every tool here.
+    // zoom reflows, so what it needs changes as it shrinks. Measure the stage
+    // itself after each pass rather than predicting: the earlier version scaled
+    // an already scaled height and stalled a few pixels short every time.
     var k = 1;
-    for (var i = 0; i < 3; i++) {
-      var need = inner.scrollHeight * k, have = st.clientHeight;
-      if (need <= have) break;
-      k = Math.max(MIN, k * (have - 6) / need);
+    for (var i = 0; i < 6; i++) {
+      var over = st.scrollHeight - st.clientHeight;
+      if (over <= 0) break;
+      var next = Math.max(MIN, k * (st.clientHeight - 2) / st.scrollHeight);
+      if (next >= k - 0.002) break;          // at the floor, or converged
+      k = next;
       inner.style.zoom = k.toFixed(3);
     }
   }
