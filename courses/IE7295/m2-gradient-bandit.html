@@ -1,1858 +1,413 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gradient Bandit Learning Tool - IE 7295</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #6BADB1 0%, #AAD1CD 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        /* Header */
-        .header {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 80px;
-            height: 4px;
-            background: #E61E27;
-        }
-
-        .header::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 80px;
-            height: 4px;
-            background: #FFC72C;
-        }
-
-        .header h1 {
-            color: white;
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .header p {
-            color: #AAD1CD;
-            font-size: 12.5px;
-        }
-
-        /* Instructions Panel */
-        .instructions-panel {
-            background: white;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .instructions-panel::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, #E61E27, #FFC72C, #0066CC);
-        }
-
-        .instructions-header {
-            padding: 18px 24px;
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            user-select: none;
-            transition: all 0.3s ease;
-        }
-
-        .instructions-header:hover {
-            background: linear-gradient(135deg, #e9ecef 0%, #f8f9fa 100%);
-            padding-left: 28px;
-        }
-
-        .instructions-title {
-            font-weight: 700;
-            font-size: 12.5px;
-            color: #2d2d2d;
-            letter-spacing: 0.3px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .instructions-title::before {
-            content: '';
-            font-size: 16px;
-        }
-
-        .instructions-toggle {
-            font-size: 16px;
-            transition: transform 0.3s;
-            color: #666;
-        }
-
-        .instructions-content {
-            padding: 0;
-            max-height: 0;
-            overflow: hidden;
-            background: white;
-            transition: max-height 0.4s ease, padding 0.4s ease;
-        }
-
-        .instructions-content.active {
-            padding: 20px;
-            max-height: 300px;
-        }
-
-        .instruction-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .instruction-section {
-            background: #f8f9fa;
-            padding: 12px;
-            border-radius: 8px;
-        }
-
-        .instruction-section h3 {
-            color: #2d2d2d;
-            font-size: 12.5px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .instruction-section p {
-            color: #555;
-            font-size: 12.5px;
-            line-height: 1.5;
-            margin-bottom: 5px;
-        }
-
-        .formula {
-            background: #2d2d2d;
-            color: white;
-            padding: 8px;
-            border-radius: 6px;
-            font-family: 'Courier New', monospace;
-            font-size: 12.5px;
-            margin: 8px 0;
-            text-align: center;
-        }
-
-        /* Controls */
-        .controls-wrapper {
-            position: relative;
-            margin-bottom: 20px;
-        }
-
-        .controls {
-            background: white;
-            padding: 15px 20px;
-            border-radius: 10px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            align-items: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .control-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .control-group label {
-            font-size: 12.5px;
-            font-weight: 600;
-            color: #666;
-            text-transform: uppercase;
-        }
-
-        .control-group input,
-        .control-group select {
-            padding: 6px 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 6px;
-            font-size: 12.5px;
-            background: white;
-            transition: border 0.3s;
-        }
-
-        .control-group input:focus,
-        .control-group select:focus {
-            outline: none;
-            border-color: #6BADB1;
-        }
-
-        button {
-            padding: 8px 20px;
-            background: linear-gradient(135deg, #6BADB1 0%, #AAD1CD 100%);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 12.5px;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-        }
-
-        button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(107, 173, 177, 0.4);
-        }
-
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* Info Button */
-        .info-button {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: rgba(107, 173, 177, 0.5);
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            font-style: italic;
-            font-family: Georgia, serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: help;
-            transition: all 0.3s ease;
-            z-index: 10;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .info-button:hover {
-            background: rgba(107, 173, 177, 0.7);
-            transform: translateY(-50%) scale(1.1) rotate(10deg);
-            box-shadow: 0 4px 16px rgba(107, 173, 177, 0.4);
-        }
-
-        .info-tooltip {
-            position: absolute;
-            top: calc(100% + 10px);
-            right: 0;
-            width: 340px;
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(107, 173, 177, 0.3);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        .info-button:hover .info-tooltip {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .info-tooltip::before {
-            content: '';
-            position: absolute;
-            top: -8px;
-            right: 18px;
-            width: 16px;
-            height: 16px;
-            background: rgba(255, 255, 255, 0.98);
-            border-top: 1px solid rgba(107, 173, 177, 0.3);
-            border-left: 1px solid rgba(107, 173, 177, 0.3);
-            transform: rotate(45deg);
-        }
-
-        .tooltip-header {
-            font-size: 12.5px;
-            font-weight: 700;
-            color: #2d2d2d;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #e0e0e0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .tooltip-header::before {
-            content: '';
-            font-size: 16px;
-        }
-
-        .arm-info {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 12px;
-            margin: 8px 0;
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-            border-radius: 8px;
-            border-left: 3px solid #6BADB1;
-            transition: all 0.2s ease;
-        }
-
-        .arm-info:hover {
-            transform: translateX(3px);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .arm-name {
-            font-weight: 600;
-            color: #333;
-            font-size: 12.5px;
-        }
-
-        .arm-params {
-            display: flex;
-            gap: 12px;
-        }
-
-        .param {
-            padding: 4px 8px;
-            background: white;
-            border-radius: 4px;
-            font-family: 'Courier New', monospace;
-            font-size: 12.5px;
-            font-weight: 600;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .param.mean {
-            color: #E61E27;
-        }
-
-        .param.std {
-            color: #0066CC;
-        }
-
-        /* Softmax Panel */
-        .softmax-panel {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .softmax-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: #2d2d2d;
-            text-align: center;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-        }
-
-        .temp-control {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 20px;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-
-        .temp-label {
-            font-size: 12.5px;
-            font-weight: 600;
-            color: #666;
-            text-transform: uppercase;
-        }
-
-        .temp-slider {
-            width: 120px;
-            height: 12px;
-            -webkit-appearance: none;
-            appearance: none;
-            background: #e0e0e0;
-            border-radius: 6px;
-            outline: none;
-            border: 1px solid #ddd;
-            position: relative;
-        }
-
-        .temp-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 18px;
-            height: 18px;
-            background: white;
-            border: 2px solid #6BADB1;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-            position: relative;
-            z-index: 2;
-        }
-
-        .temp-slider::-moz-range-thumb {
-            width: 18px;
-            height: 18px;
-            background: white;
-            border: 2px solid #6BADB1;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-            position: relative;
-            z-index: 2;
-        }
-
-        .temp-value {
-            font-size: 16px;
-            font-weight: 700;
-            color: #6BADB1;
-            min-width: 40px;
-        }
-
-        .transformation-container {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            gap: 20px;
-            align-items: center;
-        }
-
-        .bars-column {
-            text-align: center;
-        }
-
-        .bars-label {
-            font-size: 12.5px;
-            font-weight: 600;
-            color: #666;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-
-        .pref-bars-wrapper {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            height: 160px;
-            align-items: center;
-            position: relative;
-        }
-
-        .zero-line {
-            position: absolute;
-            width: 100%;
-            height: 1px;
-            background: #999;
-            top: 50%;
-            left: 0;
-            z-index: 1;
-        }
-
-        .prob-bars-wrapper {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            height: 200px;
-            align-items: flex-end;
-            padding-bottom: 20px;
-        }
-
-        .bar-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-            z-index: 2;
-        }
-
-        .pref-bar-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 160px;
-            position: relative;
-            z-index: 2;
-            width: 40px;
-        }
-
-        .bar {
-            width: 40px;
-            border-radius: 4px;
-            position: relative;
-            transition: height 0.5s ease;
-        }
-
-        .bar-value {
-            position: absolute;
-            font-size: 11px;
-            font-weight: 700;
-            white-space: nowrap;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .bar-label {
-            position: absolute;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        .arrow-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .arrow {
-            font-size: 30px;
-            color: #6BADB1;
-        }
-
-        .arrow-text {
-            font-size: 11px;
-            color: #666;
-            margin-top: 5px;
-        }
-
-        /* Main Layout */
-        .main-grid {
-            display: grid;
-            grid-template-columns: 1fr 320px;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        /* Arms */
-        .arms-container {
-            display: flex;
-            gap: 15px;
-            overflow-x: auto;
-            padding: 10px 0;
-        }
-
-        .arm-box {
-            background: white;
-            border-radius: 10px;
-            padding: 15px;
-            min-width: 200px;
-            flex: 1;
-            max-width: 250px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            position: relative;
-        }
-
-        .arm-accent {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            border-radius: 10px 10px 0 0;
-        }
-
-        .arm-title {
-            font-size: 12.5px;
-            font-weight: 700;
-            text-transform: uppercase;
-            text-align: center;
-            margin-bottom: 15px;
-            margin-top: 10px;
-        }
-
-        .arm-stats {
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 10px;
-        }
-
-        .stat-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 3px 0;
-            font-size: 12.5px;
-        }
-
-        .stat-label {
-            color: #666;
-            font-weight: 500;
-        }
-
-        .stat-value {
-            font-weight: 700;
-        }
-
-        .dist-canvas {
-            width: 100%;
-            height: 100px;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            background: white;
-        }
-
-        /* Wheel */
-        .wheel-panel {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .wheel-title {
-            font-size: 16px;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: #2d2d2d;
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        .wheel-container {
-            position: relative;
-            width: 280px;
-            height: 280px;
-            margin: 0 auto 15px;
-        }
-
-        .wheel-pointer {
-            position: absolute;
-            top: 5px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 12px solid transparent;
-            border-right: 12px solid transparent;
-            border-top: 25px solid #6BADB1;
-            z-index: 10;
-        }
-
-        #wheelCanvas {
-            width: 100%;
-            height: 100%;
-        }
-
-        .spin-button {
-            width: 100%;
-            margin-bottom: 10px;
-        }
-
-        .result-display {
-            text-align: center;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 12.5px;
-        }
-
-        /* Performance */
-        .performance-panel {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-
-        .perf-header {
-            text-align: center;
-            margin-bottom: 15px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid #f0f0f0;
-        }
-
-        .perf-header h2 {
-            font-size: 16px;
-            color: #2d2d2d;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .chart-canvas {
-            width: 100%;
-            height: 200px;
-            display: block;
-        }
-
-        .stats-row {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .stat-box {
-            text-align: center;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 6px;
-        }
-
-        .stat-box-label {
-            font-size: 11px;
-            color: #666;
-            text-transform: uppercase;
-        }
-
-        .stat-box-value {
-            font-size: 16px;
-            font-weight: bold;
-            color: #2d2d2d;
-        }
-
-        /* Footer */
-        .footer {
-            margin-top: 30px;
-            padding: 12px 20px;
-            background: #2d2d2d;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            border-top: 3px solid transparent;
-            border-image: linear-gradient(90deg, #E61E27, #FFC72C, #0066CC) 1;
-        }
-
-        .footer-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .footer-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 12.5px;
-            color: #AAD1CD;
-        }
-
-        .course-badge {
-            background: linear-gradient(135deg, #6BADB1, #AAD1CD);
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-weight: 700;
-            font-size: 12.5px;
-            color: white;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .footer-right {
-            color: #999;
-            font-size: 12.5px;
-        }
-
-        /* Special positioning for probability label */
-        .prob-label-special {
-            font-size: 11px;
-            font-weight: 600;
-            color: #888;
-            text-transform: uppercase;
-            text-align: right;
-            position: absolute;
-            right: 0;
-            top: -25px;
-        }
-    </style>
-<style>
-/* course overrides - appended after the tool's own sheet, layout untouched */
-body{font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif !important;color:#747474}
-/* font yes, colour no: several tools put headings on dark panels of their own,
-   and forcing a dark ink on them makes the title vanish */
-h1,h2,h3,h4,h5,h6{font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif !important}
-code,pre,.equation,.calculation,.formula{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important}
-a{color:#006064}
-/* the tools centre and constrain their own children, so the band has to insist
-   on being full width and left aligned or it renders as a floating chip */
-.ie7295-band{display:block !important;width:auto !important;max-width:none !important;
-  margin:0 !important;padding:9px 16px !important;text-align:left !important;
-  background:linear-gradient(135deg,#C3E3E4 0%,#C1E2E3 100%);font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
-  border-radius:0 !important;box-shadow:none !important}
-.ie7295-band h1{margin:0;font-size: 16px;font-weight:700;color:#20484A}
-.ie7295-band .sub{display:inline-block;background:rgba(255,255,255,.75);color:#3d5f61;
-  padding:2px 9px;border-radius:999px;font-size: 11px;margin-top:4px}
-.ie7295-foot{display:block !important;width:auto !important;max-width:none !important;
-  margin:0 !important;border-top:1px solid #E4E9EB;padding:10px 16px !important;
-  text-align:center !important;font-size: 11px;color:#a8b0b6;font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
-  background:#fff;border-radius:0 !important}
-</style>
-</head>
-<body>
-<div class="ie7295-band"><h1>Gradient Bandit Algorithm</h1><div class="sub">Module 2 &middot; chapter 2</div></div>
-    <!-- Header -->
-    <div class="header">
-        <h1>Gradient Bandit Learning Tool</h1>
-        <p>Visualize how preferences transform into probabilities via softmax</p>
-    </div>
-
-    <!-- Instructions -->
-    <div class="instructions-panel">
-        <div class="instructions-header" onclick="toggleInstructions()">
-            <span class="instructions-title">Understanding Gradient Bandits</span>
-            <span class="instructions-toggle" id="instructionsToggle"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
-        </div>
-        <div class="instructions-content" id="instructionsContent">
-            <div class="instruction-grid">
-                <div class="instruction-section">
-                    <h3>Core Concept</h3>
-                    <p>Gradient bandits learn preferences H(a) instead of values Q(a)</p>
-                    <div class="formula">π(a) = e^(H(a)/τ) / Σ e^(H(b)/τ)</div>
-                </div>
-                <div class="instruction-section">
-                    <h3>Temperature Effect</h3>
-                    <p><strong>Low τ:</strong> Exploit - sharp preferences</p>
-                    <p><strong>High τ:</strong> Explore - uniform probabilities</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Controls -->
-    <div class="controls-wrapper">
-        <div class="controls">
-            <div class="control-group">
-                <label>Arms:</label>
-                <select id="numArms" onchange="reset()">
-                    <option value="3">3 Arms</option>
-                    <option value="4" selected>4 Arms</option>
-                    <option value="5">5 Arms</option>
-                </select>
-            </div>
-            <div class="control-group">
-                <label>Learning Rate (α):</label>
-                <input type="number" id="alpha" value="0.1" min="0.01" max="1" step="0.01" style="width: 70px;">
-            </div>
-            <div class="control-group">
-                <label>Mode:</label>
-                <select id="difficulty" onchange="reset()">
-                    <option value="easy">Easy</option>
-                    <option value="medium" selected>Medium</option>
-                    <option value="hard">Hard</option>
-                </select>
-            </div>
-            <button onclick="reset()">Reset</button>
-            <button onclick="runSteps(100)">Run 100</button>
-            <button onclick="runSteps(1000)">Run 1000</button>
-        </div>
-        
-        <!-- Info Button -->
-        <div class="info-button">
-            i
-            <div class="info-tooltip">
-                <div class="tooltip-header">True Distributions</div>
-                <div id="trueParams"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Softmax Transformation -->
-    <div class="softmax-panel">
-        <div class="softmax-title"> Softmax Transformation</div>
-        
-        <div class="temp-control">
-            <span class="temp-label">Temperature τ:</span>
-            <input type="range" class="temp-slider" id="temperature" 
-                   min="0.1" max="5" step="0.1" value="1" oninput="updateTemp()">
-            <span class="temp-value" id="tempValue">1.0</span>
-        </div>
-        
-        <div class="transformation-container">
-            <div class="bars-column">
-                <div class="bars-label">Raw Preferences H(a)</div>
-                <div class="pref-bars-wrapper" id="prefBars">
-                    <div class="zero-line"></div>
-                </div>
-            </div>
-            <div class="arrow-box">
-                <div class="arrow"></div>
-                <div class="arrow-text">softmax</div>
-            </div>
-            <div class="bars-column" style="position: relative;">
-                <div class="prob-label-special">PROBABILITIES Π(A)</div>
-                <div class="prob-bars-wrapper" id="probBars"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Grid -->
-    <div class="main-grid">
-        <div>
-            <div class="arms-container" id="armsContainer"></div>
-        </div>
-        
-        <div class="wheel-panel">
-            <div class="wheel-title"> Probability Wheel</div>
-            <div class="wheel-container">
-                <div class="wheel-pointer"></div>
-                <canvas id="wheelCanvas"></canvas>
-            </div>
-            <button class="spin-button" onclick="spin()">Spin Wheel</button>
-            <div class="result-display" id="result">Ready to spin!</div>
-        </div>
-    </div>
-
-    <!-- Performance -->
-    <div class="performance-panel">
-        <div class="perf-header">
-            <h2>Learning Progress</h2>
-        </div>
-        <canvas class="chart-canvas" id="chart"></canvas>
-        <div class="stats-row">
-            <div class="stat-box">
-                <div class="stat-box-label">Steps</div>
-                <div class="stat-box-value" id="steps">0</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-box-label">Avg Reward</div>
-                <div class="stat-box-value" id="avgReward" style="color: #6BADB1;">0.00</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-box-label">Best Arm %</div>
-                <div class="stat-box-value" id="bestPercent" style="color: #4CAF50;">0%</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-box-label">Temperature</div>
-                <div class="stat-box-value" id="tempDisplay" style="color: #FFC72C;">1.0</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Footer -->
-    <div class="footer"> <div class="footer-content"> <div class="footer-left"> <span class="course-badge">IE 7295</span>
-                <span>Reinforcement Learning | Prof. Dehghani</span>
-            </div>
-            <div class="footer-right"> Applied Reinforcement Learning </div>
-        </div>
-    </div>
-
-    <script>
-        // State
-        let state = {
-            numArms: 4,
-            arms: [],
-            preferences: [],
-            probabilities: [],
-            avgReward: 0,
-            totalSteps: 0,
-            history: [],
-            alpha: 0.1,
-            temperature: 1.0,
-            spinning: false,
-            bestArmIndex: 0,
-            wheelAngle: 0
-        };
-
-        // Arm colors
-        const colors = ['#E61E27', '#FFC72C', '#0066CC', '#6BADB1', '#9B59B6'];
-
-        // Initialize
-        window.onload = () => reset();
-
-        function toggleInstructions() {
-            const content = document.getElementById('instructionsContent');
-            const toggle = document.getElementById('instructionsToggle');
-            if (content.classList.contains('active')) {
-                content.classList.remove('active');
-                toggle.innerHTML = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
-            } else {
-                content.classList.add('active');
-                toggle.innerHTML = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>';
-            }
-        }
-
-        function reset() {
-            state.numArms = parseInt(document.getElementById('numArms').value);
-            state.alpha = parseFloat(document.getElementById('alpha').value);
-            state.temperature = parseFloat(document.getElementById('temperature').value);
-            state.totalSteps = 0;
-            state.avgReward = 0;
-            state.history = [];
-            state.wheelAngle = 0;
-            
-            // Update temperature slider visual
-            updateTempSlider();
-            
-            // Initialize arms
-            state.arms = [];
-            const difficulty = document.getElementById('difficulty').value;
-            let bestMean = -Infinity;
-            state.bestArmIndex = 0;
-            
-            for (let i = 0; i < state.numArms; i++) {
-                let mean, std;
-                if (difficulty === 'easy') {
-                    mean = 2 + (i * 2);
-                    std = 1;
-                } else if (difficulty === 'medium') {
-                    mean = 4 + (Math.random() * 2);
-                    std = 1 + (Math.random() * 1);
-                } else {
-                    if (i === state.numArms - 1) {
-                        mean = 7;
-                        std = 3;
-                    } else {
-                        mean = 3 + (Math.random() * 2);
-                        std = 0.5;
-                    }
-                }
-                
-                if (mean > bestMean) {
-                    bestMean = mean;
-                    state.bestArmIndex = i;
-                }
-                
-                state.arms.push({
-                    trueMean: mean,
-                    trueStd: std,
-                    pulls: 0,
-                    totalReward: 0,
-                    rewards: [],
-                    estMean: 5,
-                    estStd: 3
-                });
-            }
-            
-            state.preferences = new Array(state.numArms).fill(0);
-            updateProbs();
-            updateTrueParams();
-            createArms();
-            updateAll();
-        }
-
-        function updateTempSlider() {
-            const slider = document.getElementById('temperature');
-            const percent = ((state.temperature - 0.1) / 4.9) * 100;
-            
-            // Interpolate color from blue to red
-            const ratio = (state.temperature - 0.1) / 4.9;
-            let r = Math.round(0 + 230 * ratio);
-            let g = Math.round(102 - 72 * ratio);
-            let b = Math.round(204 - 165 * ratio);
-            
-            const color = `rgb(${r}, ${g}, ${b})`;
-            
-            // Apply gradient
-            slider.style.background = `linear-gradient(to right, ${color} 0%, ${color} ${percent}%, #e0e0e0 ${percent}%, #e0e0e0 100%)`;
-        }
-
-        function updateTrueParams() {
-            const container = document.getElementById('trueParams');
-            let html = '';
-            
-            state.arms.forEach((arm, i) => {
-                const isBest = i === state.bestArmIndex;
-                html += `
-                    <div class="arm-info" style="border-left-color: ${colors[i]}; ${isBest ? 'background: #e8f5e9;' : ''}">
-                        <span class="arm-name">Arm ${i + 1} ${isBest ? '' : ''}</span>
-                        <div class="arm-params">
-                            <span class="param mean">μ=${arm.trueMean.toFixed(1)}</span>
-                            <span class="param std">σ=${arm.trueStd.toFixed(1)}</span>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            container.innerHTML = html;
-        }
-
-        function updateTemp() {
-            state.temperature = parseFloat(document.getElementById('temperature').value);
-            document.getElementById('tempValue').textContent = state.temperature.toFixed(1);
-            document.getElementById('tempDisplay').textContent = state.temperature.toFixed(1);
-            
-            updateTempSlider();
-            updateProbs();
-            updateAll();
-        }
-
-        function updateProbs() {
-            let expSum = 0;
-            const exps = [];
-            for (let i = 0; i < state.numArms; i++) {
-                const exp = Math.exp(state.preferences[i] / state.temperature);
-                exps.push(exp);
-                expSum += exp;
-            }
-            state.probabilities = exps.map(exp => exp / expSum);
-        }
-
-        function createArms() {
-            const container = document.getElementById('armsContainer');
-            container.innerHTML = '';
-            
-            for (let i = 0; i < state.numArms; i++) {
-                const box = document.createElement('div');
-                box.className = 'arm-box';
-                box.innerHTML = `
-                    <div class="arm-accent" style="background: ${colors[i]};"></div>
-                    <div class="arm-title" style="color: ${colors[i]};">Arm ${i + 1}</div>
-                    <div class="arm-stats">
-                        <div class="stat-row">
-                            <span class="stat-label">Preference H:</span>
-                            <span class="stat-value" id="h-${i}" style="color: ${colors[i]};">0.00</span>
-                        </div>
-                        <div class="stat-row">
-                            <span class="stat-label">Probability π:</span>
-                            <span class="stat-value" id="p-${i}" style="color: ${colors[i]};">25.0%</span>
-                        </div>
-                        <div class="stat-row">
-                            <span class="stat-label">Pulls:</span>
-                            <span class="stat-value" id="n-${i}" style="color: ${colors[i]};">0</span>
-                        </div>
-                        <div class="stat-row">
-                            <span class="stat-label">Avg Reward:</span>
-                            <span class="stat-value" id="r-${i}" style="color: ${colors[i]};">-</span>
-                        </div>
-                    </div>
-                    <canvas class="dist-canvas" id="dist-${i}" width="200" height="100"></canvas>
-                `;
-                container.appendChild(box);
-            }
-        }
-
-        function gaussianRandom(mean, std) {
-            let u = 0, v = 0;
-            while(u === 0) u = Math.random();
-            while(v === 0) v = Math.random();
-            return mean + std * Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
-        }
-
-        function selectAction() {
-            const rand = Math.random();
-            let cumSum = 0;
-            for (let i = 0; i < state.numArms; i++) {
-                cumSum += state.probabilities[i];
-                if (rand < cumSum) return i;
-            }
-            return state.numArms - 1;
-        }
-
-        function step() {
-            const action = selectAction();
-            const arm = state.arms[action];
-            const reward = Math.max(0, Math.min(10, gaussianRandom(arm.trueMean, arm.trueStd)));
-            
-            arm.pulls++;
-            arm.totalReward += reward;
-            arm.rewards.push(reward);
-            
-            // Update estimated distribution
-            if (arm.pulls > 1) {
-                const mean = arm.rewards.reduce((a, b) => a + b, 0) / arm.pulls;
-                const variance = arm.rewards.reduce((sum, r) => sum + Math.pow(r - mean, 2), 0) / (arm.pulls - 1);
-                arm.estMean = mean;
-                arm.estStd = Math.sqrt(variance) || 1;
-            }
-            
-            state.totalSteps++;
-            state.avgReward += (reward - state.avgReward) / state.totalSteps;
-            
-            // Gradient update
-            const alpha = state.alpha;
-            for (let i = 0; i < state.numArms; i++) {
-                if (i === action) {
-                    state.preferences[i] += alpha * (reward - state.avgReward) * (1 - state.probabilities[i]);
-                } else {
-                    state.preferences[i] -= alpha * (reward - state.avgReward) * state.probabilities[i];
-                }
-            }
-            
-            updateProbs();
-            
-            state.history.push({
-                step: state.totalSteps,
-                action: action,
-                reward: reward,
-                avgReward: state.avgReward,
-                bestArmSelected: action === state.bestArmIndex
-            });
-            
-            return { action, reward };
-        }
-
-        function runSteps(n) {
-            for (let i = 0; i < n; i++) step();
-            updateAll();
-        }
-
-        function spin() {
-            if (state.spinning) return;
-            state.spinning = true;
-            
-            // The wheel on screen was drawn from the probabilities as they are
-            // now. step() immediately updates them, so take a copy first and
-            // rotate against the wheel the student is actually looking at.
-            const drawnProbs = state.probabilities.slice();
-            
-            const result = step();
-            
-            // Calculate cumulative angles for each arm
-            let currentAngle = 0;
-            const armPositions = [];
-            for (let i = 0; i < state.numArms; i++) {
-                const segmentSize = drawnProbs[i] * 360;
-                armPositions.push({
-                    start: currentAngle,
-                    end: currentAngle + segmentSize,
-                    mid: currentAngle + segmentSize / 2
-                });
-                currentAngle += segmentSize;
-            }
-            
-            // Calculate rotation needed to put selected arm at top
-            const selectedMidpoint = armPositions[result.action].mid;
-            const rotationNeeded = -selectedMidpoint;
-            
-            // Add multiple spins for effect
-            const spins = 3 + Math.random() * 2;
-            const totalRotation = (spins * 360) + rotationNeeded;
-            
-            const canvas = document.getElementById('wheelCanvas');
-            canvas.style.transition = 'transform 2.5s cubic-bezier(0.15, 0, 0.25, 1)';
-            canvas.style.transform = `rotate(${totalRotation}deg)`;
-            
-            state.wheelAngle = totalRotation % 360;
-            
-            setTimeout(() => {
-                state.spinning = false;
-                document.getElementById('result').style.color = colors[result.action];
-                document.getElementById('result').textContent = 
-                    `Selected: Arm ${result.action + 1}  Reward: ${result.reward.toFixed(1)}`;
-                updateAll();
-            }, 2500);
-        }
-
-        function updateAll() {
-            // Update arm displays
-            for (let i = 0; i < state.numArms; i++) {
-                const arm = state.arms[i];
-                document.getElementById(`h-${i}`).textContent = state.preferences[i].toFixed(2);
-                document.getElementById(`p-${i}`).textContent = (state.probabilities[i] * 100).toFixed(1) + '%';
-                document.getElementById(`n-${i}`).textContent = arm.pulls;
-                document.getElementById(`r-${i}`).textContent = 
-                    arm.pulls > 0 ? (arm.totalReward / arm.pulls).toFixed(2) : '-';
-                drawDist(i);
-            }
-            
-            // Update stats
-            document.getElementById('steps').textContent = state.totalSteps;
-            document.getElementById('avgReward').textContent = state.avgReward.toFixed(2);
-            document.getElementById('tempDisplay').textContent = state.temperature.toFixed(1);
-            
-            if (state.history.length > 0) {
-                const recent = state.history.slice(-100);
-                const bestCount = recent.filter(h => h.bestArmSelected).length;
-                document.getElementById('bestPercent').textContent = (bestCount / recent.length * 100).toFixed(0) + '%';
-            }
-            
-            updateBars();
-            drawWheel();
-            drawChart();
-        }
-
-        function updateBars() {
-            const prefContainer = document.getElementById('prefBars');
-            const probContainer = document.getElementById('probBars');
-            
-            // Clear containers (keep zero line for prefs)
-            prefContainer.innerHTML = '<div class="zero-line"></div>';
-            probContainer.innerHTML = '';
-            
-            const maxPref = Math.max(...state.preferences.map(Math.abs)) || 1;
-            
-            for (let i = 0; i < state.numArms; i++) {
-                // Preference bar
-                const prefItem = document.createElement('div');
-                prefItem.className = 'pref-bar-item';
-                
-                const prefBar = document.createElement('div');
-                prefBar.className = 'bar';
-                const prefIntensity = Math.abs(state.preferences[i]) / maxPref;
-                const opacity = 0.3 + (prefIntensity * 0.7);
-                
-                const height = Math.abs(state.preferences[i]) / maxPref * 60;
-                
-                prefBar.style.background = `${colors[i]}${Math.round(opacity * 255).toString(16).padStart(2, '0')}`;
-                prefBar.style.display = 'flex';
-                prefBar.style.flexDirection = 'column';
-                prefBar.style.alignItems = 'center';
-                prefBar.style.justifyContent = 'center';
-                prefBar.style.height = height + 'px';
-                prefBar.style.width = '40px';
-                prefBar.style.position = 'absolute';
-                prefBar.style.left = '0';
-                
-                if (state.preferences[i] >= 0) {
-                    prefBar.style.bottom = '50%';
-                    prefBar.style.borderRadius = '4px 4px 0 0';
-                } else {
-                    prefBar.style.top = '50%';
-                    prefBar.style.borderRadius = '0 0 4px 4px';
-                }
-                
-                if (height > 20) {
-                    const prefLabel = document.createElement('div');
-                    prefLabel.style.color = 'white';
-                    prefLabel.style.fontSize = '10px';
-                    prefLabel.style.fontWeight = '700';
-                    prefLabel.style.textShadow = '0 1px 2px rgba(0,0,0,0.3)';
-                    prefLabel.innerHTML = `A${i + 1}<br>${state.preferences[i].toFixed(1)}`;
-                    prefLabel.style.textAlign = 'center';
-                    prefLabel.style.lineHeight = '1.2';
-                    prefBar.appendChild(prefLabel);
-                } else {
-                    const extLabel = document.createElement('div');
-                    extLabel.style.position = 'absolute';
-                    extLabel.style.fontSize = '10px';
-                    extLabel.style.fontWeight = '700';
-                    extLabel.style.color = colors[i];
-                    extLabel.style.textAlign = 'center';
-                    extLabel.style.width = '100%';
-                    extLabel.innerHTML = `A${i + 1}<br>${state.preferences[i].toFixed(1)}`;
-                    
-                    if (state.preferences[i] >= 0) {
-                        extLabel.style.bottom = `calc(50% + ${height}px + 5px)`;
-                    } else {
-                        extLabel.style.top = `calc(50% + ${height}px + 5px)`;
-                    }
-                    prefItem.appendChild(extLabel);
-                }
-                
-                prefItem.appendChild(prefBar);
-                prefContainer.appendChild(prefItem);
-                
-                // Probability bar - make them taller!
-                const probItem = document.createElement('div');
-                probItem.className = 'bar-item';
-                
-                const probBar = document.createElement('div');
-                probBar.className = 'bar';
-                const probOpacity = 0.4 + (state.probabilities[i] * 0.6);
-                probBar.style.background = `${colors[i]}${Math.round(probOpacity * 255).toString(16).padStart(2, '0')}`;
-                // Increased height multiplier from 120 to 160
-                probBar.style.height = (state.probabilities[i] * 160) + 'px';
-                probBar.style.borderRadius = '4px 4px 0 0';
-                
-                const probValue = document.createElement('div');
-                probValue.className = 'bar-value';
-                probValue.style.color = colors[i];
-                probValue.style.top = '-20px';
-                probValue.style.fontWeight = '700';
-                probValue.textContent = (state.probabilities[i] * 100).toFixed(0) + '%';
-                probBar.appendChild(probValue);
-                
-                const probLabel = document.createElement('div');
-                probLabel.className = 'bar-label';
-                probLabel.style.color = colors[i];
-                probLabel.style.bottom = '-15px';
-                probLabel.style.fontWeight = '700';
-                probLabel.textContent = `A${i + 1}`;
-                
-                probItem.appendChild(probBar);
-                probItem.appendChild(probLabel);
-                probContainer.appendChild(probItem);
-            }
-        }
-
-        function drawDist(index) {
-            const canvas = document.getElementById(`dist-${index}`);
-            const ctx = canvas.getContext('2d');
-            const arm = state.arms[index];
-            
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Axes
-            ctx.strokeStyle = '#e0e0e0';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(20, canvas.height - 20);
-            ctx.lineTo(canvas.width - 10, canvas.height - 20);
-            ctx.stroke();
-            
-            // Distribution curve
-            ctx.strokeStyle = colors[index];
-            ctx.lineWidth = 2;
-            
-            if (arm.pulls === 0) {
-                ctx.setLineDash([8, 4]);
-                ctx.globalAlpha = 0.4;
-            } else {
-                ctx.setLineDash([]);
-                ctx.globalAlpha = 1.0;
-            }
-            
-            ctx.beginPath();
-            for (let x = 0; x <= 10; x += 0.1) {
-                const y = (1 / (arm.estStd * Math.sqrt(2 * Math.PI))) * 
-                         Math.exp(-0.5 * Math.pow((x - arm.estMean) / arm.estStd, 2));
-                const px = 20 + ((x / 10) * (canvas.width - 30));
-                const py = canvas.height - 20 - (y * (canvas.height - 40) * arm.estStd * 2);
-                
-                if (x === 0) ctx.moveTo(px, py);
-                else ctx.lineTo(px, py);
-            }
-            ctx.stroke();
-            ctx.globalAlpha = 1.0;
-            ctx.setLineDash([]);
-            
-            // Mean line
-            if (arm.pulls > 0) {
-                const meanX = 20 + ((arm.estMean / 10) * (canvas.width - 30));
-                ctx.strokeStyle = colors[index];
-                ctx.lineWidth = 1;
-                ctx.setLineDash([3, 3]);
-                ctx.beginPath();
-                ctx.moveTo(meanX, 20);
-                ctx.lineTo(meanX, canvas.height - 20);
-                ctx.stroke();
-                ctx.setLineDash([]);
-                
-                ctx.fillStyle = colors[index];
-                ctx.font = 'bold 11px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText(`μ̂=${arm.estMean.toFixed(1)}`, meanX, 15);
-            } else {
-                ctx.fillStyle = colors[index];
-                ctx.font = 'bold 11px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText('Unknown', canvas.width / 2, 15);
-            }
-            
-            // Probability fill
-            ctx.fillStyle = colors[index] + '20';
-            ctx.fillRect(0, 0, canvas.width * state.probabilities[index], canvas.height);
-        }
-
-        function drawWheel() {
-            const canvas = document.getElementById('wheelCanvas');
-            const ctx = canvas.getContext('2d');
-            const size = 280;
-            canvas.width = size;
-            canvas.height = size;
-            
-            const centerX = size / 2;
-            const centerY = size / 2;
-            const outerRadius = 120;
-            const innerRadius = 60;
-            
-            ctx.clearRect(0, 0, size, size);
-            
-            // Shadow
-            ctx.save();
-            ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
-            ctx.shadowBlur = 15;
-            ctx.shadowOffsetY = 5;
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, outerRadius, 0, 2 * Math.PI);
-            ctx.fillStyle = 'white';
-            ctx.fill();
-            ctx.restore();
-            
-            // Draw segments starting from top
-            let startAngle = -Math.PI / 2;
-            for (let i = 0; i < state.numArms; i++) {
-                const sweepAngle = state.probabilities[i] * 2 * Math.PI;
-                
-                const gradient = ctx.createRadialGradient(centerX, centerY, innerRadius, centerX, centerY, outerRadius);
-                gradient.addColorStop(0, colors[i] + 'DD');
-                gradient.addColorStop(1, colors[i]);
-                
-                ctx.beginPath();
-                ctx.arc(centerX, centerY, outerRadius, startAngle, startAngle + sweepAngle);
-                ctx.arc(centerX, centerY, innerRadius, startAngle + sweepAngle, startAngle, true);
-                ctx.closePath();
-                
-                ctx.fillStyle = gradient;
-                ctx.fill();
-                
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
-                ctx.lineWidth = 2;
-                ctx.stroke();
-                
-                // Labels
-                if (state.probabilities[i] > 0.05) {
-                    const labelAngle = startAngle + sweepAngle / 2;
-                    const labelRadius = (outerRadius + innerRadius) / 2;
-                    const labelX = centerX + Math.cos(labelAngle) * labelRadius;
-                    const labelY = centerY + Math.sin(labelAngle) * labelRadius;
-                    
-                    ctx.beginPath();
-                    ctx.arc(labelX, labelY, 22, 0, 2 * Math.PI);
-                    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-                    ctx.fill();
-                    
-                    ctx.fillStyle = colors[i];
-                    ctx.font = 'bold 16px sans-serif';
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    ctx.fillText(`${i + 1}`, labelX, labelY - 7);
-                    
-                    ctx.font = 'bold 11px sans-serif';
-                    ctx.fillText(`${(state.probabilities[i] * 100).toFixed(0)}%`, labelX, labelY + 7);
-                }
-                
-                startAngle += sweepAngle;
-            }
-            
-            // Center
-            ctx.save();
-            ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-            ctx.shadowBlur = 10;
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, innerRadius - 2, 0, 2 * Math.PI);
-            ctx.fillStyle = '#2d2d2d';
-            ctx.fill();
-            ctx.restore();
-            
-            ctx.fillStyle = 'white';
-            ctx.font = 'bold 12px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('SPIN ME!', centerX, centerY);
-        }
-
-        function drawChart() {
-            const canvas = document.getElementById('chart');
-            const ctx = canvas.getContext('2d');
-            
-            canvas.width = canvas.offsetWidth;
-            canvas.height = 200;
-            
-            const width = canvas.width;
-            const height = canvas.height;
-            
-            ctx.clearRect(0, 0, width, height);
-            
-            if (state.history.length === 0) {
-                ctx.fillStyle = '#ccc';
-                ctx.font = '14px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText('No data yet - spin the wheel or run steps!', width / 2, height / 2);
-                return;
-            }
-            
-            const padding = 40;
-            const chartWidth = width - padding * 2;
-            const chartHeight = height - padding * 2;
-            
-            // Axes
-            ctx.strokeStyle = '#e0e0e0';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(padding, padding);
-            ctx.lineTo(padding, height - padding);
-            ctx.lineTo(width - padding, height - padding);
-            ctx.stroke();
-            
-            // Grid
-            for (let i = 0; i <= 10; i += 2) {
-                const y = height - padding - (i / 10) * chartHeight;
-                ctx.strokeStyle = '#f0f0f0';
-                ctx.beginPath();
-                ctx.moveTo(padding, y);
-                ctx.lineTo(width - padding, y);
-                ctx.stroke();
-                
-                ctx.fillStyle = '#999';
-                ctx.font = '10px sans-serif';
-                ctx.textAlign = 'right';
-                ctx.fillText(i.toString(), padding - 5, y + 3);
-            }
-            
-            // Moving average
-            const windowSize = 20;
-            const movingAvg = [];
-            
-            for (let i = 0; i < state.history.length; i++) {
-                const start = Math.max(0, i - windowSize + 1);
-                const window = state.history.slice(start, i + 1);
-                const avg = window.reduce((sum, h) => sum + h.reward, 0) / window.length;
-                movingAvg.push(avg);
-            }
-            
-            if (movingAvg.length > 1) {
-                const xScale = chartWidth / (state.history.length - 1);
-                
-                const gradient = ctx.createLinearGradient(0, padding, 0, height - padding);
-                gradient.addColorStop(0, '#6BADB130');
-                gradient.addColorStop(1, '#6BADB105');
-                
-                ctx.fillStyle = gradient;
-                ctx.beginPath();
-                ctx.moveTo(padding, height - padding);
-                for (let i = 0; i < movingAvg.length; i++) {
-                    const x = padding + i * xScale;
-                    const y = height - padding - (movingAvg[i] / 10) * chartHeight;
-                    ctx.lineTo(x, y);
-                }
-                ctx.lineTo(padding + (movingAvg.length - 1) * xScale, height - padding);
-                ctx.closePath();
-                ctx.fill();
-                
-                ctx.strokeStyle = '#6BADB1';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                for (let i = 0; i < movingAvg.length; i++) {
-                    const x = padding + i * xScale;
-                    const y = height - padding - (movingAvg[i] / 10) * chartHeight;
-                    if (i === 0) ctx.moveTo(x, y);
-                    else ctx.lineTo(x, y);
-                }
-                ctx.stroke();
-            }
-            
-            // Optimal line
-            const optimalReward = state.arms[state.bestArmIndex].trueMean;
-            const optimalY = height - padding - (optimalReward / 10) * chartHeight;
-            
-            ctx.strokeStyle = '#4CAF50';
-            ctx.lineWidth = 1;
-            ctx.setLineDash([5, 5]);
-            ctx.beginPath();
-            ctx.moveTo(padding, optimalY);
-            ctx.lineTo(width - padding, optimalY);
-            ctx.stroke();
-            ctx.setLineDash([]);
-            
-            ctx.fillStyle = '#4CAF50';
-            ctx.font = '11px sans-serif';
-            ctx.textAlign = 'left';
-            ctx.fillText(`Optimal: ${optimalReward.toFixed(1)}`, width - padding + 5, optimalY);
-        }
-    </script>
-<div class="ie7295-foot">IE7295: Applied Reinforcement Learning &middot; Prof. Dehghani</div>
-
-<style>
-/* sync_tools v12 ---------------------------------------------------------------------
-   Appended, never substituted. Everything here is a decision taken on the
-   Module 1 Grid World tool and carried across so the set reads as one course.
-   ---------------------------------------------------------------------- */
-
-/* the three colour rule under the band, the one place the full palette shows */
-.ie7295-band{position:relative}
-.ie7295-band::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;
-  background:linear-gradient(90deg,#F5D000 0 33.33%,#E2231A 33.33% 66.66%,#0064B0 66.66% 100%)}
-
-/* sliders: the weighted bar. The track is styled, so the thumb needs its
-   centring offset back by hand or WebKit aligns it to the track's top edge. */
-input[type=range]{-webkit-appearance:none;appearance:none;background:none;
-  height:22px;cursor:pointer}
-input[type=range]{border-radius:999px;
-  background:linear-gradient(90deg,#0d5f62 0%,#17a2b8 var(--fill,0%),
-             #e2e9ea var(--fill,0%),#e2e9ea 100%) !important;
-  height:11px !important;margin:9px 0}
-input[type=range]::-webkit-slider-runnable-track{height:11px;border-radius:999px;
-  background:transparent;border:0}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;margin-top:-5px;
-  width:21px;height:21px;border-radius:999px;background:#fff;border:2px solid #006064;
-  box-shadow:0 1px 4px rgba(0,0,0,.16);cursor:pointer}
-input[type=range]::-moz-range-track{height:11px;border-radius:999px;
-  background:transparent;border:0}
-input[type=range]::-moz-range-thumb{width:21px;height:21px;border-radius:999px;
-  background:#fff;border:2px solid #006064;box-shadow:0 1px 4px rgba(0,0,0,.16);cursor:pointer}
-input[type=range]:focus{outline:none}
-input[type=range]::-webkit-slider-thumb:hover,
-input[type=range]::-moz-range-thumb:hover{box-shadow:0 0 0 5px rgba(0,96,100,.13)}
-
-/* buttons: pills, one weight of emphasis */
-button, .btn, input[type=button], input[type=submit]{
-  font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif !important;border-radius:999px !important;
-  font-weight:700 !important;cursor:pointer}
-
-/* Teal is the course's one accent. Cliff Walker painted its buttons in
-   var(--mit-blue), which this course reserves for policy arrows, so the button
-   is overridden rather than the variable: anything semantic keeps its colour.
-   Danger and destructive controls are left alone deliberately. */
-button:not([class*=danger]):not([class*=delete]):not([class*=remove]),
-.btn:not([class*=danger]){
-  background:linear-gradient(135deg,#006064 0%,#17a2b8 100%) !important;
-  color:#fff !important;border:0 !important}
-button:disabled, .btn:disabled{
-  background:#cfd8dc !important;color:#8b969b !important;cursor:not-allowed}
-
-/* panels line up with the pages: same hairline, same radius */
-.panel,.card,.box,.section,.controls,.stats,.info,.legend{
-  border-radius:6px}
-
-/* prose is INK. MUTE is for captions, and reads at 2.2:1 which is not text. */
-p, li, td{color:#3d3d3d}
-
-/* the field the panels sit on. Several tools shipped with a strong teal
-   gradient body, which fought the mint band directly above it. */
-body{background:#f4f6f8 !important}
-
-/* Each tool carries its own title block, a black slab that repeated the title
-   already on the course band. The text is content, so it stays: the slab is
-   restyled into the course box instead. Background and colour have to move
-   together, or the white title is left invisible on a white panel. */
-.header{background:#fff !important;border-left:3px solid #006064 !important;
-  border-radius:0 6px 6px 0 !important;box-shadow:none !important;
-  padding:13px 17px !important;margin-bottom:14px !important}
-.header h1,.header h2{color:#20484A !important;font-size:16px !important;
-  font-weight:700 !important;margin:0 0 3px !important;text-shadow:none !important}
-.header p,.header .subtitle,.header div,.header em,.header i{
-  color:#3d3d3d !important;font-size:12.5px !important;line-height:1.6 !important;
-  text-shadow:none !important}
-.header em,.header i{font-size:11px !important;color:#a8b0b6 !important}
-
-/* One window, no page scroll. The band and the footer are pinned and the
-   middle is wrapped in a stage that scrolls on its own, so a tool that is
-   genuinely taller than the screen keeps its chrome in place instead of
-   pushing it off. Spacing is tightened first, so most tools fit outright and
-   the stage never has to scroll at all. */
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Gradient Bandit - IE 7295</title><link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script><style>
+*{box-sizing:border-box}
 html,body{height:100%;margin:0}
-body{display:flex;flex-direction:column;overflow:hidden}
-.ie7295-band,.ie7295-foot{flex:0 0 auto}
-.ie7295-stage{flex:1 1 auto;min-height:0;overflow:auto;padding:11px 15px}
-.ie7295-stage > *:first-child{margin-top:0 !important}
+body{font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;background:#f4f6f8;color:#3d3d3d;font-size:12.5px;line-height:1.5;
+  display:flex;flex-direction:column;overflow:hidden}
 
-/* the same header and footer on every tool, to the pixel */
-.ie7295-band{padding:9px 16px !important}
-.ie7295-band h1{font-size:16px !important;font-weight:700 !important;margin:0 !important}
-.ie7295-band .sub{display:inline-block;background:rgba(255,255,255,.75);color:#3d5f61;
+.band{flex:0 0 auto;background:linear-gradient(135deg,#C3E3E4 0%,#C1E2E3 100%);
+  padding:9px 16px;position:relative}
+.band::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;
+  background:linear-gradient(90deg,#F5D000 0 33.33%,#E2231A 33.33% 66.66%,#0064B0 66.66% 100%)}
+.band h1{margin:0;font-size:16px;font-weight:700;color:#20484A}
+.band .sub{display:inline-block;background:rgba(255,255,255,.75);color:#3d5f61;
   padding:2px 9px;border-radius:999px;font-size:11px;margin-top:3px}
-.ie7295-foot{border-top:1px solid #E4E9EB;padding:9px 16px !important;text-align:center;
-  font-size:11px !important;color:#a8b0b6 !important;background:#fff}
+.foot{flex:0 0 auto;border-top:1px solid #E4E9EB;background:#fff;padding:8px 16px;
+  text-align:center;font-size:11px;color:#a8b0b6}
 
-/* tightened so the content clears the fold */
-.container,.wrapper,.main{padding:0 !important;margin:0 auto !important;max-width:1400px}
-.header{padding:10px 15px !important;margin-bottom:9px !important}
-.instructions{margin-bottom:9px !important}
-.controls,.control-panel,.panel,.card,.section{margin-bottom:9px !important}
-h2{margin-top:12px !important}
-</style>
+.stage{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:9px;
+  padding:10px 14px}
+.tabs{flex:0 0 auto;display:inline-flex;background:#fff;border:1px solid #E4E9EB;
+  border-radius:999px;padding:3px;align-self:flex-start}
+.tab{font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;color:#5b7175;background:none;
+  border:0;border-radius:999px;padding:7px 20px;cursor:pointer;white-space:nowrap}
+.tab.on{background:linear-gradient(135deg,#006064 0%,#17a2b8 100%);color:#fff}
 
-<style>
-@media (min-width: 1000px){
-  .ie7295-fit{display:grid;grid-template-columns:1fr 1fr;gap:11px;align-items:start}
-  .ie7295-fit > .header,
-  .ie7295-fit > .instructions,
-  .ie7295-fit > .controls,
-  .ie7295-fit > .control-panel,
-  .ie7295-fit > .phase-banner,
-  .ie7295-fit > .status-bar{grid-column:1 / -1}
-  .ie7295-fit > *{margin-bottom:0 !important;min-width:0}
+.cols{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:264px 1fr;gap:10px}
+.side{display:flex;flex-direction:column;gap:8px;min-height:0;overflow:auto;
+  padding-right:2px}
+.main{display:flex;flex-direction:column;gap:9px;min-height:0}
 
-  /* two of these tools put everything inside one tall main-panel, so splitting
-     at the top level changes nothing. The columns go inside it instead. */
-  .ie7295-fit > .main-panel{display:grid;grid-template-columns:1fr 1fr;
-    gap:11px;align-items:start}
-  .ie7295-fit > .main-panel > h2:first-child,
-  .ie7295-fit > .main-panel > .section-title:first-child{grid-column:1 / -1}
-  .ie7295-fit > .main-panel > *{min-width:0}
+.card{background:#fff;border:1px solid #E4E9EB;border-radius:6px;padding:10px 12px}
+.card.rule{border-left:3px solid #8FC8CA;border-radius:0 6px 6px 0}
+h2{font-size:10.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+  color:#006064;margin:0 0 6px}
+
+.ctl{margin-bottom:9px}
+.ctl:last-child{margin-bottom:0}
+.ctl .lab{display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+  font-size:11px;font-weight:700;color:#20484A;margin-bottom:2px}
+.ctl .val{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;font-weight:700;color:#006064;
+  background:#eef6f6;border-radius:999px;padding:1px 9px}
+.ctl .hint{font-size:10px;color:#a8b0b6;margin-top:3px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:10px;
+  border-radius:999px;margin:6px 0 0;cursor:pointer;outline:none;
+  background:linear-gradient(90deg,#0d5f62 0%,#17a2b8 var(--f,0%),
+             #e2e9ea var(--f,0%),#e2e9ea 100%)}
+input[type=range]::-webkit-slider-runnable-track{height:10px;background:transparent}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;margin-top:-5px;
+  width:20px;height:20px;border-radius:999px;background:#fff;border:2px solid #006064;
+  box-shadow:0 1px 4px rgba(0,0,0,.18)}
+input[type=range]::-moz-range-track{height:10px;background:transparent}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:999px;
+  background:#fff;border:2px solid #006064;box-shadow:0 1px 4px rgba(0,0,0,.18)}
+select{width:100%;font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;font-size:12px;color:#20484A;background:#fff;
+  border:1px solid #E4E9EB;border-radius:6px;padding:7px 9px;margin-top:5px;cursor:pointer}
+select:focus{outline:none;border-color:#8FC8CA}
+.btns{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
+.btn{flex:1 1 0;min-width:76px;font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;font-size:11.5px;font-weight:700;
+  border-radius:999px;padding:7px 0;cursor:pointer;border:1px solid #E4E9EB;
+  background:#fff;color:#20484A}
+.btn:hover{border-color:#8FC8CA;background:#eef6f6}
+.btn.go{border:0;color:#fff;background:linear-gradient(135deg,#006064 0%,#17a2b8 100%)}
+.btn.stop{border:0;color:#fff;background:linear-gradient(135deg,#8b1a1a 0%,#b8433f 100%)}
+.btn:disabled{background:#eef1f2;color:#9aa8ae;cursor:not-allowed;border-color:#E4E9EB}
+
+.eq{background:rgba(143,200,202,.13);border-left:3px solid #8FC8CA;border-radius:0 6px 6px 0;
+  padding:11px 15px;text-align:center}
+.eq .cap{font-size:11px;color:#3d3d3d;margin-top:6px}
+.viz{flex:1 1 auto;min-height:0;background:#fff;border:1px solid #E4E9EB;border-radius:6px;
+  padding:12px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.reading{flex:0 0 auto;background:rgba(0,96,100,.07);border-left:3px solid #006064;
+  border-radius:0 6px 6px 0;padding:9px 14px;font-size:12px;line-height:1.55;color:#3d3d3d}
+.reading b{color:#006064;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-weight:700}
+.reads{flex:0 0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.read{background:#fff;border:1px solid #E4E9EB;border-radius:6px;padding:8px 11px}
+.read .k{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  color:#a8b0b6}
+.read .v{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:17px;font-weight:700;color:#20484A;margin-top:1px}
+.read.on .v{color:#006064}
+.read.warn .v{color:#8b1a1a}
+
+.steps{counter-reset:s;margin:0;padding:0;list-style:none}
+.steps li{counter-increment:s;position:relative;padding-left:20px;margin-bottom:5px;
+  font-size:10.5px;line-height:1.45;color:#3d3d3d}
+.steps li:last-child{margin-bottom:0}
+.steps li::before{content:counter(s);position:absolute;left:0;top:1px;width:15px;
+  height:15px;border-radius:999px;background:#006064;color:#fff;font-size:9.5px;
+  font-weight:700;display:flex;align-items:center;justify-content:center}
+.katex{font-size:1.05em}
+
+/* pieces individual tools draw with, all from the same palette */
+.tile{border:1px solid #E4E9EB;border-radius:6px;background:#f7f9f9;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;transition:all .18s}
+.tile .k{font-size:10px;color:#a8b0b6}
+.tile .v{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:22px;font-weight:700;color:#20484A}
+.tile.on{border:2px solid #006064;background:#eef6f6}
+.tile.best{border:2px solid #2e9e6b;background:rgba(0,150,90,.10)}
+.tile.best .v{color:#1d6b4a}
+.tile.bad{border:2px solid #E2231A;background:rgba(226,35,26,.08)}
+.tile.bad .v{color:#8b1a1a}
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:14px;height:100%;
+  width:100%;padding-bottom:22px}
+.bar{flex:1;max-width:92px;display:flex;flex-direction:column;justify-content:flex-end;
+  align-items:center;height:100%;position:relative}
+.bar .fill{width:100%;border-radius:5px 5px 0 0;min-height:3px;
+  background:linear-gradient(180deg,#17a2b8,#0d5f62)}
+.bar .fill.neg{background:linear-gradient(180deg,#d4685f,#8b1a1a)}
+.bar .t{position:absolute;bottom:-19px;font-size:11px;color:#a8b0b6;white-space:nowrap}
+.bar .c{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;font-weight:700;color:#006064;margin-bottom:4px}
+.work{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;color:#3d3d3d;line-height:2.1}
+.work b{color:#006064}
+</style></head><body><div class="band"><h1>Gradient Bandit</h1><div class="sub">Module 2 &middot; preferences, softmax, and one reward moving all of them</div></div><div class="stage"><div class="tabs"><button class="tab on" data-t="soft" type="button">Softmax</button><button class="tab" data-t="update" type="button">The update</button></div><div class="cols"><div class="side"><div class="card rule" id="controls"></div><div class="card rule" id="says"></div><div class="card rule" id="try"></div></div><div class="main"><div class="card eq" id="eq"></div><div class="viz" id="viz"></div><div class="reading" id="reading"></div><div class="reads" id="reads"></div></div></div></div><div class="foot">IE7295: Applied Reinforcement Learning &middot; Prof. Dehghani</div><script>
+var S = {
+  tab: 'soft', arms: 4, alpha: 10, temp: 100,
+  H: [], P: [], mu: [], baseline: 0, steps: 0, picked: -1, lastR: 0,
+  autoOn: false, autoT: null
+};
+
+function reset(){
+  S.H = []; S.mu = [];
+  for (var i = 0; i < S.arms; i++){
+    S.H.push(0);
+    S.mu.push(Math.round((Math.random() * 4 - 1) * 100) / 100);
+  }
+  S.baseline = 0; S.steps = 0; S.picked = -1; S.lastR = 0;
+  softmax();
+  stopAuto();
 }
-</style>
+function softmax(){
+  var t = Math.max(0.1, S.temp / 100);
+  var m = Math.max.apply(null, S.H);
+  var e = S.H.map(function(h){ return Math.exp((h - m) / t); });   // shifted, so no overflow
+  var sum = e.reduce(function(a, b){ return a + b; }, 0);
+  S.P = e.map(function(x){ return x / sum; });
+}
+function sample(){
+  var r = Math.random(), c = 0;
+  for (var i = 0; i < S.arms; i++){ c += S.P[i]; if (r <= c) return i; }
+  return S.arms - 1;
+}
+function step(){
+  var a = sample();
+  var R = S.mu[a] + (Math.random() + Math.random() + Math.random() - 1.5) * 0.9;
+  var al = S.alpha / 100;
+  S.steps += 1;
+  S.baseline += (R - S.baseline) / S.steps;          // running average reward
+  for (var i = 0; i < S.arms; i++){
+    // the chosen arm rises by 1 - P, every other falls by its own P
+    S.H[i] += al * (R - S.baseline) * ((i === a ? 1 : 0) - S.P[i]);
+  }
+  softmax();
+  S.picked = a; S.lastR = R;
+  render();
+}
+function stopAuto(){ S.autoOn = false; if (S.autoT){ clearInterval(S.autoT); S.autoT = null; } }
+function toggleAuto(){
+  if (S.autoOn){ stopAuto(); render(); return; }
+  S.autoOn = true;
+  S.autoT = setInterval(function(){
+    if (S.steps >= 400){ stopAuto(); render(); return; }
+    step();
+  }, 60);
+  render();
+}
+function onInput(id, val){
+  if (id === 'arms'){ S.arms = +val; reset(); }
+  if (id === 'alpha') S.alpha = +val;
+  if (id === 'temp'){ S.temp = +val; softmax(); }
+  render();
+}
+function onTab(){ stopAuto(); }
 
-<script>
-(function(){
-  var band = document.querySelector('.ie7295-band'),
-      foot = document.querySelector('.ie7295-foot');
-  if (!band || document.querySelector('.ie7295-stage')) return;
-  var stage = document.createElement('div');
-  stage.className = 'ie7295-stage';
-  var n = band.nextSibling;
-  while (n && n !== foot) { var next = n.nextSibling; stage.appendChild(n); n = next; }
-  document.body.insertBefore(stage, foot || null);
-})();
+function best(){ return S.mu.indexOf(Math.max.apply(null, S.mu)); }
 
-// Fit the stage to the window. Tightening the spacing got the chrome to stay
-// put but left the content up to 1100px taller than the screen, so it is
-// scaled down to fit. The floor is deliberate: below it the type stops being
-// readable and scrolling is the better answer, so the stage scrolls instead.
-(function(){
-  var MIN = document.body.dataset.fitFloor ? +document.body.dataset.fitFloor : 0.66;
-  function fit(){
-    var st = document.querySelector('.ie7295-stage');
-    if (!st) return;
-    var inner = st.firstElementChild && st.children.length === 1
-                ? st.firstElementChild : null;
-    if (!inner) {
-      inner = document.createElement('div');
-      inner.className = 'ie7295-fit';
-      while (st.firstChild) inner.appendChild(st.firstChild);
-      st.appendChild(inner);
-    }
-    // zoom, not transform: a scale() leaves the layout box at full size, so
-    // the container carries on scrolling. zoom reflows, which is the point.
-    inner.style.zoom = 1;
-    // zoom reflows, so what it needs changes as it shrinks. Measure the stage
-    // itself after each pass rather than predicting: the earlier version scaled
-    // an already scaled height and stalled a few pixels short every time.
-    var k = 1;
-    for (var i = 0; i < 6; i++) {
-      var over = st.scrollHeight - st.clientHeight;
-      if (over <= 0) break;
-      var next = Math.max(MIN, k * (st.clientHeight - 2) / st.scrollHeight);
-      if (next >= k - 0.002) break;          // at the floor, or converged
-      k = next;
-      inner.style.zoom = k.toFixed(3);
+/* preferences on the left, probabilities on the right, so the softmax is a
+   thing you watch happen rather than a formula you are told about */
+function drawSoft(){
+  var span = Math.max(1.2, Math.max.apply(null, S.H.map(Math.abs)) * 1.15);
+  $('viz').innerHTML =
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:26px;width:100%;' +
+    'max-width:860px;align-items:center">' +
+
+    '<div><div style="font-size:10px;font-weight:700;letter-spacing:.5px;' +
+      'text-transform:uppercase;color:#a8b0b6;text-align:center;margin-bottom:8px">' +
+      'preference H(a)</div>' +
+      S.H.map(function(h, i){
+        var w = (Math.abs(h) / span) * 50;
+        var pos = h >= 0;
+        return '<div style="display:flex;align-items:center;gap:7px;margin-bottom:7px">' +
+          '<div style="width:38px;font-size:10px;color:#a8b0b6">arm ' + (i + 1) + '</div>' +
+          '<div style="flex:1;height:17px;position:relative;background:#f2f5f6;' +
+            'border-radius:4px">' +
+            '<div style="position:absolute;left:50%;top:0;bottom:0;width:1px;' +
+              'background:#d4dcde"></div>' +
+            '<div style="position:absolute;top:2px;bottom:2px;border-radius:3px;' +
+              (pos ? 'left:50%;' : 'right:50%;') + 'width:' + w.toFixed(1) + '%;' +
+              'background:' + (pos ? '#17a2b8' : '#c0504d') + '"></div>' +
+          '</div>' +
+          '<div style="width:46px;font-family:ui-monospace,Menlo,monospace;font-size:11px;' +
+            'font-weight:700;color:#20484A;text-align:right">' + h.toFixed(2) + '</div>' +
+        '</div>';
+      }).join('') + '</div>' +
+
+    '<div><div style="font-size:10px;font-weight:700;letter-spacing:.5px;' +
+      'text-transform:uppercase;color:#a8b0b6;text-align:center;margin-bottom:8px">' +
+      'probability &pi;(a)</div>' +
+      S.P.map(function(p, i){
+        var w = p * 100;
+        return '<div style="display:flex;align-items:center;gap:7px;margin-bottom:7px">' +
+          '<div style="flex:1;height:17px;background:#f2f5f6;border-radius:4px;' +
+            'overflow:hidden"><div style="height:100%;width:' + w.toFixed(1) + '%;' +
+            'background:linear-gradient(90deg,#0d5f62,#17a2b8);border-radius:4px"></div></div>' +
+          '<div style="width:46px;font-family:ui-monospace,Menlo,monospace;font-size:11px;' +
+            'font-weight:700;color:' + (i === S.picked ? '#006064' : '#20484A') +
+            ';text-align:right">' + (p * 100).toFixed(1) + '%</div>' +
+        '</div>';
+      }).join('') + '</div></div>';
+
+  var b = best();
+  $('reads').innerHTML = reads([
+    ['steps', String(S.steps), ''],
+    ['baseline', S.baseline.toFixed(2), 'on'],
+    ['prob on best arm', (S.P[b] * 100).toFixed(0) + '%', S.P[b] > 0.6 ? 'on' : ''],
+    ['last reward', S.steps ? S.lastR.toFixed(2) : '-',
+      S.steps && S.lastR < S.baseline ? 'warn' : '']
+  ]);
+}
+
+var TABS = {
+  soft: {
+    eq: '\\pi_t(a) = \\frac{e^{H_t(a)}}{\\sum_b e^{H_t(b)}}',
+    cap: 'Preferences are not probabilities. Softmax turns one into the other.',
+    says: ['Preferences, not values', 'This method never estimates what an arm is ' +
+           'worth. It keeps a preference, and raises or lowers it depending on ' +
+           'whether the reward beat the average.'],
+    steps: ['All preferences start at zero, so softmax gives every arm the same ' +
+            'probability. Nothing is preferred yet.',
+            'Press <b>One step</b> a few times. Watch a preference bar cross the ' +
+            'centre line, and the probability bar beside it grow.',
+            'Drag <b>temperature</b> down to 0.20. The same preferences now produce ' +
+            'far sharper probabilities: the agent commits harder on the same evidence.',
+            'Press <b>Run</b> and watch <b>&pi; on best arm</b> climb. Stalling below ' +
+            '100% is softmax keeping some exploration alive on purpose.'],
+    read: function(){
+      if (!S.steps) return 'Every preference is <b>0.00</b>, so softmax spreads ' +
+        'probability evenly at <b>' + (100 / S.arms).toFixed(0) + '%</b> each. ' +
+        'Until something is tried there is no reason to prefer anything.';
+      var b = best(), lead = S.P.indexOf(Math.max.apply(null, S.P));
+      var beat = S.lastR > S.baseline;
+      return 'The last pull paid <b>' + S.lastR.toFixed(2) + '</b> against a baseline ' +
+        'of <b>' + S.baseline.toFixed(2) + '</b>, so arm <b>' + (S.picked + 1) +
+        '</b> was pushed ' + (beat ? '<b>up</b> and every other arm down. '
+                                   : '<b>down</b> and every other arm up. ') +
+        'Arm <b>' + (lead + 1) + '</b> now holds <b>' + (S.P[lead] * 100).toFixed(0) +
+        '%</b> of the probability' +
+        (lead === b ? ', and it is the genuinely best arm.'
+                    : ', but the best arm is actually <b>' + (b + 1) + '</b>.');
+    },
+    controls: function(){
+      return slider('arms', 'Number of arms', 2, 6, S.arms, function(v){ return String(v); }, '')
+           + slider('alpha', 'Step size &alpha;', 1, 50, S.alpha,
+                    function(v){ return (v/100).toFixed(2); },
+                    'How hard each reward moves the preferences')
+           + slider('temp', 'Temperature', 10, 300, S.temp,
+                    function(v){ return (v/100).toFixed(2); },
+                    'Low makes softmax decisive, high keeps it hesitant')
+           + '<div class="btns">'
+           + button(S.autoOn ? 'Stop' : 'Run', 'toggleAuto()', S.autoOn ? 'stop' : 'go')
+           + button('One step', 'step()', '') + '</div>'
+           + '<div class="btns">' + button('New problem', 'reset();render()', '') + '</div>';
+    },
+    draw: drawSoft
+  },
+  update: {
+    eq: 'H_{t+1}(a) = H_t(a) + \\alpha\\,(R_t - \\bar{R}_t)\\,' +
+        '\\big(\\mathbb{1}_{a = A_t} - \\pi_t(a)\\big)',
+    cap: 'One reward moves every preference, not only the arm that earned it.',
+    says: ['Why the others move too', 'Probabilities have to sum to one. Raising the ' +
+           'arm you took means lowering everything else, and the amount each one ' +
+           'loses is exactly its own current probability.'],
+    steps: ['Take a step, then read the four numbers here. They are the pieces of ' +
+            'the equation above, in order.',
+            'Notice the sign of <b>R - baseline</b>. A reward below average pushes ' +
+            'the chosen arm <b>down</b>, which is the method admitting a mistake.',
+            'Turn <b>&alpha;</b> up to 0.50 and step again. The same reward now moves ' +
+            'the preferences much further, and the run gets noisier.',
+            'The baseline is just the average reward so far. Without it, every ' +
+            'reward would look good and every preference would drift upward together.'],
+    read: function(){
+      if (!S.steps) return 'Nothing has been taken yet, so there is no reward to ' +
+        'compare against a baseline and no preference has moved.';
+      var d = S.lastR - S.baseline, al = S.alpha / 100;
+      var moved = al * d * (1 - S.P[S.picked]);
+      return 'Arm <b>' + (S.picked + 1) + '</b> paid <b>' + S.lastR.toFixed(2) +
+        '</b>, the baseline is <b>' + S.baseline.toFixed(2) + '</b>, so the ' +
+        'advantage is <b>' + d.toFixed(2) + '</b>. Multiplied by &alpha; = <b>' +
+        al.toFixed(2) + '</b> and by (1 - &pi;) = <b>' +
+        (1 - S.P[S.picked]).toFixed(2) + '</b>, its preference moved by <b>' +
+        moved.toFixed(3) + '</b>. ' +
+        (d >= 0 ? 'Every other arm moved the other way.'
+                : 'Because the advantage was negative, the arm taken went down and ' +
+                  'the others went up.');
+    },
+    controls: function(){
+      return slider('alpha', 'Step size &alpha;', 1, 50, S.alpha,
+                    function(v){ return (v/100).toFixed(2); },
+                    'The multiplier on every preference move')
+           + '<div class="btns">'
+           + button(S.autoOn ? 'Stop' : 'Run', 'toggleAuto()', S.autoOn ? 'stop' : 'go')
+           + button('One step', 'step()', '') + '</div>'
+           + '<div class="btns">' + button('New problem', 'reset();render()', '') + '</div>';
+    },
+    draw: function(){
+      var d = S.steps ? S.lastR - S.baseline : 0, al = S.alpha / 100;
+      $('viz').innerHTML =
+        '<div class="work" style="font-size:14px;line-height:2.4">' +
+        'chosen arm &nbsp; <b>' + (S.steps ? 'A = ' + (S.picked + 1) : '-') + '</b><br>' +
+        'reward &nbsp; R = <b>' + (S.steps ? S.lastR.toFixed(2) : '-') + '</b><br>' +
+        'baseline &nbsp; R&#772; = <b>' + S.baseline.toFixed(2) + '</b><br>' +
+        'advantage &nbsp; R - R&#772; = <b>' + (S.steps ? d.toFixed(2) : '-') + '</b><br>' +
+        '<span style="color:#a8b0b6">' + '&mdash;'.repeat(18) + '</span><br>' +
+        'chosen arm moves by <b>' +
+          (S.steps ? (al * d * (1 - S.P[S.picked])).toFixed(3) : '-') + '</b><br>' +
+        'each other arm by <b>' +
+          (S.steps ? (-al * d * S.P[(S.picked + 1) % S.arms]).toFixed(3) : '-') +
+        '</b> and similar</div>';
+      var b = best();
+      $('reads').innerHTML = reads([
+        ['steps', String(S.steps), ''],
+        ['advantage', S.steps ? d.toFixed(2) : '-', d < 0 ? 'warn' : 'on'],
+        ['step size', al.toFixed(2), ''],
+        ['prob on best arm', (S.P[b] * 100).toFixed(0) + '%', '']
+      ]);
     }
   }
-  window.addEventListener('resize', fit);
-  setTimeout(fit, 120); setTimeout(fit, 700); setTimeout(fit, 1800);
-})();
+};
+reset();
 
-// paint the filled portion of every slider, and keep it painted
-(function(){
-  function fill(r){
-    var min = +r.min || 0, max = +r.max === 0 ? 100 : +r.max;
-    var pct = max === min ? 0 : ((+r.value - min) / (max - min)) * 100;
-    r.style.setProperty('--fill', pct + '%');
-  }
-  var all = document.querySelectorAll('input[type=range]');
-  [].forEach.call(all, function(r){
-    fill(r);
-    r.addEventListener('input', function(){ fill(r); });
-    r.addEventListener('change', function(){ fill(r); });
+var $ = function(id){ return document.getElementById(id); };
+
+function slider(id, label, min, max, val, fmt, hint, step){
+  return '<div class="ctl"><div class="lab"><span>' + label + '</span>' +
+         '<span class="val" id="v-' + id + '">' + fmt(val) + '</span></div>' +
+         '<input type="range" id="' + id + '" min="' + min + '" max="' + max +
+         '" step="' + (step || 1) + '" value="' + val + '">' +
+         (hint ? '<div class="hint">' + hint + '</div>' : '') + '</div>';
+}
+function picker(id, label, opts, sel, hint){
+  var o = opts.map(function(p){
+    return '<option value="' + p[0] + '"' + (String(p[0]) === String(sel) ? ' selected' : '') +
+           '>' + p[1] + '</option>'; }).join('');
+  return '<div class="ctl"><div class="lab"><span>' + label + '</span></div>' +
+         '<select id="' + id + '">' + o + '</select>' +
+         (hint ? '<div class="hint">' + hint + '</div>' : '') + '</div>';
+}
+function button(label, fn, kind){
+  return '<button class="btn ' + (kind || '') + '" type="button" onclick="' + fn +
+         '">' + label + '</button>';
+}
+function reads(items){
+  return items.map(function(it){
+    return '<div class="read' + (it[2] ? ' ' + it[2] : '') + '"><div class="k">' +
+           it[0] + '</div><div class="v">' + it[1] + '</div></div>'; }).join('');
+}
+function paintRange(r){
+  var pct = ((+r.value - +r.min) / ((+r.max - +r.min) || 1)) * 100;
+  r.style.setProperty('--f', pct + '%');
+}
+function wire(){
+  [].forEach.call(document.querySelectorAll('input[type=range]'), function(r){
+    paintRange(r);
+    r.addEventListener('input', function(){ paintRange(r); onInput(r.id, +r.value); });
   });
-  // tools that move a slider from script need repainting too
-  setInterval(function(){ [].forEach.call(all, fill); }, 400);
-})();
-</script>
-</body>
-</html>
+  [].forEach.call(document.querySelectorAll('select'), function(s){
+    s.addEventListener('change', function(){ onInput(s.id, s.value); });
+  });
+}
+function render(){
+  var t = TABS[S.tab];
+  if (t.eq) {
+    $('eq').style.display = '';
+    $('eq').innerHTML = '$$' + t.eq + '$$<div class="cap">' + t.cap + '</div>';
+  } else { $('eq').style.display = 'none'; }
+  $('says').innerHTML = '<h2>' + t.says[0] + '</h2>' +
+    '<div style="font-size:11.5px;line-height:1.6;color:#3d3d3d">' + t.says[1] + '</div>';
+  $('try').innerHTML = '<h2>Try this</h2><ol class="steps">' +
+    t.steps.map(function(x){ return '<li>' + x + '</li>'; }).join('') + '</ol>';
+  $('controls').innerHTML = '<h2>Controls</h2>' + t.controls();
+  t.draw();
+  $('reading').innerHTML = t.read();
+  wire();
+  if (window.renderMathInElement && t.eq){
+    renderMathInElement($('eq'), {
+      delimiters: [{left:'$$', right:'$$', display:true}], throwOnError:false});
+  }
+}
+document.addEventListener('DOMContentLoaded', function(){
+  [].forEach.call(document.querySelectorAll('.tab'), function(b){
+    b.addEventListener('click', function(){
+      var on = document.querySelector('.tab.on');
+      if (on) on.classList.remove('on');
+      b.classList.add('on');
+      S.tab = b.dataset.t;
+      if (typeof onTab === 'function') onTab(S.tab);
+      render();
+    });
+  });
+  function boot(){
+    if (!window.renderMathInElement){ setTimeout(boot, 60); return; }
+    render();
+  }
+  boot();
+});
+</script></body></html>

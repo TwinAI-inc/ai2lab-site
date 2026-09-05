@@ -1,1126 +1,408 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Value Microscope - Policy Evaluation Tool - IE 7295</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #6BADB1 0%, #AAD1CD 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        /* Header */
-        .header {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 80px;
-            height: 4px;
-            background: #E61E27;
-        }
-
-        .header::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 80px;
-            height: 4px;
-            background: #FFC72C;
-        }
-
-        .header h1 {
-            color: white;
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .header p {
-            color: #AAD1CD;
-            font-size: 12.5px;
-        }
-
-        /* Instructions Panel */
-        .instructions-panel {
-            background: white;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .instructions-panel::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, #E61E27, #FFC72C, #0066CC);
-        }
-
-        .instructions-header {
-            padding: 18px 24px;
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            user-select: none;
-            transition: all 0.3s ease;
-        }
-
-        .instructions-header:hover {
-            background: linear-gradient(135deg, #e9ecef 0%, #f8f9fa 100%);
-            padding-left: 28px;
-        }
-
-        .instructions-title {
-            font-weight: 700;
-            font-size: 12.5px;
-            color: #2d2d2d;
-            letter-spacing: 0.3px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .instructions-title::before {
-            content: '';
-            font-size: 16px;
-        }
-
-        .instructions-toggle {
-            font-size: 16px;
-            transition: transform 0.3s;
-            color: #666;
-        }
-
-        .instructions-content {
-            padding: 0;
-            max-height: 0;
-            overflow: hidden;
-            background: white;
-            transition: max-height 0.4s ease, padding 0.4s ease;
-        }
-
-        .instructions-content.active {
-            padding: 25px;
-            max-height: 400px;
-        }
-
-        .instruction-section {
-            margin-bottom: 15px;
-            padding: 12px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border-left: 3px solid #6BADB1;
-        }
-
-        .instruction-section h3 {
-            color: #2d2d2d;
-            font-size: 12.5px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .instruction-section p {
-            color: #555;
-            font-size: 12.5px;
-            line-height: 1.5;
-            margin-bottom: 5px;
-        }
-
-        /* Controls */
-        .controls {
-            background: white;
-            padding: 15px 20px;
-            border-radius: 10px;
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        button {
-            padding: 8px 20px;
-            background: linear-gradient(135deg, #6BADB1 0%, #AAD1CD 100%);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 12.5px;
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: all 0.3s;
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(107, 173, 177, 0.4);
-        }
-
-        /* Main Layout */
-        .main-layout {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        /* Left Panel */
-        .left-panel {
-            flex: 0 0 320px;
-        }
-
-        .grid-box {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .grid-title {
-            font-size: 12.5px;
-            font-weight: 700;
-            text-align: center;
-            color: #2d2d2d;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-
-        .cell {
-            aspect-ratio: 1;
-            background: #f8f9fa;
-            border: 2px solid #e0e0e0;
-            border-radius: 6px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-            padding: 4px;
-        }
-
-        .cell:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-
-        .cell.active {
-            background: linear-gradient(135deg, #6BADB1, #AAD1CD);
-            border-color: #6BADB1;
-            color: white;
-            transform: scale(1.08);
-            box-shadow: 0 6px 12px rgba(107, 173, 177, 0.4);
-        }
-
-        .cell.terminal {
-            background: linear-gradient(135deg, #2d2d2d, #1a1a1a);
-            color: white;
-            border-color: #2d2d2d;
-        }
-
-        .cell-value {
-            font-weight: bold;
-            font-size: 12.5px;
-        }
-
-        .cell.terminal .cell-value {
-            color: #FFC72C;
-        }
-
-        .cell-policy {
-            font-size: 16px;
-            margin: 2px 0;
-        }
-
-        .cell-coords {
-            position: absolute;
-            bottom: 2px;
-            right: 2px;
-            font-size: 11px;
-            background: rgba(255,255,255,0.9);
-            color: #666;
-            padding: 1px 4px;
-            border-radius: 3px;
-        }
-
-        .cell.terminal .cell-coords {
-            background: rgba(0,0,0,0.5);
-            color: #AAD1CD;
-        }
-
-        .cell.active .cell-coords {
-            background: rgba(255,255,255,0.3);
-            color: white;
-        }
-
-        /* Info Panel */
-        .info-panel {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .info-title {
-            font-size: 12.5px;
-            font-weight: 700;
-            color: #2d2d2d;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .info-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px;
-            background: #f8f9fa;
-            border-radius: 6px;
-            font-size: 12.5px;
-        }
-
-        .info-label {
-            color: #666;
-            font-weight: 600;
-        }
-
-        .info-value {
-            font-weight: 700;
-            color: #2d2d2d;
-        }
-
-        .delta-indicator {
-            text-align: center;
-            margin-top: 10px;
-            padding: 10px;
-            background: linear-gradient(135deg, #FFE5E6, #FFCCCC);
-            border-radius: 6px;
-            font-weight: 600;
-            color: #E61E27;
-        }
-
-        .converged {
-            background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
-            color: #4CAF50;
-        }
-
-        /* Right Panel - Microscope */
-        .right-panel {
-            flex: 1;
-        }
-
-        .microscope-box {
-            background: linear-gradient(135deg, #2d2d2d, #1a1a1a);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-        }
-
-        .microscope-title {
-            color: white;
-            text-align: center;
-            font-size: 16px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 20px;
-        }
-
-        .viewer {
-            width: 420px;
-            height: 420px;
-            margin: 0 auto;
-            background: radial-gradient(circle, #2d2d2d 40%, #1a1a1a);
-            border-radius: 50%;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 
-                inset 0 0 50px rgba(0,0,0,0.5),
-                0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        .viewer-inner {
-            width: 90%;
-            height: 90%;
-            background: radial-gradient(circle, white 30%, #f0f8f9);
-            border-radius: 50%;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .state-label {
-            font-size: 12.5px;
-            color: #666;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-
-        .neighbors-display {
-            display: grid;
-            grid-template-columns: repeat(3, 60px);
-            grid-template-rows: repeat(3, 60px);
-            gap: 5px;
-            margin-bottom: 15px;
-        }
-
-        .neighbor-cell {
-            background: #f8f9fa;
-            border: 2px solid #e0e0e0;
-            border-radius: 6px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-        }
-
-        .neighbor-cell.current {
-            background: linear-gradient(135deg, #FFC72C, #FFB300);
-            border-color: #FFB300;
-            color: white;
-            font-weight: bold;
-        }
-
-        .neighbor-cell.neighbor {
-            background: linear-gradient(135deg, #E8F7F8, #D4F1F2);
-            border-color: #6BADB1;
-        }
-
-        .neighbor-cell.empty {
-            opacity: 0.3;
-        }
-
-        .neighbor-value {
-            font-size: 12.5px;
-            font-weight: bold;
-        }
-
-        .neighbor-label {
-            font-size: 11px;
-            margin-top: 2px;
-        }
-
-        .values-box {
-            background: white;
-            border-radius: 8px;
-            padding: 15px;
-            width: 100%;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            margin-bottom: 15px;
-        }
-
-        .value-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .value-row:last-child {
-            border-bottom: none;
-        }
-
-        .value-label {
-            font-size: 12.5px;
-            color: #666;
-            font-weight: 600;
-        }
-
-        .value-num {
-            font-size: 12.5px;
-            font-weight: bold;
-            color: #2d2d2d;
-        }
-
-        .equation-box {
-            background: #2d2d2d;
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            font-family: 'Courier New', monospace;
-            font-size: 12.5px;
-            line-height: 1.7;
-            width: 100%;
-        }
-
-        .equation {
-            color: #AAD1CD;
-            margin: 5px 0;
-        }
-
-        .equation-result {
-            color: #FFC72C;
-            font-weight: bold;
-            font-size: 12.5px;
-            margin-top: 5px;
-        }
-
-        /* Footer */
-        .footer {
-            margin-top: 30px;
-            padding: 12px 20px;
-            background: #2d2d2d;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            border-top: 3px solid transparent;
-            border-image: linear-gradient(90deg, #E61E27, #FFC72C, #0066CC) 1;
-        }
-
-        .footer-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: #AAD1CD;
-            font-size: 12.5px;
-        }
-
-        .course-badge {
-            background: linear-gradient(135deg, #6BADB1, #AAD1CD);
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-weight: 700;
-            font-size: 12.5px;
-            color: white;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-    </style>
-<style>
-/* course overrides - appended after the tool's own sheet, layout untouched */
-body{font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif !important;color:#747474}
-/* font yes, colour no: several tools put headings on dark panels of their own,
-   and forcing a dark ink on them makes the title vanish */
-h1,h2,h3,h4,h5,h6{font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif !important}
-code,pre,.equation,.calculation,.formula{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important}
-a{color:#006064}
-/* the tools centre and constrain their own children, so the band has to insist
-   on being full width and left aligned or it renders as a floating chip */
-.ie7295-band{display:block !important;width:auto !important;max-width:none !important;
-  margin:0 !important;padding:9px 16px !important;text-align:left !important;
-  background:linear-gradient(135deg,#C3E3E4 0%,#C1E2E3 100%);font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
-  border-radius:0 !important;box-shadow:none !important}
-.ie7295-band h1{margin:0;font-size: 16px;font-weight:700;color:#20484A}
-.ie7295-band .sub{display:inline-block;background:rgba(255,255,255,.75);color:#3d5f61;
-  padding:2px 9px;border-radius:999px;font-size: 11px;margin-top:4px}
-.ie7295-foot{display:block !important;width:auto !important;max-width:none !important;
-  margin:0 !important;border-top:1px solid #E4E9EB;padding:10px 16px !important;
-  text-align:center !important;font-size: 11px;color:#a8b0b6;font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
-  background:#fff;border-radius:0 !important}
-</style>
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function(){
-  function go(){
-    if (!window.renderMathInElement) { setTimeout(go, 60); return; }
-    renderMathInElement(document.body, {
-      delimiters: [{left: '$$', right: '$$', display: true},
-                   {left: '\\(', right: '\\)', display: false}],
-      throwOnError: false
-    });
-  }
-  go();
-});
-</script>
-<style>
-.katex{font-size:1.06em}
-.katex-display{margin:.35em 0}
-</style>
-</head>
-<body>
-<div class="ie7295-band"><h1>Value Convergence Microscope</h1><div class="sub">Module 4 &middot; chapter 4</div></div>
-    <div class="header">
-        <h1>Value Convergence Microscope</h1>
-        <p>See exactly how each state's value is calculated during policy evaluation</p>
-    </div>
-
-    <div class="instructions-panel">
-        <div class="instructions-header" onclick="toggleInstructions()">
-            <span class="instructions-title">How This Tool Works</span>
-            <span class="instructions-toggle" id="instructionsToggle"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
-        </div>
-        <div class="instructions-content" id="instructionsContent">
-            <div class="instruction-section">
-                <h3>Purpose</h3>
-                <p>This microscope shows you EXACTLY how the Bellman equation calculates each state's value during policy evaluation.</p>
-            </div>
-            <div class="instruction-section">
-                <h3>Steps to Use</h3>
-                <p>1. Click any state in the left grid to examine it under the microscope</p>
-                <p>2. The microscope shows that cell (yellow) and its neighbors (blue)</p>
-                <p>3. Click "Run Sweep" to perform one iteration of policy evaluation</p>
-                <p>4. Watch how neighbor values determine the new value</p>
-            </div>
-            <div class="instruction-section">
-                <h3>The Math</h3>
-                <p>V(s) = Reward + γ × average(neighbor values)</p>
-                <p>Terminal states (corners) have fixed goal/penalty values</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="controls">
-        <button onclick="runSweep()"> Run Sweep</button>
-        <button onclick="runMultiple()"> Run 10 Sweeps</button>
-        <button onclick="reset()"> Reset</button>
-        <div style="margin-left: 20px; display: flex; align-items: center; gap: 15px;">
-            <label style="font-size: 12.5px; font-weight: 600; color: #666;">γ:</label>
-            <input type="range" id="gammaSlider" min="0" max="100" value="90" 
-                   style="width: 120px;" oninput="updateGamma()">
-            <span id="gammaValue" style="font-weight: 700; color: #6BADB1; min-width: 35px;">0.90</span>
-        </div>
-        <div style="margin-left: 20px; display: flex; align-items: center; gap: 10px;">
-            <label style="font-size: 12.5px; font-weight: 600; color: #666;">Δ threshold:</label>
-            <input type="number" id="deltaThreshold" value="0.01" min="0.001" max="0.1" step="0.001"
-                   style="width: 70px; padding: 4px 8px; border: 2px solid #e0e0e0; border-radius: 4px;">
-        </div>
-        <span style="margin-left: auto; color: #666; font-size: 12.5px;">
-            Sweep: <strong id="sweepCount" style="color: #2d2d2d;">0</strong> | 
-            Max Δ = <strong id="maxDelta" style="color: #E61E27;">0.000</strong>
-        </span>
-    </div>
-
-    <div class="main-layout">
-        <div class="left-panel">
-            <div class="grid-box">
-                <div class="grid-title"> Click State to Examine</div>
-                <div class="grid" id="grid"></div>
-            </div>
-            
-            <div class="info-panel">
-                <div class="info-title">State Information</div>
-                <div class="info-grid">
-                    <div class="info-item">
-                        <span class="info-label">State:</span>
-                        <span class="info-value" id="infoState">(1,1)</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Value:</span>
-                        <span class="info-value" id="infoValue">0.000</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Policy:</span>
-                        <span class="info-value" id="infoPolicy"></span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Delta:</span>
-                        <span class="info-value" id="infoDelta">0.000</span>
-                    </div>
-                </div>
-                <div class="delta-indicator" id="convergenceStatus">
-                    Not Converged (Δ > 0.01)
-                </div>
-            </div>
-        </div>
-
-        <div class="right-panel">
-            <div class="microscope-box">
-                <div class="microscope-title">Value Calculation Under Microscope</div>
-                <div class="viewer">
-                    <div class="viewer-inner">
-                        <div class="neighbors-display" id="neighborsDisplay"></div>
-                        
-                        <div class="values-box">
-                            <div class="value-row">
-                                <span class="value-label">Old Value V(s)</span>
-                                <span class="value-num" id="oldVal">0.000</span>
-                            </div>
-                            <div class="value-row">
-                                <span class="value-label">New Value V'(s)</span>
-                                <span class="value-num" id="newVal" style="color: #6BADB1;">0.000</span>
-                            </div>
-                            <div class="value-row">
-                                <span class="value-label">Delta Δ (Change)</span>
-                                <span class="value-num" id="deltaVal" style="color: #E61E27;">0.000</span>
-                            </div>
-                        </div>
-                        
-                        <div class="equation-box">$$V(s) = R + \gamma \cdot \mathrm{avg}\big(\text{neighbours}\big)$$</div>
-                            <div class="equation" id="calcDetail">= -0.04 + 0.9 × 0.000</div>
-                            <div class="equation-result" id="calcResult">= 0.000</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="footer"> <div class="footer-content"> <div> <span class="course-badge">IE 7295</span>
-                Reinforcement Learning and Applications | Prof. Dehghani
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let state = {
-            gridSize: 4,
-            focusedCell: [1, 1],
-            values: {},
-            oldValues: {},
-            deltas: {},
-            policy: {},
-            sweep: 0,
-            gamma: 0.9,
-            maxDelta: 0,
-            threshold: 0.01
-        };
-
-        function toggleInstructions() {
-            const content = document.getElementById('instructionsContent');
-            const toggle = document.getElementById('instructionsToggle');
-            if (content.classList.contains('active')) {
-                content.classList.remove('active');
-                toggle.innerHTML = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
-            } else {
-                content.classList.add('active');
-                toggle.innerHTML = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>';
-            }
-        }
-
-        function updateGamma() {
-            const select = document.getElementById('gammaSelect');
-            state.gamma = select.value / 100;
-            document.getElementById('gammaValue').textContent = state.gamma.toFixed(2);
-        }
-
-        function initGrid() {
-            const grid = document.getElementById('grid');
-            grid.innerHTML = '';
-            
-            for (let i = 0; i < state.gridSize; i++) {
-                for (let j = 0; j < state.gridSize; j++) {
-                    const cell = document.createElement('div');
-                    cell.className = 'cell';
-                    cell.id = `cell-${i}-${j}`;
-                    
-                    const isTerminal = (i === 0 && j === 0) || (i === 3 && j === 3);
-                    if (isTerminal) {
-                        cell.classList.add('terminal');
-                    }
-                    
-                    const key = `${i},${j}`;
-                    if (isTerminal) {
-                        // Terminal states have fixed rewards
-                        state.values[key] = (i === 0 && j === 0) ? 1.0 : -1.0;
-                        state.policy[key] = '';
-                    } else {
-                        // Non-terminal states start at 0
-                        state.values[key] = 0;
-                        // Random policy
-                        state.policy[key] = ['', '', '', ''][Math.floor(Math.random() * 4)];
-                    }
-                    state.oldValues[key] = state.values[key];
-                    state.deltas[key] = 0;
-                    
-                    cell.innerHTML = `
-                        <div class="cell-value">${state.values[key].toFixed(2)}</div>
-                        <div class="cell-policy">${state.policy[key]}</div>
-                        <div class="cell-coords">${i},${j}</div>
-                    `;
-                    
-                    cell.onclick = () => focusCell(i, j);
-                    grid.appendChild(cell);
-                }
-            }
-            
-            focusCell(1, 1);
-        }
-
-        function getNeighbors(i, j) {
-            const neighbors = [];
-            if (i > 0) neighbors.push(`${i-1},${j}`);
-            if (i < state.gridSize - 1) neighbors.push(`${i+1},${j}`);
-            if (j > 0) neighbors.push(`${i},${j-1}`);
-            if (j < state.gridSize - 1) neighbors.push(`${i},${j+1}`);
-            return neighbors;
-        }
-
-        function updateNeighborsDisplay(i, j) {
-            const display = document.getElementById('neighborsDisplay');
-            display.innerHTML = '';
-            
-            for (let di = -1; di <= 1; di++) {
-                for (let dj = -1; dj <= 1; dj++) {
-                    const ni = i + di;
-                    const nj = j + dj;
-                    const div = document.createElement('div');
-                    
-                    if (di === 0 && dj === 0) {
-                        div.className = 'neighbor-cell current';
-                        div.innerHTML = `
-                            <div class="neighbor-value">${state.values[`${i},${j}`].toFixed(2)}</div>
-                            <div class="neighbor-label">(${i},${j})</div>
-                        `;
-                    } else if (ni >= 0 && ni < state.gridSize && nj >= 0 && nj < state.gridSize) {
-                        const isNeighbor = Math.abs(di) + Math.abs(dj) === 1;
-                        if (isNeighbor) {
-                            div.className = 'neighbor-cell neighbor';
-                            div.innerHTML = `
-                                <div class="neighbor-value">${state.values[`${ni},${nj}`].toFixed(2)}</div>
-                                <div class="neighbor-label">(${ni},${nj})</div>
-                            `;
-                        } else {
-                            div.className = 'neighbor-cell empty';
-                        }
-                    } else {
-                        div.className = 'neighbor-cell empty';
-                    }
-                    
-                    display.appendChild(div);
-                }
-            }
-        }
-
-        function focusCell(i, j) {
-            document.querySelectorAll('.cell').forEach(c => c.classList.remove('active'));
-            document.getElementById(`cell-${i}-${j}`).classList.add('active');
-            state.focusedCell = [i, j];
-            
-            updateMicroscope();
-            updateInfo();
-            updateNeighborsDisplay(i, j);
-        }
-
-        function updateMicroscope() {
-            const [i, j] = state.focusedCell;
-            const key = `${i},${j}`;
-            
-            document.getElementById('oldVal').textContent = state.oldValues[key].toFixed(3);
-            document.getElementById('newVal').textContent = state.values[key].toFixed(3);
-            document.getElementById('deltaVal').textContent = state.deltas[key].toFixed(4);
-            
-            const isTerminal = (i === 0 && j === 0) || (i === 3 && j === 3);
-            
-            if (isTerminal) {
-                document.getElementById('calcDetail').textContent = `Terminal State - Fixed Value`;
-                document.getElementById('calcResult').textContent = `= ${state.values[key].toFixed(3)}`;
-            } else {
-                const neighbors = getNeighbors(i, j);
-                let avgNeighbor = 0;
-                let neighborDetails = [];
-                neighbors.forEach(n => {
-                    const val = state.oldValues[n];
-                    avgNeighbor += val / neighbors.length;
-                    neighborDetails.push(val.toFixed(2));
-                });
-                
-                document.getElementById('calcDetail').textContent = 
-                    `= -0.04 + 0.9 × (${neighborDetails.join('+')})/${neighbors.length}`;
-                document.getElementById('calcResult').textContent = 
-                    `= ${state.values[key].toFixed(3)}`;
-            }
-        }
-
-        function updateInfo() {
-            const [i, j] = state.focusedCell;
-            const key = `${i},${j}`;
-            
-            document.getElementById('infoState').textContent = `(${i},${j})`;
-            document.getElementById('infoValue').textContent = state.values[key].toFixed(3);
-            document.getElementById('infoPolicy').textContent = state.policy[key];
-            document.getElementById('infoDelta').textContent = state.deltas[key].toFixed(4);
-        }
-
-        function runSweep() {
-            state.sweep++;
-            document.getElementById('sweepCount').textContent = state.sweep;
-            
-            Object.keys(state.values).forEach(key => {
-                state.oldValues[key] = state.values[key];
-            });
-            
-            const newValues = {};
-            state.maxDelta = 0;
-            
-            for (let i = 0; i < state.gridSize; i++) {
-                for (let j = 0; j < state.gridSize; j++) {
-                    const key = `${i},${j}`;
-                    const isTerminal = (i === 0 && j === 0) || (i === 3 && j === 3);
-                    
-                    if (isTerminal) {
-                        newValues[key] = state.values[key];
-                        state.deltas[key] = 0;
-                    } else {
-                        const neighbors = getNeighbors(i, j);
-                        let avgNeighborValue = 0;
-                        neighbors.forEach(n => {
-                            avgNeighborValue += state.oldValues[n] / neighbors.length;
-                        });
-                        
-                        const reward = -0.04;
-                        newValues[key] = reward + state.gamma * avgNeighborValue;
-                        state.deltas[key] = Math.abs(newValues[key] - state.oldValues[key]);
-                        state.maxDelta = Math.max(state.maxDelta, state.deltas[key]);
-                    }
-                }
-            }
-            
-            state.values = newValues;
-            
-            for (let i = 0; i < state.gridSize; i++) {
-                for (let j = 0; j < state.gridSize; j++) {
-                    const cell = document.getElementById(`cell-${i}-${j}`);
-                    const key = `${i},${j}`;
-                    cell.querySelector('.cell-value').textContent = state.values[key].toFixed(2);
-                }
-            }
-            
-            document.getElementById('maxDelta').textContent = state.maxDelta.toFixed(4);
-            
-            // Get current threshold value
-            state.threshold = parseFloat(document.getElementById('deltaThreshold').value);
-            
-            const status = document.getElementById('convergenceStatus');
-            if (state.maxDelta < state.threshold) {
-                status.textContent = ` Converged! (Δ < ${state.threshold})`;
-                status.classList.add('converged');
-            } else {
-                status.textContent = `Not Converged (Δ = ${state.maxDelta.toFixed(4)})`;
-                status.classList.remove('converged');
-            }
-            
-            updateMicroscope();
-            updateInfo();
-            updateNeighborsDisplay(...state.focusedCell);
-        }
-
-        function runMultiple() {
-            for (let i = 0; i < 10; i++) {
-                runSweep();
-            }
-        }
-
-        function reset() {
-            state.sweep = 0;
-            state.maxDelta = 0;
-            document.getElementById('sweepCount').textContent = '0';
-            document.getElementById('maxDelta').textContent = '0.000';
-            document.getElementById('convergenceStatus').textContent = 'Not Converged (Δ > 0.01)';
-            document.getElementById('convergenceStatus').classList.remove('converged');
-            initGrid();
-        }
-
-        window.onload = () => {
-            initGrid();
-            updateNeighborsDisplay(1, 1);
-        };
-    </script>
-<div class="ie7295-foot">IE7295: Applied Reinforcement Learning &middot; Prof. Dehghani</div>
-
-<style>
-/* sync_tools v12 ---------------------------------------------------------------------
-   Appended, never substituted. Everything here is a decision taken on the
-   Module 1 Grid World tool and carried across so the set reads as one course.
-   ---------------------------------------------------------------------- */
-
-/* the three colour rule under the band, the one place the full palette shows */
-.ie7295-band{position:relative}
-.ie7295-band::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;
-  background:linear-gradient(90deg,#F5D000 0 33.33%,#E2231A 33.33% 66.66%,#0064B0 66.66% 100%)}
-
-/* sliders: the weighted bar. The track is styled, so the thumb needs its
-   centring offset back by hand or WebKit aligns it to the track's top edge. */
-input[type=range]{-webkit-appearance:none;appearance:none;background:none;
-  height:22px;cursor:pointer}
-input[type=range]{border-radius:999px;
-  background:linear-gradient(90deg,#0d5f62 0%,#17a2b8 var(--fill,0%),
-             #e2e9ea var(--fill,0%),#e2e9ea 100%) !important;
-  height:11px !important;margin:9px 0}
-input[type=range]::-webkit-slider-runnable-track{height:11px;border-radius:999px;
-  background:transparent;border:0}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;margin-top:-5px;
-  width:21px;height:21px;border-radius:999px;background:#fff;border:2px solid #006064;
-  box-shadow:0 1px 4px rgba(0,0,0,.16);cursor:pointer}
-input[type=range]::-moz-range-track{height:11px;border-radius:999px;
-  background:transparent;border:0}
-input[type=range]::-moz-range-thumb{width:21px;height:21px;border-radius:999px;
-  background:#fff;border:2px solid #006064;box-shadow:0 1px 4px rgba(0,0,0,.16);cursor:pointer}
-input[type=range]:focus{outline:none}
-input[type=range]::-webkit-slider-thumb:hover,
-input[type=range]::-moz-range-thumb:hover{box-shadow:0 0 0 5px rgba(0,96,100,.13)}
-
-/* buttons: pills, one weight of emphasis */
-button, .btn, input[type=button], input[type=submit]{
-  font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif !important;border-radius:999px !important;
-  font-weight:700 !important;cursor:pointer}
-
-/* Teal is the course's one accent. Cliff Walker painted its buttons in
-   var(--mit-blue), which this course reserves for policy arrows, so the button
-   is overridden rather than the variable: anything semantic keeps its colour.
-   Danger and destructive controls are left alone deliberately. */
-button:not([class*=danger]):not([class*=delete]):not([class*=remove]),
-.btn:not([class*=danger]){
-  background:linear-gradient(135deg,#006064 0%,#17a2b8 100%) !important;
-  color:#fff !important;border:0 !important}
-button:disabled, .btn:disabled{
-  background:#cfd8dc !important;color:#8b969b !important;cursor:not-allowed}
-
-/* panels line up with the pages: same hairline, same radius */
-.panel,.card,.box,.section,.controls,.stats,.info,.legend{
-  border-radius:6px}
-
-/* prose is INK. MUTE is for captions, and reads at 2.2:1 which is not text. */
-p, li, td{color:#3d3d3d}
-
-/* the field the panels sit on. Several tools shipped with a strong teal
-   gradient body, which fought the mint band directly above it. */
-body{background:#f4f6f8 !important}
-
-/* Each tool carries its own title block, a black slab that repeated the title
-   already on the course band. The text is content, so it stays: the slab is
-   restyled into the course box instead. Background and colour have to move
-   together, or the white title is left invisible on a white panel. */
-.header{background:#fff !important;border-left:3px solid #006064 !important;
-  border-radius:0 6px 6px 0 !important;box-shadow:none !important;
-  padding:13px 17px !important;margin-bottom:14px !important}
-.header h1,.header h2{color:#20484A !important;font-size:16px !important;
-  font-weight:700 !important;margin:0 0 3px !important;text-shadow:none !important}
-.header p,.header .subtitle,.header div,.header em,.header i{
-  color:#3d3d3d !important;font-size:12.5px !important;line-height:1.6 !important;
-  text-shadow:none !important}
-.header em,.header i{font-size:11px !important;color:#a8b0b6 !important}
-
-/* One window, no page scroll. The band and the footer are pinned and the
-   middle is wrapped in a stage that scrolls on its own, so a tool that is
-   genuinely taller than the screen keeps its chrome in place instead of
-   pushing it off. Spacing is tightened first, so most tools fit outright and
-   the stage never has to scroll at all. */
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Value Microscope - IE 7295</title><link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script><style>
+*{box-sizing:border-box}
 html,body{height:100%;margin:0}
-body{display:flex;flex-direction:column;overflow:hidden}
-.ie7295-band,.ie7295-foot{flex:0 0 auto}
-.ie7295-stage{flex:1 1 auto;min-height:0;overflow:auto;padding:11px 15px}
-.ie7295-stage > *:first-child{margin-top:0 !important}
+body{font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;background:#f4f6f8;color:#3d3d3d;font-size:12.5px;line-height:1.5;
+  display:flex;flex-direction:column;overflow:hidden}
 
-/* the same header and footer on every tool, to the pixel */
-.ie7295-band{padding:9px 16px !important}
-.ie7295-band h1{font-size:16px !important;font-weight:700 !important;margin:0 !important}
-.ie7295-band .sub{display:inline-block;background:rgba(255,255,255,.75);color:#3d5f61;
+.band{flex:0 0 auto;background:linear-gradient(135deg,#C3E3E4 0%,#C1E2E3 100%);
+  padding:9px 16px;position:relative}
+.band::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;
+  background:linear-gradient(90deg,#F5D000 0 33.33%,#E2231A 33.33% 66.66%,#0064B0 66.66% 100%)}
+.band h1{margin:0;font-size:16px;font-weight:700;color:#20484A}
+.band .sub{display:inline-block;background:rgba(255,255,255,.75);color:#3d5f61;
   padding:2px 9px;border-radius:999px;font-size:11px;margin-top:3px}
-.ie7295-foot{border-top:1px solid #E4E9EB;padding:9px 16px !important;text-align:center;
-  font-size:11px !important;color:#a8b0b6 !important;background:#fff}
+.foot{flex:0 0 auto;border-top:1px solid #E4E9EB;background:#fff;padding:8px 16px;
+  text-align:center;font-size:11px;color:#a8b0b6}
 
-/* tightened so the content clears the fold */
-.container,.wrapper,.main{padding:0 !important;margin:0 auto !important;max-width:1400px}
-.header{padding:10px 15px !important;margin-bottom:9px !important}
-.instructions{margin-bottom:9px !important}
-.controls,.control-panel,.panel,.card,.section{margin-bottom:9px !important}
-h2{margin-top:12px !important}
-</style>
+.stage{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:9px;
+  padding:10px 14px}
+.tabs{flex:0 0 auto;display:inline-flex;background:#fff;border:1px solid #E4E9EB;
+  border-radius:999px;padding:3px;align-self:flex-start}
+.tab{font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;color:#5b7175;background:none;
+  border:0;border-radius:999px;padding:7px 20px;cursor:pointer;white-space:nowrap}
+.tab.on{background:linear-gradient(135deg,#006064 0%,#17a2b8 100%);color:#fff}
 
-<script>
-(function(){
-  var band = document.querySelector('.ie7295-band'),
-      foot = document.querySelector('.ie7295-foot');
-  if (!band || document.querySelector('.ie7295-stage')) return;
-  var stage = document.createElement('div');
-  stage.className = 'ie7295-stage';
-  var n = band.nextSibling;
-  while (n && n !== foot) { var next = n.nextSibling; stage.appendChild(n); n = next; }
-  document.body.insertBefore(stage, foot || null);
-})();
+.cols{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:264px 1fr;gap:10px}
+.side{display:flex;flex-direction:column;gap:8px;min-height:0;overflow:auto;
+  padding-right:2px}
+.main{display:flex;flex-direction:column;gap:9px;min-height:0}
 
-// Fit the stage to the window. Tightening the spacing got the chrome to stay
-// put but left the content up to 1100px taller than the screen, so it is
-// scaled down to fit. The floor is deliberate: below it the type stops being
-// readable and scrolling is the better answer, so the stage scrolls instead.
-(function(){
-  var MIN = document.body.dataset.fitFloor ? +document.body.dataset.fitFloor : 0.66;
-  function fit(){
-    var st = document.querySelector('.ie7295-stage');
-    if (!st) return;
-    var inner = st.firstElementChild && st.children.length === 1
-                ? st.firstElementChild : null;
-    if (!inner) {
-      inner = document.createElement('div');
-      inner.className = 'ie7295-fit';
-      while (st.firstChild) inner.appendChild(st.firstChild);
-      st.appendChild(inner);
-    }
-    // zoom, not transform: a scale() leaves the layout box at full size, so
-    // the container carries on scrolling. zoom reflows, which is the point.
-    inner.style.zoom = 1;
-    // zoom reflows, so what it needs changes as it shrinks. Measure the stage
-    // itself after each pass rather than predicting: the earlier version scaled
-    // an already scaled height and stalled a few pixels short every time.
-    var k = 1;
-    for (var i = 0; i < 6; i++) {
-      var over = st.scrollHeight - st.clientHeight;
-      if (over <= 0) break;
-      var next = Math.max(MIN, k * (st.clientHeight - 2) / st.scrollHeight);
-      if (next >= k - 0.002) break;          // at the floor, or converged
-      k = next;
-      inner.style.zoom = k.toFixed(3);
-    }
+.card{background:#fff;border:1px solid #E4E9EB;border-radius:6px;padding:10px 12px}
+.card.rule{border-left:3px solid #8FC8CA;border-radius:0 6px 6px 0}
+h2{font-size:10.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+  color:#006064;margin:0 0 6px}
+
+.ctl{margin-bottom:9px}
+.ctl:last-child{margin-bottom:0}
+.ctl .lab{display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+  font-size:11px;font-weight:700;color:#20484A;margin-bottom:2px}
+.ctl .val{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;font-weight:700;color:#006064;
+  background:#eef6f6;border-radius:999px;padding:1px 9px}
+.ctl .hint{font-size:10px;color:#a8b0b6;margin-top:3px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:10px;
+  border-radius:999px;margin:6px 0 0;cursor:pointer;outline:none;
+  background:linear-gradient(90deg,#0d5f62 0%,#17a2b8 var(--f,0%),
+             #e2e9ea var(--f,0%),#e2e9ea 100%)}
+input[type=range]::-webkit-slider-runnable-track{height:10px;background:transparent}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;margin-top:-5px;
+  width:20px;height:20px;border-radius:999px;background:#fff;border:2px solid #006064;
+  box-shadow:0 1px 4px rgba(0,0,0,.18)}
+input[type=range]::-moz-range-track{height:10px;background:transparent}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:999px;
+  background:#fff;border:2px solid #006064;box-shadow:0 1px 4px rgba(0,0,0,.18)}
+select{width:100%;font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;font-size:12px;color:#20484A;background:#fff;
+  border:1px solid #E4E9EB;border-radius:6px;padding:7px 9px;margin-top:5px;cursor:pointer}
+select:focus{outline:none;border-color:#8FC8CA}
+.btns{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
+.btn{flex:1 1 0;min-width:76px;font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;font-size:11.5px;font-weight:700;
+  border-radius:999px;padding:7px 0;cursor:pointer;border:1px solid #E4E9EB;
+  background:#fff;color:#20484A}
+.btn:hover{border-color:#8FC8CA;background:#eef6f6}
+.btn.go{border:0;color:#fff;background:linear-gradient(135deg,#006064 0%,#17a2b8 100%)}
+.btn.stop{border:0;color:#fff;background:linear-gradient(135deg,#8b1a1a 0%,#b8433f 100%)}
+.btn:disabled{background:#eef1f2;color:#9aa8ae;cursor:not-allowed;border-color:#E4E9EB}
+
+.eq{background:rgba(143,200,202,.13);border-left:3px solid #8FC8CA;border-radius:0 6px 6px 0;
+  padding:11px 15px;text-align:center}
+.eq .cap{font-size:11px;color:#3d3d3d;margin-top:6px}
+.viz{flex:1 1 auto;min-height:0;background:#fff;border:1px solid #E4E9EB;border-radius:6px;
+  padding:12px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.reading{flex:0 0 auto;background:rgba(0,96,100,.07);border-left:3px solid #006064;
+  border-radius:0 6px 6px 0;padding:9px 14px;font-size:12px;line-height:1.55;color:#3d3d3d}
+.reading b{color:#006064;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-weight:700}
+.reads{flex:0 0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.read{background:#fff;border:1px solid #E4E9EB;border-radius:6px;padding:8px 11px}
+.read .k{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  color:#a8b0b6}
+.read .v{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:17px;font-weight:700;color:#20484A;margin-top:1px}
+.read.on .v{color:#006064}
+.read.warn .v{color:#8b1a1a}
+
+.steps{counter-reset:s;margin:0;padding:0;list-style:none}
+.steps li{counter-increment:s;position:relative;padding-left:20px;margin-bottom:5px;
+  font-size:10.5px;line-height:1.45;color:#3d3d3d}
+.steps li:last-child{margin-bottom:0}
+.steps li::before{content:counter(s);position:absolute;left:0;top:1px;width:15px;
+  height:15px;border-radius:999px;background:#006064;color:#fff;font-size:9.5px;
+  font-weight:700;display:flex;align-items:center;justify-content:center}
+.katex{font-size:1.05em}
+
+/* pieces individual tools draw with, all from the same palette */
+.tile{border:1px solid #E4E9EB;border-radius:6px;background:#f7f9f9;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;transition:all .18s}
+.tile .k{font-size:10px;color:#a8b0b6}
+.tile .v{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:22px;font-weight:700;color:#20484A}
+.tile.on{border:2px solid #006064;background:#eef6f6}
+.tile.best{border:2px solid #2e9e6b;background:rgba(0,150,90,.10)}
+.tile.best .v{color:#1d6b4a}
+.tile.bad{border:2px solid #E2231A;background:rgba(226,35,26,.08)}
+.tile.bad .v{color:#8b1a1a}
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:14px;height:100%;
+  width:100%;padding-bottom:22px}
+.bar{flex:1;max-width:92px;display:flex;flex-direction:column;justify-content:flex-end;
+  align-items:center;height:100%;position:relative}
+.bar .fill{width:100%;border-radius:5px 5px 0 0;min-height:3px;
+  background:linear-gradient(180deg,#17a2b8,#0d5f62)}
+.bar .fill.neg{background:linear-gradient(180deg,#d4685f,#8b1a1a)}
+.bar .t{position:absolute;bottom:-19px;font-size:11px;color:#a8b0b6;white-space:nowrap}
+.bar .c{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;font-weight:700;color:#006064;margin-bottom:4px}
+.work{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;color:#3d3d3d;line-height:2.1}
+.work b{color:#006064}
+</style></head><body><div class="band"><h1>Value Microscope</h1><div class="sub">Module 4 &middot; policy evaluation, one square at a time</div></div><div class="stage"><div class="tabs"><button class="tab on" data-t="sweep" type="button">Sweeps</button><button class="tab" data-t="cell" type="button">One square</button></div><div class="cols"><div class="side"><div class="card rule" id="controls"></div><div class="card rule" id="says"></div><div class="card rule" id="try"></div></div><div class="main"><div class="card eq" id="eq"></div><div class="viz" id="viz"></div><div class="reading" id="reading"></div><div class="reads" id="reads"></div></div></div></div><div class="foot">IE7295: Applied Reinforcement Learning &middot; Prof. Dehghani</div><script>
+var R = 4, C = 4;
+var S = {
+  tab: 'sweep', gamma: 90, step: -4, sel: [1, 1], sweeps: 0, delta: 0,
+  V: [], goal: [0, 3], trap: [1, 3], wall: [1, 1],
+  autoOn: false, autoT: null
+};
+
+function reset(){
+  S.V = [];
+  for (var r = 0; r < R; r++){
+    S.V.push([]);
+    for (var c = 0; c < C; c++) S.V[r].push(0);
   }
-  window.addEventListener('resize', fit);
-  setTimeout(fit, 120); setTimeout(fit, 700); setTimeout(fit, 1800);
-})();
-
-// paint the filled portion of every slider, and keep it painted
-(function(){
-  function fill(r){
-    var min = +r.min || 0, max = +r.max === 0 ? 100 : +r.max;
-    var pct = max === min ? 0 : ((+r.value - min) / (max - min)) * 100;
-    r.style.setProperty('--fill', pct + '%');
-  }
-  var all = document.querySelectorAll('input[type=range]');
-  [].forEach.call(all, function(r){
-    fill(r);
-    r.addEventListener('input', function(){ fill(r); });
-    r.addEventListener('change', function(){ fill(r); });
+  S.sweeps = 0; S.delta = 0; S.sel = [2, 0];
+  stopAuto();
+}
+function isWall(r, c){ return r === S.wall[0] && c === S.wall[1]; }
+function isTerm(r, c){
+  return (r === S.goal[0] && c === S.goal[1]) || (r === S.trap[0] && c === S.trap[1]);
+}
+function rewardAt(r, c){
+  if (r === S.goal[0] && c === S.goal[1]) return 1;
+  if (r === S.trap[0] && c === S.trap[1]) return -1;
+  return S.step / 100;
+}
+function neighbours(r, c){
+  var out = [];
+  [[-1,0],[1,0],[0,-1],[0,1]].forEach(function(d){
+    var nr = r + d[0], nc = c + d[1];
+    if (nr < 0 || nr >= R || nc < 0 || nc >= C || isWall(nr, nc)){ nr = r; nc = c; }
+    out.push([nr, nc]);
   });
-  // tools that move a slider from script need repainting too
-  setInterval(function(){ [].forEach.call(all, fill); }, 400);
-})();
-</script>
-</body>
-</html>
+  return out;                       // walking into a wall leaves you where you are
+}
+function backup(r, c){
+  // the equal-probability random policy: average over the four moves
+  var g = S.gamma / 100, sum = 0, nb = neighbours(r, c);
+  nb.forEach(function(p){ sum += S.V[p[0]][p[1]]; });
+  return rewardAt(r, c) + g * (sum / 4);
+}
+function sweep(){
+  var next = [], d = 0;
+  for (var r = 0; r < R; r++){
+    next.push([]);
+    for (var c = 0; c < C; c++){
+      if (isWall(r, c) || isTerm(r, c)){ next[r].push(S.V[r][c]); continue; }
+      var v = backup(r, c);
+      d = Math.max(d, Math.abs(v - S.V[r][c]));
+      next[r].push(v);
+    }
+  }
+  // terminals hold the reward itself, which is where the value comes from
+  next[S.goal[0]][S.goal[1]] = 1;
+  next[S.trap[0]][S.trap[1]] = -1;
+  S.V = next; S.sweeps += 1; S.delta = d;
+  render();
+}
+function stopAuto(){ S.autoOn = false; if (S.autoT){ clearInterval(S.autoT); S.autoT = null; } }
+function toggleAuto(){
+  if (S.autoOn){ stopAuto(); render(); return; }
+  S.autoOn = true;
+  S.autoT = setInterval(function(){
+    if (S.delta < 0.001 && S.sweeps > 1){ stopAuto(); render(); return; }
+    if (S.sweeps > 120){ stopAuto(); render(); return; }
+    sweep();
+  }, 160);
+  render();
+}
+function selectCell(r, c){ S.sel = [r, c]; render(); }
+function onInput(id, val){
+  if (id === 'gamma') S.gamma = +val;
+  if (id === 'step') S.step = +val;
+  render();
+}
+function onTab(){ stopAuto(); }
+
+function grid(){
+  var lo = 99, hi = -99;
+  for (var r = 0; r < R; r++) for (var c = 0; c < C; c++){
+    if (isWall(r, c)) continue;
+    lo = Math.min(lo, S.V[r][c]); hi = Math.max(hi, S.V[r][c]);
+  }
+  var span = Math.max(0.2, hi - lo);
+  var out = '<div style="display:grid;grid-template-columns:repeat(' + C +
+            ',88px);grid-template-rows:repeat(' + R + ',72px);gap:7px">';
+  for (var r = 0; r < R; r++){
+    for (var c = 0; c < C; c++){
+      if (isWall(r, c)){
+        out += '<div class="tile" style="background:#dfe6e8;border-color:#cdd6d8"></div>';
+        continue;
+      }
+      var v = S.V[r][c];
+      var t = (v - lo) / span;                      // 0 at the lowest, 1 at the highest
+      var bg = v >= 0 ? 'rgba(29,107,74,' + (0.06 + 0.5 * t).toFixed(2) + ')'
+                      : 'rgba(160,45,45,' + (0.06 + 0.5 * (1 - t)).toFixed(2) + ')';
+      var cls = (r === S.sel[0] && c === S.sel[1]) ? ' on' : '';
+      var tag = (r === S.goal[0] && c === S.goal[1]) ? 'goal'
+              : (r === S.trap[0] && c === S.trap[1]) ? 'trap' : '';
+      out += '<div class="tile' + cls + '" style="cursor:pointer;background:' + bg +
+             '" onclick="selectCell(' + r + ',' + c + ')">' +
+             (tag ? '<div class="k">' + tag + '</div>' : '') +
+             '<div class="v" style="font-size:17px">' + v.toFixed(2) + '</div></div>';
+    }
+  }
+  return out + '</div>';
+}
+
+var TABS = {
+  sweep: {
+    eq: 'V(s) \\leftarrow R(s) + \\gamma \\sum_{s\'} \\tfrac{1}{4} V(s\')',
+    cap: 'Every state takes the average of its four neighbours, discounted, plus its own reward.',
+    says: ['One rule, applied everywhere', 'There is no cleverness here. Each sweep ' +
+           'replaces every value with the same small calculation, and repeating it ' +
+           'is what makes the numbers settle.'],
+    steps: ['Everything starts at zero except the goal and the trap, which hold ' +
+            'their own rewards.',
+            'Press <b>One sweep</b>. Only the squares next to the goal and trap ' +
+            'move, because everywhere else is still averaging zeros.',
+            'Keep sweeping. The values spread outward one ring per sweep. That is ' +
+            'information travelling, not the agent moving.',
+            'Watch <b>largest change</b> shrink toward zero. When it stops moving, ' +
+            'the values are the answer for this policy.'],
+    read: function(){
+      if (!S.sweeps) return 'Nothing has been swept yet. Every square is <b>0.00</b> ' +
+        'except the goal at <b>1.00</b> and the trap at <b>-1.00</b>, which are the ' +
+        'only two values anyone told the agent.';
+      var done = S.delta < 0.001;
+      return 'After <b>' + S.sweeps + '</b> sweeps the largest single change was <b>' +
+        S.delta.toFixed(4) + '</b>. ' +
+        (done ? 'That is small enough to call it settled: sweeping again would ' +
+                'change nothing you could see. These are the true values of this ' +
+                'policy.'
+              : 'Values are still moving, so the numbers on screen are a snapshot ' +
+                'of a calculation partway through, not an answer yet.');
+    },
+    controls: function(){
+      return slider('gamma', 'Discount &gamma;', 0, 99, S.gamma,
+                    function(v){ return (v/100).toFixed(2); },
+                    'How much a neighbour is worth from here')
+           + slider('step', 'Step reward', -20, 0, S.step,
+                    function(v){ return (v/100).toFixed(2); },
+                    'The small cost of being anywhere but the ends')
+           + '<div class="btns">'
+           + button(S.autoOn ? 'Stop' : 'Run to settle', 'toggleAuto()', S.autoOn ? 'stop' : 'go')
+           + button('One sweep', 'sweep()', '') + '</div>'
+           + '<div class="btns">' + button('Reset', 'reset();render()', '') + '</div>';
+    },
+    draw: function(){
+      $('viz').innerHTML = grid();
+      $('reads').innerHTML = reads([
+        ['sweeps', String(S.sweeps), ''],
+        ['largest change', S.sweeps ? S.delta.toFixed(4) : '-',
+          S.sweeps && S.delta < 0.001 ? 'on' : ''],
+        ['settled', S.sweeps > 1 && S.delta < 0.001 ? 'yes' : 'no',
+          S.sweeps > 1 && S.delta < 0.001 ? 'on' : ''],
+        ['discount', (S.gamma / 100).toFixed(2), '']
+      ]);
+    }
+  },
+  cell: {
+    eq: 'V(s) \\leftarrow R(s) + \\gamma \\cdot \\mathrm{mean}\\big(V(s_1), V(s_2), V(s_3), V(s_4)\\big)',
+    cap: 'The same rule, for one square, with its actual numbers.',
+    says: ['Look at one square', 'Click any square on the grid to open it up. ' +
+           'The whole sweep is this calculation, done once per square.'],
+    steps: ['Click a square. Its four neighbours and the arithmetic appear here.',
+            'A move into a wall or off the edge leaves the agent where it is, so ' +
+            'that neighbour is the square itself.',
+            'Press <b>One sweep</b> and watch this square\'s number become the ' +
+            'result you were shown.',
+            'Pick a square far from the goal. Early on its neighbours are all zero, ' +
+            'which is why distant squares stay still for several sweeps.'],
+    read: function(){
+      var r = S.sel[0], c = S.sel[1];
+      if (isWall(r, c)) return 'That square is a wall. It has no value because the ' +
+        'agent can never be in it.';
+      if (isTerm(r, c)) return 'That is a terminal square. Its value is just its ' +
+        'reward, <b>' + S.V[r][c].toFixed(2) + '</b>, and the sweep leaves it alone.';
+      var nb = neighbours(r, c), sum = 0;
+      nb.forEach(function(p){ sum += S.V[p[0]][p[1]]; });
+      var g = S.gamma / 100, mean = sum / 4, next = rewardAt(r, c) + g * mean;
+      return 'Its neighbours average <b>' + mean.toFixed(3) + '</b>. Discounted by <b>' +
+        g.toFixed(2) + '</b> that is <b>' + (g * mean).toFixed(3) + '</b>, plus the ' +
+        'step reward of <b>' + rewardAt(r, c).toFixed(2) + '</b>, giving <b>' +
+        next.toFixed(3) + '</b> against its current <b>' + S.V[r][c].toFixed(3) + '</b>.';
+    },
+    controls: function(){
+      return slider('gamma', 'Discount &gamma;', 0, 99, S.gamma,
+                    function(v){ return (v/100).toFixed(2); }, '')
+           + '<div class="btns">' + button('One sweep', 'sweep()', 'go')
+           + button('Reset', 'reset();render()', '') + '</div>';
+    },
+    draw: function(){
+      var r = S.sel[0], c = S.sel[1];
+      var nb = neighbours(r, c), sum = 0;
+      nb.forEach(function(p){ sum += S.V[p[0]][p[1]]; });
+      var g = S.gamma / 100, mean = sum / 4;
+      var names = ['up', 'down', 'left', 'right'];
+      $('viz').innerHTML =
+        '<div style="display:flex;gap:26px;align-items:center">' + grid() +
+        '<div class="work">' +
+          'square <b>(' + r + ', ' + c + ')</b><br>' +
+          names.map(function(n, i){
+            return n + ' &#8594; <b>' + S.V[nb[i][0]][nb[i][1]].toFixed(2) + '</b>';
+          }).join('<br>') +
+          '<br><span style="color:#a8b0b6">' + '&mdash;'.repeat(12) + '</span><br>' +
+          'mean = <b>' + mean.toFixed(3) + '</b><br>' +
+          '&gamma; &times; mean = <b>' + (g * mean).toFixed(3) + '</b><br>' +
+          'R + that = <b>' + (rewardAt(r, c) + g * mean).toFixed(3) + '</b>' +
+        '</div></div>';
+      $('reads').innerHTML = reads([
+        ['square', '(' + r + ', ' + c + ')', ''],
+        ['current V', S.V[r][c].toFixed(3), ''],
+        ['after a sweep', (isTerm(r, c) || isWall(r, c) ? S.V[r][c]
+                           : rewardAt(r, c) + g * mean).toFixed(3), 'on'],
+        ['sweeps', String(S.sweeps), '']
+      ]);
+    }
+  }
+};
+reset();
+
+var $ = function(id){ return document.getElementById(id); };
+
+function slider(id, label, min, max, val, fmt, hint, step){
+  return '<div class="ctl"><div class="lab"><span>' + label + '</span>' +
+         '<span class="val" id="v-' + id + '">' + fmt(val) + '</span></div>' +
+         '<input type="range" id="' + id + '" min="' + min + '" max="' + max +
+         '" step="' + (step || 1) + '" value="' + val + '">' +
+         (hint ? '<div class="hint">' + hint + '</div>' : '') + '</div>';
+}
+function picker(id, label, opts, sel, hint){
+  var o = opts.map(function(p){
+    return '<option value="' + p[0] + '"' + (String(p[0]) === String(sel) ? ' selected' : '') +
+           '>' + p[1] + '</option>'; }).join('');
+  return '<div class="ctl"><div class="lab"><span>' + label + '</span></div>' +
+         '<select id="' + id + '">' + o + '</select>' +
+         (hint ? '<div class="hint">' + hint + '</div>' : '') + '</div>';
+}
+function button(label, fn, kind){
+  return '<button class="btn ' + (kind || '') + '" type="button" onclick="' + fn +
+         '">' + label + '</button>';
+}
+function reads(items){
+  return items.map(function(it){
+    return '<div class="read' + (it[2] ? ' ' + it[2] : '') + '"><div class="k">' +
+           it[0] + '</div><div class="v">' + it[1] + '</div></div>'; }).join('');
+}
+function paintRange(r){
+  var pct = ((+r.value - +r.min) / ((+r.max - +r.min) || 1)) * 100;
+  r.style.setProperty('--f', pct + '%');
+}
+function wire(){
+  [].forEach.call(document.querySelectorAll('input[type=range]'), function(r){
+    paintRange(r);
+    r.addEventListener('input', function(){ paintRange(r); onInput(r.id, +r.value); });
+  });
+  [].forEach.call(document.querySelectorAll('select'), function(s){
+    s.addEventListener('change', function(){ onInput(s.id, s.value); });
+  });
+}
+function render(){
+  var t = TABS[S.tab];
+  if (t.eq) {
+    $('eq').style.display = '';
+    $('eq').innerHTML = '$$' + t.eq + '$$<div class="cap">' + t.cap + '</div>';
+  } else { $('eq').style.display = 'none'; }
+  $('says').innerHTML = '<h2>' + t.says[0] + '</h2>' +
+    '<div style="font-size:11.5px;line-height:1.6;color:#3d3d3d">' + t.says[1] + '</div>';
+  $('try').innerHTML = '<h2>Try this</h2><ol class="steps">' +
+    t.steps.map(function(x){ return '<li>' + x + '</li>'; }).join('') + '</ol>';
+  $('controls').innerHTML = '<h2>Controls</h2>' + t.controls();
+  t.draw();
+  $('reading').innerHTML = t.read();
+  wire();
+  if (window.renderMathInElement && t.eq){
+    renderMathInElement($('eq'), {
+      delimiters: [{left:'$$', right:'$$', display:true}], throwOnError:false});
+  }
+}
+document.addEventListener('DOMContentLoaded', function(){
+  [].forEach.call(document.querySelectorAll('.tab'), function(b){
+    b.addEventListener('click', function(){
+      var on = document.querySelector('.tab.on');
+      if (on) on.classList.remove('on');
+      b.classList.add('on');
+      S.tab = b.dataset.t;
+      if (typeof onTab === 'function') onTab(S.tab);
+      render();
+    });
+  });
+  function boot(){
+    if (!window.renderMathInElement){ setTimeout(boot, 60); return; }
+    render();
+  }
+  boot();
+});
+</script></body></html>
