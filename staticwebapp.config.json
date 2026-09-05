@@ -356,6 +356,11 @@
       "statusCode": 301
     },
     {
+      "route": "/courses/IE7295/m1-grid-world.html",
+      "redirect": "/courses/IE7295/m1-grid-world",
+      "statusCode": 301
+    },
+    {
       "route": "/gallery.html",
       "redirect": "/gallery",
       "statusCode": 301

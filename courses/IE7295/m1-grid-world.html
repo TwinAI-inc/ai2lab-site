@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUTTO's RL Grid World - Session 0</title>
+    <style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;}
+body{background:radial-gradient(38% 46% at 0% 0%, rgba(0,96,100,.13), transparent 72%),radial-gradient(42% 50% at 100% 100%, rgba(0,100,176,.10), transparent 72%),url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/><feColorMatrix type='saturate' values='0'/></filter><rect width='120' height='120' filter='url(%23g)' opacity='.11'/></svg>"),#f4f6f8;font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;color:#747474;font-size:12.5px;line-height:1.5;
+  display:flex;flex-direction:column;overflow:hidden}
+
+.ie7295-band{flex:0 0 auto;position:relative}
+.ie7295-band::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;
+  background:linear-gradient(90deg,#F5D000 0 33.33%,#E2231A 33.33% 66.66%,#0064B0 66.66% 100%)}
+.ie7295-foot{flex:0 0 auto}
+.header,.subtitle,.section-title{display:none}
+
+.shell{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:8px;
+  max-width:1200px;width:100%;margin:0 auto;padding:9px 14px}
+
+/* settings strip -------------------------------------------------------- */
+.env-setup{flex:0 0 auto;background:#fff;border:1px solid #E4E9EB;border-radius:6px;
+  padding:9px 12px;transition:opacity .18s}
+.env-setup.hidden{opacity:.45;pointer-events:none;filter:grayscale(.4)}
+.setup-head{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin-bottom:7px;flex-wrap:wrap}
+.setup-title{font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+  color:#006064}
+.preset-btn{font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;font-size:11px;font-weight:700;color:#006064;background:#fff;
+  border:1px solid #8FC8CA;border-radius:999px;padding:4px 12px;cursor:pointer;display:inline-flex;
+  align-items:center}
+.preset-btn:hover{background:#eef6f6}
+.setup-card h3 svg{color:#006064}
+.slider-wrap{padding:2px 2px 0}
+/* the visuals are drawn here and a transparent native range sits on top, so
+   keyboard and drag still work without styling the browser's own track, which
+   is what knocked the thumb off the line last time */
+.lane{position:relative;height:26px}
+.rng{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer;
+  -webkit-appearance:none;appearance:none;background:none}
+.track,.fill,.knob{position:absolute;pointer-events:none}
+.track{left:0;right:0;top:50%;transform:translateY(-50%);height:11px;border-radius:999px;
+  background:#e6eded}
+.fill{left:0;top:50%;transform:translateY(-50%);height:11px;border-radius:999px;
+  background:linear-gradient(90deg,#0d5f62,#17a2b8);transition:width .13s}
+.knob{top:50%;left:23px;transform:translate(-50%,-50%);width:44px;height:24px;
+  border-radius:999px;background:#fff;border:2px solid #006064;font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size:11px;font-weight:700;color:#006064;display:flex;align-items:center;
+  justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.13);transition:left .13s}
+.slider-ends{display:flex;justify-content:space-between;font-size:10px;color:#9aa5a8;
+  line-height:1.3;gap:8px}
+.slider-ends span.on{color:#006064;font-weight:700}
+.setup-card h3{display:flex;align-items:center;font-size:11px;font-weight:700;color:#20484A;
+  letter-spacing:.2px}
+.setting-value{margin-left:auto;font-weight:700;font-size:11px;color:#006064;
+  background:#eef6f6;border-radius:999px;padding:2px 9px;white-space:nowrap;
+  max-width:52%;overflow:hidden;text-overflow:ellipsis}
+
+/* first-run intro ------------------------------------------------------- */
+.intro-veil{position:fixed;inset:0;background:rgba(32,72,74,.42);z-index:60;
+  display:none;align-items:center;justify-content:center;padding:20px}
+.intro-veil.on{display:flex}
+.intro-card{background:#fff;border-radius:10px;padding:20px 22px;max-width:470px;
+  box-shadow:0 18px 50px rgba(0,0,0,.24);border-top:3px solid #006064}
+.intro-head{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.intro-mark{flex:0 0 auto;width:40px;height:40px;border-radius:8px;background:#eef6f6;
+  border:1px solid #8FC8CA;display:flex;align-items:center;justify-content:center;
+  margin-right:11px}
+.intro-mark img{width:26px;height:26px;display:block}
+.intro-title{flex:1 1 auto}
+.intro-card h2{font-size:16px;font-weight:700;color:#20484A;margin:0}
+.intro-box{background:rgba(143,200,202,.14);border-left:3px solid #8FC8CA;
+  border-radius:0 6px 6px 0;padding:13px 15px;margin-top:11px}
+.intro-card p{font-size:12.5px;line-height:1.6;color:#3d3d3d;margin:0}
+.intro-box ul{margin:10px 0 0;padding:0;list-style:none}
+.intro-box li{font-size:12.5px;line-height:1.5;color:#3d3d3d;padding-left:14px;
+  position:relative;margin-bottom:5px}
+.intro-box li:last-child{margin-bottom:0}
+.intro-box li::before{content:"";position:absolute;left:0;top:8px;width:5px;height:5px;
+  border-radius:999px;background:#8FC8CA}
+.intro-box b{color:#20484A}
+.intro-skip{position:relative;flex:0 0 auto;width:36px;height:36px;padding:0;border:0;
+  background:none;cursor:pointer}
+.intro-skip span{position:absolute;inset:0;display:flex;align-items:center;
+  justify-content:center;font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;font-size:12.5px;font-weight:700;color:#006064}
+.intro-skip:hover span{color:#E2231A}
+.intro-go{margin-top:14px;width:100%;font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;font-size:12.5px;font-weight:700;
+  color:#fff;background:linear-gradient(135deg,#006064 0%,#17a2b8 100%);border:0;
+  border-radius:999px;padding:9px 0;cursor:pointer}
+
+/* how to play ----------------------------------------------------------- */
+/* grows so the left column ends level with the grid and Q-table panels */
+.help-box{background:#fff;border:1px solid #E4E9EB;border-radius:6px;padding:9px 11px;
+  flex:1 1 auto;margin-top:2px}
+.help-box h3{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  color:#006064;margin-bottom:7px}
+.help-row{display:flex;gap:7px;align-items:flex-start;font-size:11px;color:#3d3d3d;
+  line-height:1.5;margin-bottom:6px}
+.help-row:last-child{margin-bottom:0}
+.help-row svg{flex:0 0 auto;margin-top:2px;color:#8FC8CA}
+/* pausing has to look different from starting, and this has to outrank the
+   !important gradient the primary buttons carry */
+.play-btn.running{background:linear-gradient(135deg,#8b1a1a 0%,#b8433f 100%)!important;
+  border-color:#8b1a1a!important;color:#fff!important}
+.setup-grid{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+.setup-card{flex:1 1 168px;min-width:0}
+.setup-card h3{font-size:11px;font-weight:700;color:#20484A;margin-bottom:4px}
+.option-group{display:none}   /* the slider drives these now */
+.option-btn{font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;font-size:11px;font-weight:600;color:#747474;background:#f7f9f9;
+  border:1px solid #E4E9EB;border-radius:999px;padding:4px 10px;cursor:pointer;white-space:nowrap}
+.option-btn:hover{border-color:#8FC8CA;background:#eef6f6}
+.option-btn.selected{background:#006064;border-color:#006064;color:#fff}
+.init-btn{font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;font-size:12.5px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,#006064 0%,#17a2b8 100%);border:0;border-radius:999px;
+  padding:8px 22px;cursor:pointer;white-space:nowrap}
+.init-btn:disabled{background:#cfd8dc;cursor:not-allowed}
+
+/* game ------------------------------------------------------------------ */
+.game-container{display:none;flex:1 1 auto;min-height:0}
+.game-container.show{display:block}
+.game-layout{display:flex;gap:10px;height:100%;align-items:stretch}
+.grid-section{flex:1 1 auto;min-width:0;display:flex;gap:10px;min-height:0}
+.grid-wrapper{flex:1 1 auto;min-height:0;background:#fff;border:1px solid #E4E9EB;
+  border-radius:6px;padding:10px;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:16px}
+.grid-legend{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;font-size:11px;
+  color:#a8b0b6}
+.grid-legend span{display:inline-flex;align-items:center;gap:5px}
+.grid-legend .lg{opacity:.9}
+.grid{display:grid;position:relative;grid-template-columns:repeat(4,92px);grid-template-rows:repeat(3,92px);
+  gap:7px}
+.cell{position:relative;background:#f7f9f9;border:1px solid #E4E9EB;border-radius:6px;
+  transition:all .15s;cursor:default}
+.cell.reachable{cursor:pointer;border-color:#8FC8CA;background:#eef6f6}
+.cell.reachable:hover{border-color:#006064}
+.cell.goal{background:rgba(0,150,90,.14);border-color:#2e9e6b}
+.tie-arm{position:absolute;color:rgba(0,100,176,.5);line-height:0}
+.tie-arm.up{top:5px;left:50%;transform:translateX(-50%)}
+.tie-arm.down{bottom:5px;left:50%;transform:translateX(-50%)}
+.tie-arm.left{left:4px;top:50%;transform:translateY(-50%)}
+.tie-arm.right{right:4px;top:50%;transform:translateY(-50%)}
+
+/* hover labels: CSS only, so there is no listener to leak when the grid is rebuilt */
+.cell[data-tip]{cursor:help}
+.cell[data-tip]::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 7px);
+  transform:translateX(-50%);background:#20484A;color:#fff;font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;font-size:11px;
+  font-weight:400;line-height:1.35;padding:6px 9px;border-radius:5px;width:170px;
+  text-align:left;opacity:0;visibility:hidden;transition:opacity .13s;z-index:40;
+  box-shadow:0 3px 10px rgba(0,0,0,.2)}
+.cell[data-tip]::before{content:"";position:absolute;left:50%;bottom:calc(100% + 2px);
+  transform:translateX(-50%);border:5px solid transparent;border-top-color:#20484A;
+  opacity:0;visibility:hidden;transition:opacity .13s;z-index:40}
+.cell[data-tip]:hover::after,.cell[data-tip]:hover::before{opacity:1;visibility:visible}
+.cell-icon{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  pointer-events:none}
+/* start sits in the corner instead of the middle, because Sutto stands there
+   and the policy arrow is drawn through that square too */
+.cell-icon.start{top:auto;bottom:7px;left:7px;transform:none;opacity:.6}
+.cell.trap{background:rgba(226,35,26,.09);border-color:#E2231A}
+.cell.blocked{background:#dfe6e8;border-color:#cdd6d8}
+.cell-reward{position:absolute;right:5px;bottom:3px;font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;font-size:11px;color:#a8b0b6}
+.cell.goal .cell-reward{color:#1d6b4a}
+.cell.trap .cell-reward{color:#E2231A}
+.policy-arrow{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  color:#0064B0;opacity:0;transition:opacity .13s;pointer-events:none}
+.policy-arrow.show{opacity:1}
+
+.robot{position:absolute;width:92px;height:92px;display:flex;flex-direction:column;
+  align-items:center;justify-content:flex-end;padding-bottom:12px;transition:all .18s}
+.robot-body{width:44px;height:44px;display:block}
+.robot-eyes{position:absolute;top:9px;left:0;right:0;display:flex;gap:7px;justify-content:center}
+.eye{width:6px;height:6px;border-radius:999px;background:#fff}
+.robot-label{font-size:11px;font-weight:700;color:#20484A;margin-top:2px}
+.robot-reward{position:absolute;top:8px;font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;font-size:11px;font-weight:700;
+  background:#20484A;color:#fff;border-radius:4px;padding:0 5px;white-space:nowrap}
+.robot-reward.positive{background:#1d6b4a}
+.robot-reward.negative{background:#E2231A}
+
+/* right column ---------------------------------------------------------- */
+.controls-section{flex:0 0 250px;display:flex;flex-direction:column;gap:8px;min-height:0;
+  overflow:auto}
+.env-info,.q-values{background:#fff;border:1px solid #E4E9EB;border-radius:6px;padding:9px 11px}
+.q-values{flex:0 0 320px;overflow:auto}
+.env-info{background:rgba(143,200,202,.16);border:0;border-left:3px solid #8FC8CA;
+  border-radius:0 6px 6px 0}
+.env-info h3,.q-values h3{font-size:11px;font-weight:700;letter-spacing:.5px;
+  text-transform:uppercase;color:#006064;margin-bottom:6px}
+.env-params{display:flex;flex-wrap:wrap;gap:3px 14px;font-size:11px}
+.env-param{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;color:#20484A}
+
+.control-buttons{display:flex;flex-wrap:wrap;gap:5px}
+.control-buttons button{flex:1 1 112px;font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;font-size:11px;font-weight:700;
+  padding:8px 6px;border-radius:6px;cursor:pointer;border:1px solid #E4E9EB;background:#f7f9f9;
+  color:#20484A}
+.control-buttons button:hover{border-color:#8FC8CA;background:#eef6f6}
+.play-btn,.show-policy-btn{background:linear-gradient(135deg,#006064 0%,#17a2b8 100%)!important;
+  border-color:transparent!important;color:#fff!important}
+.show-policy-btn{background:#fff!important;color:#006064!important;border-color:#8FC8CA!important}
+
+.stats{display:flex;flex-wrap:wrap;gap:5px}
+.stat-item{flex:1 1 108px;background:#f7f9f9;border:1px solid #E4E9EB;border-radius:6px;
+  padding:6px 8px;display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.stat-label{font-size:11px;color:#a8b0b6;white-space:nowrap}
+.stat-value{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;font-size:16px;font-weight:700;color:#20484A}
+
+.q-note{font-size:11px;color:#3d3d3d;line-height:1.55;margin:2px 0 10px;max-width:640px}
+.q-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.q-legend{display:flex;align-items:center;gap:6px;font-size:10px;color:#8a949b;margin-top:9px}
+.q-legend .sw{width:22px;height:8px;border-radius:999px;display:inline-block}
+.q-legend .sw+span,.q-legend .sw{margin-left:2px}
+.q-legend .neg{background:rgba(160,45,45,.55)}
+.q-legend .zero{background:#f2f5f6;border:1px solid #E4E9EB}
+.q-legend .pos{background:rgba(29,107,74,.55)}
+.q-cell{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;font-size:11px;text-align:center;padding:5px 2px;border-radius:4px;
+  background:#f7f9f9;border:1px solid #E4E9EB;color:#20484A}
+.q-cell.blocked{background:#dfe6e8;color:#a8b0b6}
+.q-cell.positive{background:rgba(0,150,90,.13);border-color:#9ed3b8}
+.q-cell.negative{background:rgba(190,40,40,.10);border-color:#e0b0ae}
+
+.instructions{flex:0 0 auto;background:#fff;border:1px solid #E4E9EB;border-radius:6px;
+  padding:7px 11px;font-size:11px;color:#a8b0b6;line-height:1.6}
+.instructions b{color:#20484A}
+.instructions span{display:inline-block;margin-right:14px;white-space:nowrap}
+
+/* episode end ----------------------------------------------------------- */
+.termination-message{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+  background:rgba(16,24,40,.45);z-index:50}
+.termination-message.show{display:flex}
+.term-card{background:#fff;border-radius:10px;padding:22px 26px;max-width:390px;
+  box-shadow:0 18px 50px rgba(0,0,0,.24);border-top:3px solid #006064;text-align:center}
+.termination-message.success .term-card{border-top-color:#1d6b4a}
+.termination-message.failure .term-card{border-top-color:#E2231A}
+.termination-message h2{font-size:16px;font-weight:700;color:#20484A;margin-bottom:6px}
+.termination-message.success h2{color:#1d6b4a}
+.termination-message.failure h2{color:#8b1a1a}
+.termination-message p{font-size:12.5px;color:#747474;line-height:1.7;margin-bottom:12px}
+.termination-message button{font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;font-size:12.5px;font-weight:700;color:#fff;
+  background:#006064;border:0;border-radius:999px;padding:7px 18px;cursor:pointer}
+
+@media (max-width:900px){
+  body{overflow:auto}
+  .game-layout{flex-direction:column}
+  .controls-section{flex:0 0 auto}
+  .grid{grid-template-columns:repeat(4,62px);grid-template-rows:repeat(3,62px)}
+}
+</style>
+<style>
+/* course overrides - appended after the tool's own sheet, layout untouched */
+body{font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif !important;color:#747474}
+/* font yes, colour no: several tools put headings on dark panels of their own,
+   and forcing a dark ink on them makes the title vanish */
+h1,h2,h3,h4,h5,h6{font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif !important}
+code,pre,.equation,.calculation,.formula{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important}
+a{color:#006064}
+/* the tools centre and constrain their own children, so the band has to insist
+   on being full width and left aligned or it renders as a floating chip */
+.ie7295-band{display:block !important;width:auto !important;max-width:none !important;
+  margin:0 !important;padding:9px 16px !important;text-align:left !important;
+  background:linear-gradient(135deg,#C3E3E4 0%,#C1E2E3 100%);font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+  border-radius:0 !important;box-shadow:none !important}
+.ie7295-band h1{margin:0;font-size: 16px;font-weight:700;color:#20484A}
+.ie7295-band .sub{display:inline-block;background:rgba(255,255,255,.75);color:#3d5f61;
+  padding:2px 9px;border-radius:999px;font-size: 11px;margin-top:4px}
+.ie7295-foot{display:block !important;width:auto !important;max-width:none !important;
+  margin:0 !important;border-top:1px solid #E4E9EB;padding:10px 16px !important;
+  text-align:center !important;font-size: 11px;color:#a8b0b6;font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+  background:#fff;border-radius:0 !important}
+</style>
+</head>
+<body>
+<div class="ie7295-band"><h1>Sutto's Grid World</h1><div class="sub">Module 1 &middot; see the loop run</div></div>
+    
+
+    <!-- Environment Setup Screen -->
+    <div class="shell">
+<div class="env-setup" id="env-setup">
+        <div class="setup-head"><div class="setup-title">Set the environment, then start</div><button class="preset-btn" id="preset-btn" type="button"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><circle cx="12" cy="12" r="9"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg> Use the usual settings</button></div>
+        <div class="setup-grid">
+            <div class="setup-card">
+                <h3><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><path d="M5 12h14M13 6l6 6-6 6"/></svg>Step Penalty<b class="setting-value"></b></h3>
+                <div class="option-group" id="step-options">
+                    <button class="option-btn" data-value="0">No Penalty (0)</button>
+                    <button class="option-btn" data-value="-1">Small Penalty (-1)</button>
+                    <button class="option-btn" data-value="-2">Large Penalty (-2)</button>
+                </div>
+            </div>
+            <div class="setup-card">
+                <h3><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg>Goal Reward<b class="setting-value"></b></h3>
+                <div class="option-group" id="goal-options">
+                    <button class="option-btn" data-value="10">Standard Reward (+10)</button>
+                    <button class="option-btn" data-value="50">Strong Reward (+50)</button>
+                    <button class="option-btn" data-value="100">High Reward (+100)</button>
+                </div>
+            </div>
+            <div class="setup-card">
+                <h3><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17h.01"/></svg>Trap Penalty<b class="setting-value"></b></h3>
+                <div class="option-group" id="trap-options">
+                    <button class="option-btn" data-value="-10">Standard Penalty (-10)</button>
+                    <button class="option-btn" data-value="-25">Harsh Penalty (-25)</button>
+                    <button class="option-btn" data-value="-50">Severe Penalty (-50)</button>
+                </div>
+            </div>
+            <div class="setup-card">
+                <h3><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Discount Factor (γ)<b class="setting-value"></b></h3>
+                <div class="option-group" id="gamma-options">
+                    <button class="option-btn" data-value="0.5">Short-sighted (γ=0.5)</button>
+                    <button class="option-btn" data-value="0.9">Balanced (γ=0.9)</button>
+                    <button class="option-btn" data-value="0.99">Far-sighted (γ=0.99)</button>
+                </div>
+            </div><div class="setup-card" style="flex:0 0 auto"><h3>&nbsp;</h3><button class="init-btn" id="init-btn" disabled>Start</button></div>
+        </div>
+        
+    </div>
+
+    <!-- Game Screen -->
+    <div class="game-container" id="game-container">
+        <div class="game-layout">
+            <div class="controls-section">
+                <div class="env-info">
+                    <h4>Environment Config</h4>
+                    <div class="env-params">
+                        <span class="env-param">Step: <span id="env-step">-1</span></span>
+                        <span class="env-param">Goal: <span id="env-goal">+10</span></span>
+                        <span class="env-param">Trap: <span id="env-trap">-10</span></span>
+                        <span class="env-param">Gamma (γ): <span id="env-gamma">0.9</span></span>
+                    </div>
+                </div>
+
+                <h2 class="section-title">Controls</h2>
+                <div class="control-buttons">
+                    <button class="play-btn" id="start-btn"> AUTO-LEARN</button>
+                    <button class="show-policy-btn" id="policy-btn"> SHOW POLICY</button>
+                    <button class="reset-btn" id="reset-btn"> RESET GAME</button>
+                    <button class="new-env-btn" id="new-env-btn"> NEW ENV</button>
+                </div>
+
+                <h3 class="section-title">Statistics</h3>
+                <div class="stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Steps</span>
+                        <span class="stat-value" id="steps">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Episode Reward</span>
+                        <span class="stat-value" id="reward">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Episodes</span>
+                        <span class="stat-value" id="episodes">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Total Score</span>
+                        <span class="stat-value" id="total-score">0</span>
+                    </div>
+                </div>
+            <div class="help-box"><h3>How to play</h3><div class="help-row"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18M12 3 9 6.5M12 3l3 3.5M12 21l-3-3.5M12 21l3-3.5M3 12l3.5-3M3 12l3.5 3M21 12l-3.5-3M21 12l-3.5 3"/></svg><span>Arrow keys, or click a neighbouring square</span></div><div class="help-row"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4M5 4h11l-2.2 3.5L16 11H5z"/></svg><span>Reaching the goal or the trap ends the episode</span></div><div class="help-row"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Gamma sets how much the future counts</span></div><div class="help-row"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg><span>Auto-learn plays whole episodes for you</span></div><div class="help-row"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.6"/></svg><span>Show policy reveals the best move in each square</span></div></div></div>
+
+            <div class="grid-section">
+                <div class="grid-wrapper">
+                    <div class="grid" id="grid"></div><div class="grid-legend"><span><svg class="lg" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#006064" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V21h13V9.5"/></svg>start</span><span><svg class="lg" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#1d6b4a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h11l-2.2 3.5L16 11H5z" fill="#F5D000" stroke="#1d6b4a"/></svg>goal</span><span><svg class="lg" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#E2231A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20L12 3z" fill="rgba(226,35,26,.14)"/><path d="M12 10v4M12 17h.01"/></svg>trap</span><span><svg class="lg" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#93a0a3" stroke-width="1.7" stroke-linejoin="round"><rect x="3.5" y="6" width="17" height="12" rx="1.5"/><path d="M3.5 10h17M3.5 14h17"/><path d="M12 6v4M8 10v4M16 10v4M12 14v4"/></svg>wall</span></div>
+                </div>
+                
+                <div class="q-values">
+                    <h3>Q-Table (State Values)</h3><p class="q-note">What Sutto believes each square is worth. Warmer means a better place to be. Nothing moves mid-run: he plays a whole episode, then looks back over what he actually got and revises. That is Monte Carlo learning.</p>
+                    <div class="q-grid" id="q-grid"></div><div class="q-legend"><span class="sw neg"></span>worse<span class="sw zero"></span>unknown<span class="sw pos"></span>better</div>
+                </div>
+            </div>
+        </div>
+
+        </div>
+    </div>
+
+    <div class="termination-message" id="termination-message">
+        <div class="term-card">
+            <h2 id="term-title">Episode complete</h2>
+            <p id="term-text">Result text</p>
+            <button onclick="closeTermination()">Continue</button>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let grid = [];
+        let episodeTrail = [];   // {x, y, reward} for the episode in progress
+        let episodeOver = false; // set on goal or trap, cleared on reset
+        let robotPos = {x: 0, y: 2};
+        let robotElement = null;
+        let robotRewardElement = null;
+        let steps = 0;
+        let currentReward = 0;
+        let episodes = 0;
+        let totalScore = 0;
+        let isLearning = false;
+        let qValues = {};
+        let showingPolicy = false;
+        let envInitialized = false;
+        
+        // Environment parameters
+        let envParams = {
+            stepPenalty: null,
+            goalReward: null,
+            trapPenalty: null,
+            gamma: null
+        };
+        
+        // Grid configuration
+        const ROWS = 3;
+        const COLS = 4;
+        const CELL_SIZE = 99;
+        
+        // Special cells
+        const GOAL_POS = {x: 3, y: 0};
+        const TRAP_POS = {x: 3, y: 1};
+        const BLOCKED_POS = {x: 1, y: 1};
+        const START_POS = {x: 0, y: 2};
+        
+        // Environment setup
+        document.querySelectorAll('.option-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const group = this.parentElement;
+                group.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                
+                // Update environment parameters
+                if (group.id === 'step-options') {
+                    envParams.stepPenalty = parseFloat(this.dataset.value);
+                } else if (group.id === 'goal-options') {
+                    envParams.goalReward = parseFloat(this.dataset.value);
+                } else if (group.id === 'trap-options') {
+                    envParams.trapPenalty = parseFloat(this.dataset.value);
+                } else if (group.id === 'gamma-options') {
+                    envParams.gamma = parseFloat(this.dataset.value);
+                }
+                
+                // Check if all parameters are selected
+                if (envParams.stepPenalty !== null && 
+                    envParams.goalReward !== null && 
+                    envParams.trapPenalty !== null &&
+                    envParams.gamma !== null) {
+                    document.getElementById('init-btn').disabled = false;
+                }
+            });
+        });
+        
+        document.getElementById('init-btn').addEventListener('click', () => {
+            initializeEnvironment();
+        });
+        
+        document.getElementById('new-env-btn').addEventListener('click', () => {
+            // Reset to setup screen
+            document.getElementById('game-container').classList.remove('show');
+            document.getElementById('env-setup').classList.remove('hidden');
+            
+            // Reset selections
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            document.getElementById('init-btn').disabled = true;
+            
+            envParams = {
+                stepPenalty: null,
+                goalReward: null,
+                trapPenalty: null,
+                gamma: null
+            };
+            
+            envInitialized = false;
+        });
+        
+        function initializeEnvironment() {
+            envInitialized = true;
+            
+            // Update display
+            document.getElementById('env-step').textContent = envParams.stepPenalty;
+            document.getElementById('env-goal').textContent = '+' + envParams.goalReward;
+            document.getElementById('env-trap').textContent = envParams.trapPenalty;
+            document.getElementById('env-gamma').textContent = envParams.gamma;
+            
+            // Hide setup, show game
+            document.getElementById('env-setup').classList.add('hidden');
+            document.getElementById('game-container').classList.add('show');
+            
+            // Initialize game
+            resetGame();
+        }
+        
+        function initGrid() {
+            const gridElement = document.getElementById('grid');
+            gridElement.innerHTML = '';
+            grid = [];
+            
+            // Initialize Q-values
+            for (let y = 0; y < ROWS; y++) {
+                for (let x = 0; x < COLS; x++) {
+                    if (!qValues[`${x},${y}`]) {
+                        qValues[`${x},${y}`] = 0;
+                    }
+                }
+            }
+            
+            // Create cells
+            for (let y = 0; y < ROWS; y++) {
+                grid[y] = [];
+                for (let x = 0; x < COLS; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.x = x;
+                    cell.dataset.y = y;
+                    
+                    // Add policy arrow
+                    const arrow = document.createElement('div');
+                    arrow.className = 'policy-arrow';
+                    cell.appendChild(arrow);
+                    
+                    // Add reward display
+                    const rewardDisplay = document.createElement('div');
+                    rewardDisplay.className = 'cell-reward';
+                    
+                    // Set special cells and rewards
+                    if (x === GOAL_POS.x && y === GOAL_POS.y) {
+                        cell.classList.add('goal');
+                        cell.dataset.tip = 'Goal: reaching it ends the episode and pays the goal reward';
+                        cell.insertAdjacentHTML('beforeend', '<svg class="cell-icon" viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#1d6b4a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h11l-2.2 3.5L16 11H5z" fill="#F5D000" stroke="#1d6b4a"/></svg>');
+                        grid[y][x] = 'goal';
+                        rewardDisplay.textContent = '+' + envParams.goalReward;
+                    } else if (x === TRAP_POS.x && y === TRAP_POS.y) {
+                        cell.classList.add('trap');
+                        cell.dataset.tip = 'Trap: falling in ends the episode and costs the trap penalty';
+                        cell.insertAdjacentHTML('beforeend', '<svg class="cell-icon" viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#E2231A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20L12 3z" fill="rgba(226,35,26,.14)"/><path d="M12 10v4M12 17h.01"/></svg>');
+                        grid[y][x] = 'trap';
+                        rewardDisplay.textContent = envParams.trapPenalty;
+                    } else if (x === BLOCKED_POS.x && y === BLOCKED_POS.y) {
+                        cell.classList.add('blocked');
+                        cell.dataset.tip = 'Wall: Sutto cannot enter this square';
+                        cell.insertAdjacentHTML('beforeend', '<svg class="cell-icon" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#93a0a3" stroke-width="1.7" stroke-linejoin="round"><rect x="3.5" y="6" width="17" height="12" rx="1.5"/><path d="M3.5 10h17M3.5 14h17"/><path d="M12 6v4M8 10v4M16 10v4M12 14v4"/></svg>');
+                        grid[y][x] = 'blocked';
+                    } else if (x === START_POS.x && y === START_POS.y) {
+                        cell.classList.add('start');
+                        cell.dataset.tip = 'Start: every episode begins here';
+                        cell.insertAdjacentHTML('beforeend', '<svg class="cell-icon start" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#006064" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V21h13V9.5"/></svg>');
+                        grid[y][x] = 'start';
+                        rewardDisplay.textContent = envParams.stepPenalty;
+                    } else {
+                        grid[y][x] = 'empty';
+                        rewardDisplay.textContent = envParams.stepPenalty;
+                    }
+                    
+                    if (grid[y][x] !== 'blocked') {
+                        cell.appendChild(rewardDisplay);
+                    }
+                    
+                    cell.addEventListener('click', () => cellClick(x, y));
+                    gridElement.appendChild(cell);
+                }
+            }
+            
+            createRobot();
+            updateQDisplay();
+            refreshPolicy();
+            updateReachableCells();
+        }
+        
+        function createRobot() {
+            if (robotElement) {
+                robotElement.remove();
+            }
+            
+            robotElement = document.createElement('div');
+            robotElement.className = 'robot';
+            
+            robotRewardElement = document.createElement('div');
+            robotRewardElement.className = 'robot-reward';
+            robotRewardElement.textContent = 'Score: 0';
+            
+            robotElement.innerHTML = `
+                <img class="robot-body" src="data:image/png;base64,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" alt="Sutto"><div class="robot-label">SUTTO</div>
+                </div>
+            `;
+            
+            robotElement.appendChild(robotRewardElement);
+            document.querySelector('.grid').appendChild(robotElement);
+            moveRobot(START_POS.x, START_POS.y);
+        }
+        
+        function moveRobot(x, y, animate = true) {
+            robotPos = {x, y};
+            const leftPos = x * CELL_SIZE;
+            const bottomPos = (ROWS - 1 - y) * CELL_SIZE;
+            
+            if (animate) {
+                robotElement.style.left = `${leftPos}px`;
+                robotElement.style.bottom = `${bottomPos}px`;
+            } else {
+                robotElement.style.transition = 'none';
+                robotElement.style.left = `${leftPos}px`;
+                robotElement.style.bottom = `${bottomPos}px`;
+                setTimeout(() => {
+                    robotElement.style.transition = '';
+                }, 50);
+            }
+        }
+        
+        function updateRobotReward(reward) {
+            currentReward += reward;
+            robotRewardElement.textContent = `Score: ${currentReward}`;
+            
+            if (reward > 0) {
+                robotRewardElement.classList.add('positive');
+                robotRewardElement.classList.remove('negative');
+            } else if (reward < 0) {
+                robotRewardElement.classList.add('negative');
+                robotRewardElement.classList.remove('positive');
+            } else {
+                robotRewardElement.classList.remove('positive', 'negative');
+            }
+        }
+        
+        function cellClick(x, y) {
+            if (isLearning) return;
+            
+            if (isAdjacent(robotPos.x, robotPos.y, x, y) && grid[y][x] !== 'blocked') {
+                makeMove(x, y);
+            }
+        }
+        
+        function isAdjacent(x1, y1, x2, y2) {
+            const dx = Math.abs(x1 - x2);
+            const dy = Math.abs(y1 - y2);
+            return (dx === 1 && dy === 0) || (dx === 0 && dy === 1);
+        }
+        
+        function makeMove(x, y) {
+            if (episodeOver) return;   // the square he is on ended the run
+            if (grid[y][x] === 'blocked') return;
+            
+            moveRobot(x, y);
+            steps++;
+            document.getElementById('steps').textContent = steps;
+            
+            // Calculate reward
+            let reward = envParams.stepPenalty;
+            let terminal = false;
+            
+            if (grid[y][x] === 'goal') {
+                reward = envParams.goalReward;
+                terminal = true;
+                updateRobotReward(reward);
+                setTimeout(() => {
+                    showTermination(true, currentReward);
+                }, 500);
+            } else if (grid[y][x] === 'trap') {
+                reward = envParams.trapPenalty;
+                terminal = true;
+                updateRobotReward(reward);
+                setTimeout(() => {
+                    showTermination(false, currentReward);
+                }, 500);
+            } else {
+                updateRobotReward(reward);
+            }
+            
+            totalScore += reward;
+            document.getElementById('reward').textContent = currentReward;
+            document.getElementById('total-score').textContent = totalScore;
+            
+            // Nothing is learned yet: the square and its reward just go on the
+            // trail, and the whole trail is worked through when the episode ends.
+            episodeTrail.push({x: x, y: y, reward: reward});
+            
+            updateReachableCells();
+            
+            if (terminal) {
+                episodeOver = true;
+                updateReachableCells();
+                finishEpisode();
+                setTimeout(() => resetEpisode(), 2000);
+            }
+        }
+        
+        function showTermination(success, score) {
+            const msg = document.getElementById('termination-message');
+            const title = document.getElementById('term-title');
+            const text = document.getElementById('term-text');
+            
+            if (success) {
+                msg.className = 'termination-message success';
+                title.textContent = 'Goal reached';
+                text.textContent = `Sutto reached the flag in ${steps} steps, scoring ${score}. Every step he took cost him something, so a shorter route is worth more.`;
+            } else {
+                msg.className = 'termination-message failure';
+                title.textContent = 'Into the trap';
+                text.textContent = `Sutto walked into the trap after ${steps} steps, scoring ${score}. That is not a failure, it is how he learns which squares to avoid.`;
+            }
+            
+            msg.classList.add('show');
+        }
+        
+        function closeTermination() {
+            document.getElementById('termination-message').classList.remove('show');
+        }
+        
+        // Every-visit Monte Carlo with a constant step size. Walking the trail
+        // backwards makes each return one multiply and one add: G = r + gamma*G.
+        function finishEpisode() {
+            if (!episodeTrail.length) return;      // already settled, or never moved
+            const alpha = 0.1;
+            let G = 0;
+            for (let i = episodeTrail.length - 1; i >= 0; i--) {
+                const step = episodeTrail[i];
+                G = step.reward + envParams.gamma * G;
+                const key = `${step.x},${step.y}`;
+                qValues[key] = qValues[key] + alpha * (G - qValues[key]);
+            }
+            episodeTrail = [];
+            updateQDisplay();
+            refreshPolicy();
+        }
+        
+        function getMaxQValue(x, y) {
+            let maxQ = -Infinity;
+            const moves = [
+                {dx: 0, dy: -1},
+                {dx: 0, dy: 1},
+                {dx: -1, dy: 0},
+                {dx: 1, dy: 0}
+            ];
+            
+            for (const move of moves) {
+                const newX = x + move.dx;
+                const newY = y + move.dy;
+                
+                if (newX >= 0 && newX < COLS && newY >= 0 && newY < ROWS && grid[newY][newX] !== 'blocked') {
+                    maxQ = Math.max(maxQ, qValues[`${newX},${newY}`]);
+                }
+            }
+            
+            return maxQ === -Infinity ? 0 : maxQ;
+        }
+        
+        function policyArrow(deg, size) {
+            size = size || 21;
+            return '<svg viewBox="0 0 24 24" width="' + size + '" height="' + size + '" fill="none" ' +
+                   'stroke="currentColor" stroke-width="2.4" stroke-linecap="round" ' +
+                   'stroke-linejoin="round" style="transform:rotate(' + deg + 'deg)">' +
+                   '<path d="M5 12h13M12 6l6 6-6 6"/></svg>';
+        }
+        
+        function tieArm(move) {
+            const side = move.dy < 0 ? 'up' : move.dy > 0 ? 'down'
+                       : move.dx < 0 ? 'left' : 'right';
+            return '<span class="tie-arm ' + side + '">' +
+                   policyArrow(move.arrow, 15) + '</span>';
+        }
+        
+        function getBestAction(x, y) {
+            const moves = [
+                {dx: 0, dy: -1, arrow: -90},
+                {dx: 0, dy: 1, arrow: 90},
+                {dx: -1, dy: 0, arrow: 180},
+                {dx: 1, dy: 0, arrow: 0}
+            ];
+            
+            let best = [];
+            let bestQ = -Infinity;
+            const EPS = 1e-9;
+            
+            for (const move of moves) {
+                const newX = x + move.dx;
+                const newY = y + move.dy;
+                
+                if (newX >= 0 && newX < COLS && newY >= 0 && newY < ROWS && grid[newY][newX] !== 'blocked') {
+                    const q = qValues[`${newX},${newY}`];
+                    if (q > bestQ + EPS) {
+                        bestQ = q;
+                        best = [move];
+                    } else if (Math.abs(q - bestQ) <= EPS) {
+                        best.push(move);
+                    }
+                }
+            }
+            
+            // hand back the whole tie: two equally good moves is a real
+            // answer, and four of them is what an untrained agent has
+            return best;
+        }
+        
+        function showOptimalPolicy() {
+            showingPolicy = !showingPolicy;
+            const arrows = document.querySelectorAll('.policy-arrow');
+            
+            if (showingPolicy) {
+                for (let y = 0; y < ROWS; y++) {
+                    for (let x = 0; x < COLS; x++) {
+                        if (grid[y][x] !== 'blocked' && grid[y][x] !== 'goal' && grid[y][x] !== 'trap') {
+                            const cellIndex = y * COLS + x;
+                            const arrow = arrows[cellIndex];
+                            const bestMove = getBestAction(x, y);
+                            
+                            if (bestMove.length === 1) {
+                                arrow.innerHTML = policyArrow(bestMove[0].arrow);
+                                arrow.title = 'Best move from here';
+                            } else if (bestMove.length > 1) {
+                                arrow.innerHTML = bestMove.map(tieArm).join('');
+                                arrow.title = bestMove.length + ' moves are tied here, ' +
+                                    'so he has no reason yet to prefer one';
+                            } else {
+                                arrow.innerHTML = '';
+                                arrow.title = '';
+                            }
+                            arrow.classList.add('show');
+                        }
+                    }
+                }
+                document.getElementById('policy-btn').textContent = ' HIDE POLICY';
+            } else {
+                arrows.forEach(arrow => {
+                    arrow.classList.remove('show');
+                });
+                document.getElementById('policy-btn').textContent = ' SHOW POLICY';
+            }
+        }
+        
+        function updateReachableCells() {
+            document.querySelectorAll('.cell').forEach(cell => {
+                cell.classList.remove('reachable');
+            });
+            
+            if (episodeOver) return;   // no square invites a click any more
+            
+            const moves = [
+                {dx: 0, dy: -1},
+                {dx: 0, dy: 1},
+                {dx: -1, dy: 0},
+                {dx: 1, dy: 0}
+            ];
+            
+            for (const move of moves) {
+                const newX = robotPos.x + move.dx;
+                const newY = robotPos.y + move.dy;
+                
+                if (newX >= 0 && newX < COLS && newY >= 0 && newY < ROWS && grid[newY][newX] !== 'blocked') {
+                    const cell = document.querySelector(`[data-x="${newX}"][data-y="${newY}"]`);
+                    if (cell) {
+                        cell.classList.add('reachable');
+                    }
+                }
+            }
+        }
+        
+        function refreshPolicy() {
+            if (!showingPolicy) return;
+            showingPolicy = false;      // showOptimalPolicy toggles, so flip
+            showOptimalPolicy();        // it back and let it repaint
+        }
+        
+        function updateQDisplay() {
+            const qGrid = document.getElementById('q-grid');
+            qGrid.innerHTML = '';
+            
+            for (let y = 0; y < ROWS; y++) {
+                for (let x = 0; x < COLS; x++) {
+                    const qCell = document.createElement('div');
+                    qCell.className = 'q-cell';
+                    const qValue = qValues[`${x},${y}`];
+                    qCell.textContent = qValue.toFixed(2);
+                    
+                    if (grid[y][x] === 'blocked') {
+                        qCell.classList.add('blocked');
+                        qCell.textContent = 'wall';
+                    } else if (qValue > 0) {
+                        const intensity = Math.min(100, qValue * 10);
+                        qCell.style.background = `rgba(29, 107, 74, ${Math.min(.85, intensity/110)})`;qCell.style.borderColor = '#9ed3b8';if (intensity > 45) qCell.style.color = '#fff';
+                    } else if (qValue < 0) {
+                        const intensity = Math.min(100, Math.abs(qValue) * 10);
+                        qCell.style.background = `rgba(160, 45, 45, ${Math.min(.8, intensity/110)})`;qCell.style.borderColor = '#e0b0ae';if (intensity > 45) qCell.style.color = '#fff';
+                    }
+                    
+                    qGrid.appendChild(qCell);
+                }
+            }
+        }
+        
+        async function startLearning() {
+            if (isLearning) return;
+            isLearning = true;
+            setLearnBtn(true);
+            
+            for (let episode = 0; episode < 30; episode++) {
+                await runEpisode();
+                episodes++;
+                document.getElementById('episodes').textContent = episodes;
+                
+                if (!isLearning) break;
+            }
+            
+            isLearning = false;
+            setLearnBtn(false);
+        }
+        
+        function setLearnBtn(running) {
+            const b = document.getElementById('start-btn');
+            b.textContent = running ? 'PAUSE' : 'AUTO-LEARN';
+            b.classList.toggle('running', running);
+        }
+        
+        async function runEpisode() {
+            resetPosition();
+            let stepCount = 0;
+            const maxSteps = 30;
+            
+            while (stepCount < maxSteps && isLearning) {
+                const action = chooseAction();
+                const {newX, newY} = action;
+                
+                if (newX !== robotPos.x || newY !== robotPos.y) {
+                    const prevGrid = grid[newY][newX];
+                    makeMove(newX, newY);
+                    await sleep(130);
+                    
+                    // Check for terminal states
+                    if (prevGrid === 'goal' || prevGrid === 'trap') {
+                        await sleep(600);
+                        break;
+                    }
+                }
+                
+                stepCount++;
+            }
+            
+            finishEpisode();
+            resetPosition();
+        }
+        
+        function chooseAction() {
+            const epsilon = Math.max(0.1, 0.3 - episodes * 0.01);
+            const moves = [
+                {dx: 0, dy: -1},
+                {dx: 0, dy: 1},
+                {dx: -1, dy: 0},
+                {dx: 1, dy: 0}
+            ];
+            
+            if (Math.random() < epsilon) {
+                const validMoves = [];
+                for (const move of moves) {
+                    const newX = robotPos.x + move.dx;
+                    const newY = robotPos.y + move.dy;
+                    
+                    if (newX >= 0 && newX < COLS && newY >= 0 && newY < ROWS && grid[newY][newX] !== 'blocked') {
+                        validMoves.push({newX, newY});
+                    }
+                }
+                
+                if (validMoves.length > 0) {
+                    return validMoves[Math.floor(Math.random() * validMoves.length)];
+                }
+            } else {
+                let bestMove = {newX: robotPos.x, newY: robotPos.y};
+                let bestQ = -Infinity;
+                
+                for (const move of moves) {
+                    const newX = robotPos.x + move.dx;
+                    const newY = robotPos.y + move.dy;
+                    
+                    if (newX >= 0 && newX < COLS && newY >= 0 && newY < ROWS && grid[newY][newX] !== 'blocked') {
+                        const q = qValues[`${newX},${newY}`];
+                        if (q > bestQ) {
+                            bestQ = q;
+                            bestMove = {newX, newY};
+                        }
+                    }
+                }
+                
+                return bestMove;
+            }
+            
+            return {newX: robotPos.x, newY: robotPos.y};
+        }
+        
+        function resetPosition() {
+            episodeTrail = [];
+            episodeOver = false;
+            moveRobot(START_POS.x, START_POS.y, false);
+            currentReward = 0;
+            robotRewardElement.textContent = 'Score: 0';
+            robotRewardElement.classList.remove('positive', 'negative');
+            updateReachableCells();
+        }
+        
+        function resetEpisode() {
+            closeTermination();
+            resetPosition();
+            steps = 0;
+            document.getElementById('steps').textContent = steps;
+            document.getElementById('reward').textContent = currentReward;
+            episodes++;
+            document.getElementById('episodes').textContent = episodes;
+        }
+        
+        function resetGame() {
+            isLearning = false;
+            steps = 0;
+            currentReward = 0;
+            episodes = 0;
+            totalScore = 0;
+            showingPolicy = false;
+            
+            document.getElementById('steps').textContent = '0';
+            document.getElementById('reward').textContent = '0';
+            document.getElementById('episodes').textContent = '0';
+            document.getElementById('total-score').textContent = '0';
+            setLearnBtn(false);
+            document.getElementById('policy-btn').textContent = ' SHOW POLICY';
+            
+            qValues = {};
+            
+            if (envInitialized) {
+                initGrid();
+            }
+        }
+        
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            if (!envInitialized || isLearning) return;
+            
+            let newX = robotPos.x;
+            let newY = robotPos.y;
+            
+            switch(e.key) {
+                case 'ArrowUp':
+                    newY = Math.max(0, robotPos.y - 1);
+                    break;
+                case 'ArrowDown':
+                    newY = Math.min(ROWS - 1, robotPos.y + 1);
+                    break;
+                case 'ArrowLeft':
+                    newX = Math.max(0, robotPos.x - 1);
+                    break;
+                case 'ArrowRight':
+                    newX = Math.min(COLS - 1, robotPos.x + 1);
+                    break;
+                default:
+                    return;
+            }
+            
+            e.preventDefault();
+            if ((newX !== robotPos.x || newY !== robotPos.y) && grid[newY][newX] !== 'blocked') {
+                makeMove(newX, newY);
+            }
+        });
+        
+        // Button event listeners
+        document.getElementById('start-btn').addEventListener('click', function(){
+            if (isLearning) { isLearning = false; setLearnBtn(false); }
+            else { startLearning(); }
+        });
+        document.getElementById('policy-btn').addEventListener('click', showOptimalPolicy);
+        document.getElementById('reset-btn').addEventListener('click', resetGame);
+    </script>
+<div class="ie7295-foot">IE7295: Applied Reinforcement Learning &middot; Prof. Dehghani</div>
+<div class="intro-veil" id="intro-veil">
+  <div class="intro-card">
+    <div class="intro-head">
+      <span class="intro-mark"><img src="data:image/png;base64,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" alt=""></span>
+      <span class="intro-title"><h2>How this works</h2></span>
+      <button class="intro-skip" id="intro-skip" type="button" aria-label="Skip">
+        <svg viewBox="0 0 36 36" width="36" height="36">
+          <circle cx="18" cy="18" r="15.5" fill="none" stroke="#dfe8e9" stroke-width="3"/>
+          <circle id="intro-ring" cx="18" cy="18" r="15.5" fill="none" stroke="#006064"
+                  stroke-width="3" stroke-linecap="round" stroke-dasharray="97.4"
+                  stroke-dashoffset="0" transform="rotate(-90 18 18)"/>
+        </svg>
+        <span id="intro-count">10</span>
+      </button>
+    </div>
+    <div class="intro-box">
+      <p>Sutto starts bottom left and wants the flag. Every step costs him a
+         little, the trap costs him a lot, and he has no map. He only finds the
+         good route by trying routes and remembering how they went.</p>
+      <ul>
+        <li><b>Move him</b> with the arrow keys, or click a neighbouring square.</li>
+        <li><b>Auto-learn</b> plays episodes for you so you can watch instead.</li>
+        <li><b>Show policy</b> draws his current best move in every square.</li>
+        <li><b>The table</b> on the right only changes when an episode ends.</li>
+      </ul>
+    </div>
+    <button class="intro-go" id="intro-go" type="button">Got it, let me play</button>
+  </div>
+</div>
+<script>
+(function(){
+  var veil = document.getElementById('intro-veil'),
+      ring = document.getElementById('intro-ring'),
+      num  = document.getElementById('intro-count'),
+      LEN  = 97.4, SECS = 10, shown = false, timer = null;
+
+  function close(){
+    if (timer) { clearInterval(timer); timer = null; }
+    veil.classList.remove('on');
+  }
+  document.getElementById('intro-skip').addEventListener('click', close);
+  document.getElementById('intro-go').addEventListener('click', close);
+  veil.addEventListener('click', function(e){ if (e.target === veil) close(); });
+
+  function open(){
+    if (shown) return;              // first run only
+    shown = true;
+    veil.classList.add('on');
+    var left = SECS;
+    num.textContent = left;
+    ring.style.strokeDashoffset = 0;
+    timer = setInterval(function(){
+      left -= 1;
+      num.textContent = Math.max(0, left);
+      ring.style.strokeDashoffset = LEN * (SECS - left) / SECS;
+      if (left <= 0) close();
+    }, 1000);
+  }
+  var go = document.getElementById('init-btn');
+  if (go) go.addEventListener('click', function(){ setTimeout(open, 260); });
+})();
+</script><script>
+document.querySelectorAll('.option-group').forEach(function(group){
+  var btns = [].slice.call(group.querySelectorAll('.option-btn'));
+  if (btns.length < 2) return;
+  var last = btns.length - 1;
+  // the word for each stop, and the number, kept apart: the heading carries the
+  // name of the choice and the knob carries its value, so neither repeats
+  var name = btns.map(function(b){ return b.textContent.replace(/\s*\(.*\)\s*/, ''); });
+  var num  = btns.map(function(b){
+    var m = b.textContent.match(/\(([^)]*)\)/); return m ? m[1] : b.textContent;
+  });
+
+  var wrap = document.createElement('div');
+  wrap.className = 'slider-wrap';
+  wrap.innerHTML =
+    '<div class="lane" data-inset="23">' +
+      '<div class="track"></div><div class="fill"></div><div class="knob"></div>' +
+      '<input type="range" class="rng" min="0" max="' + last + '" step="1" value="0">' +
+    '</div>' +
+    '<div class="slider-ends"><span>' + name[0] + '</span>' +
+    '<span>' + name[last] + '</span></div>';
+  group.parentNode.appendChild(wrap);
+
+  var lane  = wrap.querySelector('.lane'),
+      rng   = wrap.querySelector('.rng'),
+      fill  = wrap.querySelector('.fill'),
+      knob  = wrap.querySelector('.knob'),
+      read  = group.parentNode.querySelector('.setting-value'),
+      ends  = [].slice.call(wrap.querySelectorAll('.slider-ends span')),
+      inset = +lane.dataset.inset;
+
+  // the knob's travel is inset by half its own width, the way a native slider
+  // does it, so it never hangs off either end of the rail
+  function xOf(i){ return inset + (i / last) * (lane.clientWidth - 2 * inset); }
+
+  function paint(i){
+    var x = xOf(i);
+    fill.style.width = x + 'px';
+    knob.style.left = x + 'px';
+    knob.textContent = num[i];
+    read.textContent = name[i];
+    read.title = btns[i].textContent;
+    // sitting on an end would otherwise print that name twice; lighting it up
+    // turns the repeat into a reading of where you are on the scale
+    ends[0].classList.toggle('on', i === 0);
+    ends[1].classList.toggle('on', i === last);
+  }
+  rng.addEventListener('input', function(){
+    var i = +rng.value;
+    btns[i].click();
+    paint(i);
+  });
+  window.addEventListener('resize', function(){ paint(+rng.value); });
+  // the defaults button clicks a hidden button directly, so follow it back
+  group.addEventListener('click', function(e){
+    var i = btns.indexOf(e.target);
+    if (i > -1 && +rng.value !== i){ rng.value = i; paint(i); }
+  }, true);
+  paint(0);
+});
+</script><script>
+document.getElementById('preset-btn').addEventListener('click', function(){
+  var pick = {'step-options':'-1','goal-options':'10','trap-options':'-10','gamma-options':'0.9'};
+  Object.keys(pick).forEach(function(id){
+    var g = document.getElementById(id);
+    if (!g) return;
+    [].forEach.call(g.querySelectorAll('.option-btn'), function(b){
+      if (b.getAttribute('data-value') === pick[id]) b.click();
+    });
+  });
+  var go = document.getElementById('init-btn');
+  if (go && !go.disabled) go.click();
+});
+</script></body>
+</html>
