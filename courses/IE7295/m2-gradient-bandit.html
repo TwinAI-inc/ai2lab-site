@@ -1224,13 +1224,18 @@ a{color:#006064}
             if (state.spinning) return;
             state.spinning = true;
             
+            // The wheel on screen was drawn from the probabilities as they are
+            // now. step() immediately updates them, so take a copy first and
+            // rotate against the wheel the student is actually looking at.
+            const drawnProbs = state.probabilities.slice();
+            
             const result = step();
             
             // Calculate cumulative angles for each arm
             let currentAngle = 0;
             const armPositions = [];
             for (let i = 0; i < state.numArms; i++) {
-                const segmentSize = state.probabilities[i] * 360;
+                const segmentSize = drawnProbs[i] * 360;
                 armPositions.push({
                     start: currentAngle,
                     end: currentAngle + segmentSize,
@@ -1663,7 +1668,7 @@ a{color:#006064}
 <div class="ie7295-foot">IE7295: Applied Reinforcement Learning &middot; Prof. Dehghani</div>
 
 <style>
-/* sync_tools v3 ---------------------------------------------------------------------
+/* sync_tools v8 ---------------------------------------------------------------------
    Appended, never substituted. Everything here is a decision taken on the
    Module 1 Grid World tool and carried across so the set reads as one course.
    ---------------------------------------------------------------------- */
@@ -1677,17 +1682,22 @@ a{color:#006064}
    centring offset back by hand or WebKit aligns it to the track's top edge. */
 input[type=range]{-webkit-appearance:none;appearance:none;background:none;
   height:22px;cursor:pointer}
+input[type=range]{border-radius:999px;
+  background:linear-gradient(90deg,#0d5f62 0%,#17a2b8 var(--fill,0%),
+             #e2e9ea var(--fill,0%),#e2e9ea 100%) !important;
+  height:11px !important;margin:9px 0}
 input[type=range]::-webkit-slider-runnable-track{height:11px;border-radius:999px;
-  background:#e6eded;border:0}
+  background:transparent;border:0}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;margin-top:-5px;
   width:21px;height:21px;border-radius:999px;background:#fff;border:2px solid #006064;
   box-shadow:0 1px 4px rgba(0,0,0,.16);cursor:pointer}
-input[type=range]::-moz-range-track{height:11px;border-radius:999px;background:#e6eded;
-  border:0}
+input[type=range]::-moz-range-track{height:11px;border-radius:999px;
+  background:transparent;border:0}
 input[type=range]::-moz-range-thumb{width:21px;height:21px;border-radius:999px;
   background:#fff;border:2px solid #006064;box-shadow:0 1px 4px rgba(0,0,0,.16);cursor:pointer}
-input[type=range]::-moz-range-progress{height:11px;border-radius:999px;
-  background:linear-gradient(90deg,#0d5f62,#17a2b8)}
+input[type=range]:focus{outline:none}
+input[type=range]::-webkit-slider-thumb:hover,
+input[type=range]::-moz-range-thumb:hover{box-shadow:0 0 0 5px rgba(0,96,100,.13)}
 
 /* buttons: pills, one weight of emphasis */
 button, .btn, input[type=button], input[type=submit]{
@@ -1729,6 +1739,96 @@ body{background:#f4f6f8 !important}
   color:#3d3d3d !important;font-size:12.5px !important;line-height:1.6 !important;
   text-shadow:none !important}
 .header em,.header i{font-size:11px !important;color:#a8b0b6 !important}
+
+/* One window, no page scroll. The band and the footer are pinned and the
+   middle is wrapped in a stage that scrolls on its own, so a tool that is
+   genuinely taller than the screen keeps its chrome in place instead of
+   pushing it off. Spacing is tightened first, so most tools fit outright and
+   the stage never has to scroll at all. */
+html,body{height:100%;margin:0}
+body{display:flex;flex-direction:column;overflow:hidden}
+.ie7295-band,.ie7295-foot{flex:0 0 auto}
+.ie7295-stage{flex:1 1 auto;min-height:0;overflow:auto;padding:11px 15px}
+.ie7295-stage > *:first-child{margin-top:0 !important}
+
+/* the same header and footer on every tool, to the pixel */
+.ie7295-band{padding:9px 16px !important}
+.ie7295-band h1{font-size:16px !important;font-weight:700 !important;margin:0 !important}
+.ie7295-band .sub{display:inline-block;background:rgba(255,255,255,.75);color:#3d5f61;
+  padding:2px 9px;border-radius:999px;font-size:11px;margin-top:3px}
+.ie7295-foot{border-top:1px solid #E4E9EB;padding:9px 16px !important;text-align:center;
+  font-size:11px !important;color:#a8b0b6 !important;background:#fff}
+
+/* tightened so the content clears the fold */
+.container,.wrapper,.main{padding:0 !important;margin:0 auto !important;max-width:1400px}
+.header{padding:10px 15px !important;margin-bottom:9px !important}
+.instructions{margin-bottom:9px !important}
+.controls,.control-panel,.panel,.card,.section{margin-bottom:9px !important}
+h2{margin-top:12px !important}
 </style>
+
+<script>
+(function(){
+  var band = document.querySelector('.ie7295-band'),
+      foot = document.querySelector('.ie7295-foot');
+  if (!band || document.querySelector('.ie7295-stage')) return;
+  var stage = document.createElement('div');
+  stage.className = 'ie7295-stage';
+  var n = band.nextSibling;
+  while (n && n !== foot) { var next = n.nextSibling; stage.appendChild(n); n = next; }
+  document.body.insertBefore(stage, foot || null);
+})();
+
+// Fit the stage to the window. Tightening the spacing got the chrome to stay
+// put but left the content up to 1100px taller than the screen, so it is
+// scaled down to fit. The floor is deliberate: below it the type stops being
+// readable and scrolling is the better answer, so the stage scrolls instead.
+(function(){
+  var MIN = 0.66;
+  function fit(){
+    var st = document.querySelector('.ie7295-stage');
+    if (!st) return;
+    var inner = st.firstElementChild && st.children.length === 1
+                ? st.firstElementChild : null;
+    if (!inner) {
+      inner = document.createElement('div');
+      inner.className = 'ie7295-fit';
+      while (st.firstChild) inner.appendChild(st.firstChild);
+      st.appendChild(inner);
+    }
+    // zoom, not transform: a scale() leaves the layout box at full size, so
+    // the container carries on scrolling. zoom reflows, which is the point.
+    inner.style.zoom = 1;
+    // zoom reflows, so the height it needs changes as it shrinks. Converge on
+    // it instead of guessing once: three passes settles every tool here.
+    var k = 1;
+    for (var i = 0; i < 3; i++) {
+      var need = inner.scrollHeight * k, have = st.clientHeight;
+      if (need <= have) break;
+      k = Math.max(MIN, k * (have - 6) / need);
+      inner.style.zoom = k.toFixed(3);
+    }
+  }
+  window.addEventListener('resize', fit);
+  setTimeout(fit, 120); setTimeout(fit, 700); setTimeout(fit, 1800);
+})();
+
+// paint the filled portion of every slider, and keep it painted
+(function(){
+  function fill(r){
+    var min = +r.min || 0, max = +r.max === 0 ? 100 : +r.max;
+    var pct = max === min ? 0 : ((+r.value - min) / (max - min)) * 100;
+    r.style.setProperty('--fill', pct + '%');
+  }
+  var all = document.querySelectorAll('input[type=range]');
+  [].forEach.call(all, function(r){
+    fill(r);
+    r.addEventListener('input', function(){ fill(r); });
+    r.addEventListener('change', function(){ fill(r); });
+  });
+  // tools that move a slider from script need repainting too
+  setInterval(function(){ [].forEach.call(all, fill); }, 400);
+})();
+</script>
 </body>
 </html>
