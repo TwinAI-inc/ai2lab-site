@@ -146,8 +146,14 @@ body{background:radial-gradient(38% 46% at 0% 0%, rgba(0,96,100,.13), transparen
 .grid-wrapper{flex:1 1 auto;min-height:0;background:#fff;border:1px solid #E4E9EB;
   border-radius:6px;padding:10px;display:flex;flex-direction:column;align-items:center;
   justify-content:center;gap:16px}
-.board-who{font-size:11px;font-weight:700;color:#006064;letter-spacing:.3px;
-  text-align:center;min-height:14px}
+.board-who{display:flex;align-items:center;justify-content:center;gap:0;min-height:22px}
+.board-who:empty{min-height:0}
+.board-who svg{color:#fff;margin-right:5px}
+.board-who .ul{font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+  color:#fff;background:#006064;border-radius:999px 0 0 999px;padding:3px 8px 3px 9px;
+  display:inline-flex;align-items:center}
+.board-who .un{font-size:11px;font-weight:700;color:#006064;background:#eef6f6;
+  border:1px solid #8FC8CA;border-left:0;border-radius:0 999px 999px 0;padding:2px 11px 2px 9px}
 .grid-legend{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;font-size:11px;
   color:#a8b0b6}
 .grid-legend span{display:inline-flex;align-items:center;gap:5px}
@@ -1161,6 +1167,10 @@ a{color:#006064}
 </div>
 <script>
 (function(){
+  var USER_ICON = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" ' +
+    'stroke="currentColor" stroke-width="2" stroke-linecap="round" ' +
+    'stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/>' +
+    '<path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>';
   var veil = document.getElementById('name-veil'),
       input = document.getElementById('name-in'),
       who = document.getElementById('whois');
@@ -1170,7 +1180,11 @@ a{color:#006064}
     // the same name on the board, so a screenshot of just the grid still
     // carries it even when the header band is cropped out
     var b = document.getElementById('board-who');
-    if (b) b.textContent = n ? n + "'s grid world" : '';
+    if (b) {
+      b.innerHTML = n ? '<span class="ul">' + USER_ICON + 'User</span>' +
+                        '<span class="un"></span>' : '';
+      if (n) b.querySelector('.un').textContent = n;
+    }
     var hi = document.getElementById('intro-hi');
     if (hi) hi.textContent = n ? 'Say hi, ' + n : 'How this works';
   }
