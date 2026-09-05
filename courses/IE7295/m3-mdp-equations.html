@@ -25,16 +25,16 @@ body{font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFon
 .tab.on{background:linear-gradient(135deg,#006064 0%,#17a2b8 100%);color:#fff}
 
 .cols{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:264px 1fr;gap:10px}
-.side{display:flex;flex-direction:column;gap:9px;min-height:0}
+.side{display:flex;flex-direction:column;gap:8px;min-height:0}
 .main{display:flex;flex-direction:column;gap:9px;min-height:0}
 
-.card{background:#fff;border:1px solid #E4E9EB;border-radius:6px;padding:12px 14px}
+.card{background:#fff;border:1px solid #E4E9EB;border-radius:6px;padding:11px 13px}
 .card.rule{border-left:3px solid #8FC8CA;border-radius:0 6px 6px 0}
 h2{font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
-  color:#006064;margin:0 0 9px}
+  color:#006064;margin:0 0 7px}
 
 /* controls */
-.ctl{margin-bottom:13px}
+.ctl{margin-bottom:11px}
 .ctl:last-child{margin-bottom:0}
 .ctl .lab{display:flex;align-items:baseline;justify-content:space-between;gap:8px;
   font-size:11px;font-weight:700;color:#20484A;margin-bottom:2px}
@@ -113,6 +113,23 @@ select:focus{outline:none;border-color:#8FC8CA}
 .work{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;color:#3d3d3d;line-height:2.1}
 .work b{color:#006064}
 .katex{font-size:1.05em}
+
+/* the left column can outgrow the window once it carries instructions */
+.side{overflow:auto;padding-right:2px}
+
+/* what the numbers on screen mean, right now, in a sentence. This is the
+   part a student actually needs and the old tool never had. */
+.reading{flex:0 0 auto;background:rgba(0,96,100,.07);border-left:3px solid #006064;
+  border-radius:0 6px 6px 0;padding:9px 14px;font-size:12px;line-height:1.55;color:#3d3d3d}
+.reading b{color:#006064;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-weight:700}
+
+.steps{counter-reset:s;margin:0;padding:0;list-style:none}
+.steps li{counter-increment:s;position:relative;padding-left:21px;margin-bottom:6px;
+  font-size:11px;line-height:1.45;color:#3d3d3d}
+.steps li:last-child{margin-bottom:0}
+.steps li::before{content:counter(s);position:absolute;left:0;top:1px;width:15px;
+  height:15px;border-radius:999px;background:#006064;color:#fff;font-size:9.5px;
+  font-weight:700;display:flex;align-items:center;justify-content:center}
 </style></head><body>
 <div class="band"><h1>MDP Equations</h1>
   <div class="sub">Module 3 &middot; the three equations chapter 3 is built on</div></div>
@@ -128,10 +145,12 @@ select:focus{outline:none;border-color:#8FC8CA}
     <div class="side">
       <div class="card rule" id="controls"></div>
       <div class="card rule" id="says"></div>
+      <div class="card rule" id="try"></div>
     </div>
     <div class="main">
       <div class="card eq" id="eq"></div>
       <div class="viz" id="viz"></div>
+      <div class="reading" id="reading"></div>
       <div class="reads" id="reads"></div>
     </div>
   </div>
@@ -310,10 +329,32 @@ var TABS = {
   trans: {
     eq: 'p(s\', r \\mid s, a) = \\Pr\\{S_t = s\',\\, R_t = r \\mid S_{t-1} = s,\\, A_{t-1} = a\\}',
     cap: 'The chance of landing in s\' and collecting r, given you were in s and chose a.',
-    says: ['Actions do not always work', 'The agent picks a direction. Most of the ' +
-           'time it goes that way. Sometimes it slips sideways, and occasionally it ' +
-           'ends up somewhere else entirely. Everything downstream in this course ' +
-           'exists because of that gap between what was chosen and what happened.'],
+    says: ['Actions do not always work', 'Everything downstream in this course ' +
+           'exists because of the gap between the action chosen and what actually ' +
+           'happened.'],
+    steps: ['The dark square is the agent now; the four around it are where one ' +
+            'move might land it.',
+            'Pick an action, then drag <b>Intended direction</b> down to 50% and ' +
+            'watch probability leak into the sideways squares.',
+            'Watch <b>entropy</b> at the bottom. It is near zero when the outcome ' +
+            'is close to certain, and largest when every square is equally likely.',
+            'Push <b>sideways slip</b> up until the intended square is no longer ' +
+            'the most likely one. That is a world where planning barely helps.'],
+    read: function(){
+      var pr = transProbs(), H = 0;
+      pr.forEach(function(v){ if (v > 0) H -= v * Math.log2(v); });
+      var certain = H < 0.6, chaos = H > 1.6;
+      return 'Choosing <b>' + S.action + '</b> puts the agent where it meant to go ' +
+        '<b>' + (pr[0] * 100).toFixed(0) + '%</b> of the time, sideways <b>' +
+        (pr[1] * 200).toFixed(0) + '%</b>, and backwards <b>' +
+        (pr[3] * 100).toFixed(0) + '%</b>. Entropy <b>' + H.toFixed(2) + '</b>: ' +
+        (certain ? 'the outcome is close to certain, so a plan made here will ' +
+                   'usually survive contact with the environment.'
+         : chaos ? 'the outcome is close to a coin toss, so the action barely ' +
+                   'determines what happens and the agent must rely on trying often.'
+         : 'the action mostly works but not reliably, which is the case this ' +
+           'whole course is written for.');
+    },
     controls: function(){
       return slider('main', 'Intended direction', 0, 100, S.main,
                     function(v){ return v + '%'; }, 'How often the action does what you asked')
@@ -329,10 +370,32 @@ var TABS = {
     eq: 'G_t = R_{t+1} + \\gamma R_{t+2} + \\gamma^{2} R_{t+3} + \\cdots' +
         ' = \\sum_{k=0}^{\\infty} \\gamma^{k} R_{t+k+1}',
     cap: 'The return is everything still to come, with later rewards worth less.',
-    says: ['Why discount at all', 'Gamma decides how far ahead the agent cares. Near ' +
-           'zero it takes whatever is in front of it. Near one it will accept a long ' +
-           'run of losses for a payoff at the end. Each bar below is one reward after ' +
-           'discounting, so you can see how quickly the far ones stop mattering.'],
+    says: ['Why discount at all', 'Gamma decides how far ahead the agent cares: near ' +
+           'zero it takes whatever is in front of it, near one it waits.'],
+    steps: ['Each bar is one future reward after discounting. The number on top ' +
+            'is what that reward is actually worth today.',
+            'Drag <b>&gamma;</b> to 0.50 and watch the far bars collapse. Then take ' +
+            'it to 0.99 and watch them come back almost level.',
+            'Switch the sequence to <b>Nothing, then +10</b>. At low &gamma; the ' +
+            'return is near zero, because a payoff that far away is worth almost ' +
+            'nothing to a myopic agent.',
+            'Compare <b>return G</b> with the plain sum of the rewards. The gap ' +
+            'between them is exactly what discounting costs.'],
+    read: function(){
+      var g = S.gammaR / 100, rs = rewardsFor(), G = 0, plain = 0;
+      rs.forEach(function(r, k){ G += Math.pow(g, k) * r; plain += r; });
+      var lastW = Math.pow(g, S.steps - 1);
+      return 'At <b>&gamma; = ' + g.toFixed(2) + '</b> the reward ' + S.steps +
+        ' steps out counts for <b>' + (lastW * 100).toFixed(0) + '%</b> of its face ' +
+        'value. The rewards add up to <b>' + plain.toFixed(2) + '</b> undiscounted, ' +
+        'but the return is <b>' + G.toFixed(2) + '</b>. ' +
+        (g < 0.4 ? 'This agent is myopic: it will trade almost any future for a ' +
+                   'small gain now.'
+         : g > 0.94 ? 'This agent is patient enough to accept a long run of losses ' +
+                      'for a payoff at the end.'
+         : 'A middling &gamma; like this is the usual choice, and the reason most ' +
+           'agents look a little short-sighted.');
+    },
     controls: function(){
       return slider('gammaR', 'Discount &gamma;', 0, 100, S.gammaR,
                     function(v){ return (v/100).toFixed(2); }, '0 is myopic, 1 is far-sighted')
@@ -348,9 +411,29 @@ var TABS = {
     eq: 'V(s) = R(s) + \\gamma \\max_{s\'} V(s\')',
     cap: 'A state is worth what it pays now, plus the discounted value of the best place it leads.',
     says: ['Values defined by other values', 'Nothing here is measured directly. Each ' +
-           'state borrows its value from its best neighbour, which borrowed from its ' +
-           'own. Press Step and watch V(s) move to R plus a discounted share of the ' +
-           'best neighbour, then stop changing. That settling point is the answer.'],
+           'state borrows its value from its best neighbour, which borrowed from its own.'],
+    steps: ['The teal box on the left is the state being updated. The four on the ' +
+            'right are where it can go, and the green one is the best of them.',
+            'Press <b>Step</b> once. V(s) jumps from 0 to R plus a discounted ' +
+            'share of the best neighbour. The arithmetic is written beside it.',
+            'Press <b>Step</b> again. Nothing moves, and <b>settled</b> turns to ' +
+            'yes. With the neighbours held fixed there is only one answer.',
+            'Change the reward to <b>Goal, +10</b> and press Step. The state is now ' +
+            'worth more than any neighbour, which is how value spreads outward ' +
+            'from a goal in a real grid.'],
+    read: function(){
+      var g = S.gammaB / 100, best = Math.max.apply(null, S.NB);
+      var next = S.reward + g * best, d = Math.abs(next - S.V);
+      return 'The best neighbour is worth <b>' + best.toFixed(2) + '</b>. Discounted ' +
+        'by <b>' + g.toFixed(2) + '</b> it contributes <b>' + (g * best).toFixed(2) +
+        '</b>, and adding the reward of <b>' + S.reward.toFixed(2) + '</b> makes ' +
+        'this state worth <b>' + next.toFixed(2) + '</b>. ' +
+        (S.iter === 0 ? 'Press Step to apply it.'
+         : d < 0.01 ? 'It has stopped changing, so this is the fixed point of the ' +
+                      'equation for these neighbours.'
+         : 'That is <b>' + d.toFixed(2) + '</b> away from the current value, so it ' +
+           'has not settled yet.');
+    },
     controls: function(){
       return slider('gammaB', 'Discount &gamma;', 0, 100, S.gammaB,
                     function(v){ return (v/100).toFixed(2); }, 'How much the neighbour is worth here')
@@ -369,8 +452,11 @@ function render(){
   $('eq').innerHTML = '$$' + t.eq + '$$<div class="cap">' + t.cap + '</div>';
   $('says').innerHTML = '<h2>' + t.says[0] + '</h2>' +
     '<div style="font-size:11.5px;line-height:1.6;color:#3d3d3d">' + t.says[1] + '</div>';
+  $('try').innerHTML = '<h2>Try this</h2><ol class="steps">' +
+    t.steps.map(function(x){ return '<li>' + x + '</li>'; }).join('') + '</ol>';
   $('controls').innerHTML = '<h2>Controls</h2>' + t.controls();
   t.draw();
+  $('reading').innerHTML = t.read();
   wire();
   if (window.renderMathInElement){
     renderMathInElement($('eq'), {
