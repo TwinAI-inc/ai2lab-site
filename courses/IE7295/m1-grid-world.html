@@ -1182,6 +1182,11 @@ document.querySelectorAll('.option-group').forEach(function(group){
     var i = btns.indexOf(e.target);
     if (i > -1 && +rng.value !== i){ rng.value = i; paint(i); }
   }, true);
+  // The slider opens showing a value, so the game has to agree that value was
+  // chosen. Without this the panel looks fully configured while Start stays
+  // locked, and pressing it does nothing. The old buttons made an unset
+  // setting obvious; a thumb resting at position zero does not.
+  btns[0].click();
   paint(0);
 });
 </script><script>
