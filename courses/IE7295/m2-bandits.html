@@ -1,0 +1,1770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Armed Bandit Learning Tool - IE 7295</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #6BADB1 0%, #AAD1CD 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background: #E61E27;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 80px;
+            height: 4px;
+            background: #FFC72C;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #AAD1CD;
+            font-size: 12.5px;
+        }
+
+        /* Instructions Panel */
+        .instructions-panel {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .instructions-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #E61E27, #FFC72C, #0066CC);
+        }
+
+        .instructions-header {
+            padding: 18px 24px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            transition: all 0.3s ease;
+        }
+
+        .instructions-header:hover {
+            background: linear-gradient(135deg, #e9ecef 0%, #f8f9fa 100%);
+            padding-left: 28px;
+        }
+
+        .instructions-title {
+            font-weight: 700;
+            font-size: 12.5px;
+            color: #2d2d2d;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .instructions-title::before {
+            content: '';
+            font-size: 16px;
+        }
+
+        .instructions-toggle {
+            font-size: 16px;
+            transition: transform 0.3s;
+            color: #666;
+        }
+
+        .instructions-content {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            background: white;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+        }
+
+        .instructions-content.active {
+            padding: 25px;
+            max-height: 600px;
+        }
+
+        .instruction-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border-radius: 8px;
+            border-left: 3px solid #6BADB1;
+        }
+
+        .instruction-section h3 {
+            color: #2d2d2d;
+            margin-bottom: 10px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .instruction-section p {
+            color: #555;
+            line-height: 1.7;
+            font-size: 12.5px;
+            margin-bottom: 8px;
+        }
+
+        .instruction-highlight {
+            background: linear-gradient(135deg, #FFC72C20 0%, #FFB30020 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #E67E22;
+        }
+
+        /* Controls */
+        .controls-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-group label {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        .control-group input,
+        .control-group select {
+            padding: 6px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 12.5px;
+            background: white;
+            transition: border 0.3s;
+        }
+
+        .control-group input:focus,
+        .control-group select:focus {
+            outline: none;
+            border-color: #6BADB1;
+        }
+
+        button {
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #6BADB1 0%, #AAD1CD 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 12.5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(107, 173, 177, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Info Button - Circular & Transparent */
+        .info-button {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(107, 173, 177, 0.5);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            font-style: italic;
+            font-family: Georgia, serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: help;
+            transition: all 0.3s ease;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .info-button:hover {
+            background: rgba(107, 173, 177, 0.7);
+            transform: translateY(-50%) scale(1.1) rotate(10deg);
+            box-shadow: 0 4px 16px rgba(107, 173, 177, 0.4);
+        }
+
+        .info-tooltip {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            width: 340px;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(107, 173, 177, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .info-button:hover .info-tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .info-tooltip::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            right: 18px;
+            width: 16px;
+            height: 16px;
+            background: rgba(255, 255, 255, 0.98);
+            border-top: 1px solid rgba(107, 173, 177, 0.3);
+            border-left: 1px solid rgba(107, 173, 177, 0.3);
+            transform: rotate(45deg);
+        }
+
+        .tooltip-header {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: #2d2d2d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tooltip-header::before {
+            content: '';
+            font-size: 16px;
+        }
+
+        .arm-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            margin: 8px 0;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border-radius: 8px;
+            border-left: 3px solid #6BADB1;
+            transition: all 0.2s ease;
+        }
+
+        .arm-info:hover {
+            transform: translateX(3px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .arm-info:nth-child(2) { border-left-color: #E61E27; }
+        .arm-info:nth-child(3) { border-left-color: #FFC72C; }
+        .arm-info:nth-child(4) { border-left-color: #0066CC; }
+        .arm-info:nth-child(5) { border-left-color: #6BADB1; }
+
+        .arm-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 12.5px;
+        }
+
+        .arm-params {
+            display: flex;
+            gap: 12px;
+        }
+
+        .param {
+            padding: 4px 8px;
+            background: white;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 12.5px;
+            font-weight: 600;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .param.mean {
+            color: #E61E27;
+        }
+
+        .param.std {
+            color: #0066CC;
+        }
+
+        /* Phase Display */
+        .phase-display {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .phase-display::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, #E61E27 0%, #FFC72C 50%, #0066CC 100%);
+        }
+
+        .phase-label {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .phase-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2d2d2d;
+        }
+
+        .phase-info {
+            text-align: right;
+        }
+
+        .phase-remaining {
+            font-size: 16px;
+            font-weight: 600;
+            color: #6BADB1;
+        }
+
+        /* Arms Container */
+        .arms-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+
+        .arm-box {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            min-width: 200px;
+            flex: 1;
+            max-width: 250px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .arm-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 30px;
+            height: 3px;
+            background: #E61E27;
+        }
+
+        .arm-box::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 30px;
+            background: #E61E27;
+        }
+
+        .arm-box:nth-child(2n)::before,
+        .arm-box:nth-child(2n)::after {
+            background: #FFC72C;
+        }
+
+        .arm-box:nth-child(3n)::before,
+        .arm-box:nth-child(3n)::after {
+            background: #0066CC;
+        }
+
+        .arm-title {
+            font-size: 12.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #2d2d2d;
+            text-align: center;
+            margin-bottom: 15px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Slot Machine Display */
+        .reward-display {
+            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: 700;
+            color: #999;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slot-container {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slot-box {
+            width: 45px;
+            height: 55px;
+            background: white;
+            border: 2px solid #999;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+            color: #333;
+        }
+
+        .slot-reel {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .slot-number {
+            height: 55px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        @keyframes slotSpin {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-550px); }
+        }
+
+        .spinning .slot-box .slot-reel {
+            animation: slotSpin 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .spinning .slot-box:nth-child(2) .slot-reel {
+            animation-duration: 1s;
+        }
+
+        .spinning .slot-box:nth-child(3) .slot-reel {
+            animation-duration: 1.2s;
+        }
+
+        .reward-display.high {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            border-color: #45a049;
+        }
+
+        .reward-display.high .slot-box {
+            background: rgba(255,255,255,0.95);
+            border-color: #45a049;
+            color: #2e7d32;
+        }
+
+        .reward-display.medium {
+            background: linear-gradient(135deg, #FFC72C 0%, #FFB300 100%);
+            border-color: #FFB300;
+        }
+
+        .reward-display.medium .slot-box {
+            background: rgba(255,255,255,0.95);
+            border-color: #FFB300;
+            color: #f57c00;
+        }
+
+        .reward-display.low {
+            background: linear-gradient(135deg, #f44336 0%, #da190b 100%);
+            border-color: #da190b;
+        }
+
+        .reward-display.low .slot-box {
+            background: rgba(255,255,255,0.95);
+            border-color: #da190b;
+            color: #c62828;
+        }
+
+        .slot-box.winner {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(255,255,255,0.6);
+            border-width: 2px;
+            animation: winPulse 0.5s ease-in-out;
+        }
+
+        @keyframes winPulse {
+            0%, 100% { transform: scale(1.1); }
+            50% { transform: scale(1.15); }
+        }
+
+        .pull-button {
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .arm-stats {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+            font-size: 12.5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            color: #2d2d2d;
+        }
+
+        .distribution-canvas {
+            width: 100%;
+            height: 100px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            background: white;
+        }
+
+        /* Results Panel */
+        .results-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .results-header h2 {
+            font-size: 16px;
+            color: #2d2d2d;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .phase-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            padding: 15px;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+
+        .phase-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 12px;
+            padding: 2px;
+            background: linear-gradient(135deg, #F4D03F, #E74C3C);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .phase-card.explore::before {
+            background: linear-gradient(135deg, #3498DB, #0066CC);
+            opacity: 0.8;
+        }
+
+        .phase-card.exploit::before {
+            background: linear-gradient(135deg, #E74C3C, #FFC72C);
+            opacity: 0.8;
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .phase-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .phase-card.explore .phase-icon {
+            background: linear-gradient(135deg, #3498DB, #0066CC);
+            color: white;
+        }
+
+        .phase-card.exploit .phase-icon {
+            background: linear-gradient(135deg, #E74C3C, #FFC72C);
+            color: white;
+        }
+
+        .phase-title {
+            font-size: 12.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .phase-card.explore .phase-title {
+            color: #0066CC;
+        }
+
+        .phase-card.exploit .phase-title {
+            color: #E74C3C;
+        }
+
+        .phase-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .phase-stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 10px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 5px;
+            font-size: 12.5px;
+        }
+
+        .phase-stat-label {
+            color: #666;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .phase-stat-value {
+            font-weight: 700;
+            font-size: 12.5px;
+            color: #2d2d2d;
+        }
+
+        .phase-score-container {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .score-label {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .score-bar {
+            height: 8px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .score-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .phase-card.explore .score-fill {
+            background: linear-gradient(90deg, #3498DB, #0066CC);
+        }
+
+        .phase-card.exploit .score-fill {
+            background: linear-gradient(90deg, #E74C3C, #FFC72C);
+        }
+
+        .score-value {
+            text-align: right;
+            margin-top: 4px;
+            font-size: 12.5px;
+            font-weight: 700;
+        }
+
+        .phase-card.explore .score-value {
+            color: #0066CC;
+        }
+
+        .phase-card.exploit .score-value {
+            color: #E74C3C;
+        }
+
+        .mini-chart-container {
+            margin-top: 10px;
+            padding: 2px;
+            height: 80px;
+            border-radius: 4px;
+            background: rgba(248,249,250,0.3);
+        }
+
+        .mini-chart {
+            width: 100%;
+            height: 80px;
+            display: block;
+            border-radius: 3px;
+        }
+
+        /* Footer - Simple & Narrow */
+        .footer {
+            margin-top: 30px;
+            padding: 12px 20px;
+            background: #2d2d2d;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-top: 3px solid transparent;
+            border-image: linear-gradient(90deg, #E61E27, #FFC72C, #0066CC) 1;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 12.5px;
+            color: #AAD1CD;
+        }
+
+        .course-badge {
+            background: linear-gradient(135deg, #6BADB1, #AAD1CD);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 12.5px;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #999;
+            font-size: 12.5px;
+        }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-box {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 600px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .modal-box h2 {
+            color: #2d2d2d;
+            margin-bottom: 15px;
+        }
+
+        .modal-box p {
+            color: #666;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+<style>
+/* course overrides - appended after the tool's own sheet, layout untouched */
+body{font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif !important;color:#747474}
+/* font yes, colour no: several tools put headings on dark panels of their own,
+   and forcing a dark ink on them makes the title vanish */
+h1,h2,h3,h4,h5,h6{font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif !important}
+code,pre,.equation,.calculation,.formula{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important}
+a{color:#006064}
+/* the tools centre and constrain their own children, so the band has to insist
+   on being full width and left aligned or it renders as a floating chip */
+.ie7295-band{display:block !important;width:auto !important;max-width:none !important;
+  margin:0 !important;padding:9px 16px !important;text-align:left !important;
+  background:linear-gradient(135deg,#C3E3E4 0%,#C1E2E3 100%);font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+  border-radius:0 !important;box-shadow:none !important}
+.ie7295-band h1{margin:0;font-size: 16px;font-weight:700;color:#20484A}
+.ie7295-band .sub{display:inline-block;background:rgba(255,255,255,.75);color:#3d5f61;
+  padding:2px 9px;border-radius:999px;font-size: 11px;margin-top:4px}
+.ie7295-foot{display:block !important;width:auto !important;max-width:none !important;
+  margin:0 !important;border-top:1px solid #E4E9EB;padding:10px 16px !important;
+  text-align:center !important;font-size: 11px;color:#a8b0b6;font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+  background:#fff;border-radius:0 !important}
+</style>
+</head>
+<body>
+<div class="ie7295-band"><h1>Multi-Armed Bandits: Slot Machines</h1><div class="sub">Module 2 &middot; chapter 2</div></div>
+    <!-- Header -->
+    <div class="header">
+        <h1>Multi-Armed Bandit Learning Tool</h1>
+        <p>Explore the exploration-exploitation tradeoff through interactive experiments</p>
+    </div>
+
+    <!-- Instructions Panel -->
+    <div class="instructions-panel">
+        <div class="instructions-header" onclick="toggleInstructions()">
+            <span class="instructions-title">How to Play & Learn</span>
+            <span class="instructions-toggle" id="instructionsToggle"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+        </div>
+        <div class="instructions-content" id="instructionsContent">
+            <div class="instruction-section">
+                <h3>Your Mission</h3>
+                <p>You're facing a classic problem in decision-making: <span class="instruction-highlight">explore vs exploit</span>. 
+                Each arm is a slot machine with hidden reward patterns. Your goal? Maximize total rewards!</p>
+            </div>
+            
+            <div class="instruction-section">
+                <h3>Phase 1: Exploration</h3>
+                <p>During exploration, you're <strong>learning</strong> about each arm's behavior. Pull different arms to discover:</p>
+                <p>• Which arms give consistently high rewards</p>
+                <p>• Which arms are unpredictable (high variance)</p>
+                <p>• The average reward you can expect from each</p>
+            </div>
+            
+            <div class="instruction-section">
+                <h3>Phase 2: Exploitation</h3>
+                <p>Now it's time to <strong>earn</strong>! Use your knowledge from exploration to maximize rewards.</p>
+                <p>Should you always pull the best arm? Or hedge your bets? The choice is yours!</p>
+            </div>
+            
+            <div class="instruction-section">
+                <h3>Pro Tips</h3>
+                <p>• Hover over the <span class="instruction-highlight">ℹ button</span> to see the true distributions</p>
+                <p>• Watch the mini charts to track your performance over time</p>
+                <p>• The slot machine animation shows your reward - middle box is your score!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-wrapper">
+        <div class="controls">
+            <div class="control-group">
+                <label>Arms:</label>
+                <select id="numArms" onchange="resetExperiment()">
+                    <option value="3">3 Arms</option>
+                    <option value="4" selected>4 Arms</option>
+                    <option value="5">5 Arms</option>
+                    <option value="6">6 Arms</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Explore:</label>
+                <input type="number" id="exploreLimit" value="10" min="5" max="50" style="width: 70px;">
+            </div>
+            <div class="control-group">
+                <label>Exploit:</label>
+                <input type="number" id="exploitLimit" value="10" min="5" max="50" style="width: 70px;">
+            </div>
+            <div class="control-group">
+                <label>Difficulty:</label>
+                <select id="difficulty" onchange="resetExperiment()">
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                </select>
+            </div>
+            <button onclick="resetExperiment()">Reset</button>
+        </div>
+        
+        <!-- Info Button -->
+        <div class="info-button">
+            i
+            <div class="info-tooltip">
+                <div class="tooltip-header">True Distributions</div>
+                <div id="trueParams">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phase Display -->
+    <div class="phase-display">
+        <div>
+            <div class="phase-label">Current Phase</div>
+            <div class="phase-value" id="currentPhase">EXPLORATION</div>
+        </div>
+        <div class="phase-info">
+            <div class="phase-label">Pulls Remaining</div>
+            <div class="phase-remaining" id="pullsRemaining">10</div>
+        </div>
+    </div>
+
+    <!-- Arms Container -->
+    <div class="arms-container" id="armsContainer"></div>
+
+    <!-- Results Panel -->
+    <div class="results-panel">
+        <div class="results-header">
+            <h2>Performance Comparison</h2>
+        </div>
+        
+        <div class="results-grid">
+            <div class="phase-card explore">
+                <div class="phase-header">
+                    <div class="phase-icon"></div>
+                    <div class="phase-title">Exploration</div>
+                </div>
+                <div class="phase-stats">
+                    <div class="phase-stat-row">
+                        <span class="phase-stat-label">Total Pulls</span>
+                        <span class="phase-stat-value" id="explorePulls">0</span>
+                    </div>
+                    <div class="phase-stat-row">
+                        <span class="phase-stat-label">Total Reward</span>
+                        <span class="phase-stat-value" id="exploreReward">0</span>
+                    </div>
+                    <div class="phase-stat-row">
+                        <span class="phase-stat-label">Average Reward</span>
+                        <span class="phase-stat-value" id="exploreAvg">0.0</span>
+                    </div>
+                </div>
+                <div class="phase-score-container">
+                    <div class="score-label">Performance Score</div>
+                    <div class="score-bar">
+                        <div class="score-fill" id="exploreScore" style="width: 0%"></div>
+                    </div>
+                    <div class="score-value" id="exploreScoreValue">0%</div>
+                </div>
+                <div class="mini-chart-container">
+                    <canvas class="mini-chart" id="exploreChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="phase-card exploit">
+                <div class="phase-header">
+                    <div class="phase-icon"></div>
+                    <div class="phase-title">Exploitation</div>
+                </div>
+                <div class="phase-stats">
+                    <div class="phase-stat-row">
+                        <span class="phase-stat-label">Total Pulls</span>
+                        <span class="phase-stat-value" id="exploitPulls">0</span>
+                    </div>
+                    <div class="phase-stat-row">
+                        <span class="phase-stat-label">Total Reward</span>
+                        <span class="phase-stat-value" id="exploitReward">0</span>
+                    </div>
+                    <div class="phase-stat-row">
+                        <span class="phase-stat-label">Average Reward</span>
+                        <span class="phase-stat-value" id="exploitAvg">0.0</span>
+                    </div>
+                </div>
+                <div class="phase-score-container">
+                    <div class="score-label">Performance Score</div>
+                    <div class="score-bar">
+                        <div class="score-fill" id="exploitScore" style="width: 0%"></div>
+                    </div>
+                    <div class="score-value" id="exploitScoreValue">0%</div>
+                </div>
+                <div class="mini-chart-container">
+                    <canvas class="mini-chart" id="exploitChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer"> <div class="footer-content"> <div class="footer-left"> <span class="course-badge">IE 7295</span>
+                <span>Reinforcement Learning | Prof. Dehghani</span>
+            </div>
+            <div class="footer-right"> <span><span id="copyright-year"></span> Applied Reinforcement Learning | All Rights Reserved</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="phaseModal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <h2>Exploration Complete!</h2>
+            <p>You've gathered data about each arm's rewards.</p>
+            <p>Now use your knowledge to maximize rewards in the exploitation phase!</p>
+            <button onclick="startExploitPhase()">Start Exploitation </button>
+        </div>
+    </div>
+
+    <div id="finalModal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <h2 id="finalTitle">Experiment Complete!</h2>
+            <div id="finalMessage"></div>
+            <button onclick="closeFinalModal()">Close & Review Results</button>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let state = {
+            phase: 'explore',
+            numArms: 4,
+            exploreLimit: 10,
+            exploitLimit: 10,
+            currentPulls: 0,
+            totalPulls: 0,
+            arms: [],
+            totalReward: 0,
+            exploreReward: 0,
+            exploitReward: 0,
+            explorePulls: 0,
+            exploitPulls: 0,
+            animating: false,
+            history: []
+        };
+
+        // Initialize
+        window.onload = function() {
+            resetExperiment();
+            document.getElementById('copyright-year').textContent = new Date().getFullYear();
+            window.addEventListener('resize', () => drawMiniCharts());
+        };
+
+        function toggleInstructions() {
+            const content = document.getElementById('instructionsContent');
+            const toggle = document.getElementById('instructionsToggle');
+            
+            if (content.classList.contains('active')) {
+                content.classList.remove('active');
+                toggle.innerHTML = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+            } else {
+                content.classList.add('active');
+                toggle.innerHTML = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>';
+            }
+        }
+
+        function resetExperiment() {
+            state.numArms = parseInt(document.getElementById('numArms').value);
+            state.exploreLimit = parseInt(document.getElementById('exploreLimit').value);
+            state.exploitLimit = parseInt(document.getElementById('exploitLimit').value);
+            
+            state.phase = 'explore';
+            state.currentPulls = 0;
+            state.totalPulls = 0;
+            state.totalReward = 0;
+            state.exploreReward = 0;
+            state.exploitReward = 0;
+            state.explorePulls = 0;
+            state.exploitPulls = 0;
+            state.history = [];
+            
+            state.arms = [];
+            const difficulty = document.getElementById('difficulty').value;
+            
+            for (let i = 0; i < state.numArms; i++) {
+                let mean, std;
+                
+                if (difficulty === 'easy') {
+                    mean = 2 + (i * 2);
+                    std = 1;
+                } else if (difficulty === 'medium') {
+                    mean = 4 + (Math.random() * 2);
+                    std = 0.5 + (Math.random() * 2);
+                } else {
+                    if (i === state.numArms - 1) {
+                        mean = 7;
+                        std = 3;
+                    } else {
+                        mean = 4 + (Math.random() * 1);
+                        std = 0.5;
+                    }
+                }
+                
+                state.arms.push({
+                    trueMean: mean,
+                    trueStd: std,
+                    pulls: 0,
+                    rewards: [],
+                    sampleMean: 0,
+                    sampleStd: 0
+                });
+            }
+            
+            updateTrueParams();
+            createArms();
+            updateDisplay();
+            drawMiniCharts();
+        }
+
+        function updateTrueParams() {
+            const container = document.getElementById('trueParams');
+            let html = '';
+            
+            state.arms.forEach((arm, i) => {
+                html += `
+                    <div class="arm-info">
+                        <span class="arm-name">Arm ${i + 1}</span>
+                        <div class="arm-params">
+                            <span class="param mean">μ=${arm.trueMean.toFixed(1)}</span>
+                            <span class="param std">σ=${arm.trueStd.toFixed(1)}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function createArms() {
+            const container = document.getElementById('armsContainer');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < state.numArms; i++) {
+                const armBox = document.createElement('div');
+                armBox.className = 'arm-box';
+                armBox.innerHTML = `
+                    <div class="arm-title">Arm ${i + 1}</div>
+                    <div class="reward-display" id="reward-${i}">
+                        <span id="slot-${i}">?</span>
+                    </div>
+                    <button class="pull-button" onclick="pullArm(${i})">Pull Arm</button>
+                    <div class="arm-stats">
+                        <div class="stat-row">
+                            <span class="stat-label">Pulls:</span>
+                            <span class="stat-value" id="pulls-${i}">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Est. Mean:</span>
+                            <span class="stat-value" id="mean-${i}">-</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Est. Std:</span>
+                            <span class="stat-value" id="std-${i}">-</span>
+                        </div>
+                    </div>
+                    <canvas class="distribution-canvas" id="dist-${i}" width="200" height="100"></canvas>
+                `;
+                container.appendChild(armBox);
+            }
+        }
+
+        function pullArm(index) {
+            if (state.animating) return;
+            
+            const limit = state.phase === 'explore' ? state.exploreLimit : state.exploitLimit;
+            if (state.currentPulls >= limit) return;
+            
+            state.animating = true;
+            
+            const arm = state.arms[index];
+            const reward = Math.max(0, Math.min(10, 
+                Math.round(gaussianRandom(arm.trueMean, arm.trueStd))));
+            
+            arm.pulls++;
+            arm.rewards.push(reward);
+            arm.sampleMean = arm.rewards.reduce((a, b) => a + b, 0) / arm.pulls;
+            
+            if (arm.pulls > 1) {
+                const variance = arm.rewards.reduce((sum, r) => 
+                    sum + Math.pow(r - arm.sampleMean, 2), 0) / (arm.pulls - 1);
+                arm.sampleStd = Math.sqrt(variance);
+            }
+            
+            state.currentPulls++;
+            state.totalPulls++;
+            state.totalReward += reward;
+            
+            if (state.phase === 'explore') {
+                state.explorePulls++;
+                state.exploreReward += reward;
+            } else {
+                state.exploitPulls++;
+                state.exploitReward += reward;
+            }
+            
+            state.history.push({
+                pull: state.totalPulls,
+                reward: reward,
+                cumAvg: state.totalReward / state.totalPulls,
+                phase: state.phase
+            });
+            
+            displaySlotMachine(index, reward);
+            updateDisplay();
+            updateArmDisplay(index);
+            drawDistribution(index);
+            drawMiniCharts();
+            
+            setTimeout(() => {
+                state.animating = false;
+                checkPhaseComplete();
+            }, 1500);
+        }
+
+        function displaySlotMachine(index, reward) {
+            const display = document.getElementById(`reward-${index}`);
+            const slot = document.getElementById(`slot-${index}`);
+            
+            // Create spinning animation - all slots will end on the same reward number
+            let html = '<div class="slot-container spinning">';
+            for (let i = 0; i < 3; i++) {
+                html += `
+                    <div class="slot-box">
+                        <div class="slot-reel">
+                            <div class="slot-number">9</div>
+                            <div class="slot-number">8</div>
+                            <div class="slot-number">7</div>
+                            <div class="slot-number">6</div>
+                            <div class="slot-number">5</div>
+                            <div class="slot-number">4</div>
+                            <div class="slot-number">3</div>
+                            <div class="slot-number">2</div>
+                            <div class="slot-number">1</div>
+                            <div class="slot-number">0</div>
+                            <div class="slot-number">${reward}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            html += '</div>';
+            slot.innerHTML = html;
+            
+            display.classList.remove('high', 'medium', 'low');
+            
+            // After spinning, show all three boxes with the SAME reward number (like a real slot machine win!)
+            setTimeout(() => {
+                slot.innerHTML = `
+                    <div class="slot-container">
+                        <div class="slot-box winner">
+                            <div class="slot-number">${reward}</div>
+                        </div>
+                        <div class="slot-box winner">
+                            <div class="slot-number">${reward}</div>
+                        </div>
+                        <div class="slot-box winner">
+                            <div class="slot-number">${reward}</div>
+                        </div>
+                    </div>
+                `;
+                
+                // Apply color based on reward value
+                if (reward >= 7) {
+                    display.classList.add('high');
+                } else if (reward >= 4) {
+                    display.classList.add('medium');
+                } else {
+                    display.classList.add('low');
+                }
+            }, 800);
+            
+            // Reset back to question mark
+            setTimeout(() => {
+                slot.innerHTML = '?';
+                display.classList.remove('high', 'medium', 'low');
+            }, 1400);
+        }
+
+        function gaussianRandom(mean, std) {
+            let u = 0, v = 0;
+            while(u === 0) u = Math.random();
+            while(v === 0) v = Math.random();
+            return mean + std * Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+        }
+
+        function updateDisplay() {
+            document.getElementById('currentPhase').textContent = 
+                state.phase === 'explore' ? 'EXPLORATION' : 'EXPLOITATION';
+            
+            const limit = state.phase === 'explore' ? state.exploreLimit : state.exploitLimit;
+            document.getElementById('pullsRemaining').textContent = limit - state.currentPulls;
+            
+            // Update stats
+            document.getElementById('explorePulls').textContent = state.explorePulls;
+            document.getElementById('exploreReward').textContent = state.exploreReward;
+            const exploreAvg = state.explorePulls > 0 ? (state.exploreReward / state.explorePulls).toFixed(2) : '0.00';
+            document.getElementById('exploreAvg').textContent = exploreAvg;
+            
+            document.getElementById('exploitPulls').textContent = state.exploitPulls;
+            document.getElementById('exploitReward').textContent = state.exploitReward;
+            const exploitAvg = state.exploitPulls > 0 ? (state.exploitReward / state.exploitPulls).toFixed(2) : '0.00';
+            document.getElementById('exploitAvg').textContent = exploitAvg;
+            
+            // Update scores
+            const exploreScore = state.explorePulls > 0 ? ((state.exploreReward / state.explorePulls) / 10 * 100) : 0;
+            const exploitScore = state.exploitPulls > 0 ? ((state.exploitReward / state.exploitPulls) / 10 * 100) : 0;
+            
+            document.getElementById('exploreScore').style.width = exploreScore + '%';
+            document.getElementById('exploreScoreValue').textContent = exploreScore.toFixed(0) + '%';
+            
+            document.getElementById('exploitScore').style.width = exploitScore + '%';
+            document.getElementById('exploitScoreValue').textContent = exploitScore.toFixed(0) + '%';
+        }
+
+        function updateArmDisplay(index) {
+            const arm = state.arms[index];
+            document.getElementById(`pulls-${index}`).textContent = arm.pulls;
+            document.getElementById(`mean-${index}`).textContent = 
+                arm.pulls > 0 ? arm.sampleMean.toFixed(2) : '-';
+            document.getElementById(`std-${index}`).textContent = 
+                arm.pulls > 1 ? arm.sampleStd.toFixed(2) : '-';
+        }
+
+        function drawDistribution(index) {
+            const canvas = document.getElementById(`dist-${index}`);
+            const ctx = canvas.getContext('2d');
+            const arm = state.arms[index];
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            if (arm.pulls === 0) {
+                ctx.fillStyle = '#ccc';
+                ctx.font = '12px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('No data yet', canvas.width / 2, canvas.height / 2);
+                return;
+            }
+            
+            const mean = arm.sampleMean;
+            const std = Math.max(arm.sampleStd, 0.5);
+            
+            // Draw axes
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(20, canvas.height - 20);
+            ctx.lineTo(canvas.width - 10, canvas.height - 20);
+            ctx.stroke();
+            
+            // Draw curve
+            ctx.strokeStyle = '#6BADB1';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            for (let x = 0; x <= 10; x += 0.1) {
+                const y = (1 / (std * Math.sqrt(2 * Math.PI))) * 
+                         Math.exp(-0.5 * Math.pow((x - mean) / std, 2));
+                const px = 20 + ((x / 10) * (canvas.width - 30));
+                const py = canvas.height - 20 - (y * (canvas.height - 40) * std * 2);
+                
+                if (x === 0) {
+                    ctx.moveTo(px, py);
+                } else {
+                    ctx.lineTo(px, py);
+                }
+            }
+            ctx.stroke();
+            
+            // Draw mean line
+            const meanX = 20 + ((mean / 10) * (canvas.width - 30));
+            ctx.strokeStyle = '#E61E27';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([3, 3]);
+            ctx.beginPath();
+            ctx.moveTo(meanX, 20);
+            ctx.lineTo(meanX, canvas.height - 20);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // Labels
+            ctx.fillStyle = '#666';
+            ctx.font = '10px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('0', 20, canvas.height - 5);
+            ctx.fillText('10', canvas.width - 10, canvas.height - 5);
+            
+            ctx.fillStyle = 'white';
+            ctx.fillRect(meanX - 20, 10, 40, 15);
+            ctx.fillStyle = '#E61E27';
+            ctx.fillText(`μ=${mean.toFixed(1)}`, meanX, 20);
+        }
+
+        function drawMiniCharts() {
+            drawMiniChart('exploreChart', state.history.filter(h => h.phase === 'explore'), '#3498DB');
+            drawMiniChart('exploitChart', state.history.filter(h => h.phase === 'exploit'), '#E74C3C');
+        }
+
+        function drawMiniChart(canvasId, data, color) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = 80;
+            
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            ctx.fillStyle = '#fafafa';
+            ctx.fillRect(0, 0, width, height);
+            
+            if (data.length === 0) {
+                ctx.fillStyle = '#ccc';
+                ctx.font = '11px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('No data yet', width / 2, height / 2);
+                return;
+            }
+            
+            let cumSum = 0;
+            const processedData = data.map((point, index) => {
+                cumSum += point.reward;
+                return {
+                    x: index,
+                    y: cumSum / (index + 1),
+                    reward: point.reward
+                };
+            });
+            
+            const padding = 15;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            
+            const maxX = Math.max(processedData.length - 1, 1);
+            const xScale = (x) => padding + (x / maxX) * chartWidth;
+            const yScale = (y) => padding + (1 - y / 10) * chartHeight;
+            
+            // Grid
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 0.5;
+            
+            [0, 5, 10].forEach(val => {
+                ctx.beginPath();
+                ctx.moveTo(padding, yScale(val));
+                ctx.lineTo(width - padding, yScale(val));
+                ctx.stroke();
+                
+                ctx.fillStyle = '#999';
+                ctx.font = '9px sans-serif';
+                ctx.textAlign = 'right';
+                ctx.fillText(val.toString(), padding - 3, yScale(val) + 3);
+            });
+            
+            // Area fill
+            const gradient = ctx.createLinearGradient(0, padding, 0, height - padding);
+            gradient.addColorStop(0, color + '30');
+            gradient.addColorStop(1, color + '05');
+            
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.moveTo(xScale(0), yScale(processedData[0].y));
+            processedData.forEach(point => {
+                ctx.lineTo(xScale(point.x), yScale(point.y));
+            });
+            ctx.lineTo(xScale(processedData.length - 1), height - padding);
+            ctx.lineTo(xScale(0), height - padding);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Line
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            processedData.forEach((point, i) => {
+                const x = xScale(point.x);
+                const y = yScale(point.y);
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            ctx.stroke();
+            
+            // Points
+            ctx.fillStyle = color;
+            processedData.forEach(point => {
+                ctx.beginPath();
+                ctx.arc(xScale(point.x), yScale(point.y), 2, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            
+            // Final value
+            if (processedData.length > 0) {
+                const lastPoint = processedData[processedData.length - 1];
+                ctx.fillStyle = 'white';
+                ctx.fillRect(width - 45, 2, 42, 16);
+                ctx.fillStyle = color;
+                ctx.font = 'bold 11px sans-serif';
+                ctx.textAlign = 'right';
+                ctx.fillText(`μ: ${lastPoint.y.toFixed(2)}`, width - 4, 13);
+            }
+        }
+
+        function checkPhaseComplete() {
+            const limit = state.phase === 'explore' ? state.exploreLimit : state.exploitLimit;
+            
+            if (state.currentPulls >= limit) {
+                if (state.phase === 'explore') {
+                    document.getElementById('phaseModal').classList.remove('hidden');
+                } else {
+                    showFinalResults();
+                }
+            }
+        }
+
+        function startExploitPhase() {
+            document.getElementById('phaseModal').classList.add('hidden');
+            state.phase = 'exploit';
+            state.currentPulls = 0;
+            updateDisplay();
+        }
+
+        function showFinalResults() {
+            const exploreAvg = state.explorePulls > 0 ? (state.exploreReward / state.explorePulls) : 0;
+            const exploitAvg = state.exploitPulls > 0 ? (state.exploitReward / state.exploitPulls) : 0;
+            
+            let title, message;
+            
+            if (exploitAvg > exploreAvg) {
+                const improvement = ((exploitAvg - exploreAvg) / exploreAvg * 100).toFixed(1);
+                title = ' Excellent! Exploitation Beat Exploration!';
+                message = `
+                    <p style="color: #27ae60; font-size: 16px; font-weight: 600; margin-bottom: 15px;">
+                        You improved performance by ${improvement}% in exploitation!
+                    </p>
+                    <p>Great job! You successfully learned which arms were best and capitalized on that knowledge.</p>
+                `;
+            } else {
+                title = ' Exploration Outperformed Exploitation';
+                message = `
+                    <p style="color: #e74c3c; font-size: 16px; font-weight: 600; margin-bottom: 15px;">
+                        Your exploration phase actually performed better. Did you identify the right arms?
+                    </p>
+                    <p>Try different strategies to see what works best!</p>
+                `;
+            }
+            
+            message += `
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div style="text-align: center; padding: 10px; background: white; border-radius: 6px; border-left: 3px solid #3498DB;">
+                            <div style="font-size: 12.5px; color: #666;">EXPLORATION</div>
+                            <div style="font-size: 24px; font-weight: bold; color: #3498DB;">${exploreAvg.toFixed(2)}</div>
+                        </div>
+                        <div style="text-align: center; padding: 10px; background: white; border-radius: 6px; border-left: 3px solid #E74C3C;">
+                            <div style="font-size: 12.5px; color: #666;">EXPLOITATION</div>
+                            <div style="font-size: 24px; font-weight: bold; color: #E74C3C;">${exploitAvg.toFixed(2)}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('finalTitle').innerHTML = title;
+            document.getElementById('finalMessage').innerHTML = message;
+            document.getElementById('finalModal').classList.remove('hidden');
+        }
+        
+        function closeFinalModal() {
+            document.getElementById('finalModal').classList.add('hidden');
+        }
+    </script>
+<div class="ie7295-foot">IE7295: Applied Reinforcement Learning &middot; Prof. Dehghani</div>
+
+<style>
+/* sync_tools v3 ---------------------------------------------------------------------
+   Appended, never substituted. Everything here is a decision taken on the
+   Module 1 Grid World tool and carried across so the set reads as one course.
+   ---------------------------------------------------------------------- */
+
+/* the three colour rule under the band, the one place the full palette shows */
+.ie7295-band{position:relative}
+.ie7295-band::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;
+  background:linear-gradient(90deg,#F5D000 0 33.33%,#E2231A 33.33% 66.66%,#0064B0 66.66% 100%)}
+
+/* sliders: the weighted bar. The track is styled, so the thumb needs its
+   centring offset back by hand or WebKit aligns it to the track's top edge. */
+input[type=range]{-webkit-appearance:none;appearance:none;background:none;
+  height:22px;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:11px;border-radius:999px;
+  background:#e6eded;border:0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;margin-top:-5px;
+  width:21px;height:21px;border-radius:999px;background:#fff;border:2px solid #006064;
+  box-shadow:0 1px 4px rgba(0,0,0,.16);cursor:pointer}
+input[type=range]::-moz-range-track{height:11px;border-radius:999px;background:#e6eded;
+  border:0}
+input[type=range]::-moz-range-thumb{width:21px;height:21px;border-radius:999px;
+  background:#fff;border:2px solid #006064;box-shadow:0 1px 4px rgba(0,0,0,.16);cursor:pointer}
+input[type=range]::-moz-range-progress{height:11px;border-radius:999px;
+  background:linear-gradient(90deg,#0d5f62,#17a2b8)}
+
+/* buttons: pills, one weight of emphasis */
+button, .btn, input[type=button], input[type=submit]{
+  font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif !important;border-radius:999px !important;
+  font-weight:700 !important;cursor:pointer}
+
+/* Teal is the course's one accent. Cliff Walker painted its buttons in
+   var(--mit-blue), which this course reserves for policy arrows, so the button
+   is overridden rather than the variable: anything semantic keeps its colour.
+   Danger and destructive controls are left alone deliberately. */
+button:not([class*=danger]):not([class*=delete]):not([class*=remove]),
+.btn:not([class*=danger]){
+  background:linear-gradient(135deg,#006064 0%,#17a2b8 100%) !important;
+  color:#fff !important;border:0 !important}
+button:disabled, .btn:disabled{
+  background:#cfd8dc !important;color:#8b969b !important;cursor:not-allowed}
+
+/* panels line up with the pages: same hairline, same radius */
+.panel,.card,.box,.section,.controls,.stats,.info,.legend{
+  border-radius:6px}
+
+/* prose is INK. MUTE is for captions, and reads at 2.2:1 which is not text. */
+p, li, td{color:#3d3d3d}
+
+/* the field the panels sit on. Several tools shipped with a strong teal
+   gradient body, which fought the mint band directly above it. */
+body{background:#f4f6f8 !important}
+
+/* Each tool carries its own title block, a black slab that repeated the title
+   already on the course band. The text is content, so it stays: the slab is
+   restyled into the course box instead. Background and colour have to move
+   together, or the white title is left invisible on a white panel. */
+.header{background:#fff !important;border-left:3px solid #006064 !important;
+  border-radius:0 6px 6px 0 !important;box-shadow:none !important;
+  padding:13px 17px !important;margin-bottom:14px !important}
+.header h1,.header h2{color:#20484A !important;font-size:16px !important;
+  font-weight:700 !important;margin:0 0 3px !important;text-shadow:none !important}
+.header p,.header .subtitle,.header div,.header em,.header i{
+  color:#3d3d3d !important;font-size:12.5px !important;line-height:1.6 !important;
+  text-shadow:none !important}
+.header em,.header i{font-size:11px !important;color:#a8b0b6 !important}
+</style>
+</body>
+</html>

@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Average Reward Formulation - IE 7295</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #6BADB1 0%, #AAD1CD 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background: #E61E27;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 80px;
+            height: 4px;
+            background: #FFC72C;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #AAD1CD;
+            font-size: 12.5px;
+        }
+
+        /* Instructions */
+        .instructions {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-left: 4px solid #6BADB1;
+        }
+
+        .instructions h3 {
+            color: #2d2d2d;
+            font-size: 12.5px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .instructions p {
+            color: #555;
+            font-size: 12.5px;
+            line-height: 1.7;
+            margin-bottom: 8px;
+        }
+
+        .instructions strong {
+            color: #2d2d2d;
+        }
+
+        /* Main Panel */
+        .main-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .main-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #E61E27, #FFC72C, #0066CC);
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #2d2d2d;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+            letter-spacing: 0.5px;
+        }
+
+        /* Controls */
+        .controls {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .control-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .control-label {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: #2d2d2d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .control-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #6BADB1;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6BADB1, #AAD1CD);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6BADB1, #AAD1CD);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        /* SVG Container */
+        .svg-container {
+            height: 450px;
+            background: #fafafa;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .network-svg {
+            width: 100%;
+            max-width: 900px;
+            height: 100%;
+        }
+
+        /* SVG Styles */
+        .node-circle {
+            fill: white;
+            stroke: #6BADB1;
+            stroke-width: 3;
+        }
+
+        .node-circle.decision {
+            fill: #2d2d2d;
+            stroke: #FFC72C;
+            stroke-width: 4;
+        }
+
+        .node-text {
+            fill: #2d2d2d;
+            font-size: 12.5px;
+            font-weight: 700;
+            text-anchor: middle;
+            dominant-baseline: middle;
+        }
+
+        .node-text.decision {
+            fill: white;
+            font-size: 22px;
+            font-weight: 900;
+        }
+
+        .edge-path {
+            fill: none;
+            stroke: #999;
+            stroke-width: 2.5;
+        }
+
+        .edge-path.highlight {
+            stroke: #2d2d2d;
+            stroke-width: 4;
+        }
+
+        .edge-path.animated {
+            stroke-dasharray: 5;
+            animation: dash 0.5s linear infinite;
+        }
+
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -10;
+            }
+        }
+
+        .edge-label {
+            fill: #4CAF50;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .action-label {
+            fill: #2d2d2d;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        /* Formula Container */
+        .formula-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .formula-box {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border-radius: 10px;
+            padding: 25px;
+            border-left: 4px solid #6BADB1;
+            transition: all 0.3s ease;
+        }
+
+        .formula-box:hover {
+            box-shadow: 0 4px 12px rgba(107, 173, 177, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .formula-box.policy-right {
+            border-left-color: #0066CC;
+        }
+
+        .formula-header {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 15px;
+        }
+
+        .formula {
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            color: #2d2d2d;
+            margin: 15px 0;
+            line-height: 1.7;
+        }
+
+        .formula-result {
+            font-size: 28px;
+            font-weight: 700;
+            color: #6BADB1;
+            margin-top: 15px;
+        }
+
+        .formula-box.policy-right .formula-result {
+            color: #0066CC;
+        }
+
+        /* Result Panel */
+        .result-panel {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .result-title {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 15px;
+        }
+
+        .winner-badge {
+            display: inline-block;
+            padding: 15px 35px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6BADB1, #AAD1CD);
+            color: white;
+            box-shadow: 0 4px 12px rgba(107, 173, 177, 0.3);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .threshold-box {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            border-left: 4px solid #FFC72C;
+            text-align: left;
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            border-top: 3px solid #6BADB1;
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .metric-card:nth-child(2) {
+            border-top-color: #0066CC;
+        }
+
+        .metric-card:nth-child(3) {
+            border-top-color: #FFC72C;
+        }
+
+        .metric-card:nth-child(4) {
+            border-top-color: #E61E27;
+        }
+
+        .metric-label {
+            font-size: 11px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2d2d2d;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 30px;
+            padding: 15px 25px;
+            background: #2d2d2d;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-top: 3px solid transparent;
+            border-image: linear-gradient(90deg, #E61E27, #FFC72C, #0066CC) 1;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 12.5px;
+            color: #AAD1CD;
+        }
+
+        .course-badge {
+            background: linear-gradient(135deg, #6BADB1, #AAD1CD);
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 12.5px;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-right {
+            color: #AAD1CD;
+            font-size: 12.5px;
+        }
+
+        @media (max-width: 768px) {
+            .formula-container {
+                grid-template-columns: 1fr;
+            }
+            .control-row {
+                grid-template-columns: 1fr;
+            }
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+<style>
+/* course overrides - appended after the tool's own sheet, layout untouched */
+body{font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif !important;color:#747474}
+/* font yes, colour no: several tools put headings on dark panels of their own,
+   and forcing a dark ink on them makes the title vanish */
+h1,h2,h3,h4,h5,h6{font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif !important}
+code,pre,.equation,.calculation,.formula{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important}
+a{color:#006064}
+/* the tools centre and constrain their own children, so the band has to insist
+   on being full width and left aligned or it renders as a floating chip */
+.ie7295-band{display:block !important;width:auto !important;max-width:none !important;
+  margin:0 !important;padding:9px 16px !important;text-align:left !important;
+  background:linear-gradient(135deg,#C3E3E4 0%,#C1E2E3 100%);font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+  border-radius:0 !important;box-shadow:none !important}
+.ie7295-band h1{margin:0;font-size: 16px;font-weight:700;color:#20484A}
+.ie7295-band .sub{display:inline-block;background:rgba(255,255,255,.75);color:#3d5f61;
+  padding:2px 9px;border-radius:999px;font-size: 11px;margin-top:4px}
+.ie7295-foot{display:block !important;width:auto !important;max-width:none !important;
+  margin:0 !important;border-top:1px solid #E4E9EB;padding:10px 16px !important;
+  text-align:center !important;font-size: 11px;color:#a8b0b6;font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+  background:#fff;border-radius:0 !important}
+</style>
+</head>
+<body>
+<div class="ie7295-band"><h1>Average Reward: the formulation</h1><div class="sub">Module 10 &middot; chapter 10</div></div>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        function App() {
+            const [gamma, setGamma] = useState(0.50);
+            const [numStates, setNumStates] = useState(5);
+
+            // Create SVG nodes and paths
+            const renderNetwork = () => {
+                const centerX = 450;
+                const centerY = 225;
+                const radius = 100;
+                const nodes = [];
+                const paths = [];
+
+                // Left ring (counter-clockwise)
+                const leftCenterX = centerX - 250;
+                const leftCenterY = centerY;
+                const leftNodes = [];
+                
+                for (let i = 1; i < numStates; i++) {
+                    const angle = Math.PI / 2 + (2 * Math.PI * i / numStates);
+                    const x = leftCenterX + radius * Math.cos(angle);
+                    const y = leftCenterY + radius * Math.sin(angle);
+                    leftNodes.push({ x, y, id: `left-${i}` });
+                }
+
+                // Draw left ring nodes
+                leftNodes.forEach(node => {
+                    nodes.push(
+                        <g key={node.id}>
+                            <circle cx={node.x} cy={node.y} r="18" className="node-circle" />
+                        </g>
+                    );
+                });
+
+                // Left ring paths
+                paths.push(
+                    <g key="left-paths">
+                        <path
+                            d={`M ${centerX} ${centerY} Q ${(centerX + leftNodes[0].x) / 2} ${(centerY + leftNodes[0].y) / 2 - 30} ${leftNodes[0].x} ${leftNodes[0].y}`}
+                            className="edge-path highlight animated"
+                            markerEnd="url(#arrow-h)"
+                        />
+                        <text x={(centerX + leftNodes[0].x) / 2 - 30} y={(centerY + leftNodes[0].y) / 2 - 20} className="edge-label">+1</text>
+                        {leftNodes.map((node, i) => {
+                            if (i < leftNodes.length - 1) {
+                                return (
+                                    <path
+                                        key={`left-edge-${i}`}
+                                        d={`M ${node.x} ${node.y} Q ${(node.x + leftNodes[i + 1].x) / 2 - 20} ${(node.y + leftNodes[i + 1].y) / 2} ${leftNodes[i + 1].x} ${leftNodes[i + 1].y}`}
+                                        className="edge-path"
+                                        markerEnd="url(#arrow)"
+                                    />
+                                );
+                            }
+                            return null;
+                        })}
+                        <path
+                            d={`M ${leftNodes[leftNodes.length - 1].x} ${leftNodes[leftNodes.length - 1].y} Q ${(leftNodes[leftNodes.length - 1].x + centerX) / 2} ${(leftNodes[leftNodes.length - 1].y + centerY) / 2 + 30} ${centerX} ${centerY}`}
+                            className="edge-path"
+                            markerEnd="url(#arrow)"
+                        />
+                    </g>
+                );
+
+                // Right ring (clockwise)
+                const rightCenterX = centerX + 250;
+                const rightCenterY = centerY;
+                const rightNodes = [];
+                
+                for (let i = 1; i < numStates; i++) {
+                    const angle = Math.PI / 2 - (2 * Math.PI * i / numStates);
+                    const x = rightCenterX + radius * Math.cos(angle);
+                    const y = rightCenterY + radius * Math.sin(angle);
+                    rightNodes.push({ x, y, id: `right-${i}` });
+                }
+
+                // Draw right ring nodes
+                rightNodes.forEach(node => {
+                    nodes.push(
+                        <g key={node.id}>
+                            <circle cx={node.x} cy={node.y} r="18" className="node-circle" />
+                        </g>
+                    );
+                });
+
+                // Right ring paths
+                paths.push(
+                    <g key="right-paths">
+                        <path
+                            d={`M ${centerX} ${centerY} Q ${(centerX + rightNodes[0].x) / 2} ${(centerY + rightNodes[0].y) / 2 - 30} ${rightNodes[0].x} ${rightNodes[0].y}`}
+                            className="edge-path"
+                            markerEnd="url(#arrow)"
+                        />
+                        {rightNodes.map((node, i) => {
+                            if (i < rightNodes.length - 1) {
+                                return (
+                                    <path
+                                        key={`right-edge-${i}`}
+                                        d={`M ${node.x} ${node.y} Q ${(node.x + rightNodes[i + 1].x) / 2 + 20} ${(node.y + rightNodes[i + 1].y) / 2} ${rightNodes[i + 1].x} ${rightNodes[i + 1].y}`}
+                                        className="edge-path"
+                                        markerEnd="url(#arrow)"
+                                    />
+                                );
+                            }
+                            return null;
+                        })}
+                        <path
+                            d={`M ${rightNodes[rightNodes.length - 1].x} ${rightNodes[rightNodes.length - 1].y} Q ${(rightNodes[rightNodes.length - 1].x + centerX) / 2} ${(rightNodes[rightNodes.length - 1].y + centerY) / 2 + 30} ${centerX} ${centerY}`}
+                            className="edge-path highlight animated"
+                            markerEnd="url(#arrow-h)"
+                        />
+                        <text x={(rightNodes[rightNodes.length - 1].x + centerX) / 2 + 30} y={(rightNodes[rightNodes.length - 1].y + centerY) / 2 + 45} className="edge-label">+2</text>
+                    </g>
+                );
+
+                // Labels
+                nodes.push(
+                    <g key="labels">
+                        <text x={centerX - 150} y={centerY - 80} className="action-label">L</text>
+                        <text x={centerX + 150} y={centerY - 80} className="action-label">R</text>
+                    </g>
+                );
+
+                return { nodes, paths };
+            };
+
+            const { nodes, paths } = renderNetwork();
+
+            // Calculate values
+            const gammaPowN = Math.pow(gamma, numStates);
+            let vLeft, vRight;
+
+            if (Math.abs(1 - gammaPowN) < 0.00001) {
+                vLeft = 999999;
+                vRight = 999999;
+            } else {
+                vLeft = 1 / (1 - gammaPowN);
+                vRight = (2 * Math.pow(gamma, numStates - 1)) / (1 - gammaPowN);
+            }
+
+            const fmt = (v) => v > 1000 ? '' : v.toFixed(3);
+            const threshold = Math.pow(2, -1 / (numStates - 1));
+
+            return (
+                <>
+                    <div className="header">
+                        <h1>Average Reward Formulation</h1>
+                        <p>Understanding the Discount Factor Problem</p>
+                    </div>
+
+                    <div className="instructions">
+                        <h3>The Nearsighted MDP</h3>
+                        <p><strong>Problem:</strong> Two circular paths (rings) that share state S. From S, the agent chooses LEFT or RIGHT.</p>
+                        <p><strong>Left Ring:</strong> Reward +1 at the top (first transition leaving S, 1 step away)</p>
+                        <p><strong>Right Ring:</strong> Reward +2 at the bottom (last transition returning to S, {numStates - 1} steps away)</p>
+                        <p><strong>Question:</strong> Intuitively, +2 &gt; +1, so RIGHT is better. But does γ change this?</p>
+                    </div>
+
+                    <div className="main-panel">
+                        <div className="section-title">Interactive Analysis</div>
+                        
+                        <div className="controls">
+                            <div className="control-row">
+                                <div className="control-group">
+                                    <div className="control-label">
+                                        <span>Discount Factor (γ)</span>
+                                        <span className="control-value">{gamma.toFixed(2)}</span>
+                                    </div>
+                                    <input 
+                                        type="range" 
+                                        min="0" 
+                                        max="100" 
+                                        value={gamma * 100} 
+                                        onChange={(e) => setGamma(e.target.value / 100)}
+                                    />
+                                </div>
+                                <div className="control-group">
+                                    <div className="control-label">
+                                        <span>States per Ring</span>
+                                        <span className="control-value">{numStates}</span>
+                                    </div>
+                                    <input 
+                                        type="range" 
+                                        min="3" 
+                                        max="10" 
+                                        value={numStates} 
+                                        step="1"
+                                        onChange={(e) => setNumStates(parseInt(e.target.value))}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="svg-container">
+                            <svg className="network-svg" viewBox="0 0 900 450">
+                                <defs>
+                                    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                                        <polygon points="0 0, 10 5, 0 10" fill="#999"/>
+                                    </marker>
+                                    <marker id="arrow-h" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                                        <polygon points="0 0, 10 5, 0 10" fill="#2d2d2d"/>
+                                    </marker>
+                                </defs>
+                                
+                                {paths}
+                                {nodes}
+                                
+                                {/* Center S node */}
+                                <circle cx="450" cy="225" r="28" className="node-circle decision" />
+                                <text x="450" y="225" className="node-text decision">S</text>
+                            </svg>
+                        </div>
+
+                        <div className="section-title">Value Function Comparison</div>
+
+                        <div className="formula-container">
+                            <div className="formula-box">
+                                <div className="formula-header">Left Policy (π<sub>L</sub>)</div>
+                                <div className="formula">v<sub>L</sub>(s) = 1 / (1 - γ<sup>{numStates}</sup>)</div>
+                                <div className="formula-result">{fmt(vLeft)}</div>
+                            </div>
+                            <div className="formula-box policy-right">
+                                <div className="formula-header">Right Policy (π<sub>R</sub>)</div>
+                                <div className="formula">v<sub>R</sub>(s) = 2γ<sup>{numStates - 1}</sup> / (1 - γ<sup>{numStates}</sup>)</div>
+                                <div className="formula-result">{fmt(vRight)}</div>
+                            </div>
+                        </div>
+
+                        <div className="result-panel">
+                            <div className="result-title">Optimal Policy</div>
+                            <div 
+                                className="winner-badge" 
+                                style={{
+                                    background: vRight > vLeft 
+                                        ? 'linear-gradient(135deg, #0066CC, #42A5F5)' 
+                                        : 'linear-gradient(135deg, #6BADB1, #AAD1CD)'
+                                }}
+                            >
+                                {vRight > vLeft ? 'RIGHT preferred ' : 'LEFT preferred '}
+                            </div>
+                            <div className="threshold-box">
+                                <strong style={{color: '#FF6F00'}}>Critical Threshold:</strong> γ  <strong>{threshold.toFixed(3)}</strong> required for RIGHT to be preferred.
+                                <br/><br/>
+                                <span>
+                                    With {numStates} states, γ  {threshold.toFixed(3)}. 
+                                    {numStates >= 8 && ' As rings grow larger, γ must approach 1.0, causing numerical instability—this is why discount formulation is problematic for large continuing tasks.'}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="metrics-grid">
+                            <div className="metric-card">
+                                <div className="metric-label">Current γ</div>
+                                <div className="metric-value">{gamma.toFixed(2)}</div>
+                            </div>
+                            <div className="metric-card">
+                                <div className="metric-label">v<sub>L</sub>(s)</div>
+                                <div className="metric-value">{fmt(vLeft)}</div>
+                            </div>
+                            <div className="metric-card">
+                                <div className="metric-label">v<sub>R</sub>(s)</div>
+                                <div className="metric-value">{fmt(vRight)}</div>
+                            </div>
+                            <div className="metric-card">
+                                <div className="metric-label">Difference</div>
+                                <div className="metric-value">{fmt(vRight - vLeft)}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="footer"> <div className="footer-content"> <div className="footer-left"> <span className="course-badge">IE 7295</span>
+                                <span>Reinforcement Learning | Average Reward Formulation</span>
+                            </div>
+                            <div className="footer-right"> <span>Prof. Dehghani </span>
+                            </div>
+                        </div>
+                    </div>
+                </>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+<div class="ie7295-foot">IE7295: Applied Reinforcement Learning &middot; Prof. Dehghani</div>
+
+<style>
+/* sync_tools v3 ---------------------------------------------------------------------
+   Appended, never substituted. Everything here is a decision taken on the
+   Module 1 Grid World tool and carried across so the set reads as one course.
+   ---------------------------------------------------------------------- */
+
+/* the three colour rule under the band, the one place the full palette shows */
+.ie7295-band{position:relative}
+.ie7295-band::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;
+  background:linear-gradient(90deg,#F5D000 0 33.33%,#E2231A 33.33% 66.66%,#0064B0 66.66% 100%)}
+
+/* sliders: the weighted bar. The track is styled, so the thumb needs its
+   centring offset back by hand or WebKit aligns it to the track's top edge. */
+input[type=range]{-webkit-appearance:none;appearance:none;background:none;
+  height:22px;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:11px;border-radius:999px;
+  background:#e6eded;border:0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;margin-top:-5px;
+  width:21px;height:21px;border-radius:999px;background:#fff;border:2px solid #006064;
+  box-shadow:0 1px 4px rgba(0,0,0,.16);cursor:pointer}
+input[type=range]::-moz-range-track{height:11px;border-radius:999px;background:#e6eded;
+  border:0}
+input[type=range]::-moz-range-thumb{width:21px;height:21px;border-radius:999px;
+  background:#fff;border:2px solid #006064;box-shadow:0 1px 4px rgba(0,0,0,.16);cursor:pointer}
+input[type=range]::-moz-range-progress{height:11px;border-radius:999px;
+  background:linear-gradient(90deg,#0d5f62,#17a2b8)}
+
+/* buttons: pills, one weight of emphasis */
+button, .btn, input[type=button], input[type=submit]{
+  font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif !important;border-radius:999px !important;
+  font-weight:700 !important;cursor:pointer}
+
+/* Teal is the course's one accent. Cliff Walker painted its buttons in
+   var(--mit-blue), which this course reserves for policy arrows, so the button
+   is overridden rather than the variable: anything semantic keeps its colour.
+   Danger and destructive controls are left alone deliberately. */
+button:not([class*=danger]):not([class*=delete]):not([class*=remove]),
+.btn:not([class*=danger]){
+  background:linear-gradient(135deg,#006064 0%,#17a2b8 100%) !important;
+  color:#fff !important;border:0 !important}
+button:disabled, .btn:disabled{
+  background:#cfd8dc !important;color:#8b969b !important;cursor:not-allowed}
+
+/* panels line up with the pages: same hairline, same radius */
+.panel,.card,.box,.section,.controls,.stats,.info,.legend{
+  border-radius:6px}
+
+/* prose is INK. MUTE is for captions, and reads at 2.2:1 which is not text. */
+p, li, td{color:#3d3d3d}
+
+/* the field the panels sit on. Several tools shipped with a strong teal
+   gradient body, which fought the mint band directly above it. */
+body{background:#f4f6f8 !important}
+
+/* Each tool carries its own title block, a black slab that repeated the title
+   already on the course band. The text is content, so it stays: the slab is
+   restyled into the course box instead. Background and colour have to move
+   together, or the white title is left invisible on a white panel. */
+.header{background:#fff !important;border-left:3px solid #006064 !important;
+  border-radius:0 6px 6px 0 !important;box-shadow:none !important;
+  padding:13px 17px !important;margin-bottom:14px !important}
+.header h1,.header h2{color:#20484A !important;font-size:16px !important;
+  font-weight:700 !important;margin:0 0 3px !important;text-shadow:none !important}
+.header p,.header .subtitle,.header div,.header em,.header i{
+  color:#3d3d3d !important;font-size:12.5px !important;line-height:1.6 !important;
+  text-shadow:none !important}
+.header em,.header i{font-size:11px !important;color:#a8b0b6 !important}
+</style>
+</body>
+</html>

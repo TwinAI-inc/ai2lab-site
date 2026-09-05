@@ -356,8 +356,53 @@
       "statusCode": 301
     },
     {
+      "route": "/courses/IE7295/index.html",
+      "redirect": "/courses/IE7295/",
+      "statusCode": 301
+    },
+    {
       "route": "/courses/IE7295/m1-grid-world.html",
       "redirect": "/courses/IE7295/m1-grid-world",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE7295/m10-average-reward-map.html",
+      "redirect": "/courses/IE7295/m10-average-reward-map",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE7295/m10-average-reward.html",
+      "redirect": "/courses/IE7295/m10-average-reward",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE7295/m10-nearsighted-mdp.html",
+      "redirect": "/courses/IE7295/m10-nearsighted-mdp",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE7295/m2-bandits.html",
+      "redirect": "/courses/IE7295/m2-bandits",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE7295/m2-gradient-bandit.html",
+      "redirect": "/courses/IE7295/m2-gradient-bandit",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE7295/m3-mdp-equations.html",
+      "redirect": "/courses/IE7295/m3-mdp-equations",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE7295/m4-value-microscope.html",
+      "redirect": "/courses/IE7295/m4-value-microscope",
+      "statusCode": 301
+    },
+    {
+      "route": "/courses/IE7295/m6-cliff-walker.html",
+      "redirect": "/courses/IE7295/m6-cliff-walker",
       "statusCode": 301
     },
     {

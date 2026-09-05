@@ -1,0 +1,1734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gradient Bandit Learning Tool - IE 7295</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #6BADB1 0%, #AAD1CD 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background: #E61E27;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 80px;
+            height: 4px;
+            background: #FFC72C;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #AAD1CD;
+            font-size: 12.5px;
+        }
+
+        /* Instructions Panel */
+        .instructions-panel {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .instructions-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #E61E27, #FFC72C, #0066CC);
+        }
+
+        .instructions-header {
+            padding: 18px 24px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            transition: all 0.3s ease;
+        }
+
+        .instructions-header:hover {
+            background: linear-gradient(135deg, #e9ecef 0%, #f8f9fa 100%);
+            padding-left: 28px;
+        }
+
+        .instructions-title {
+            font-weight: 700;
+            font-size: 12.5px;
+            color: #2d2d2d;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .instructions-title::before {
+            content: '';
+            font-size: 16px;
+        }
+
+        .instructions-toggle {
+            font-size: 16px;
+            transition: transform 0.3s;
+            color: #666;
+        }
+
+        .instructions-content {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            background: white;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+        }
+
+        .instructions-content.active {
+            padding: 20px;
+            max-height: 300px;
+        }
+
+        .instruction-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .instruction-section {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .instruction-section h3 {
+            color: #2d2d2d;
+            font-size: 12.5px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .instruction-section p {
+            color: #555;
+            font-size: 12.5px;
+            line-height: 1.5;
+            margin-bottom: 5px;
+        }
+
+        .formula {
+            background: #2d2d2d;
+            color: white;
+            padding: 8px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12.5px;
+            margin: 8px 0;
+            text-align: center;
+        }
+
+        /* Controls */
+        .controls-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-group label {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        .control-group input,
+        .control-group select {
+            padding: 6px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 12.5px;
+            background: white;
+            transition: border 0.3s;
+        }
+
+        .control-group input:focus,
+        .control-group select:focus {
+            outline: none;
+            border-color: #6BADB1;
+        }
+
+        button {
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #6BADB1 0%, #AAD1CD 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 12.5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(107, 173, 177, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Info Button */
+        .info-button {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(107, 173, 177, 0.5);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            font-style: italic;
+            font-family: Georgia, serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: help;
+            transition: all 0.3s ease;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .info-button:hover {
+            background: rgba(107, 173, 177, 0.7);
+            transform: translateY(-50%) scale(1.1) rotate(10deg);
+            box-shadow: 0 4px 16px rgba(107, 173, 177, 0.4);
+        }
+
+        .info-tooltip {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            width: 340px;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(107, 173, 177, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .info-button:hover .info-tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .info-tooltip::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            right: 18px;
+            width: 16px;
+            height: 16px;
+            background: rgba(255, 255, 255, 0.98);
+            border-top: 1px solid rgba(107, 173, 177, 0.3);
+            border-left: 1px solid rgba(107, 173, 177, 0.3);
+            transform: rotate(45deg);
+        }
+
+        .tooltip-header {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: #2d2d2d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tooltip-header::before {
+            content: '';
+            font-size: 16px;
+        }
+
+        .arm-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            margin: 8px 0;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border-radius: 8px;
+            border-left: 3px solid #6BADB1;
+            transition: all 0.2s ease;
+        }
+
+        .arm-info:hover {
+            transform: translateX(3px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .arm-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 12.5px;
+        }
+
+        .arm-params {
+            display: flex;
+            gap: 12px;
+        }
+
+        .param {
+            padding: 4px 8px;
+            background: white;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 12.5px;
+            font-weight: 600;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .param.mean {
+            color: #E61E27;
+        }
+
+        .param.std {
+            color: #0066CC;
+        }
+
+        /* Softmax Panel */
+        .softmax-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .softmax-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2d2d2d;
+            text-align: center;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .temp-control {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .temp-label {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        .temp-slider {
+            width: 120px;
+            height: 12px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #e0e0e0;
+            border-radius: 6px;
+            outline: none;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+
+        .temp-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: white;
+            border: 2px solid #6BADB1;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 2;
+        }
+
+        .temp-slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: white;
+            border: 2px solid #6BADB1;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 2;
+        }
+
+        .temp-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #6BADB1;
+            min-width: 40px;
+        }
+
+        .transformation-container {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .bars-column {
+            text-align: center;
+        }
+
+        .bars-label {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .pref-bars-wrapper {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            height: 160px;
+            align-items: center;
+            position: relative;
+        }
+
+        .zero-line {
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            background: #999;
+            top: 50%;
+            left: 0;
+            z-index: 1;
+        }
+
+        .prob-bars-wrapper {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            height: 200px;
+            align-items: flex-end;
+            padding-bottom: 20px;
+        }
+
+        .bar-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .pref-bar-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 160px;
+            position: relative;
+            z-index: 2;
+            width: 40px;
+        }
+
+        .bar {
+            width: 40px;
+            border-radius: 4px;
+            position: relative;
+            transition: height 0.5s ease;
+        }
+
+        .bar-value {
+            position: absolute;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .bar-label {
+            position: absolute;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .arrow-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .arrow {
+            font-size: 30px;
+            color: #6BADB1;
+        }
+
+        .arrow-text {
+            font-size: 11px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* Main Layout */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* Arms */
+        .arms-container {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+
+        .arm-box {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            min-width: 200px;
+            flex: 1;
+            max-width: 250px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .arm-accent {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .arm-title {
+            font-size: 12.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 15px;
+            margin-top: 10px;
+        }
+
+        .arm-stats {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+            font-size: 12.5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-weight: 700;
+        }
+
+        .dist-canvas {
+            width: 100%;
+            height: 100px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            background: white;
+        }
+
+        /* Wheel */
+        .wheel-panel {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .wheel-title {
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #2d2d2d;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .wheel-container {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            margin: 0 auto 15px;
+        }
+
+        .wheel-pointer {
+            position: absolute;
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-top: 25px solid #6BADB1;
+            z-index: 10;
+        }
+
+        #wheelCanvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .spin-button {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .result-display {
+            text-align: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 12.5px;
+        }
+
+        /* Performance */
+        .performance-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .perf-header {
+            text-align: center;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .perf-header h2 {
+            font-size: 16px;
+            color: #2d2d2d;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .chart-canvas {
+            width: 100%;
+            height: 200px;
+            display: block;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .stat-box-label {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        .stat-box-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2d2d2d;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 30px;
+            padding: 12px 20px;
+            background: #2d2d2d;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-top: 3px solid transparent;
+            border-image: linear-gradient(90deg, #E61E27, #FFC72C, #0066CC) 1;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 12.5px;
+            color: #AAD1CD;
+        }
+
+        .course-badge {
+            background: linear-gradient(135deg, #6BADB1, #AAD1CD);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 12.5px;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-right {
+            color: #999;
+            font-size: 12.5px;
+        }
+
+        /* Special positioning for probability label */
+        .prob-label-special {
+            font-size: 11px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            text-align: right;
+            position: absolute;
+            right: 0;
+            top: -25px;
+        }
+    </style>
+<style>
+/* course overrides - appended after the tool's own sheet, layout untouched */
+body{font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif !important;color:#747474}
+/* font yes, colour no: several tools put headings on dark panels of their own,
+   and forcing a dark ink on them makes the title vanish */
+h1,h2,h3,h4,h5,h6{font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif !important}
+code,pre,.equation,.calculation,.formula{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important}
+a{color:#006064}
+/* the tools centre and constrain their own children, so the band has to insist
+   on being full width and left aligned or it renders as a floating chip */
+.ie7295-band{display:block !important;width:auto !important;max-width:none !important;
+  margin:0 !important;padding:9px 16px !important;text-align:left !important;
+  background:linear-gradient(135deg,#C3E3E4 0%,#C1E2E3 100%);font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+  border-radius:0 !important;box-shadow:none !important}
+.ie7295-band h1{margin:0;font-size: 16px;font-weight:700;color:#20484A}
+.ie7295-band .sub{display:inline-block;background:rgba(255,255,255,.75);color:#3d5f61;
+  padding:2px 9px;border-radius:999px;font-size: 11px;margin-top:4px}
+.ie7295-foot{display:block !important;width:auto !important;max-width:none !important;
+  margin:0 !important;border-top:1px solid #E4E9EB;padding:10px 16px !important;
+  text-align:center !important;font-size: 11px;color:#a8b0b6;font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+  background:#fff;border-radius:0 !important}
+</style>
+</head>
+<body>
+<div class="ie7295-band"><h1>Gradient Bandit Algorithm</h1><div class="sub">Module 2 &middot; chapter 2</div></div>
+    <!-- Header -->
+    <div class="header">
+        <h1>Gradient Bandit Learning Tool</h1>
+        <p>Visualize how preferences transform into probabilities via softmax</p>
+    </div>
+
+    <!-- Instructions -->
+    <div class="instructions-panel">
+        <div class="instructions-header" onclick="toggleInstructions()">
+            <span class="instructions-title">Understanding Gradient Bandits</span>
+            <span class="instructions-toggle" id="instructionsToggle"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+        </div>
+        <div class="instructions-content" id="instructionsContent">
+            <div class="instruction-grid">
+                <div class="instruction-section">
+                    <h3>Core Concept</h3>
+                    <p>Gradient bandits learn preferences H(a) instead of values Q(a)</p>
+                    <div class="formula">π(a) = e^(H(a)/τ) / Σ e^(H(b)/τ)</div>
+                </div>
+                <div class="instruction-section">
+                    <h3>Temperature Effect</h3>
+                    <p><strong>Low τ:</strong> Exploit - sharp preferences</p>
+                    <p><strong>High τ:</strong> Explore - uniform probabilities</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-wrapper">
+        <div class="controls">
+            <div class="control-group">
+                <label>Arms:</label>
+                <select id="numArms" onchange="reset()">
+                    <option value="3">3 Arms</option>
+                    <option value="4" selected>4 Arms</option>
+                    <option value="5">5 Arms</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Learning Rate (α):</label>
+                <input type="number" id="alpha" value="0.1" min="0.01" max="1" step="0.01" style="width: 70px;">
+            </div>
+            <div class="control-group">
+                <label>Mode:</label>
+                <select id="difficulty" onchange="reset()">
+                    <option value="easy">Easy</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="hard">Hard</option>
+                </select>
+            </div>
+            <button onclick="reset()">Reset</button>
+            <button onclick="runSteps(100)">Run 100</button>
+            <button onclick="runSteps(1000)">Run 1000</button>
+        </div>
+        
+        <!-- Info Button -->
+        <div class="info-button">
+            i
+            <div class="info-tooltip">
+                <div class="tooltip-header">True Distributions</div>
+                <div id="trueParams"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Softmax Transformation -->
+    <div class="softmax-panel">
+        <div class="softmax-title"> Softmax Transformation</div>
+        
+        <div class="temp-control">
+            <span class="temp-label">Temperature τ:</span>
+            <input type="range" class="temp-slider" id="temperature" 
+                   min="0.1" max="5" step="0.1" value="1" oninput="updateTemp()">
+            <span class="temp-value" id="tempValue">1.0</span>
+        </div>
+        
+        <div class="transformation-container">
+            <div class="bars-column">
+                <div class="bars-label">Raw Preferences H(a)</div>
+                <div class="pref-bars-wrapper" id="prefBars">
+                    <div class="zero-line"></div>
+                </div>
+            </div>
+            <div class="arrow-box">
+                <div class="arrow"></div>
+                <div class="arrow-text">softmax</div>
+            </div>
+            <div class="bars-column" style="position: relative;">
+                <div class="prob-label-special">PROBABILITIES Π(A)</div>
+                <div class="prob-bars-wrapper" id="probBars"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="main-grid">
+        <div>
+            <div class="arms-container" id="armsContainer"></div>
+        </div>
+        
+        <div class="wheel-panel">
+            <div class="wheel-title"> Probability Wheel</div>
+            <div class="wheel-container">
+                <div class="wheel-pointer"></div>
+                <canvas id="wheelCanvas"></canvas>
+            </div>
+            <button class="spin-button" onclick="spin()">Spin Wheel</button>
+            <div class="result-display" id="result">Ready to spin!</div>
+        </div>
+    </div>
+
+    <!-- Performance -->
+    <div class="performance-panel">
+        <div class="perf-header">
+            <h2>Learning Progress</h2>
+        </div>
+        <canvas class="chart-canvas" id="chart"></canvas>
+        <div class="stats-row">
+            <div class="stat-box">
+                <div class="stat-box-label">Steps</div>
+                <div class="stat-box-value" id="steps">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-box-label">Avg Reward</div>
+                <div class="stat-box-value" id="avgReward" style="color: #6BADB1;">0.00</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-box-label">Best Arm %</div>
+                <div class="stat-box-value" id="bestPercent" style="color: #4CAF50;">0%</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-box-label">Temperature</div>
+                <div class="stat-box-value" id="tempDisplay" style="color: #FFC72C;">1.0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer"> <div class="footer-content"> <div class="footer-left"> <span class="course-badge">IE 7295</span>
+                <span>Reinforcement Learning | Prof. Dehghani</span>
+            </div>
+            <div class="footer-right"> Applied Reinforcement Learning </div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let state = {
+            numArms: 4,
+            arms: [],
+            preferences: [],
+            probabilities: [],
+            avgReward: 0,
+            totalSteps: 0,
+            history: [],
+            alpha: 0.1,
+            temperature: 1.0,
+            spinning: false,
+            bestArmIndex: 0,
+            wheelAngle: 0
+        };
+
+        // Arm colors
+        const colors = ['#E61E27', '#FFC72C', '#0066CC', '#6BADB1', '#9B59B6'];
+
+        // Initialize
+        window.onload = () => reset();
+
+        function toggleInstructions() {
+            const content = document.getElementById('instructionsContent');
+            const toggle = document.getElementById('instructionsToggle');
+            if (content.classList.contains('active')) {
+                content.classList.remove('active');
+                toggle.innerHTML = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+            } else {
+                content.classList.add('active');
+                toggle.innerHTML = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>';
+            }
+        }
+
+        function reset() {
+            state.numArms = parseInt(document.getElementById('numArms').value);
+            state.alpha = parseFloat(document.getElementById('alpha').value);
+            state.temperature = parseFloat(document.getElementById('temperature').value);
+            state.totalSteps = 0;
+            state.avgReward = 0;
+            state.history = [];
+            state.wheelAngle = 0;
+            
+            // Update temperature slider visual
+            updateTempSlider();
+            
+            // Initialize arms
+            state.arms = [];
+            const difficulty = document.getElementById('difficulty').value;
+            let bestMean = -Infinity;
+            state.bestArmIndex = 0;
+            
+            for (let i = 0; i < state.numArms; i++) {
+                let mean, std;
+                if (difficulty === 'easy') {
+                    mean = 2 + (i * 2);
+                    std = 1;
+                } else if (difficulty === 'medium') {
+                    mean = 4 + (Math.random() * 2);
+                    std = 1 + (Math.random() * 1);
+                } else {
+                    if (i === state.numArms - 1) {
+                        mean = 7;
+                        std = 3;
+                    } else {
+                        mean = 3 + (Math.random() * 2);
+                        std = 0.5;
+                    }
+                }
+                
+                if (mean > bestMean) {
+                    bestMean = mean;
+                    state.bestArmIndex = i;
+                }
+                
+                state.arms.push({
+                    trueMean: mean,
+                    trueStd: std,
+                    pulls: 0,
+                    totalReward: 0,
+                    rewards: [],
+                    estMean: 5,
+                    estStd: 3
+                });
+            }
+            
+            state.preferences = new Array(state.numArms).fill(0);
+            updateProbs();
+            updateTrueParams();
+            createArms();
+            updateAll();
+        }
+
+        function updateTempSlider() {
+            const slider = document.getElementById('temperature');
+            const percent = ((state.temperature - 0.1) / 4.9) * 100;
+            
+            // Interpolate color from blue to red
+            const ratio = (state.temperature - 0.1) / 4.9;
+            let r = Math.round(0 + 230 * ratio);
+            let g = Math.round(102 - 72 * ratio);
+            let b = Math.round(204 - 165 * ratio);
+            
+            const color = `rgb(${r}, ${g}, ${b})`;
+            
+            // Apply gradient
+            slider.style.background = `linear-gradient(to right, ${color} 0%, ${color} ${percent}%, #e0e0e0 ${percent}%, #e0e0e0 100%)`;
+        }
+
+        function updateTrueParams() {
+            const container = document.getElementById('trueParams');
+            let html = '';
+            
+            state.arms.forEach((arm, i) => {
+                const isBest = i === state.bestArmIndex;
+                html += `
+                    <div class="arm-info" style="border-left-color: ${colors[i]}; ${isBest ? 'background: #e8f5e9;' : ''}">
+                        <span class="arm-name">Arm ${i + 1} ${isBest ? '' : ''}</span>
+                        <div class="arm-params">
+                            <span class="param mean">μ=${arm.trueMean.toFixed(1)}</span>
+                            <span class="param std">σ=${arm.trueStd.toFixed(1)}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function updateTemp() {
+            state.temperature = parseFloat(document.getElementById('temperature').value);
+            document.getElementById('tempValue').textContent = state.temperature.toFixed(1);
+            document.getElementById('tempDisplay').textContent = state.temperature.toFixed(1);
+            
+            updateTempSlider();
+            updateProbs();
+            updateAll();
+        }
+
+        function updateProbs() {
+            let expSum = 0;
+            const exps = [];
+            for (let i = 0; i < state.numArms; i++) {
+                const exp = Math.exp(state.preferences[i] / state.temperature);
+                exps.push(exp);
+                expSum += exp;
+            }
+            state.probabilities = exps.map(exp => exp / expSum);
+        }
+
+        function createArms() {
+            const container = document.getElementById('armsContainer');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < state.numArms; i++) {
+                const box = document.createElement('div');
+                box.className = 'arm-box';
+                box.innerHTML = `
+                    <div class="arm-accent" style="background: ${colors[i]};"></div>
+                    <div class="arm-title" style="color: ${colors[i]};">Arm ${i + 1}</div>
+                    <div class="arm-stats">
+                        <div class="stat-row">
+                            <span class="stat-label">Preference H:</span>
+                            <span class="stat-value" id="h-${i}" style="color: ${colors[i]};">0.00</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Probability π:</span>
+                            <span class="stat-value" id="p-${i}" style="color: ${colors[i]};">25.0%</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Pulls:</span>
+                            <span class="stat-value" id="n-${i}" style="color: ${colors[i]};">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Avg Reward:</span>
+                            <span class="stat-value" id="r-${i}" style="color: ${colors[i]};">-</span>
+                        </div>
+                    </div>
+                    <canvas class="dist-canvas" id="dist-${i}" width="200" height="100"></canvas>
+                `;
+                container.appendChild(box);
+            }
+        }
+
+        function gaussianRandom(mean, std) {
+            let u = 0, v = 0;
+            while(u === 0) u = Math.random();
+            while(v === 0) v = Math.random();
+            return mean + std * Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+        }
+
+        function selectAction() {
+            const rand = Math.random();
+            let cumSum = 0;
+            for (let i = 0; i < state.numArms; i++) {
+                cumSum += state.probabilities[i];
+                if (rand < cumSum) return i;
+            }
+            return state.numArms - 1;
+        }
+
+        function step() {
+            const action = selectAction();
+            const arm = state.arms[action];
+            const reward = Math.max(0, Math.min(10, gaussianRandom(arm.trueMean, arm.trueStd)));
+            
+            arm.pulls++;
+            arm.totalReward += reward;
+            arm.rewards.push(reward);
+            
+            // Update estimated distribution
+            if (arm.pulls > 1) {
+                const mean = arm.rewards.reduce((a, b) => a + b, 0) / arm.pulls;
+                const variance = arm.rewards.reduce((sum, r) => sum + Math.pow(r - mean, 2), 0) / (arm.pulls - 1);
+                arm.estMean = mean;
+                arm.estStd = Math.sqrt(variance) || 1;
+            }
+            
+            state.totalSteps++;
+            state.avgReward += (reward - state.avgReward) / state.totalSteps;
+            
+            // Gradient update
+            const alpha = state.alpha;
+            for (let i = 0; i < state.numArms; i++) {
+                if (i === action) {
+                    state.preferences[i] += alpha * (reward - state.avgReward) * (1 - state.probabilities[i]);
+                } else {
+                    state.preferences[i] -= alpha * (reward - state.avgReward) * state.probabilities[i];
+                }
+            }
+            
+            updateProbs();
+            
+            state.history.push({
+                step: state.totalSteps,
+                action: action,
+                reward: reward,
+                avgReward: state.avgReward,
+                bestArmSelected: action === state.bestArmIndex
+            });
+            
+            return { action, reward };
+        }
+
+        function runSteps(n) {
+            for (let i = 0; i < n; i++) step();
+            updateAll();
+        }
+
+        function spin() {
+            if (state.spinning) return;
+            state.spinning = true;
+            
+            const result = step();
+            
+            // Calculate cumulative angles for each arm
+            let currentAngle = 0;
+            const armPositions = [];
+            for (let i = 0; i < state.numArms; i++) {
+                const segmentSize = state.probabilities[i] * 360;
+                armPositions.push({
+                    start: currentAngle,
+                    end: currentAngle + segmentSize,
+                    mid: currentAngle + segmentSize / 2
+                });
+                currentAngle += segmentSize;
+            }
+            
+            // Calculate rotation needed to put selected arm at top
+            const selectedMidpoint = armPositions[result.action].mid;
+            const rotationNeeded = -selectedMidpoint;
+            
+            // Add multiple spins for effect
+            const spins = 3 + Math.random() * 2;
+            const totalRotation = (spins * 360) + rotationNeeded;
+            
+            const canvas = document.getElementById('wheelCanvas');
+            canvas.style.transition = 'transform 2.5s cubic-bezier(0.15, 0, 0.25, 1)';
+            canvas.style.transform = `rotate(${totalRotation}deg)`;
+            
+            state.wheelAngle = totalRotation % 360;
+            
+            setTimeout(() => {
+                state.spinning = false;
+                document.getElementById('result').style.color = colors[result.action];
+                document.getElementById('result').textContent = 
+                    `Selected: Arm ${result.action + 1}  Reward: ${result.reward.toFixed(1)}`;
+                updateAll();
+            }, 2500);
+        }
+
+        function updateAll() {
+            // Update arm displays
+            for (let i = 0; i < state.numArms; i++) {
+                const arm = state.arms[i];
+                document.getElementById(`h-${i}`).textContent = state.preferences[i].toFixed(2);
+                document.getElementById(`p-${i}`).textContent = (state.probabilities[i] * 100).toFixed(1) + '%';
+                document.getElementById(`n-${i}`).textContent = arm.pulls;
+                document.getElementById(`r-${i}`).textContent = 
+                    arm.pulls > 0 ? (arm.totalReward / arm.pulls).toFixed(2) : '-';
+                drawDist(i);
+            }
+            
+            // Update stats
+            document.getElementById('steps').textContent = state.totalSteps;
+            document.getElementById('avgReward').textContent = state.avgReward.toFixed(2);
+            document.getElementById('tempDisplay').textContent = state.temperature.toFixed(1);
+            
+            if (state.history.length > 0) {
+                const recent = state.history.slice(-100);
+                const bestCount = recent.filter(h => h.bestArmSelected).length;
+                document.getElementById('bestPercent').textContent = (bestCount / recent.length * 100).toFixed(0) + '%';
+            }
+            
+            updateBars();
+            drawWheel();
+            drawChart();
+        }
+
+        function updateBars() {
+            const prefContainer = document.getElementById('prefBars');
+            const probContainer = document.getElementById('probBars');
+            
+            // Clear containers (keep zero line for prefs)
+            prefContainer.innerHTML = '<div class="zero-line"></div>';
+            probContainer.innerHTML = '';
+            
+            const maxPref = Math.max(...state.preferences.map(Math.abs)) || 1;
+            
+            for (let i = 0; i < state.numArms; i++) {
+                // Preference bar
+                const prefItem = document.createElement('div');
+                prefItem.className = 'pref-bar-item';
+                
+                const prefBar = document.createElement('div');
+                prefBar.className = 'bar';
+                const prefIntensity = Math.abs(state.preferences[i]) / maxPref;
+                const opacity = 0.3 + (prefIntensity * 0.7);
+                
+                const height = Math.abs(state.preferences[i]) / maxPref * 60;
+                
+                prefBar.style.background = `${colors[i]}${Math.round(opacity * 255).toString(16).padStart(2, '0')}`;
+                prefBar.style.display = 'flex';
+                prefBar.style.flexDirection = 'column';
+                prefBar.style.alignItems = 'center';
+                prefBar.style.justifyContent = 'center';
+                prefBar.style.height = height + 'px';
+                prefBar.style.width = '40px';
+                prefBar.style.position = 'absolute';
+                prefBar.style.left = '0';
+                
+                if (state.preferences[i] >= 0) {
+                    prefBar.style.bottom = '50%';
+                    prefBar.style.borderRadius = '4px 4px 0 0';
+                } else {
+                    prefBar.style.top = '50%';
+                    prefBar.style.borderRadius = '0 0 4px 4px';
+                }
+                
+                if (height > 20) {
+                    const prefLabel = document.createElement('div');
+                    prefLabel.style.color = 'white';
+                    prefLabel.style.fontSize = '10px';
+                    prefLabel.style.fontWeight = '700';
+                    prefLabel.style.textShadow = '0 1px 2px rgba(0,0,0,0.3)';
+                    prefLabel.innerHTML = `A${i + 1}<br>${state.preferences[i].toFixed(1)}`;
+                    prefLabel.style.textAlign = 'center';
+                    prefLabel.style.lineHeight = '1.2';
+                    prefBar.appendChild(prefLabel);
+                } else {
+                    const extLabel = document.createElement('div');
+                    extLabel.style.position = 'absolute';
+                    extLabel.style.fontSize = '10px';
+                    extLabel.style.fontWeight = '700';
+                    extLabel.style.color = colors[i];
+                    extLabel.style.textAlign = 'center';
+                    extLabel.style.width = '100%';
+                    extLabel.innerHTML = `A${i + 1}<br>${state.preferences[i].toFixed(1)}`;
+                    
+                    if (state.preferences[i] >= 0) {
+                        extLabel.style.bottom = `calc(50% + ${height}px + 5px)`;
+                    } else {
+                        extLabel.style.top = `calc(50% + ${height}px + 5px)`;
+                    }
+                    prefItem.appendChild(extLabel);
+                }
+                
+                prefItem.appendChild(prefBar);
+                prefContainer.appendChild(prefItem);
+                
+                // Probability bar - make them taller!
+                const probItem = document.createElement('div');
+                probItem.className = 'bar-item';
+                
+                const probBar = document.createElement('div');
+                probBar.className = 'bar';
+                const probOpacity = 0.4 + (state.probabilities[i] * 0.6);
+                probBar.style.background = `${colors[i]}${Math.round(probOpacity * 255).toString(16).padStart(2, '0')}`;
+                // Increased height multiplier from 120 to 160
+                probBar.style.height = (state.probabilities[i] * 160) + 'px';
+                probBar.style.borderRadius = '4px 4px 0 0';
+                
+                const probValue = document.createElement('div');
+                probValue.className = 'bar-value';
+                probValue.style.color = colors[i];
+                probValue.style.top = '-20px';
+                probValue.style.fontWeight = '700';
+                probValue.textContent = (state.probabilities[i] * 100).toFixed(0) + '%';
+                probBar.appendChild(probValue);
+                
+                const probLabel = document.createElement('div');
+                probLabel.className = 'bar-label';
+                probLabel.style.color = colors[i];
+                probLabel.style.bottom = '-15px';
+                probLabel.style.fontWeight = '700';
+                probLabel.textContent = `A${i + 1}`;
+                
+                probItem.appendChild(probBar);
+                probItem.appendChild(probLabel);
+                probContainer.appendChild(probItem);
+            }
+        }
+
+        function drawDist(index) {
+            const canvas = document.getElementById(`dist-${index}`);
+            const ctx = canvas.getContext('2d');
+            const arm = state.arms[index];
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Axes
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(20, canvas.height - 20);
+            ctx.lineTo(canvas.width - 10, canvas.height - 20);
+            ctx.stroke();
+            
+            // Distribution curve
+            ctx.strokeStyle = colors[index];
+            ctx.lineWidth = 2;
+            
+            if (arm.pulls === 0) {
+                ctx.setLineDash([8, 4]);
+                ctx.globalAlpha = 0.4;
+            } else {
+                ctx.setLineDash([]);
+                ctx.globalAlpha = 1.0;
+            }
+            
+            ctx.beginPath();
+            for (let x = 0; x <= 10; x += 0.1) {
+                const y = (1 / (arm.estStd * Math.sqrt(2 * Math.PI))) * 
+                         Math.exp(-0.5 * Math.pow((x - arm.estMean) / arm.estStd, 2));
+                const px = 20 + ((x / 10) * (canvas.width - 30));
+                const py = canvas.height - 20 - (y * (canvas.height - 40) * arm.estStd * 2);
+                
+                if (x === 0) ctx.moveTo(px, py);
+                else ctx.lineTo(px, py);
+            }
+            ctx.stroke();
+            ctx.globalAlpha = 1.0;
+            ctx.setLineDash([]);
+            
+            // Mean line
+            if (arm.pulls > 0) {
+                const meanX = 20 + ((arm.estMean / 10) * (canvas.width - 30));
+                ctx.strokeStyle = colors[index];
+                ctx.lineWidth = 1;
+                ctx.setLineDash([3, 3]);
+                ctx.beginPath();
+                ctx.moveTo(meanX, 20);
+                ctx.lineTo(meanX, canvas.height - 20);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                ctx.fillStyle = colors[index];
+                ctx.font = 'bold 11px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(`μ̂=${arm.estMean.toFixed(1)}`, meanX, 15);
+            } else {
+                ctx.fillStyle = colors[index];
+                ctx.font = 'bold 11px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Unknown', canvas.width / 2, 15);
+            }
+            
+            // Probability fill
+            ctx.fillStyle = colors[index] + '20';
+            ctx.fillRect(0, 0, canvas.width * state.probabilities[index], canvas.height);
+        }
+
+        function drawWheel() {
+            const canvas = document.getElementById('wheelCanvas');
+            const ctx = canvas.getContext('2d');
+            const size = 280;
+            canvas.width = size;
+            canvas.height = size;
+            
+            const centerX = size / 2;
+            const centerY = size / 2;
+            const outerRadius = 120;
+            const innerRadius = 60;
+            
+            ctx.clearRect(0, 0, size, size);
+            
+            // Shadow
+            ctx.save();
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
+            ctx.shadowBlur = 15;
+            ctx.shadowOffsetY = 5;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, outerRadius, 0, 2 * Math.PI);
+            ctx.fillStyle = 'white';
+            ctx.fill();
+            ctx.restore();
+            
+            // Draw segments starting from top
+            let startAngle = -Math.PI / 2;
+            for (let i = 0; i < state.numArms; i++) {
+                const sweepAngle = state.probabilities[i] * 2 * Math.PI;
+                
+                const gradient = ctx.createRadialGradient(centerX, centerY, innerRadius, centerX, centerY, outerRadius);
+                gradient.addColorStop(0, colors[i] + 'DD');
+                gradient.addColorStop(1, colors[i]);
+                
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, outerRadius, startAngle, startAngle + sweepAngle);
+                ctx.arc(centerX, centerY, innerRadius, startAngle + sweepAngle, startAngle, true);
+                ctx.closePath();
+                
+                ctx.fillStyle = gradient;
+                ctx.fill();
+                
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Labels
+                if (state.probabilities[i] > 0.05) {
+                    const labelAngle = startAngle + sweepAngle / 2;
+                    const labelRadius = (outerRadius + innerRadius) / 2;
+                    const labelX = centerX + Math.cos(labelAngle) * labelRadius;
+                    const labelY = centerY + Math.sin(labelAngle) * labelRadius;
+                    
+                    ctx.beginPath();
+                    ctx.arc(labelX, labelY, 22, 0, 2 * Math.PI);
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                    ctx.fill();
+                    
+                    ctx.fillStyle = colors[i];
+                    ctx.font = 'bold 16px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(`${i + 1}`, labelX, labelY - 7);
+                    
+                    ctx.font = 'bold 11px sans-serif';
+                    ctx.fillText(`${(state.probabilities[i] * 100).toFixed(0)}%`, labelX, labelY + 7);
+                }
+                
+                startAngle += sweepAngle;
+            }
+            
+            // Center
+            ctx.save();
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+            ctx.shadowBlur = 10;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, innerRadius - 2, 0, 2 * Math.PI);
+            ctx.fillStyle = '#2d2d2d';
+            ctx.fill();
+            ctx.restore();
+            
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 12px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('SPIN ME!', centerX, centerY);
+        }
+
+        function drawChart() {
+            const canvas = document.getElementById('chart');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = canvas.offsetWidth;
+            canvas.height = 200;
+            
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            if (state.history.length === 0) {
+                ctx.fillStyle = '#ccc';
+                ctx.font = '14px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('No data yet - spin the wheel or run steps!', width / 2, height / 2);
+                return;
+            }
+            
+            const padding = 40;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            
+            // Axes
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, height - padding);
+            ctx.lineTo(width - padding, height - padding);
+            ctx.stroke();
+            
+            // Grid
+            for (let i = 0; i <= 10; i += 2) {
+                const y = height - padding - (i / 10) * chartHeight;
+                ctx.strokeStyle = '#f0f0f0';
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(width - padding, y);
+                ctx.stroke();
+                
+                ctx.fillStyle = '#999';
+                ctx.font = '10px sans-serif';
+                ctx.textAlign = 'right';
+                ctx.fillText(i.toString(), padding - 5, y + 3);
+            }
+            
+            // Moving average
+            const windowSize = 20;
+            const movingAvg = [];
+            
+            for (let i = 0; i < state.history.length; i++) {
+                const start = Math.max(0, i - windowSize + 1);
+                const window = state.history.slice(start, i + 1);
+                const avg = window.reduce((sum, h) => sum + h.reward, 0) / window.length;
+                movingAvg.push(avg);
+            }
+            
+            if (movingAvg.length > 1) {
+                const xScale = chartWidth / (state.history.length - 1);
+                
+                const gradient = ctx.createLinearGradient(0, padding, 0, height - padding);
+                gradient.addColorStop(0, '#6BADB130');
+                gradient.addColorStop(1, '#6BADB105');
+                
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.moveTo(padding, height - padding);
+                for (let i = 0; i < movingAvg.length; i++) {
+                    const x = padding + i * xScale;
+                    const y = height - padding - (movingAvg[i] / 10) * chartHeight;
+                    ctx.lineTo(x, y);
+                }
+                ctx.lineTo(padding + (movingAvg.length - 1) * xScale, height - padding);
+                ctx.closePath();
+                ctx.fill();
+                
+                ctx.strokeStyle = '#6BADB1';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                for (let i = 0; i < movingAvg.length; i++) {
+                    const x = padding + i * xScale;
+                    const y = height - padding - (movingAvg[i] / 10) * chartHeight;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            }
+            
+            // Optimal line
+            const optimalReward = state.arms[state.bestArmIndex].trueMean;
+            const optimalY = height - padding - (optimalReward / 10) * chartHeight;
+            
+            ctx.strokeStyle = '#4CAF50';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(padding, optimalY);
+            ctx.lineTo(width - padding, optimalY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            ctx.fillStyle = '#4CAF50';
+            ctx.font = '11px sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText(`Optimal: ${optimalReward.toFixed(1)}`, width - padding + 5, optimalY);
+        }
+    </script>
+<div class="ie7295-foot">IE7295: Applied Reinforcement Learning &middot; Prof. Dehghani</div>
+
+<style>
+/* sync_tools v3 ---------------------------------------------------------------------
+   Appended, never substituted. Everything here is a decision taken on the
+   Module 1 Grid World tool and carried across so the set reads as one course.
+   ---------------------------------------------------------------------- */
+
+/* the three colour rule under the band, the one place the full palette shows */
+.ie7295-band{position:relative}
+.ie7295-band::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;
+  background:linear-gradient(90deg,#F5D000 0 33.33%,#E2231A 33.33% 66.66%,#0064B0 66.66% 100%)}
+
+/* sliders: the weighted bar. The track is styled, so the thumb needs its
+   centring offset back by hand or WebKit aligns it to the track's top edge. */
+input[type=range]{-webkit-appearance:none;appearance:none;background:none;
+  height:22px;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:11px;border-radius:999px;
+  background:#e6eded;border:0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;margin-top:-5px;
+  width:21px;height:21px;border-radius:999px;background:#fff;border:2px solid #006064;
+  box-shadow:0 1px 4px rgba(0,0,0,.16);cursor:pointer}
+input[type=range]::-moz-range-track{height:11px;border-radius:999px;background:#e6eded;
+  border:0}
+input[type=range]::-moz-range-thumb{width:21px;height:21px;border-radius:999px;
+  background:#fff;border:2px solid #006064;box-shadow:0 1px 4px rgba(0,0,0,.16);cursor:pointer}
+input[type=range]::-moz-range-progress{height:11px;border-radius:999px;
+  background:linear-gradient(90deg,#0d5f62,#17a2b8)}
+
+/* buttons: pills, one weight of emphasis */
+button, .btn, input[type=button], input[type=submit]{
+  font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif !important;border-radius:999px !important;
+  font-weight:700 !important;cursor:pointer}
+
+/* Teal is the course's one accent. Cliff Walker painted its buttons in
+   var(--mit-blue), which this course reserves for policy arrows, so the button
+   is overridden rather than the variable: anything semantic keeps its colour.
+   Danger and destructive controls are left alone deliberately. */
+button:not([class*=danger]):not([class*=delete]):not([class*=remove]),
+.btn:not([class*=danger]){
+  background:linear-gradient(135deg,#006064 0%,#17a2b8 100%) !important;
+  color:#fff !important;border:0 !important}
+button:disabled, .btn:disabled{
+  background:#cfd8dc !important;color:#8b969b !important;cursor:not-allowed}
+
+/* panels line up with the pages: same hairline, same radius */
+.panel,.card,.box,.section,.controls,.stats,.info,.legend{
+  border-radius:6px}
+
+/* prose is INK. MUTE is for captions, and reads at 2.2:1 which is not text. */
+p, li, td{color:#3d3d3d}
+
+/* the field the panels sit on. Several tools shipped with a strong teal
+   gradient body, which fought the mint band directly above it. */
+body{background:#f4f6f8 !important}
+
+/* Each tool carries its own title block, a black slab that repeated the title
+   already on the course band. The text is content, so it stays: the slab is
+   restyled into the course box instead. Background and colour have to move
+   together, or the white title is left invisible on a white panel. */
+.header{background:#fff !important;border-left:3px solid #006064 !important;
+  border-radius:0 6px 6px 0 !important;box-shadow:none !important;
+  padding:13px 17px !important;margin-bottom:14px !important}
+.header h1,.header h2{color:#20484A !important;font-size:16px !important;
+  font-weight:700 !important;margin:0 0 3px !important;text-shadow:none !important}
+.header p,.header .subtitle,.header div,.header em,.header i{
+  color:#3d3d3d !important;font-size:12.5px !important;line-height:1.6 !important;
+  text-shadow:none !important}
+.header em,.header i{font-size:11px !important;color:#a8b0b6 !important}
+</style>
+</body>
+</html>

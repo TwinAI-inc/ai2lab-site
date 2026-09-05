@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nearsighted MDP Problem - IE 7295</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #6BADB1 0%, #AAD1CD 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background: #E61E27;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 80px;
+            height: 4px;
+            background: #FFC72C;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #AAD1CD;
+            font-size: 12.5px;
+        }
+
+        /* Instructions */
+        .instructions {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-left: 4px solid #6BADB1;
+        }
+
+        .instructions h3 {
+            color: #2d2d2d;
+            font-size: 12.5px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .instructions p {
+            color: #555;
+            font-size: 12.5px;
+            line-height: 1.7;
+            margin-bottom: 8px;
+        }
+
+        /* Main Panel */
+        .main-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .main-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #E61E27, #FFC72C, #0066CC);
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #2d2d2d;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+            letter-spacing: 0.5px;
+        }
+
+        /* Controls */
+        .controls {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .control-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .control-label {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: #2d2d2d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .control-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #6BADB1;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6BADB1, #AAD1CD);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6BADB1, #AAD1CD);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        /* Network Container */
+        .network-container {
+            background: #fafafa;
+            border-radius: 10px;
+            padding: 40px;
+            margin-bottom: 30px;
+            min-height: 450px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #e0e0e0;
+        }
+
+        #network-svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .state-circle {
+            fill: white;
+            stroke: #6BADB1;
+            stroke-width: 2.5;
+            transition: all 0.3s ease;
+        }
+
+        .state-circle.decision {
+            fill: #2d2d2d;
+            stroke: #FFC72C;
+            stroke-width: 4;
+        }
+
+        .state-text {
+            fill: #2d2d2d;
+            font-size: 12.5px;
+            font-weight: 600;
+            text-anchor: middle;
+            dominant-baseline: middle;
+        }
+
+        .state-text.decision {
+            fill: white;
+            font-size: 16px;
+        }
+
+        .arrow-path {
+            fill: none;
+            stroke: #999;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            opacity: 0.8;
+        }
+
+        .arrow-path.highlight {
+            stroke: #2d2d2d;
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            opacity: 1;
+        }
+
+        .action-label {
+            fill: #2d2d2d;
+            font-size: 16px;
+            font-weight: 700;
+            text-anchor: middle;
+        }
+
+        .reward-label {
+            fill: #4CAF50;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        /* Formula Display */
+        .formula-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .formula-box {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border-radius: 10px;
+            padding: 25px;
+            border-left: 4px solid #6BADB1;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .formula-box:hover {
+            box-shadow: 0 4px 12px rgba(107, 173, 177, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .formula-box.policy-right {
+            border-left-color: #0066CC;
+        }
+
+        .formula-header {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #6BADB1;
+            color: white;
+            font-size: 12.5px;
+            font-weight: 700;
+            cursor: help;
+            position: relative;
+        }
+
+        .info-icon:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2d2d2d;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 400;
+            white-space: nowrap;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            pointer-events: none;
+        }
+
+        .info-icon:hover::before {
+            content: '';
+            position: absolute;
+            bottom: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #2d2d2d;
+            z-index: 1000;
+        }
+
+        .formula {
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            color: #2d2d2d;
+            margin: 15px 0;
+            line-height: 1.7;
+        }
+
+        .formula-result {
+            font-size: 28px;
+            font-weight: 700;
+            color: #6BADB1;
+            margin-top: 15px;
+        }
+
+        .formula-box.policy-right .formula-result {
+            color: #0066CC;
+        }
+
+        /* Result Panel */
+        .result-panel {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .result-title {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 15px;
+        }
+
+        .winner-badge {
+            display: inline-block;
+            padding: 15px 35px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6BADB1, #AAD1CD);
+            color: white;
+            box-shadow: 0 4px 12px rgba(107, 173, 177, 0.3);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .threshold-box {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            border-left: 4px solid #FFC72C;
+            text-align: left;
+            transition: all 0.5s ease;
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            border-top: 3px solid #6BADB1;
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .metric-card:nth-child(2) {
+            border-top-color: #0066CC;
+        }
+
+        .metric-card:nth-child(3) {
+            border-top-color: #FFC72C;
+        }
+
+        .metric-card:nth-child(4) {
+            border-top-color: #E61E27;
+        }
+
+        .metric-label {
+            font-size: 11px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2d2d2d;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 30px;
+            padding: 15px 25px;
+            background: #2d2d2d;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-top: 3px solid transparent;
+            border-image: linear-gradient(90deg, #E61E27, #FFC72C, #0066CC) 1;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 12.5px;
+            color: #AAD1CD;
+        }
+
+        .course-badge {
+            background: linear-gradient(135deg, #6BADB1, #AAD1CD);
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 12.5px;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-right {
+            color: #AAD1CD;
+            font-size: 12.5px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .formula-container {
+                grid-template-columns: 1fr;
+            }
+            .control-row {
+                grid-template-columns: 1fr;
+            }
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+<style>
+/* course overrides - appended after the tool's own sheet, layout untouched */
+body{font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif !important;color:#747474}
+/* font yes, colour no: several tools put headings on dark panels of their own,
+   and forcing a dark ink on them makes the title vanish */
+h1,h2,h3,h4,h5,h6{font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif !important}
+code,pre,.equation,.calculation,.formula{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important}
+a{color:#006064}
+/* the tools centre and constrain their own children, so the band has to insist
+   on being full width and left aligned or it renders as a floating chip */
+.ie7295-band{display:block !important;width:auto !important;max-width:none !important;
+  margin:0 !important;padding:9px 16px !important;text-align:left !important;
+  background:linear-gradient(135deg,#C3E3E4 0%,#C1E2E3 100%);font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+  border-radius:0 !important;box-shadow:none !important}
+.ie7295-band h1{margin:0;font-size: 16px;font-weight:700;color:#20484A}
+.ie7295-band .sub{display:inline-block;background:rgba(255,255,255,.75);color:#3d5f61;
+  padding:2px 9px;border-radius:999px;font-size: 11px;margin-top:4px}
+.ie7295-foot{display:block !important;width:auto !important;max-width:none !important;
+  margin:0 !important;border-top:1px solid #E4E9EB;padding:10px 16px !important;
+  text-align:center !important;font-size: 11px;color:#a8b0b6;font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+  background:#fff;border-radius:0 !important}
+</style>
+</head>
+<body>
+<div class="ie7295-band"><h1>The Nearsighted MDP</h1><div class="sub">Module 10 &middot; why gamma matters</div></div>
+    <div class="header">
+        <h1>The Nearsighted MDP Problem</h1>
+        <p>Why discount factors are problematic for continuing tasks</p>
+    </div>
+
+    <div class="instructions">
+        <h3>Problem Setup</h3>
+        <p><strong>Structure:</strong> Two circular paths (rings) that share state S. From S, the agent chooses LEFT or RIGHT.</p>
+        <p><strong>Left Ring:</strong> Reward +1 at the top (first transition leaving S, 1 step away)</p>
+        <p><strong>Right Ring:</strong> Reward +2 at the bottom (last transition returning to S, 4 steps away)</p>
+        <p><strong>Question:</strong> Intuitively, +2 > +1, so RIGHT is better. But does the discount factor γ change this?</p>
+    </div>
+
+    <div class="main-panel">
+        <div class="section-title">Interactive Analysis</div>
+        
+        <div class="controls">
+            <div class="control-row">
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>Discount Factor (γ)</span>
+                        <span class="control-value" id="gamma-val">0.50</span>
+                    </div>
+                    <input type="range" id="gamma-slider" min="0" max="100" value="50" oninput="updateAnalysis()">
+                </div>
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>States per Ring</span>
+                        <span class="control-value" id="states-val">5</span>
+                    </div>
+                    <input type="range" id="states-slider" min="3" max="10" value="5" step="1" oninput="updateAnalysis()">
+                </div>
+            </div>
+        </div>
+
+        <div class="network-container">
+            <svg id="network-svg" width="800" height="450" viewBox="0 0 800 450"></svg>
+        </div>
+
+        <div class="section-title">Value Function Comparison</div>
+
+        <div class="formula-container">
+            <div class="formula-box">
+                <div class="formula-header">
+                    Left Policy (π<sub>L</sub>)
+                    <a href="https://en.wikipedia.org/wiki/Geometric_series" target="_blank" style="text-decoration: none;">
+                        <span class="info-icon" data-tooltip="Geometric series: Σγ^k = 1/(1-γ)"></span>
+                    </a>
+                </div>
+                <div class="formula">v<sub>L</sub>(s) = 1 / (1 - γ<sup id="exp-left">5</sup>)</div>
+                <div class="formula-result" id="value-left">0.000</div>
+            </div>
+            <div class="formula-box policy-right">
+                <div class="formula-header">
+                    Right Policy (π<sub>R</sub>)
+                    <a href="https://en.wikipedia.org/wiki/Geometric_series" target="_blank" style="text-decoration: none;">
+                        <span class="info-icon" data-tooltip="Discounted reward: r×γ^(n-1) × geometric series"></span>
+                    </a>
+                </div>
+                <div class="formula">v<sub>R</sub>(s) = 2γ<sup id="exp-right1">4</sup> / (1 - γ<sup id="exp-right2">5</sup>)</div>
+                <div class="formula-result" id="value-right">0.000</div>
+            </div>
+        </div>
+
+        <div class="result-panel">
+            <div class="result-title">Optimal Policy</div>
+            <div style="display: flex; gap: 15px; justify-content: center; align-items: center; flex-wrap: wrap; margin-bottom: 20px;">
+                <div class="winner-badge" id="winner-badge">LEFT preferred</div>
+                <button onclick="findEquilibrium()" style="padding: 12px 24px; background: linear-gradient(135deg, #FFC72C, #FFB300); color: #2d2d2d; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 12.5px; box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);">
+                     Find Equilibrium γ
+                </button>
+            </div>
+            <div class="threshold-box">
+                <strong style="color: #FF6F00;">Critical Threshold:</strong> γ  <strong id="threshold-val">0.841</strong> required for RIGHT to be preferred.
+                <br><br>
+                <span id="threshold-explain">With 5 states, γ  0.841. As rings grow larger, γ must approach 1.0, causing numerical instability—this is why discount formulation is problematic for large continuing tasks.</span>
+            </div>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Current γ</div>
+                <div class="metric-value" id="metric-gamma">0.50</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">v<sub>L</sub>(s)</div>
+                <div class="metric-value" id="metric-vl">0.000</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">v<sub>R</sub>(s)</div>
+                <div class="metric-value" id="metric-vr">0.000</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Difference</div>
+                <div class="metric-value" id="metric-diff">0.000</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer"> <div class="footer-content"> <div class="footer-left"> <span class="course-badge">IE 7295</span>
+                <span>Reinforcement Learning | Continuing Tasks</span>
+            </div>
+            <div class="footer-right"> <span>Prof. Dehghani </span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function drawNetwork(numStates) {
+            const svg = document.getElementById('network-svg');
+            svg.innerHTML = `
+                <defs>
+                    <!-- No markers needed - arrows drawn directly -->
+                </defs>
+            `;
+
+            const centerX = 400;
+            const centerY = 225;
+            const nodeRadius = 22;
+            
+            const sX = centerX;
+            const sY = centerY;
+
+            // LEFT RING
+            const leftNodes = [{x: sX, y: sY, isS: true}];
+            const leftRadius = 140;
+            const leftCenterX = centerX - 150;
+            const leftCenterY = centerY - 30;
+            
+            for (let i = 1; i < numStates; i++) {
+                const angle = -0.3 + (1.9 * Math.PI * i / (numStates - 1));
+                const x = leftCenterX + leftRadius * Math.cos(angle);
+                const y = leftCenterY + leftRadius * Math.sin(angle);
+                leftNodes.push({x, y, isS: false});
+            }
+
+            for (let i = 0; i < leftNodes.length; i++) {
+                const curr = leftNodes[i];
+                const next = leftNodes[(i + 1) % leftNodes.length];
+                
+                const dx = next.x - curr.x;
+                const dy = next.y - curr.y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                const midX = (curr.x + next.x) / 2;
+                const midY = (curr.y + next.y) / 2;
+                
+                const perpX = -dy / dist * 30;
+                const perpY = dx / dist * 30;
+                const ctrlX = midX + perpX;
+                const ctrlY = midY + perpY;
+                
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                const pathD = `M ${curr.x} ${curr.y} Q ${ctrlX} ${ctrlY} ${next.x} ${next.y}`;
+                path.setAttribute('d', pathD);
+                path.setAttribute('class', i === 0 ? 'arrow-path highlight' : 'arrow-path');
+                svg.appendChild(path);
+                
+                // Calculate tangent at midpoint for arrow direction
+                const t = 0.5; // midpoint
+                const tangentX = 2 * (1 - t) * (ctrlX - curr.x) + 2 * t * (next.x - ctrlX);
+                const tangentY = 2 * (1 - t) * (ctrlY - curr.y) + 2 * t * (next.y - ctrlY);
+                const angle = Math.atan2(tangentY, tangentX) * 180 / Math.PI;
+                
+                // Calculate actual midpoint on curve
+                const mx = (1-t)*(1-t)*curr.x + 2*(1-t)*t*ctrlX + t*t*next.x;
+                const my = (1-t)*(1-t)*curr.y + 2*(1-t)*t*ctrlY + t*t*next.y;
+                
+                // Draw arrow at midpoint
+                const arrowSize = i === 0 ? 12 : 10;
+                const arrowColor = i === 0 ? '#2d2d2d' : '#999';
+                const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                const points = `0,0 ${arrowSize},${arrowSize/2} 0,${arrowSize}`;
+                arrow.setAttribute('points', points);
+                arrow.setAttribute('fill', arrowColor);
+                arrow.setAttribute('transform', `translate(${mx - arrowSize/2}, ${my - arrowSize/2}) rotate(${angle} ${arrowSize/2} ${arrowSize/2})`);
+                svg.appendChild(arrow);
+                
+                if (i === 0) {
+                    const reward = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    reward.setAttribute('x', ctrlX - 25);
+                    reward.setAttribute('y', ctrlY - 10);
+                    reward.setAttribute('class', 'reward-label');
+                    reward.textContent = '+1';
+                    svg.appendChild(reward);
+                }
+            }
+
+            for (let i = 1; i < leftNodes.length; i++) {
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', leftNodes[i].x);
+                circle.setAttribute('cy', leftNodes[i].y);
+                circle.setAttribute('r', nodeRadius);
+                circle.setAttribute('class', 'state-circle');
+                svg.appendChild(circle);
+            }
+
+            // RIGHT RING
+            const rightNodes = [{x: sX, y: sY, isS: true}];
+            const rightRadius = 140;
+            const rightCenterX = centerX + 150;
+            const rightCenterY = centerY - 30;
+            
+            for (let i = 1; i < numStates; i++) {
+                const angle = Math.PI + 0.3 - (1.9 * Math.PI * i / (numStates - 1));
+                const x = rightCenterX + rightRadius * Math.cos(angle);
+                const y = rightCenterY + rightRadius * Math.sin(angle);
+                rightNodes.push({x, y, isS: false});
+            }
+
+            for (let i = 0; i < rightNodes.length; i++) {
+                const curr = rightNodes[i];
+                const next = rightNodes[(i + 1) % rightNodes.length];
+                
+                const dx = next.x - curr.x;
+                const dy = next.y - curr.y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                const midX = (curr.x + next.x) / 2;
+                const midY = (curr.y + next.y) / 2;
+                
+                const perpX = -dy / dist * 30;
+                const perpY = dx / dist * 30;
+                const ctrlX = midX + perpX;
+                const ctrlY = midY + perpY;
+                
+                const isLast = (i === rightNodes.length - 1);
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                const pathD = `M ${curr.x} ${curr.y} Q ${ctrlX} ${ctrlY} ${next.x} ${next.y}`;
+                path.setAttribute('d', pathD);
+                path.setAttribute('class', isLast ? 'arrow-path highlight' : 'arrow-path');
+                svg.appendChild(path);
+                
+                // Calculate tangent at midpoint for arrow direction
+                const t = 0.5; // midpoint
+                const tangentX = 2 * (1 - t) * (ctrlX - curr.x) + 2 * t * (next.x - ctrlX);
+                const tangentY = 2 * (1 - t) * (ctrlY - curr.y) + 2 * t * (next.y - ctrlY);
+                const angle = Math.atan2(tangentY, tangentX) * 180 / Math.PI;
+                
+                // Calculate actual midpoint on curve
+                const mx = (1-t)*(1-t)*curr.x + 2*(1-t)*t*ctrlX + t*t*next.x;
+                const my = (1-t)*(1-t)*curr.y + 2*(1-t)*t*ctrlY + t*t*next.y;
+                
+                // Draw arrow at midpoint
+                const arrowSize = isLast ? 12 : 10;
+                const arrowColor = isLast ? '#2d2d2d' : '#999';
+                const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                const points = `0,0 ${arrowSize},${arrowSize/2} 0,${arrowSize}`;
+                arrow.setAttribute('points', points);
+                arrow.setAttribute('fill', arrowColor);
+                arrow.setAttribute('transform', `translate(${mx - arrowSize/2}, ${my - arrowSize/2}) rotate(${angle} ${arrowSize/2} ${arrowSize/2})`);
+                svg.appendChild(arrow);
+                
+                if (isLast) {
+                    const reward = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    reward.setAttribute('x', ctrlX + 25);
+                    reward.setAttribute('y', ctrlY + 40);
+                    reward.setAttribute('class', 'reward-label');
+                    reward.textContent = '+2';
+                    svg.appendChild(reward);
+                }
+            }
+
+            for (let i = 1; i < rightNodes.length; i++) {
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', rightNodes[i].x);
+                circle.setAttribute('cy', rightNodes[i].y);
+                circle.setAttribute('r', nodeRadius);
+                circle.setAttribute('class', 'state-circle');
+                svg.appendChild(circle);
+            }
+
+            // S node
+            const sCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            sCircle.setAttribute('cx', sX);
+            sCircle.setAttribute('cy', sY);
+            sCircle.setAttribute('r', 32);
+            sCircle.setAttribute('class', 'state-circle decision');
+            svg.appendChild(sCircle);
+
+            const sText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            sText.setAttribute('x', sX);
+            sText.setAttribute('y', sY);
+            sText.setAttribute('class', 'state-text decision');
+            sText.textContent = 'S';
+            svg.appendChild(sText);
+
+            const lLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            lLabel.setAttribute('x', sX - 70);
+            lLabel.setAttribute('y', sY - 40);
+            lLabel.setAttribute('class', 'action-label');
+            lLabel.textContent = 'L';
+            svg.appendChild(lLabel);
+
+            const rLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            rLabel.setAttribute('x', sX + 70);
+            rLabel.setAttribute('y', sY - 40);
+            rLabel.setAttribute('class', 'action-label');
+            rLabel.textContent = 'R';
+            svg.appendChild(rLabel);
+        }
+
+        function updateAnalysis() {
+            const gamma = document.getElementById('gamma-slider').value / 100;
+            const numStates = parseInt(document.getElementById('states-slider').value);
+
+            document.getElementById('gamma-val').textContent = gamma.toFixed(2);
+            document.getElementById('states-val').textContent = numStates;
+            document.getElementById('metric-gamma').textContent = gamma.toFixed(2);
+
+            document.getElementById('exp-left').textContent = numStates;
+            document.getElementById('exp-right1').textContent = numStates - 1;
+            document.getElementById('exp-right2').textContent = numStates;
+
+            const gammaPowN = Math.pow(gamma, numStates);
+            let vLeft, vRight;
+
+            if (Math.abs(1 - gammaPowN) < 0.00001) {
+                vLeft = 999999;
+                vRight = 999999;
+            } else {
+                vLeft = 1 / (1 - gammaPowN);
+                vRight = (2 * Math.pow(gamma, numStates - 1)) / (1 - gammaPowN);
+            }
+
+            const fmt = (v) => v > 1000 ? '' : v.toFixed(3);
+
+            document.getElementById('value-left').textContent = fmt(vLeft);
+            document.getElementById('value-right').textContent = fmt(vRight);
+            document.getElementById('metric-vl').textContent = fmt(vLeft);
+            document.getElementById('metric-vr').textContent = fmt(vRight);
+            document.getElementById('metric-diff').textContent = fmt(vRight - vLeft);
+
+            const badge = document.getElementById('winner-badge');
+            if (vRight > vLeft) {
+                badge.textContent = 'RIGHT preferred ';
+                badge.style.background = 'linear-gradient(135deg, #0066CC, #42A5F5)';
+            } else {
+                badge.textContent = 'LEFT preferred ';
+                badge.style.background = 'linear-gradient(135deg, #6BADB1, #AAD1CD)';
+            }
+
+            const threshold = Math.pow(2, -1 / (numStates - 1));
+            document.getElementById('threshold-val').textContent = threshold.toFixed(3);
+
+            let exp = `With ${numStates} states, γ  ${threshold.toFixed(3)} required for RIGHT to be optimal. `;
+            if (numStates === 5) {
+                exp += 'With 100 states, γ would need to be  0.993, causing severe numerical instability!';
+            } else if (numStates >= 8) {
+                exp += 'As rings grow larger, γ must approach 1.0, causing numerical problems.';
+            } else {
+                exp += 'This demonstrates why discount factors are problematic for large continuing tasks.';
+            }
+            document.getElementById('threshold-explain').textContent = exp;
+
+            drawNetwork(numStates);
+        }
+
+        function findEquilibrium() {
+            const numStates = parseInt(document.getElementById('states-slider').value);
+            const equilibriumGamma = Math.pow(2, -1 / (numStates - 1));
+            
+            // Set slider to equilibrium value
+            document.getElementById('gamma-slider').value = Math.round(equilibriumGamma * 100);
+            updateAnalysis();
+            
+            // Flash the threshold box
+            const box = document.querySelector('.threshold-box');
+            box.style.background = '#FFF9C4';
+            box.style.borderLeftColor = '#FFC72C';
+            setTimeout(() => {
+                box.style.background = 'white';
+                box.style.borderLeftColor = '#FFC72C';
+            }, 1000);
+        }
+
+        window.onload = () => {
+            updateAnalysis();
+        };
+    </script>
+<div class="ie7295-foot">IE7295: Applied Reinforcement Learning &middot; Prof. Dehghani</div>
+
+<style>
+/* sync_tools v3 ---------------------------------------------------------------------
+   Appended, never substituted. Everything here is a decision taken on the
+   Module 1 Grid World tool and carried across so the set reads as one course.
+   ---------------------------------------------------------------------- */
+
+/* the three colour rule under the band, the one place the full palette shows */
+.ie7295-band{position:relative}
+.ie7295-band::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;
+  background:linear-gradient(90deg,#F5D000 0 33.33%,#E2231A 33.33% 66.66%,#0064B0 66.66% 100%)}
+
+/* sliders: the weighted bar. The track is styled, so the thumb needs its
+   centring offset back by hand or WebKit aligns it to the track's top edge. */
+input[type=range]{-webkit-appearance:none;appearance:none;background:none;
+  height:22px;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:11px;border-radius:999px;
+  background:#e6eded;border:0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;margin-top:-5px;
+  width:21px;height:21px;border-radius:999px;background:#fff;border:2px solid #006064;
+  box-shadow:0 1px 4px rgba(0,0,0,.16);cursor:pointer}
+input[type=range]::-moz-range-track{height:11px;border-radius:999px;background:#e6eded;
+  border:0}
+input[type=range]::-moz-range-thumb{width:21px;height:21px;border-radius:999px;
+  background:#fff;border:2px solid #006064;box-shadow:0 1px 4px rgba(0,0,0,.16);cursor:pointer}
+input[type=range]::-moz-range-progress{height:11px;border-radius:999px;
+  background:linear-gradient(90deg,#0d5f62,#17a2b8)}
+
+/* buttons: pills, one weight of emphasis */
+button, .btn, input[type=button], input[type=submit]{
+  font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif !important;border-radius:999px !important;
+  font-weight:700 !important;cursor:pointer}
+
+/* Teal is the course's one accent. Cliff Walker painted its buttons in
+   var(--mit-blue), which this course reserves for policy arrows, so the button
+   is overridden rather than the variable: anything semantic keeps its colour.
+   Danger and destructive controls are left alone deliberately. */
+button:not([class*=danger]):not([class*=delete]):not([class*=remove]),
+.btn:not([class*=danger]){
+  background:linear-gradient(135deg,#006064 0%,#17a2b8 100%) !important;
+  color:#fff !important;border:0 !important}
+button:disabled, .btn:disabled{
+  background:#cfd8dc !important;color:#8b969b !important;cursor:not-allowed}
+
+/* panels line up with the pages: same hairline, same radius */
+.panel,.card,.box,.section,.controls,.stats,.info,.legend{
+  border-radius:6px}
+
+/* prose is INK. MUTE is for captions, and reads at 2.2:1 which is not text. */
+p, li, td{color:#3d3d3d}
+
+/* the field the panels sit on. Several tools shipped with a strong teal
+   gradient body, which fought the mint band directly above it. */
+body{background:#f4f6f8 !important}
+
+/* Each tool carries its own title block, a black slab that repeated the title
+   already on the course band. The text is content, so it stays: the slab is
+   restyled into the course box instead. Background and colour have to move
+   together, or the white title is left invisible on a white panel. */
+.header{background:#fff !important;border-left:3px solid #006064 !important;
+  border-radius:0 6px 6px 0 !important;box-shadow:none !important;
+  padding:13px 17px !important;margin-bottom:14px !important}
+.header h1,.header h2{color:#20484A !important;font-size:16px !important;
+  font-weight:700 !important;margin:0 0 3px !important;text-shadow:none !important}
+.header p,.header .subtitle,.header div,.header em,.header i{
+  color:#3d3d3d !important;font-size:12.5px !important;line-height:1.6 !important;
+  text-shadow:none !important}
+.header em,.header i{font-size:11px !important;color:#a8b0b6 !important}
+</style>
+</body>
+</html>

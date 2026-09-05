@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Average Reward Setting - IE 7295</title>
+    <style>
+*{box-sizing:border-box}
+body{margin:0;padding:26px 18px 60px;background:#f4f6f8;font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+  color:#747474;font-size: 12.5px;line-height: 1.7}
+.container{max-width:900px;margin:0 auto;background:#fff;border-radius:6px;overflow:hidden;
+  box-shadow:0 12px 34px -16px rgba(16,24,40,.24)}
+.page-header{background:linear-gradient(135deg,#C3E3E4 0%,#C1E2E3 100%);padding:10px 18px}
+.page-header h1{margin:0;font-size: 16px;font-weight:700;color:#20484A;font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif}
+.page-header .chapter-info,.meta{display:inline-block;background:rgba(255,255,255,.75);
+  color:#3d5f61;padding:2px 9px;border-radius:999px;font-size: 11px;margin-top:4px}
+.content{padding:18px}
+.section{margin:0 0 22px}
+h2{font-size: 16px;font-weight:700;color:#20484A;margin:22px 0 8px;padding-bottom:6px;
+  border-bottom:2px solid rgba(143,200,202,.45)}
+h3{font-size: 12.5px;font-weight:700;color:#20484A;margin:14px 0 4px}
+p,li{font-size: 12.5px;line-height: 1.7;color:#747474}
+ul{padding-left:20px;margin:6px 0 8px}
+b,strong{color:#3d3d3d}
+a{color:#006064;font-weight:700;text-decoration:none}
+
+.intro-box,.highlight-box,.summary-box,.example-box,.key-points{
+  background:rgba(143,200,202,.14);border-left:3px solid #8FC8CA;border-radius:0 6px 6px 0;
+  padding:11px 14px;margin:14px 0}
+.highlight-box,.summary-box{background:rgba(0,96,100,.09);border-left-color:#006064}
+.example-box{background:#F7F9F9;border-left-color:#D8DEE2}
+
+.equation-box{background:#fff;border:1px solid #E4E9EB;border-left:3px solid #006064;
+  border-radius:0 6px 6px 0;padding:12px 15px;margin:12px 0}
+.equation-label{font-size: 11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  color:#006064;margin-bottom:5px}
+.equation{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;font-size: 12.5px;color:#10333A;background:#F7F9F9;
+  border-radius:4px;padding:9px 12px;overflow-x:auto}
+.equation-desc{font-size: 11px;color:#a8b0b6;margin-top:6px}
+.calculation{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;font-size: 12.5px;background:#F7F9F9;border-radius:4px;
+  padding:7px 11px;margin:6px 0;color:#10333A;overflow-x:auto}
+
+.comparison-grid,.key-points-grid{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+.comparison-card,.key-point{flex:1;min-width:220px;background:#fff;border:1px solid #E4E9EB;
+  border-radius:6px;overflow:hidden}
+.key-point{padding:11px 14px;font-size: 12.5px}
+.comparison-card-header{background:linear-gradient(135deg,#0d4f52 0%,#006064 100%);
+  color:#fff;font-size: 12.5px;font-weight:700;padding:8px 13px}
+.comparison-card-body{padding:11px 14px;font-size: 12.5px}
+.key-points-content{margin:0}
+
+.badge{display:inline-block;background:#006064;color:#fff;font-size: 11px;font-weight:700;
+  padding:2px 9px;border-radius:999px}
+.download-btn{display:inline-block;background:linear-gradient(135deg,#006064 0%,#17a2b8 100%);
+  color:#fff;font-size: 12.5px;font-weight:700;padding:6px 14px;border-radius:999px;
+  text-decoration:none;margin:4px 6px 4px 0}
+.example-step{margin:10px 0}
+.page-footer{border-top:1px solid #E4E9EB;padding:9px 0;text-align:center;font-size: 11px;
+  color:#a8b0b6}
+.why{background:rgba(0,96,100,.07);border-left:3px solid #006064;border-radius:0 6px 6px 0;
+  padding:12px 15px;margin:16px 0}
+.why-label{font-size: 11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+  color:#006064;margin-bottom:4px}
+</style>
+</head>
+<body>
+<div class="ie7295-band"><h1>Average Reward</h1><div class="sub">Chapter 10 &middot; when discounting stops making sense</div></div>
+    <div class="container">
+        <!-- Header -->
+        <div class="page-header">
+            <h1>Average Reward Setting for Continuing Tasks</h1>
+            <div class="meta">
+                <span class="badge">Chapter 10</span>
+                <span class="chapter-info">An Alternative to Discounted Formulation - Sutton & Barto</span>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Introduction -->
+            <section class="section">
+                <div class="why"><div class="why-label">Why this chapter exists</div><p>Everything so far has assumed an episode ends. The pole falls, the lander touches down, the game finishes, and you can total what the agent collected. Now think about a process that never stops: a queue that runs all day, a machine that keeps producing, a recommender serving users for years. There is no final total to compare, because the total is infinite either way.</p><p>The usual fix is to discount, multiplying each future reward by a number below one so the sum stays finite. It works, and it hides a problem: you had to invent the discount factor. Nothing in the queue told you it should be 0.9 rather than 0.99, and the two give you different policies. This chapter is about the alternative &mdash; measuring the <b>rate</b> of reward instead of the total, so there is no arbitrary number to pick.</p></div><div class="intro-box">
+                    <h2>The Average Reward Framework</h2>
+                    <p>For <strong>continuing tasks</strong> (tasks with no natural termination), we have traditionally used discount factors γ &lt; 1. However, this approach introduces several problems:</p>
+                    
+                    <ul>
+                        <li>The choice of γ is arbitrary and significantly affects the learned policy</li>
+                        <li>For long-horizon tasks, γ must approach 1.0, causing numerical instability</li>
+                        <li>Discount factors create "nearsighted" behavior where the agent undervalues distant rewards</li>
+                        <li>The discount formulation conflates two distinct concerns: the uncertainty of future states and the time preference</li>
+                    </ul>
+
+                    <div class="highlight-box">
+                        <p><strong>Key Insight:</strong> Instead of discounting, we can measure performance as the <em>average reward per time step</em> in the long run. This eliminates the need for arbitrary discounting while naturally handling continuing tasks.</p>
+                    </div>
+
+                    <p>The average reward setting defines optimality in terms of the long-run average reward rate, making it particularly suitable for continuing tasks where there's no natural endpoint and we care about steady-state performance.</p>
+                </div>
+            </section>
+
+            <!-- Core Equations -->
+            <section class="section">
+                <div class="intro-box">
+                    <h2>Core Concepts & Equations</h2>
+
+                    <div class="why"><div class="why-label">Reading the equations</div><p>Three of the four symbols below are doing one job: separating <i>how well the agent does per step</i> from <i>how much better one state is than another</i>. The reward rate <code>r(&pi;)</code> is the first, a single number for the whole policy. The differential value is the second, and it is a difference rather than a total &mdash; how much extra reward you collect by starting here rather than in an average state.</p><p>If a value ever looked like a strange quantity to you, this is the version where it becomes concrete: it is measured in reward-steps of advantage, and the worked example further down does the arithmetic on a two-state problem you can check by hand.</p></div><div class="equation-box">
+                        <div class="equation-label">Average Reward Rate</div>
+                        <div class="equation">
+                            r(π) = lim<sub>h</sub> (1/h) Σ<sub>t=1</sub><sup>h</sup> E[R<sub>t</sub> | S<sub>0</sub>, A<sub>0:t-1</sub> ~ π]
+                        </div>
+                        <div class="equation-desc">The long-run expected reward per time step under policy π</div>
+                    </div>
+
+                    <p>In the average reward setting, we assume <strong>ergodicity</strong>: starting from any state and following any policy, all states are reachable with positive probability. Under ergodicity, the average reward is independent of the starting state.</p>
+
+                    <div class="equation-box">
+                        <div class="equation-label">Differential Value Function</div>
+                        <div class="equation">
+                            v<sub>π</sub>(s) = Σ<sub>t=1</sub><sup></sup> E[R<sub>t</sub> - r(π) | S<sub>0</sub> = s, A<sub>0:t-1</sub> ~ π]
+                        </div>
+                        <div class="equation-desc">Expected sum of differences between rewards and average reward</div>
+                    </div>
+
+                    <p>The differential value function v<sub>π</sub>(s) measures how much <em>better</em> or <em>worse</em> it is to start in state s compared to the long-run average. It answers: "How much extra reward do I get by starting here?"</p>
+
+                    <div class="equation-box">
+                        <div class="equation-label">Differential Bellman Equation</div>
+                        <div class="equation">
+                            v<sub>π</sub>(s) = Σ<sub>a</sub> π(a|s) Σ<sub>s',r</sub> p(s',r|s,a)[r - r(π) + v<sub>π</sub>(s')]
+                        </div>
+                        <div class="equation-desc">Bellman equation without discounting</div>
+                    </div>
+
+                    <div class="equation-box">
+                        <div class="equation-label">Optimal Bellman Equation</div>
+                        <div class="equation">
+                            v<sub>*</sub>(s) = max<sub>a</sub> Σ<sub>s',r</sub> p(s',r|s,a)[r - r<sub>*</sub> + v<sub>*</sub>(s')]
+                        </div>
+                        <div class="equation-desc">Bellman optimality equation for average reward</div>
+                    </div>
+
+                    <div class="equation-box">
+                        <div class="equation-label">Differential TD Error</div>
+                        <div class="equation">
+                            δ<sub>t</sub> = R<sub>t+1</sub> - r̄<sub>t</sub> + v(S<sub>t+1</sub>) - v(S<sub>t</sub>)
+                        </div>
+                        <div class="equation-desc">TD error using average reward estimate r̄<sub>t</sub></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- R-Learning Algorithm -->
+            <section class="section">
+                <div class="intro-box">
+                    <h2>R-Learning Algorithm</h2>
+                    <p>R-learning is the differential version of Q-learning for the average reward setting. It learns both the average reward rate and the differential action values simultaneously.</p>
+
+                    <div class="equation-box">
+                        <div class="equation-label">R-Learning: Average Reward Update</div>
+                        <div class="equation">
+                            r̄<sub>t+1</sub> = r̄<sub>t</sub> + β[R<sub>t+1</sub> - r̄<sub>t</sub> + max<sub>a</sub> Q(S<sub>t+1</sub>,a) - max<sub>a</sub> Q(S<sub>t</sub>,a)]
+                        </div>
+                        <div class="equation-desc">Update average reward estimate (β is step size for average reward)</div>
+                    </div>
+
+                    <div class="equation-box">
+                        <div class="equation-label">R-Learning: Action-Value Update</div>
+                        <div class="equation">
+                            Q(S<sub>t</sub>,A<sub>t</sub>)  Q(S<sub>t</sub>,A<sub>t</sub>) + α[R<sub>t+1</sub> - r̄<sub>t</sub> + max<sub>a</sub> Q(S<sub>t+1</sub>,a) - Q(S<sub>t</sub>,A<sub>t</sub>)]
+                        </div>
+                        <div class="equation-desc">Update differential Q-values (α is step size for Q-values)</div>
+                    </div>
+
+                    <div class="highlight-box">
+                        <p><strong>Key Difference from Q-Learning:</strong> R-learning uses (R<sub>t+1</sub> - r̄<sub>t</sub>) instead of just R<sub>t+1</sub>, and no discount factor appears. The algorithm learns what's "better than average" rather than absolute values. The term max<sub>a</sub> Q(S<sub>t+1</sub>,a) - max<sub>a</sub> Q(S<sub>t</sub>,a) represents the change in the value of the best action.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Interactive Tool Section -->
+            <section class="section">
+                <div class="intro-box" style="background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); border: 3px solid #6BADB1;">
+                    <h2 style="color: #2d2d2d; text-align: center; font-size: 24px;">Interactive Tool: Explore Average Reward</h2>
+                    
+                    <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #FFC72C;">
+                        <p><strong>Learning Objective:</strong> Use the interactive tool to visualize and compare the discounted and average reward formulations on a simple MDP. Experiment with different parameters to understand:</p>
+                        <ul style="margin-top: 10px;">
+                            <li>How average reward converges to a steady-state value</li>
+                            <li>How discount factor γ affects the discounted return</li>
+                            <li>Why average reward is more stable for long-horizon tasks</li>
+                            <li>The relationship between reward structure and optimal policies</li>
+                        </ul>
+                    </div>
+
+                    <div style="text-align: center; padding: 30px; background: #fafafa; border-radius: 10px; margin: 20px 0;">
+                        <div style="margin-bottom: 20px;">
+                            <p style="color: #6e6e6e; font-size: 12.5px; margin-bottom: 15px;">Download the interactive tool and open it in your browser to experiment with average reward concepts.</p>
+                        </div>
+                        
+                        <!-- PLACEHOLDER: Add your download link here -->
+                        <a href="YOUR_TOOL_FILE_LINK_HERE.html" download class="download-btn">
+                             Download Interactive Tool
+                        </a>
+                        
+                        <p style="color: #999; font-size: 12.5px; margin-top: 15px; font-style: italic;">Save the file and open it in your web browser</p>
+                    </div>
+
+                    <div style="background: #F8F9FA; padding: 15px; border-radius: 8px; margin-top: 20px;">
+                        <p style="color: #2d2d2d; font-size: 12.5px; margin: 0;"><strong>Instructions:</strong> After exploring the tool, reflect on how the choice between discounted and average reward formulations affects the learned policy. Pay particular attention to what happens as γ approaches 1.0 in the discounted case.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Comparison -->
+            <section class="section">
+                <div class="intro-box">
+                    <h2>Discounted vs. Average Reward: A Comparison</h2>
+                </div>
+                <div class="comparison-grid">
+                    <div class="comparison-card">
+                        <div class="comparison-card-header">
+                            <h3>Discounted Setting</h3>
+                        </div>
+                        <div class="comparison-card-body">
+                            <p><strong>Return:</strong> G<sub>t</sub> = Σ<sub>k=0</sub><sup></sup> γ<sup>k</sup>R<sub>t+k+1</sub></p>
+                            <p><strong>Value Function:</strong> v<sub>π</sub>(s) = E<sub>π</sub>[G<sub>t</sub> | S<sub>t</sub> = s]</p>
+                            <p><strong>Pros:</strong> Well-studied theory, mathematically convenient, contractive operators guarantee convergence</p>
+                            <p><strong>Cons:</strong> Arbitrary γ choice, nearsighted behavior, numerical issues when γ1, conflates time preference with uncertainty</p>
+                            <p><strong>Best for:</strong> Episodic tasks, when future truly matters less, finite-horizon problems</p>
+                        </div>
+                    </div>
+
+                    <div class="comparison-card">
+                        <div class="comparison-card-header">
+                            <h3>Average Reward Setting</h3>
+                        </div>
+                        <div class="comparison-card-body">
+                            <p><strong>Return:</strong> Σ<sub>t=1</sub><sup></sup> (R<sub>t</sub> - r(π))</p>
+                            <p><strong>Value Function:</strong> v<sub>π</sub>(s) = E<sub>π</sub>[Σ(R<sub>t</sub> - r(π)) | S<sub>0</sub> = s]</p>
+                            <p><strong>Pros:</strong> No discounting needed, natural for continuing tasks, avoids γ tuning, focuses on steady-state performance</p>
+                            <p><strong>Cons:</strong> Requires ergodicity, more complex convergence analysis, less developed theory than discounted case</p>
+                            <p><strong>Best for:</strong> Continuing tasks, long-term optimization, systems with steady-state behavior (control systems, servers, robots)</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Numerical Example -->
+            <section class="section">
+                <div class="example-box">
+                    <h3>Numerical Example: Two-State MDP</h3>
+                    <div class="example-content">
+                        <h4>Problem Setup</h4>
+                        <p>Consider a simple continuing task with two states: <strong>State A</strong> and <strong>State B</strong>. The agent alternates between them deterministically.</p>
+                        
+                        <div class="example-step">
+                            <h5>Transition Structure</h5>
+                            <p>• From State A: Always transition to State B with reward R<sub>A</sub> = +2</p>
+                            <p>• From State B: Always transition to State A with reward R<sub>B</sub> = +4</p>
+                            <p>• This continues forever (continuing task)</p>
+                        </div>
+
+                        <h4>Solution Using Average Reward</h4>
+                        
+                        <div class="example-step">
+                            <h5>Step 1: Calculate Average Reward Rate</h5>
+                            <p>Since we alternate between states equally:</p>
+                            <div class="calculation">
+                                r(π) = (R<sub>A</sub> + R<sub>B</sub>) / 2 = (2 + 4) / 2 = <strong>3.0</strong>
+                            </div>
+                            <p>The long-run average reward is 3.0 per time step.</p>
+                        </div>
+
+                        <div class="example-step">
+                            <h5>Step 2: Calculate Differential Values</h5>
+                            <p>For State A, we get reward 2 (which is 1 below average), then move to State B:</p>
+                            <div class="calculation">
+                                v(A) = (2 - 3) + v(B) = -1 + v(B)
+                            </div>
+                            <p>For State B, we get reward 4 (which is 1 above average), then move to State A:</p>
+                            <div class="calculation">
+                                v(B) = (4 - 3) + v(A) = 1 + v(A)
+                            </div>
+                            <p>Solving this system (substituting first equation into second):</p>
+                            <div class="calculation">
+                                v(B) = 1 + (-1 + v(B)) = v(B)
+                            </div>
+                            <p>This is satisfied for any offset. By convention, we set v(B) = 0 (choosing a reference state):</p>
+                            <div class="calculation">
+                                v(B) = <strong>0</strong><br>
+                                v(A) = -1 + 0 = <strong>-1</strong>
+                            </div>
+                        </div>
+
+                        <div class="example-step">
+                            <h5>Step 3: Interpretation</h5>
+                            <p>• <strong>v(A) = -1:</strong> Starting in State A is 1 unit worse than the reference</p>
+                            <p>• <strong>v(B) = 0:</strong> State B is our reference (neutral)</p>
+                            <p>• Both differential values are relative to the average reward of 3.0</p>
+                            <p>• The agent prefers State B over State A by 1 unit</p>
+                        </div>
+
+                        <h4>Comparison with Discounted Setting (γ = 0.9)</h4>
+                        
+                        <div class="example-step">
+                            <h5>Discounted Values</h5>
+                            <p>For State A:</p>
+                            <div class="calculation">
+                                v<sub>γ</sub>(A) = 2 + 0.9·v<sub>γ</sub>(B)
+                            </div>
+                            <p>For State B:</p>
+                            <div class="calculation">
+                                v<sub>γ</sub>(B) = 4 + 0.9·v<sub>γ</sub>(A)
+                            </div>
+                            <p>Solving:</p>
+                            <div class="calculation">
+                                v<sub>γ</sub>(A) = 2 + 0.9(4 + 0.9v<sub>γ</sub>(A))<br>
+                                v<sub>γ</sub>(A) = 2 + 3.6 + 0.81v<sub>γ</sub>(A)<br>
+                                0.19v<sub>γ</sub>(A) = 5.6<br>
+                                v<sub>γ</sub>(A) = <strong>29.47</strong>
+                            </div>
+                            <div class="calculation">
+                                v<sub>γ</sub>(B) = 4 + 0.9(29.47) = <strong>30.52</strong>
+                            </div>
+                        </div>
+
+                        <h4>Key Observations</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Method</th>
+                                    <th>v(A)</th>
+                                    <th>v(B)</th>
+                                    <th>v(B) - v(A)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Average Reward</strong></td>
+                                    <td>-1.0</td>
+                                    <td>0.0</td>
+                                    <td>1.0</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Discounted (γ=0.9)</strong></td>
+                                    <td>29.47</td>
+                                    <td>30.52</td>
+                                    <td>1.05</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="highlight-box">
+                            <p><strong>Important:</strong> Both methods agree on the <em>relative preference</em> (State B is better), but average reward provides a cleaner interpretation: values are differences from the average rather than discounted sums. As γ1, discounted values, but average reward values remain bounded and interpretable.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Advantages & When to Use -->
+            <section class="section">
+                <div class="key-points">
+                    <h3>When to Use Average Reward Setting</h3>
+                    <div class="key-points-content">
+                        <h4>Advantages of Average Reward</h4>
+                        <div class="key-points-grid">
+                            <div class="key-point">
+                                <p><strong> Continuing Tasks:</strong><br>Naturally suited for tasks with no terminal states, like process control, server management, or robot navigation where performance continues indefinitely.</p>
+                            </div>
+                            <div class="key-point">
+                                <p><strong> No Discount Tuning:</strong><br>Eliminates the arbitrary choice of γ, removing a hyperparameter that significantly affects learned behavior and policy quality.</p>
+                            </div>
+                            <div class="key-point">
+                                <p><strong> Long-term Optimization:</strong><br>Focuses on long-run performance without myopic behavior caused by high discounting. All future rewards treated equally.</p>
+                            </div>
+                            <div class="key-point">
+                                <p><strong> Numerical Stability:</strong><br>Avoids numerical issues that arise when γ must be very close to 1 for long-horizon problems. Values remain bounded.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="summary-box">
+                            <p>
+                                <strong>Important Requirement:</strong> The average reward setting requires <strong>ergodicity</strong> – all states must be reachable from all other states under any policy. It's most effective when you care about steady-state performance rather than transient behavior. For episodic tasks or when time preference is important, the discounted setting may be more appropriate.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Additional Algorithms -->
+            <section class="section">
+                <div class="intro-box">
+                    <h2>Differential SARSA & Expected SARSA</h2>
+                    <p>The average reward framework can be applied to on-policy methods as well:</p>
+
+                    <div class="equation-box">
+                        <div class="equation-label">Differential SARSA</div>
+                        <div class="equation">
+                            Q(S<sub>t</sub>,A<sub>t</sub>)  Q(S<sub>t</sub>,A<sub>t</sub>) + α[R<sub>t+1</sub> - r̄<sub>t</sub> + Q(S<sub>t+1</sub>,A<sub>t+1</sub>) - Q(S<sub>t</sub>,A<sub>t</sub>)]
+                        </div>
+                        <div class="equation-desc">On-policy TD control using the action actually taken</div>
+                    </div>
+
+                    <div class="equation-box">
+                        <div class="equation-label">Differential Expected SARSA</div>
+                        <div class="equation">
+                            Q(S<sub>t</sub>,A<sub>t</sub>)  Q(S<sub>t</sub>,A<sub>t</sub>) + α[R<sub>t+1</sub> - r̄<sub>t</sub> + Σ<sub>a</sub> π(a|S<sub>t+1</sub>)Q(S<sub>t+1</sub>,a) - Q(S<sub>t</sub>,A<sub>t</sub>)]
+                        </div>
+                        <div class="equation-desc">Uses expected value over next actions instead of sampled or max</div>
+                    </div>
+
+                    <div class="highlight-box">
+                        <p><strong>Algorithm Choice:</strong> Use Differential SARSA when learning on-policy with the behavior policy, R-learning when learning the optimal policy off-policy, and Differential Expected SARSA for reduced variance while maintaining flexibility.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Summary -->
+            <section class="section">
+                <div class="key-points">
+                    <h3>Key Takeaways</h3>
+                    <div class="key-points-content">
+                        <h4>Essential Concepts</h4>
+                        <div class="key-points-grid">
+                            <div class="key-point">
+                                <p><strong>Average Reward Rate r(π):</strong><br>The long-run expected reward per time step. Independent of starting state under ergodicity.</p>
+                            </div>
+                            <div class="key-point">
+                                <p><strong>Differential Values v(s):</strong><br>How much better or worse a state is compared to the average. Measures relative quality, not absolute.</p>
+                            </div>
+                            <div class="key-point">
+                                <p><strong>No Discounting:</strong><br>Future rewards not discounted. Suitable when all future time steps matter equally in continuing tasks.</p>
+                            </div>
+                            <div class="key-point">
+                                <p><strong>R-Learning:</strong><br>The workhorse algorithm for average reward. Simultaneously learns r̄ and Q-values.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="summary-box">
+                            <p>
+                                The average reward setting provides a principled alternative to discounting for continuing tasks. By measuring steady-state performance and relative state quality, it avoids the arbitrariness and numerical issues of the discount factor while remaining theoretically sound for ergodic MDPs.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Footer -->
+        <div class="page-footer">IE7295: Applied Reinforcement Learning &middot; Prof. Dehghani</div>
+    </div>
+<div class="ie7295-foot">IE7295: Applied Reinforcement Learning &middot; Prof. Dehghani</div>
+
+<style>
+/* sync_tools v3 ---------------------------------------------------------------------
+   Appended, never substituted. Everything here is a decision taken on the
+   Module 1 Grid World tool and carried across so the set reads as one course.
+   ---------------------------------------------------------------------- */
+
+/* the three colour rule under the band, the one place the full palette shows */
+.ie7295-band{position:relative}
+.ie7295-band::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;
+  background:linear-gradient(90deg,#F5D000 0 33.33%,#E2231A 33.33% 66.66%,#0064B0 66.66% 100%)}
+
+/* sliders: the weighted bar. The track is styled, so the thumb needs its
+   centring offset back by hand or WebKit aligns it to the track's top edge. */
+input[type=range]{-webkit-appearance:none;appearance:none;background:none;
+  height:22px;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:11px;border-radius:999px;
+  background:#e6eded;border:0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;margin-top:-5px;
+  width:21px;height:21px;border-radius:999px;background:#fff;border:2px solid #006064;
+  box-shadow:0 1px 4px rgba(0,0,0,.16);cursor:pointer}
+input[type=range]::-moz-range-track{height:11px;border-radius:999px;background:#e6eded;
+  border:0}
+input[type=range]::-moz-range-thumb{width:21px;height:21px;border-radius:999px;
+  background:#fff;border:2px solid #006064;box-shadow:0 1px 4px rgba(0,0,0,.16);cursor:pointer}
+input[type=range]::-moz-range-progress{height:11px;border-radius:999px;
+  background:linear-gradient(90deg,#0d5f62,#17a2b8)}
+
+/* buttons: pills, one weight of emphasis */
+button, .btn, input[type=button], input[type=submit]{
+  font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif !important;border-radius:999px !important;
+  font-weight:700 !important;cursor:pointer}
+
+/* Teal is the course's one accent. Cliff Walker painted its buttons in
+   var(--mit-blue), which this course reserves for policy arrows, so the button
+   is overridden rather than the variable: anything semantic keeps its colour.
+   Danger and destructive controls are left alone deliberately. */
+button:not([class*=danger]):not([class*=delete]):not([class*=remove]),
+.btn:not([class*=danger]){
+  background:linear-gradient(135deg,#006064 0%,#17a2b8 100%) !important;
+  color:#fff !important;border:0 !important}
+button:disabled, .btn:disabled{
+  background:#cfd8dc !important;color:#8b969b !important;cursor:not-allowed}
+
+/* panels line up with the pages: same hairline, same radius */
+.panel,.card,.box,.section,.controls,.stats,.info,.legend{
+  border-radius:6px}
+
+/* prose is INK. MUTE is for captions, and reads at 2.2:1 which is not text. */
+p, li, td{color:#3d3d3d}
+
+/* the field the panels sit on. Several tools shipped with a strong teal
+   gradient body, which fought the mint band directly above it. */
+body{background:#f4f6f8 !important}
+
+/* Each tool carries its own title block, a black slab that repeated the title
+   already on the course band. The text is content, so it stays: the slab is
+   restyled into the course box instead. Background and colour have to move
+   together, or the white title is left invisible on a white panel. */
+.header{background:#fff !important;border-left:3px solid #006064 !important;
+  border-radius:0 6px 6px 0 !important;box-shadow:none !important;
+  padding:13px 17px !important;margin-bottom:14px !important}
+.header h1,.header h2{color:#20484A !important;font-size:16px !important;
+  font-weight:700 !important;margin:0 0 3px !important;text-shadow:none !important}
+.header p,.header .subtitle,.header div,.header em,.header i{
+  color:#3d3d3d !important;font-size:12.5px !important;line-height:1.6 !important;
+  text-shadow:none !important}
+.header em,.header i{font-size:11px !important;color:#a8b0b6 !important}
+</style>
+
+<style>
+.ie7295-band{background:linear-gradient(135deg,#C3E3E4 0%,#C1E2E3 100%);
+  padding:9px 16px;font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif}
+.ie7295-band h1{margin:0;font-size:16px;font-weight:700;color:#20484A}
+.ie7295-band .sub{display:inline-block;background:rgba(255,255,255,.75);color:#3d5f61;
+  padding:2px 9px;border-radius:999px;font-size:11px;margin-top:3px}
+.ie7295-foot{border-top:1px solid #E4E9EB;padding:10px 16px;text-align:center;
+  font-size:11px;color:#a8b0b6;font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;background:#fff}
+</style></body>
+</html>

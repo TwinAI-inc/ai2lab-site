@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MDP & Bellman Equation Tool - IE 7295</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #6BADB1 0%, #AAD1CD 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* MIT Media Lab Colors */
+        :root {
+            --mit-red: #E61E27;
+            --mit-yellow: #FFC72C;
+            --mit-blue: #0066CC;
+            --mit-black: #000000;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background: var(--mit-red);
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 80px;
+            height: 4px;
+            background: var(--mit-yellow);
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #AAD1CD;
+            font-size: 12.5px;
+        }
+
+        /* Instructions Panel */
+        .instructions-panel {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .instructions-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--mit-red), var(--mit-yellow), var(--mit-blue));
+        }
+
+        .instructions-header {
+            padding: 18px 24px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            transition: all 0.3s ease;
+        }
+
+        .instructions-header:hover {
+            background: linear-gradient(135deg, #e9ecef 0%, #f8f9fa 100%);
+            padding-left: 28px;
+        }
+
+        .instructions-title {
+            font-weight: 700;
+            font-size: 12.5px;
+            color: #2d2d2d;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .instructions-title::before {
+            content: '';
+            font-size: 16px;
+        }
+
+        .instructions-toggle {
+            font-size: 16px;
+            transition: transform 0.3s;
+            color: #666;
+        }
+
+        .instructions-content {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            background: white;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+        }
+
+        .instructions-content.active {
+            padding: 20px;
+            max-height: 400px;
+        }
+
+        .instruction-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .instruction-section {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .instruction-section h3 {
+            color: #2d2d2d;
+            font-size: 12.5px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .instruction-section p {
+            color: #555;
+            font-size: 12.5px;
+            line-height: 1.5;
+            margin-bottom: 5px;
+        }
+
+        .formula {
+            background: #2d2d2d;
+            color: white;
+            padding: 8px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12.5px;
+            margin: 8px 0;
+            text-align: center;
+        }
+
+        /* Tab Navigation */
+        .tab-nav {
+            background: white;
+            border-radius: 10px;
+            padding: 5px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 5px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 12.5px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #6BADB1 0%, #AAD1CD 100%);
+            color: white;
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 10%;
+            width: 80%;
+            height: 3px;
+            border-radius: 2px;
+        }
+
+        .tab-btn:nth-child(1).active::after {
+            background: var(--mit-red);
+        }
+
+        .tab-btn:nth-child(2).active::after {
+            background: var(--mit-yellow);
+        }
+
+        .tab-btn:nth-child(3).active::after {
+            background: var(--mit-blue);
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: #f8f9fa;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Controls */
+        .controls-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            background: white;
+            padding: 15px 60px 15px 20px;
+            border-radius: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-group label {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        .control-group input,
+        .control-group select {
+            padding: 6px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 12.5px;
+            background: white;
+            transition: border 0.3s;
+        }
+
+        .control-group input:focus,
+        .control-group select:focus {
+            outline: none;
+            border-color: #6BADB1;
+        }
+
+        input[type="range"] {
+            width: 120px;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            border-radius: 4px;
+            background: #e0e0e0;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            border: 2px solid #6BADB1;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            border: 2px solid #6BADB1;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        .value-display {
+            font-weight: bold;
+            color: #2d2d2d;
+            min-width: 45px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-left: auto;
+        }
+
+        button {
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #6BADB1 0%, #AAD1CD 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 12.5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(107, 173, 177, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Info Button */
+        .info-button {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(107, 173, 177, 0.5);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            font-style: italic;
+            font-family: Georgia, serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: help;
+            transition: all 0.3s ease;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .info-button:hover {
+            background: rgba(107, 173, 177, 0.7);
+            transform: translateY(-50%) scale(1.1) rotate(10deg);
+            box-shadow: 0 4px 16px rgba(107, 173, 177, 0.4);
+        }
+
+        .info-tooltip {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            width: 340px;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(107, 173, 177, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .info-button:hover .info-tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .info-tooltip::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            right: 18px;
+            width: 16px;
+            height: 16px;
+            background: rgba(255, 255, 255, 0.98);
+            border-top: 1px solid rgba(107, 173, 177, 0.3);
+            border-left: 1px solid rgba(107, 173, 177, 0.3);
+            transform: rotate(45deg);
+        }
+
+        .tooltip-header {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: #2d2d2d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tooltip-header::before {
+            content: '';
+            font-size: 16px;
+        }
+
+        .param-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            margin: 8px 0;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border-radius: 8px;
+            border-left: 3px solid #6BADB1;
+            transition: all 0.2s ease;
+        }
+
+        .param-info:hover {
+            transform: translateX(3px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .param-info strong {
+            color: #2d2d2d;
+            font-size: 12.5px;
+        }
+
+        .param-info span:last-child {
+            color: #555;
+            font-size: 12.5px;
+        }
+
+        /* Main Panel */
+        .main-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--mit-red), var(--mit-yellow), var(--mit-blue));
+        }
+
+        .panel-header {
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #2d2d2d;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+            letter-spacing: 0.5px;
+        }
+
+        /* Equation Box */
+        .equation-box {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-left: 4px solid #6BADB1;
+            text-align: center;
+        }
+
+        .equation {
+            font-size: 16px;
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+            margin: 10px 0;
+            color: #2d2d2d;
+        }
+
+        .equation-desc {
+            font-size: 12.5px;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        /* Visualization Container */
+        .viz-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 320px;
+            background: #fafafa;
+            border-radius: 8px;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        /* State Cells */
+        .state-cell {
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            font-size: 12.5px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .center-state {
+            background: #2d2d2d;
+            color: white;
+            font-weight: bold;
+            z-index: 10;
+            border: 3px solid var(--mit-yellow);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .neighbor-state {
+            background: white;
+            border: 2px solid #dee2e6;
+        }
+
+        /* Positioning for closer state boxes */
+        .state-cell.up-pos {
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .state-cell.right-pos {
+            top: 50%;
+            right: 120px;
+            transform: translateY(-50%);
+        }
+
+        .state-cell.down-pos {
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .state-cell.left-pos {
+            top: 50%;
+            left: 120px;
+            transform: translateY(-50%);
+        }
+
+        .state-label {
+            font-weight: 600;
+            color: #2d2d2d;
+            font-size: 12.5px;
+        }
+
+        .state-prob {
+            color: var(--mit-red);
+            font-weight: bold;
+            margin-top: 4px;
+            font-size: 12.5px;
+        }
+
+        .state-reward {
+            color: #666;
+            font-size: 11px;
+            margin-top: 2px;
+        }
+
+        /* Return Steps */
+        .return-steps {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .return-step {
+            padding: 12px 18px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #dee2e6;
+            font-weight: 600;
+            font-size: 12.5px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .return-step.current {
+            background: linear-gradient(135deg, var(--mit-yellow), #FFD54F);
+            color: #2d2d2d;
+            border-color: var(--mit-yellow);
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(255, 199, 44, 0.4);
+        }
+
+        .return-step .reward-value {
+            display: block;
+            font-size: 16px;
+            margin-top: 4px;
+            color: var(--mit-red);
+        }
+
+        /* Info Grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 3px solid #6BADB1;
+        }
+
+        .info-card:nth-child(1) {
+            border-left-color: var(--mit-blue);
+        }
+
+        .info-card:nth-child(2) {
+            border-left-color: var(--mit-red);
+        }
+
+        .info-card:nth-child(3) {
+            border-left-color: var(--mit-yellow);
+        }
+
+        .info-card:nth-child(4) {
+            border-left-color: var(--mit-blue);
+        }
+
+        .info-label {
+            font-size: 11px;
+            color: #999;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2d2d2d;
+        }
+
+        /* Calculation Box */
+        .calc-box {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .calc-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 5px;
+            border-left: 3px solid #6BADB1;
+        }
+
+        .calc-label {
+            font-size: 12.5px;
+            color: #666;
+        }
+
+        .calc-value {
+            font-size: 12.5px;
+            font-weight: bold;
+            color: #2d2d2d;
+        }
+
+        .calc-result {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-left-color: #4CAF50;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 30px;
+            padding: 12px 20px;
+            background: #2d2d2d;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-top: 3px solid transparent;
+            border-image: linear-gradient(90deg, var(--mit-red), var(--mit-yellow), var(--mit-blue)) 1;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 12.5px;
+            color: #AAD1CD;
+        }
+
+        .course-badge {
+            background: linear-gradient(135deg, #6BADB1, #AAD1CD);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 12.5px;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-right {
+            color: #999;
+            font-size: 12.5px;
+        }
+    </style>
+<style>
+/* course overrides - appended after the tool's own sheet, layout untouched */
+body{font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif !important;color:#747474}
+/* font yes, colour no: several tools put headings on dark panels of their own,
+   and forcing a dark ink on them makes the title vanish */
+h1,h2,h3,h4,h5,h6{font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif !important}
+code,pre,.equation,.calculation,.formula{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important}
+a{color:#006064}
+/* the tools centre and constrain their own children, so the band has to insist
+   on being full width and left aligned or it renders as a floating chip */
+.ie7295-band{display:block !important;width:auto !important;max-width:none !important;
+  margin:0 !important;padding:9px 16px !important;text-align:left !important;
+  background:linear-gradient(135deg,#C3E3E4 0%,#C1E2E3 100%);font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+  border-radius:0 !important;box-shadow:none !important}
+.ie7295-band h1{margin:0;font-size: 16px;font-weight:700;color:#20484A}
+.ie7295-band .sub{display:inline-block;background:rgba(255,255,255,.75);color:#3d5f61;
+  padding:2px 9px;border-radius:999px;font-size: 11px;margin-top:4px}
+.ie7295-foot{display:block !important;width:auto !important;max-width:none !important;
+  margin:0 !important;border-top:1px solid #E4E9EB;padding:10px 16px !important;
+  text-align:center !important;font-size: 11px;color:#a8b0b6;font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+  background:#fff;border-radius:0 !important}
+</style>
+</head>
+<body>
+<div class="ie7295-band"><h1>MDP Equations</h1><div class="sub">Module 3 &middot; chapter 3</div></div>
+    <div class="header">
+        <h1>MDP Fundamentals Learning Tool</h1>
+        <p>Understanding transition probabilities, returns, and the Bellman equation in reinforcement learning</p>
+    </div>
+
+    <div class="instructions-panel">
+        <div class="instructions-header" onclick="toggleInstructions()">
+            <span class="instructions-title">Understanding MDPs, Returns & Bellman Equations</span>
+            <span class="instructions-toggle" id="instructionsToggle"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+        </div>
+        <div class="instructions-content" id="instructionsContent">
+            <div class="instruction-grid">
+                <div class="instruction-section">
+                    <h3>Transition Probabilities</h3>
+                    <p><strong>Core Concept:</strong> Stochastic dynamics</p>
+                    <div class="formula">p(s',r|s,a) = Pr{St=s', Rt=r | St-1=s, At-1=a}</div>
+                    <p>• Main: Action succeeds</p>
+                    <p>• Side: Lateral slips</p>
+                </div>
+                <div class="instruction-section">
+                    <h3>Return Gt</h3>
+                    <p><strong>Cumulative Reward:</strong> Total discounted</p>
+                    <div class="formula">Gt = Rt+1 + γRt+2 + γ²Rt+3 + ...</div>
+                    <p>• γ: Discount factor</p>
+                    <p>• Future value decay</p>
+                </div>
+                <div class="instruction-section">
+                    <h3>Bellman Equation</h3>
+                    <p><strong>Value Function:</strong> Recursive definition</p>
+                    <div class="formula">V(s) = R(s) + γ max V(s')</div>
+                    <p>• Immediate + Future</p>
+                    <p>• Bootstrap values</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab('transition')">Transition p(s',r|s,a)</button>
+        <button class="tab-btn" onclick="switchTab('return')">Return G<sub>t</sub></button>
+        <button class="tab-btn" onclick="switchTab('bellman')">Bellman V(s)</button>
+    </div>
+
+    <!-- Transition Probability Tab -->
+    <div id="transition-tab" class="tab-content active">
+        <div class="controls-wrapper">
+            <div class="controls">
+                <div class="control-group">
+                    <label>Main Prob:</label>
+                    <input type="range" id="mainProb" min="0" max="100" value="80" oninput="updateTransition()">
+                    <span class="value-display" id="mainProbVal">80%</span>
+                </div>
+                <div class="control-group">
+                    <label>Side Prob:</label>
+                    <input type="range" id="sideProb" min="0" max="50" value="10" oninput="updateTransition()">
+                    <span class="value-display" id="sideProbVal">10%</span>
+                </div>
+                <div class="control-group">
+                    <label>Action:</label>
+                    <select id="action" onchange="updateTransition()">
+                        <option value="up">Up </option>
+                        <option value="right">Right </option>
+                        <option value="down">Down </option>
+                        <option value="left">Left </option>
+                    </select>
+                </div>
+                <div class="button-group">
+                    <button onclick="randomizeProbs()">Randomize</button>
+                </div>
+            </div>
+            
+            <div class="info-button">
+                i
+                <div class="info-tooltip">
+                    <div class="tooltip-header">Transition Parameters</div>
+                    <div class="param-info">
+                        <strong>Main Probability:</strong>
+                        <span>Chance of intended direction</span>
+                    </div>
+                    <div class="param-info">
+                        <strong>Side Probability:</strong>
+                        <span>Chance of lateral slip (max 50%)</span>
+                    </div>
+                    <div class="param-info">
+                        <strong>Entropy H(p):</strong>
+                        <span>Uncertainty measure</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-panel">
+            <div class="panel-header">Transition Probability Function</div>
+            
+            <div class="equation-box">
+                <div class="equation">p(s', r | s, a) = Pr{S<sub>t</sub> = s', R<sub>t</sub> = r | S<sub>t-1</sub> = s, A<sub>t-1</sub> = a}</div>
+                <div class="equation-desc">Probability of reaching state s' with reward r from state s taking action a</div>
+            </div>
+
+            <div class="viz-container">
+                <div class="state-cell center-state">
+                    <div style="font-size: 16px;">State s</div>
+                    <div style="font-size: 11px; font-weight: normal; margin-top: 4px;">Current</div>
+                </div>
+                
+                <div class="state-cell neighbor-state up-pos" id="upCell">
+                    <div class="state-label">s'₁ ()</div>
+                    <div class="state-prob">p = 0.00</div>
+                    <div class="state-reward">r = -1</div>
+                </div>
+                
+                <div class="state-cell neighbor-state right-pos" id="rightCell">
+                    <div class="state-label">s'₂ ()</div>
+                    <div class="state-prob">p = 0.00</div>
+                    <div class="state-reward">r = -1</div>
+                </div>
+                
+                <div class="state-cell neighbor-state down-pos" id="downCell">
+                    <div class="state-label">s'₃ ()</div>
+                    <div class="state-prob">p = 0.00</div>
+                    <div class="state-reward">r = -1</div>
+                </div>
+                
+                <div class="state-cell neighbor-state left-pos" id="leftCell">
+                    <div class="state-label">s'₄ ()</div>
+                    <div class="state-prob">p = 0.00</div>
+                    <div class="state-reward">r = -1</div>
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="info-label">Total Prob</div>
+                    <div class="info-value">100%</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Expected R</div>
+                    <div class="info-value" id="expReward1">-1.0</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Entropy</div>
+                    <div class="info-value" id="entropy1">0.00</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Max Prob</div>
+                    <div class="info-value" id="maxProb1">80%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Return Tab -->
+    <div id="return-tab" class="tab-content">
+        <div class="controls-wrapper">
+            <div class="controls">
+                <div class="control-group">
+                    <label>Gamma (γ):</label>
+                    <input type="range" id="gammaReturn" min="0" max="100" value="90" oninput="updateReturn()">
+                    <span class="value-display" id="gammaReturnVal">0.90</span>
+                </div>
+                <div class="control-group">
+                    <label>Steps:</label>
+                    <input type="range" id="steps" min="3" max="8" value="5" oninput="updateReturn()">
+                    <span class="value-display" id="stepsVal">5</span>
+                </div>
+                <div class="control-group">
+                    <label>Rewards:</label>
+                    <select id="rewardSeq" onchange="updateReturn()">
+                        <option value="constant">Constant (-1)</option>
+                        <option value="increasing">Increasing</option>
+                        <option value="terminal">Terminal Goal</option>
+                    </select>
+                </div>
+                <div class="button-group">
+                    <button onclick="animateReturn()">Animate</button>
+                </div>
+            </div>
+            
+            <div class="info-button">
+                i
+                <div class="info-tooltip">
+                    <div class="tooltip-header">Return Calculation</div>
+                    <div class="param-info">
+                        <strong>Gamma (γ):</strong>
+                        <span>Discount factor [0,1]</span>
+                    </div>
+                    <div class="param-info">
+                        <strong>G<sub>t</sub> Formula:</strong>
+                        <span>Sum of discounted rewards</span>
+                    </div>
+                    <div class="param-info">
+                        <strong>Effect:</strong>
+                        <span>Lower γ = myopic, Higher γ = farsighted</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-panel">
+            <div class="panel-header">Return Calculation</div>
+            
+            <div class="equation-box">
+                <div class="equation">G<sub>t</sub> = R<sub>t+1</sub> + γR<sub>t+2</sub> + γ²R<sub>t+3</sub> + ... = Σ<sub>k=0</sub><sup></sup> γ<sup>k</sup>R<sub>t+k+1</sub></div>
+                <div class="equation-desc">Total discounted reward from time t onwards</div>
+            </div>
+
+            <div class="return-steps" id="returnSteps"></div>
+
+            <div class="calc-box">
+                <div class="calc-row">
+                    <span class="calc-label">Return Formula:</span>
+                    <span class="calc-value" id="returnFormula">G<sub>t</sub> = -1 + 0.9(-1) + 0.81(-1) + ...</span>
+                </div>
+                <div class="calc-row calc-result">
+                    <span class="calc-label">Total Return G<sub>t</sub>:</span>
+                    <span class="calc-value" id="totalReturn">-4.10</span>
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="info-label">G<sub>t</sub></div>
+                    <div class="info-value" id="returnValue">-4.10</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">γ<sup>n</sup></div>
+                    <div class="info-value" id="finalDiscount">0.59</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Steps</div>
+                    <div class="info-value" id="numSteps">5</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Avg R</div>
+                    <div class="info-value" id="avgReward">-1.00</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bellman Equation Tab -->
+    <div id="bellman-tab" class="tab-content">
+        <div class="controls-wrapper">
+            <div class="info-button">
+                i
+                <div class="info-tooltip">
+                    <div class="tooltip-header">Bellman Update</div>
+                    <div class="param-info">
+                        <strong>Current V(s):</strong>
+                        <span>State's current value</span>
+                    </div>
+                    <div class="param-info">
+                        <strong>Future States:</strong>
+                        <span>Click to see their values</span>
+                    </div>
+                    <div class="param-info">
+                        <strong>Update Rule:</strong>
+                        <span>V = R + γ × max(neighbors)</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <div class="button-group">
+                    <button onclick="stepBellman()">Step</button>
+                    <button onclick="resetBellman()">Reset</button>
+                </div>
+                <div class="control-group">
+                    <label>Gamma (γ):</label>
+                    <input type="range" id="gamma" min="0" max="100" value="90" oninput="updateBellman()">
+                    <span class="value-display" id="gammaVal">0.90</span>
+                </div>
+                <div class="control-group">
+                    <label>Reward:</label>
+                    <select id="rewardType" onchange="updateBellman()">
+                        <option value="-1">Step Cost (-1)</option>
+                        <option value="0">Neutral (0)</option>
+                        <option value="10">Goal (+10)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-panel">
+            <div class="panel-header">Bellman Equation Visualization</div>
+            
+            <div class="equation-box">
+                <div class="equation">V(s) = R(s) + γ × max<sub>s'</sub> V(s')</div>
+                <div class="equation-desc">State value = Immediate reward + Discounted best future value</div>
+            </div>
+
+            <div class="viz-container">
+                <div class="state-cell center-state">
+                    <div style="font-size: 16px;">V(s)</div>
+                    <div style="font-size: 16px; margin-top: 5px;" id="currentStateValue">0.00</div>
+                </div>
+                
+                <div class="state-cell neighbor-state up-pos" id="futureCell0" onclick="showNeighborValue(0)">
+                    <div style="font-weight: 600;">V(s'₁)</div>
+                    <div style="font-size: 16px; color: #6BADB1; margin-top: 5px;" id="neighbor0">5.00</div>
+                    <div style="font-size: 11px; color: #999;">Future</div>
+                </div>
+                
+                <div class="state-cell neighbor-state right-pos" id="futureCell1" onclick="showNeighborValue(1)">
+                    <div style="font-weight: 600;">V(s'₂)</div>
+                    <div style="font-size: 16px; color: #6BADB1; margin-top: 5px;" id="neighbor1">3.00</div>
+                    <div style="font-size: 11px; color: #999;">Future</div>
+                </div>
+                
+                <div class="state-cell neighbor-state down-pos" id="futureCell2" onclick="showNeighborValue(2)">
+                    <div style="font-weight: 600;">V(s'₃)</div>
+                    <div style="font-size: 16px; color: #6BADB1; margin-top: 5px;" id="neighbor2">2.00</div>
+                    <div style="font-size: 11px; color: #999;">Future</div>
+                </div>
+                
+                <div class="state-cell neighbor-state left-pos" id="futureCell3" onclick="showNeighborValue(3)">
+                    <div style="font-weight: 600;">V(s'₄)</div>
+                    <div style="font-size: 16px; color: #6BADB1; margin-top: 5px;" id="neighbor3">4.00</div>
+                    <div style="font-size: 11px; color: #999;">Future</div>
+                </div>
+            </div>
+
+            <div class="calc-box">
+                <div class="calc-row">
+                    <span class="calc-label">Immediate Reward R(s):</span>
+                    <span class="calc-value" id="immediateReward">-1.00</span>
+                </div>
+                <div class="calc-row">
+                    <span class="calc-label">Max Future Value max V(s'):</span>
+                    <span class="calc-value" id="maxFuture">5.00</span>
+                </div>
+                <div class="calc-row">
+                    <span class="calc-label">Discounted Future γ × max V(s'):</span>
+                    <span class="calc-value" id="discountedFuture">4.50</span>
+                </div>
+                <div class="calc-row calc-result">
+                    <span class="calc-label">New Value V(s) = R + γ × max V(s'):</span>
+                    <span class="calc-value" id="newValue">3.50</span>
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="info-label">Iteration</div>
+                    <div class="info-value" id="bellmanIteration">0</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Best Action</div>
+                    <div class="info-value" id="bestAction"></div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Change</div>
+                    <div class="info-value" id="valueChange">0.00</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Converged</div>
+                    <div class="info-value" id="converged">No</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer"> <div class="footer-content"> <div class="footer-left"> <span class="course-badge">IE 7295</span>
+                <span>Reinforcement Learning | Prof. Dehghani</span>
+            </div>
+            <div class="footer-right"> <span>Educational Tool</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentTab = 'transition';
+        let bellmanIteration = 0;
+        let currentStateValue = 0;
+        let neighborValues = [5, 3, 2, 4];
+        let returnAnimation = null;
+
+        // MIT Media Lab Colors
+        const MIT_RED = '#E61E27';
+        const MIT_YELLOW = '#FFC72C';
+        const MIT_BLUE = '#0066CC';
+
+        // Update slider gradient with MIT colors
+        function updateSliderGradient(sliderId, value, maxValue = 100) {
+            const slider = document.getElementById(sliderId);
+            const percent = (value / maxValue) * 100;
+            const normalizedValue = value / maxValue;
+            
+            let color;
+            if (normalizedValue < 0.33) {
+                // Low: MIT Blue
+                const opacity = 0.3 + normalizedValue * 2;
+                color = `${MIT_BLUE}${Math.round(opacity * 255).toString(16).padStart(2, '0')}`;
+            } else if (normalizedValue < 0.66) {
+                // Medium: MIT Yellow
+                const opacity = 0.5 + (normalizedValue - 0.33) * 1.5;
+                color = `${MIT_YELLOW}${Math.round(opacity * 255).toString(16).padStart(2, '0')}`;
+            } else {
+                // High: MIT Red
+                const opacity = 0.6 + (normalizedValue - 0.66) * 1.2;
+                color = `${MIT_RED}${Math.round(opacity * 255).toString(16).padStart(2, '0')}`;
+            }
+            
+            slider.style.background = `linear-gradient(to right, ${color} 0%, ${color} ${percent}%, #e0e0e0 ${percent}%, #e0e0e0 100%)`;
+        }
+
+        // Apply MIT colors to state cells based on probability
+        function applyProbabilityGradient(cell, probability) {
+            if (probability === 0) {
+                cell.style.background = 'white';
+                cell.style.borderColor = '#dee2e6';
+                return;
+            }
+            
+            if (probability < 0.33) {
+                // Low: MIT Blue gradient
+                const opacity = probability * 3;
+                cell.style.background = `linear-gradient(135deg, 
+                    rgba(0, 102, 204, ${opacity * 0.3}), 
+                    rgba(0, 102, 204, ${opacity * 0.15}))`;
+                cell.style.borderColor = MIT_BLUE;
+            } else if (probability < 0.66) {
+                // Medium: MIT Yellow gradient
+                const opacity = (probability - 0.33) * 3;
+                cell.style.background = `linear-gradient(135deg, 
+                    rgba(255, 199, 44, ${opacity * 0.5 + 0.2}), 
+                    rgba(255, 199, 44, ${opacity * 0.3 + 0.1}))`;
+                cell.style.borderColor = MIT_YELLOW;
+            } else {
+                // High: MIT Red gradient
+                const opacity = (probability - 0.66) * 3;
+                cell.style.background = `linear-gradient(135deg, 
+                    rgba(230, 30, 39, ${opacity * 0.6 + 0.3}), 
+                    rgba(230, 30, 39, ${opacity * 0.4 + 0.2}))`;
+                cell.style.borderColor = MIT_RED;
+            }
+        }
+
+        // Toggle instructions
+        function toggleInstructions() {
+            const content = document.getElementById('instructionsContent');
+            const toggle = document.getElementById('instructionsToggle');
+            if (content.classList.contains('active')) {
+                content.classList.remove('active');
+                toggle.innerHTML = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+            } else {
+                content.classList.add('active');
+                toggle.innerHTML = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>';
+            }
+        }
+
+        // Switch tabs
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            if (tab === 'transition') {
+                document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+                document.getElementById('transition-tab').classList.add('active');
+            } else if (tab === 'return') {
+                document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+                document.getElementById('return-tab').classList.add('active');
+                updateReturn();
+            } else {
+                document.querySelector('.tab-btn:nth-child(3)').classList.add('active');
+                document.getElementById('bellman-tab').classList.add('active');
+                updateBellman();
+            }
+        }
+
+        // Update transition probabilities
+        function updateTransition() {
+            const mainProbValue = parseInt(document.getElementById('mainProb').value);
+            const sideProbValue = parseInt(document.getElementById('sideProb').value);
+            const mainProb = mainProbValue / 100;
+            const sideProb = sideProbValue / 100;
+            const action = document.getElementById('action').value;
+            
+            // Update sliders
+            updateSliderGradient('mainProb', mainProbValue);
+            updateSliderGradient('sideProb', sideProbValue, 50);
+            
+            document.getElementById('mainProbVal').textContent = mainProbValue + '%';
+            document.getElementById('sideProbVal').textContent = sideProbValue + '%';
+            
+            // Reset all cells
+            ['up', 'right', 'down', 'left'].forEach(dir => {
+                const cell = document.getElementById(dir + 'Cell');
+                cell.style.background = 'white';
+                cell.style.borderColor = '#dee2e6';
+                cell.querySelector('.state-prob').textContent = 'p = 0.00';
+            });
+            
+            // Set main direction
+            const mainCell = document.getElementById(action + 'Cell');
+            mainCell.querySelector('.state-prob').textContent = `p = ${mainProb.toFixed(2)}`;
+            applyProbabilityGradient(mainCell, mainProb);
+            
+            // Set side directions
+            const sides = {
+                up: ['left', 'right'],
+                right: ['up', 'down'],
+                down: ['left', 'right'],
+                left: ['up', 'down']
+            };
+            
+            sides[action].forEach(dir => {
+                const cell = document.getElementById(dir + 'Cell');
+                cell.querySelector('.state-prob').textContent = `p = ${sideProb.toFixed(2)}`;
+                applyProbabilityGradient(cell, sideProb);
+            });
+            
+            // Calculate metrics
+            let entropy = 0;
+            if (mainProb > 0) entropy -= mainProb * Math.log2(mainProb);
+            if (sideProb > 0) entropy -= 2 * sideProb * Math.log2(sideProb);
+            
+            document.getElementById('expReward1').textContent = '-1.0';
+            document.getElementById('entropy1').textContent = entropy.toFixed(2);
+            document.getElementById('maxProb1').textContent = mainProbValue + '%';
+        }
+
+        // Randomize probabilities
+        function randomizeProbs() {
+            const mainProb = Math.floor(Math.random() * 40 + 60);
+            const remaining = 100 - mainProb;
+            const sideProb = Math.min(50, Math.floor(remaining / 2));
+            
+            document.getElementById('mainProb').value = mainProb;
+            document.getElementById('sideProb').value = sideProb;
+            updateTransition();
+        }
+
+        // Update return calculation
+        function updateReturn() {
+            const gamma = parseFloat(document.getElementById('gammaReturn').value) / 100;
+            const steps = parseInt(document.getElementById('steps').value);
+            const rewardType = document.getElementById('rewardSeq').value;
+            
+            updateSliderGradient('gammaReturn', gamma * 100);
+            updateSliderGradient('steps', ((steps - 3) / 5) * 100);
+            
+            document.getElementById('gammaReturnVal').textContent = gamma.toFixed(2);
+            document.getElementById('stepsVal').textContent = steps;
+            
+            // Generate rewards
+            let rewards = [];
+            for (let i = 0; i < steps; i++) {
+                if (rewardType === 'constant') {
+                    rewards.push(-1);
+                } else if (rewardType === 'increasing') {
+                    rewards.push(-3 + i);
+                } else if (rewardType === 'terminal') {
+                    rewards.push(i === steps - 1 ? 10 : -1);
+                }
+            }
+            
+            // Create visualization
+            const stepsContainer = document.getElementById('returnSteps');
+            stepsContainer.innerHTML = '';
+            
+            let totalReturn = 0;
+            let formulaHtml = 'G<sub>t</sub> = ';
+            
+            for (let i = 0; i < steps; i++) {
+                const discounted = rewards[i] * Math.pow(gamma, i);
+                totalReturn += discounted;
+                
+                const stepDiv = document.createElement('div');
+                stepDiv.className = 'return-step';
+                stepDiv.innerHTML = `
+                    t+${i+1}
+                    <span class="reward-value">R=${rewards[i]}</span>
+                `;
+                stepsContainer.appendChild(stepDiv);
+                
+                if (i > 0) formulaHtml += ' + ';
+                if (i === 0) {
+                    formulaHtml += `${rewards[i]}`;
+                } else {
+                    formulaHtml += `${gamma.toFixed(1)}<sup>${i}</sup>(${rewards[i]})`;
+                }
+            }
+            
+            document.getElementById('returnFormula').innerHTML = formulaHtml;
+            document.getElementById('totalReturn').textContent = totalReturn.toFixed(2);
+            document.getElementById('returnValue').textContent = totalReturn.toFixed(2);
+            document.getElementById('finalDiscount').textContent = Math.pow(gamma, steps-1).toFixed(2);
+            document.getElementById('numSteps').textContent = steps;
+            document.getElementById('avgReward').textContent = (rewards.reduce((a,b) => a+b, 0) / steps).toFixed(2);
+        }
+
+        // Animate return
+        function animateReturn() {
+            const steps = document.querySelectorAll('.return-step');
+            let current = 0;
+            
+            if (returnAnimation) clearInterval(returnAnimation);
+            
+            returnAnimation = setInterval(() => {
+                steps.forEach(s => s.classList.remove('current'));
+                if (current < steps.length) {
+                    steps[current].classList.add('current');
+                    current++;
+                } else {
+                    clearInterval(returnAnimation);
+                }
+            }, 500);
+        }
+
+        // Update Bellman
+        function updateBellman() {
+            const gamma = parseFloat(document.getElementById('gamma').value) / 100;
+            const reward = parseFloat(document.getElementById('rewardType').value);
+            
+            updateSliderGradient('gamma', gamma * 100);
+            
+            document.getElementById('gammaVal').textContent = gamma.toFixed(2);
+            document.getElementById('immediateReward').textContent = reward.toFixed(2);
+            
+            const maxFuture = Math.max(...neighborValues);
+            const discountedFuture = gamma * maxFuture;
+            const newValue = reward + discountedFuture;
+            
+            document.getElementById('maxFuture').textContent = maxFuture.toFixed(2);
+            document.getElementById('discountedFuture').textContent = discountedFuture.toFixed(2);
+            document.getElementById('newValue').textContent = newValue.toFixed(2);
+            
+            const maxIndex = neighborValues.indexOf(maxFuture);
+            const actions = ['', '', '', ''];
+            document.getElementById('bestAction').textContent = actions[maxIndex];
+            
+            // Apply gradients to future states
+            for (let i = 0; i < 4; i++) {
+                const cell = document.getElementById(`futureCell${i}`);
+                const normalizedValue = neighborValues[i] / 10;
+                applyProbabilityGradient(cell, normalizedValue);
+            }
+        }
+
+        // Step Bellman
+        function stepBellman() {
+            const gamma = parseFloat(document.getElementById('gamma').value) / 100;
+            const reward = parseFloat(document.getElementById('rewardType').value);
+            
+            const maxFuture = Math.max(...neighborValues);
+            const newValue = reward + gamma * maxFuture;
+            const change = Math.abs(newValue - currentStateValue);
+            
+            currentStateValue = newValue;
+            bellmanIteration++;
+            
+            document.getElementById('currentStateValue').textContent = currentStateValue.toFixed(2);
+            document.getElementById('bellmanIteration').textContent = bellmanIteration;
+            document.getElementById('valueChange').textContent = change.toFixed(3);
+            document.getElementById('converged').textContent = change < 0.01 ? 'Yes' : 'No';
+            
+            // Update neighbors
+            for (let i = 0; i < 4; i++) {
+                neighborValues[i] += (Math.random() - 0.5) * 0.5;
+                neighborValues[i] = Math.max(0, Math.min(10, neighborValues[i]));
+                document.getElementById(`neighbor${i}`).textContent = neighborValues[i].toFixed(2);
+            }
+            
+            updateBellman();
+        }
+
+        // Reset Bellman
+        function resetBellman() {
+            bellmanIteration = 0;
+            currentStateValue = 0;
+            neighborValues = [5, 3, 2, 4];
+            
+            document.getElementById('currentStateValue').textContent = '0.00';
+            document.getElementById('bellmanIteration').textContent = '0';
+            document.getElementById('valueChange').textContent = '0.00';
+            document.getElementById('converged').textContent = 'No';
+            
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`neighbor${i}`).textContent = neighborValues[i].toFixed(2);
+            }
+            
+            updateBellman();
+        }
+
+        // Show neighbor value
+        function showNeighborValue(index) {
+            alert(`Future State V(s'${index+1}) = ${neighborValues[index].toFixed(2)}\n\n` +
+                  `This represents the expected value of moving to this neighboring state.\n` +
+                  `The Bellman equation uses the maximum of all neighbor values.`);
+        }
+
+        // Initialize
+        updateTransition();
+        updateReturn();
+        updateBellman();
+    </script>
+<div class="ie7295-foot">IE7295: Applied Reinforcement Learning &middot; Prof. Dehghani</div>
+
+<style>
+/* sync_tools v3 ---------------------------------------------------------------------
+   Appended, never substituted. Everything here is a decision taken on the
+   Module 1 Grid World tool and carried across so the set reads as one course.
+   ---------------------------------------------------------------------- */
+
+/* the three colour rule under the band, the one place the full palette shows */
+.ie7295-band{position:relative}
+.ie7295-band::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;
+  background:linear-gradient(90deg,#F5D000 0 33.33%,#E2231A 33.33% 66.66%,#0064B0 66.66% 100%)}
+
+/* sliders: the weighted bar. The track is styled, so the thumb needs its
+   centring offset back by hand or WebKit aligns it to the track's top edge. */
+input[type=range]{-webkit-appearance:none;appearance:none;background:none;
+  height:22px;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:11px;border-radius:999px;
+  background:#e6eded;border:0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;margin-top:-5px;
+  width:21px;height:21px;border-radius:999px;background:#fff;border:2px solid #006064;
+  box-shadow:0 1px 4px rgba(0,0,0,.16);cursor:pointer}
+input[type=range]::-moz-range-track{height:11px;border-radius:999px;background:#e6eded;
+  border:0}
+input[type=range]::-moz-range-thumb{width:21px;height:21px;border-radius:999px;
+  background:#fff;border:2px solid #006064;box-shadow:0 1px 4px rgba(0,0,0,.16);cursor:pointer}
+input[type=range]::-moz-range-progress{height:11px;border-radius:999px;
+  background:linear-gradient(90deg,#0d5f62,#17a2b8)}
+
+/* buttons: pills, one weight of emphasis */
+button, .btn, input[type=button], input[type=submit]{
+  font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif !important;border-radius:999px !important;
+  font-weight:700 !important;cursor:pointer}
+
+/* Teal is the course's one accent. Cliff Walker painted its buttons in
+   var(--mit-blue), which this course reserves for policy arrows, so the button
+   is overridden rather than the variable: anything semantic keeps its colour.
+   Danger and destructive controls are left alone deliberately. */
+button:not([class*=danger]):not([class*=delete]):not([class*=remove]),
+.btn:not([class*=danger]){
+  background:linear-gradient(135deg,#006064 0%,#17a2b8 100%) !important;
+  color:#fff !important;border:0 !important}
+button:disabled, .btn:disabled{
+  background:#cfd8dc !important;color:#8b969b !important;cursor:not-allowed}
+
+/* panels line up with the pages: same hairline, same radius */
+.panel,.card,.box,.section,.controls,.stats,.info,.legend{
+  border-radius:6px}
+
+/* prose is INK. MUTE is for captions, and reads at 2.2:1 which is not text. */
+p, li, td{color:#3d3d3d}
+
+/* the field the panels sit on. Several tools shipped with a strong teal
+   gradient body, which fought the mint band directly above it. */
+body{background:#f4f6f8 !important}
+
+/* Each tool carries its own title block, a black slab that repeated the title
+   already on the course band. The text is content, so it stays: the slab is
+   restyled into the course box instead. Background and colour have to move
+   together, or the white title is left invisible on a white panel. */
+.header{background:#fff !important;border-left:3px solid #006064 !important;
+  border-radius:0 6px 6px 0 !important;box-shadow:none !important;
+  padding:13px 17px !important;margin-bottom:14px !important}
+.header h1,.header h2{color:#20484A !important;font-size:16px !important;
+  font-weight:700 !important;margin:0 0 3px !important;text-shadow:none !important}
+.header p,.header .subtitle,.header div,.header em,.header i{
+  color:#3d3d3d !important;font-size:12.5px !important;line-height:1.6 !important;
+  text-shadow:none !important}
+.header em,.header i{font-size:11px !important;color:#a8b0b6 !important}
+</style>
+</body>
+</html>
