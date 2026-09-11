@@ -1,0 +1,905 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Anscombe's Quartet</title><style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #F2F5F6; color: #3d3d3d; font-family: Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+       font-size: 14px; line-height: 1.7; padding: 26px 18px; }
+
+.container { max-width: 1100px; margin: 0 auto; background: #FFFFFF;
+             border: 1px solid #E4E9EB; border-radius: 10px; overflow: hidden; }
+
+/* the course header band, same one every course page carries */
+.header { background: linear-gradient(135deg, #D3E4F5 0%, #A6C7E8 100%);
+          padding: 16px 24px; position: relative; overflow: hidden; }
+.header h1 { font-size: 30px; font-weight: 800; color: #14304F;
+             letter-spacing: -.4px; line-height: 1.5; }
+.header p { font-size: 12px; color: #2C4C6E; margin-top: 6px;
+            text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+.header::after, .graph-decoration { display: none; }
+
+.content { padding: 24px 26px 30px; }
+.section-title { font-size: 18px; font-weight: 800; color: #14304F;
+                 margin: 30px 0 14px; }
+
+/* one box family: 3px accent rule, square left, rounded right */
+.intro-section { display: flex; gap: 20px; flex-wrap: wrap;
+                 background: #EBF3FB; border-left: 3px solid #0B4F9C;
+                 border-radius: 0 8px 8px 0; padding: 16px 18px; margin-bottom: 26px; }
+.intro-content { flex: 1; min-width: 260px; }
+.intro-content h2 { font-size: 18px; font-weight: 800; color: #14304F;
+                    margin-bottom: 8px; }
+.intro-content p { font-size: 14px; color: #4A5560; margin-bottom: 8px; }
+.key-insight { background: #FFFFFF; border-left: 3px solid #2E7FD1;
+               border-radius: 0 6px 6px 0; padding: 11px 14px; margin: 14px 0;
+               font-size: 14px; color: #4A5560; }
+.portrait-box { width: 132px; flex-shrink: 0; text-align: center; }
+.portrait-box img { width: 100%; border-radius: 6px; border: 1px solid #E4E9EB; }
+.portrait-caption { font-size: 12px; color: #747474; margin-top: 7px; }
+
+/* data tables */
+.data-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+             margin-bottom: 28px; }
+.data-card { border: 1px solid #E4E9EB; border-radius: 8px; overflow: hidden;
+             background: #FFFFFF; }
+.data-card h3 { background: linear-gradient(135deg, #1A3A8F 0%, #2FC6DC 100%); color: #FFFFFF; font-size: 12px;
+                font-weight: 800; letter-spacing: .8px; text-transform: uppercase;
+                padding: 7px 10px; text-align: center; }
+.table-wrapper { padding: 8px 10px; max-height: 210px; overflow-y: auto; }
+table { width: 100%; border-collapse: collapse; }
+th { font-size: 12px; font-weight: 800; color: #0B4F9C; padding: 5px;
+     border-bottom: 1px solid #E4E9EB; }
+td { font-size: 14px; color: #3d3d3d; padding: 4px 5px; text-align: center;
+     font-variant-numeric: tabular-nums; }
+
+/* the one button shape */
+.start-btn, .next-btn { display: inline-block; background: linear-gradient(135deg, #1A3A8F 0%, #2FC6DC 100%); color: #FFFFFF;
+    border: 0; border-radius: 999px; font-family: inherit; font-size: 14px;
+    font-weight: 800; padding: 11px 28px; cursor: pointer; }
+.start-btn { display: block; margin: 32px auto; }
+.next-btn { margin-top: 18px; }
+
+.stats-section { background: #EBF3FB; border-left: 3px solid #0B4F9C;
+                 border-radius: 0 8px 8px 0; padding: 18px 20px; margin: 26px 0; }
+.stats-section h2 { font-size: 18px; font-weight: 800; color: #14304F;
+                    margin-bottom: 14px; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+              gap: 10px; }
+.stat-item { background: #FFFFFF; border: 1px solid #E4E9EB; border-radius: 6px;
+             padding: 11px 12px; text-align: center; }
+.stat-label { font-size: 12px; color: #747474; margin-bottom: 4px; }
+.stat-value { font-size: 18px; font-weight: 800; color: #0B4F9C; }
+
+/* the exercise. display:none is load-bearing - the script toggles it */
+.challenge-section { display: none; background: #FFFFFF; border: 1px solid #E4E9EB;
+                     border-radius: 10px; padding: 26px; margin: 26px 0; }
+.timer-container { text-align: center; padding: 30px 20px; }
+.timer-title { font-size: 18px; font-weight: 800; color: #14304F;
+               margin-bottom: 14px; }
+.countdown { font-size: 54px; font-weight: 800; color: #0B4F9C; margin: 16px 0;
+             font-variant-numeric: tabular-nums; }
+.timer-note { font-size: 14px; color: #747474; margin-top: 12px; }
+.questions-container { display: none; }
+.question { display: none; background: #EBF3FB; border-left: 3px solid #0B4F9C;
+            border-radius: 0 8px 8px 0; padding: 20px 22px; margin: 18px 0; }
+.question.active { display: block; }
+.q-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+            padding-bottom: 12px; border-bottom: 1px solid #E4E9EB; }
+.q-number { background: #0B4F9C; color: #FFFFFF; font-size: 12px;
+            font-weight: 800; padding: 4px 12px; border-radius: 999px; }
+.q-text { font-size: 18px; font-weight: 700; color: #14304F;
+          margin-bottom: 18px; line-height: 1.5; }
+.choices { display: grid; gap: 9px; }
+.choice { display: flex; align-items: center; gap: 11px; background: #FFFFFF;
+          border: 1px solid #E4E9EB; border-radius: 8px; padding: 12px 14px;
+          cursor: pointer; }
+.choice:hover { border-color: #2E7FD1; background: #EBF3FB; }
+.choice input { width: 17px; height: 17px; accent-color: #0B4F9C; }
+.choice label { flex: 1; font-size: 14px; color: #3d3d3d; cursor: pointer; }
+
+.complete-section { display: none; text-align: center; padding: 34px 24px;
+                    background: #EBF3FB; border-radius: 10px; }
+.score-display { font-size: 44px; font-weight: 800; color: #0B4F9C; margin: 16px 0; }
+
+.plot-section { display: none; background: #FFFFFF; border: 1px solid #E4E9EB;
+                border-radius: 10px; padding: 26px; margin: 26px 0; }
+.plots-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+             margin: 24px 0; }
+.plot-item { border: 1px solid #E4E9EB; border-radius: 8px; padding: 12px;
+             background: #FFFFFF; }
+.plot-item h4 { font-size: 12px; font-weight: 800; color: #0B4F9C;
+                text-transform: uppercase; letter-spacing: .8px; margin-bottom: 8px;
+                text-align: center; }
+canvas { width: 100%; height: auto; display: block; }
+
+.results-section { display: none; background: #FFFFFF; border: 1px solid #E4E9EB;
+                   border-radius: 10px; padding: 26px; margin: 26px 0; }
+.comparison-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+                   margin: 24px 0; }
+.result-box { background: #EBF3FB; border-left: 3px solid #0B4F9C;
+              border-radius: 0 8px 8px 0; padding: 20px 22px; text-align: center; }
+.result-box h4 { font-size: 14px; font-weight: 800; color: #14304F;
+                 margin-bottom: 12px; }
+.big-score { font-size: 40px; font-weight: 800; color: #0B4F9C; margin-bottom: 6px; }
+.time-display { font-size: 12px; color: #747474; }
+.impact-analysis { background: #EBF3FB; border-left: 3px solid #2E7FD1;
+                   border-radius: 0 8px 8px 0; padding: 20px 22px; margin: 24px 0;
+                   font-size: 14px; color: #4A5560; }
+
+.final-analysis { margin-top: 32px; padding: 26px; background: #FFFFFF;
+                  border: 1px solid #E4E9EB; border-radius: 10px; }
+.final-analysis h3 { font-size: 18px; font-weight: 800; color: #14304F;
+                     margin-bottom: 22px; }
+.analysis-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.analysis-card { border: 1px solid #E4E9EB; border-radius: 8px; overflow: hidden; }
+.analysis-card h4 { background: linear-gradient(135deg, #1A3A8F 0%, #2FC6DC 100%); color: #FFFFFF; font-size: 12px;
+                    font-weight: 800; letter-spacing: .8px; text-transform: uppercase;
+                    padding: 8px 10px; text-align: center; }
+.analysis-card canvas { display: block; margin: 10px auto; }
+.analysis-text { padding: 12px 14px; font-size: 14px; color: #4A5560; }
+
+/* the course footer band */
+.footer { background: #EBF3FB; border-top: 1px solid #E4E9EB; padding: 11px 24px;
+          display: flex; align-items: center; justify-content: space-between;
+          gap: 12px; flex-wrap: wrap; font-size: 12px; color: #747474; }
+.footer .code { background: #0B4F9C; color: #FFFFFF; font-weight: 800;
+                letter-spacing: .6px; padding: 3px 9px; border-radius: 4px; }
+.footer .name { font-weight: 700; color: #14304F; }
+
+@media (max-width: 900px) {
+  .data-grid, .plots-row, .analysis-grid { grid-template-columns: repeat(2, 1fr); }
+  .comparison-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .data-grid, .plots-row, .analysis-grid { grid-template-columns: 1fr; }
+  .header h1 { font-size: 24px; }
+}
+</style></head><body><div class="container"><div class="header"><h1>Anscombe's Quartet</h1><p>Module 01</p></div><div class="content">
+            <div class="intro-section">
+                <div class="intro-content">
+                    <h2>The Statistical Paradox</h2>
+                    <p>
+                        In 1973, Francis Anscombe created four datasets that would forever change how we approach data analysis. 
+                        These datasets share identical statistical properties yet tell completely different stories when visualized.
+                    </p>
+                    <div class="key-insight">
+                        <strong style="color: #1768A2;">Key Insight:</strong> All four datasets have the same mean (x̄=9, ȳ=7.5), 
+                        same variance, same correlation (r=0.816), and same regression line (y = 3.00 + 0.500x).
+                    </div>
+                    <a href="https://www.google.com/url?sa=i&url=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FFrank_Anscombe&psig=AOvVaw2uAB8ZmGhmG3qVahqIXWQI&ust=1757276911749000&source=images&cd=vfe&opi=89978449&ved=0CBYQjRxqFwoTCICzq-L8xI8DFQAAAAAdAAAAABAE" target="_blank" 
+                       style="color: #1768A2; text-decoration: none; font-size: 13px;">
+                        Learn more about the mathematical foundations →
+                    </a>
+                </div>
+                </div>
+            
+            <h2 class="section-title">The Raw Data</h2>
+            <div class="data-grid">
+                <div class="data-card">
+                    <h3>Dataset I</h3>
+                    <div class="table-wrapper">
+                        <table id="table1">
+                            <thead><tr><th>X</th><th>Y</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="data-card">
+                    <h3>Dataset II</h3>
+                    <div class="table-wrapper">
+                        <table id="table2">
+                            <thead><tr><th>X</th><th>Y</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="data-card">
+                    <h3>Dataset III</h3>
+                    <div class="table-wrapper">
+                        <table id="table3">
+                            <thead><tr><th>X</th><th>Y</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="data-card">
+                    <h3>Dataset IV</h3>
+                    <div class="table-wrapper">
+                        <table id="table4">
+                            <thead><tr><th>X</th><th>Y</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="start-btn" onclick="startChallenge()">Start Analysis Challenge</button>
+            
+            <div class="stats-section">
+                <h2>Identical Statistics Across All Datasets</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Mean X</div>
+                        <div class="stat-value">9.00</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Mean Y</div>
+                        <div class="stat-value">7.50</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Var X</div>
+                        <div class="stat-value">11.00</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Var Y</div>
+                        <div class="stat-value">4.13</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Correlation</div>
+                        <div class="stat-value">0.816</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">R²</div>
+                        <div class="stat-value">0.667</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Slope</div>
+                        <div class="stat-value">0.500</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Intercept</div>
+                        <div class="stat-value">3.00</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="challengeSection" class="challenge-section">
+                <div id="studyTimer" class="timer-container">
+                    <h3 class="timer-title">Study the Data Tables Above</h3>
+                    <div class="countdown">01:00</div>
+                    <p class="timer-message">Analyze the patterns in the numbers carefully</p>
+                    <p class="timer-note">After the timer, the challenge will start automatically</p>
+                </div>
+                
+                <div id="part1Questions" class="questions-container">
+                    <h3 style="text-align: center; margin-bottom: 20px; color: #1E2B3B;">Part 1: Analysis from Numbers Only</h3>
+                    
+                    <!-- 5 Questions for Part 1 -->
+                    <div id="q1" class="question">
+                        <div class="q-header">
+                            <span class="q-number">Question 1 of 5</span>
+                            <span class="q-timer">00:00</span>
+                        </div>
+                        <div class="q-text">Which dataset has the highest Y value?</div>
+                        <div class="choices">
+                            <div class="choice" onclick="selectChoice(this, 'q1', 'I')">
+                                <input type="radio" name="q1" value="I">
+                                <label>Dataset I</label>
+                            </div>
+                            <div class="choice" onclick="selectChoice(this, 'q1', 'II')">
+                                <input type="radio" name="q1" value="II">
+                                <label>Dataset II</label>
+                            </div>
+                            <div class="choice" onclick="selectChoice(this, 'q1', 'III')">
+                                <input type="radio" name="q1" value="III">
+                                <label>Dataset III</label>
+                            </div>
+                            <div class="choice" onclick="selectChoice(this, 'q1', 'IV')">
+                                <input type="radio" name="q1" value="IV">
+                                <label>Dataset IV</label>
+                            </div>
+                        </div>
+                        <button class="next-btn" onclick="nextQuestion(1, 1)">Next →</button>
+                    </div>
+                    
+                    <div id="q2" class="question">
+                        <div class="q-header">
+                            <span class="q-number">Question 2 of 5</span>
+                            <span class="q-timer">00:00</span>
+                        </div>
+                        <div class="q-text">Which dataset has most X values at the same position?</div>
+                        <div class="choices">
+                            <div class="choice" onclick="selectChoice(this, 'q2', 'I')">
+                                <input type="radio" name="q2" value="I">
+                                <label>Dataset I</label>
+                            </div>
+                            <div class="choice" onclick="selectChoice(this, 'q2', 'II')">
+                                <input type="radio" name="q2" value="II">
+                                <label>Dataset II</label>
+                            </div>
+                            <div class="choice" onclick="selectChoice(this, 'q2', 'III')">
+                                <input type="radio" name="q2" value="III">
+                                <label>Dataset III</label>
+                            </div>
+                            <div class="choice" onclick="selectChoice(this, 'q2', 'IV')">
+                                <input type="radio" name="q2" value="IV">
+                                <label>Dataset IV</label>
+                            </div>
+                        </div>
+                        <button class="next-btn" onclick="nextQuestion(1, 2)">Next →</button>
+                    </div>
+                    
+                    <div id="q3" class="question">
+                        <div class="q-header">
+                            <span class="q-number">Question 3 of 5</span>
+                            <span class="q-timer">00:00</span>
+                        </div>
+                        <div class="q-text">Which dataset shows the WORST fit for a straight line?</div>
+                        <div class="choices">
+                            <div class="choice" onclick="selectChoice(this, 'q3', 'I')">
+                                <input type="radio" name="q3" value="I">
+                                <label>Dataset I</label>
+                            </div>
+                            <div class="choice" onclick="selectChoice(this, 'q3', 'II')">
+                                <input type="radio" name="q3" value="II">
+                                <label>Dataset II</label>
+                            </div>
+                            <div class="choice" onclick="selectChoice(this, 'q3', 'III')">
+                                <input type="radio" name="q3" value="III">
+                                <label>Dataset III</label>
+                            </div>
+                            <div class="choice" onclick="selectChoice(this, 'q3', 'IV')">
+                                <input type="radio" name="q3" value="IV">
+                                <label>Dataset IV</label>
+                            </div>
+                        </div>
+                        <button class="next-btn" onclick="nextQuestion(1, 3)">Next →</button>
+                    </div>
+                    
+                    <div id="q4" class="question">
+                        <div class="q-header">
+                            <span class="q-number">Question 4 of 5</span>
+                            <span class="q-timer">00:00</span>
+                        </div>
+                        <div class="q-text">For which dataset does linear regression make the MOST sense?</div>
+                        <div class="choices">
+                            <div class="choice" onclick="selectChoice(this, 'q4', 'I')">
+                                <input type="radio" name="q4" value="I">
+                                <label>Dataset I</label>
+                            </div>
+                            <div class="choice" onclick="selectChoice(this, 'q4', 'II')">
+                                <input type="radio" name="q4" value="II">
+                                <label>Dataset II</label>
+                            </div>
+                            <div class="choice" onclick="selectChoice(this, 'q4', 'III')">
+                                <input type="radio" name="q4" value="III">
+                                <label>Dataset III</label>
+                            </div>
+                            <div class="choice" onclick="selectChoice(this, 'q4', 'IV')">
+                                <input type="radio" name="q4" value="IV">
+                                <label>Dataset IV</label>
+                            </div>
+                        </div>
+                        <button class="next-btn" onclick="nextQuestion(1, 4)">Next →</button>
+                    </div>
+                    
+                    <div id="q5" class="question">
+                        <div class="q-header">
+                            <span class="q-number">Question 5 of 5</span>
+                            <span class="q-timer">00:00</span>
+                        </div>
+                        <div class="q-text">Which dataset would be MOST dangerous for extrapolation?</div>
+                        <div class="choices">
+                            <div class="choice" onclick="selectChoice(this, 'q5', 'I')">
+                                <input type="radio" name="q5" value="I">
+                                <label>Dataset I</label>
+                            </div>
+                            <div class="choice" onclick="selectChoice(this, 'q5', 'II')">
+                                <input type="radio" name="q5" value="II">
+                                <label>Dataset II</label>
+                            </div>
+                            <div class="choice" onclick="selectChoice(this, 'q5', 'III')">
+                                <input type="radio" name="q5" value="III">
+                                <label>Dataset III</label>
+                            </div>
+                            <div class="choice" onclick="selectChoice(this, 'q5', 'IV')">
+                                <input type="radio" name="q5" value="IV">
+                                <label>Dataset IV</label>
+                            </div>
+                        </div>
+                        <button class="next-btn" onclick="finishPart1()">Complete Part 1 →</button>
+                    </div>
+                </div>
+                
+                <div id="part1Complete" class="complete-section">
+                    <h3>Part 1 Complete!</h3>
+                    <div class="score-display" id="p1ScoreShow">0/5 Correct</div>
+                    <p>Your answers have been recorded. Now let's see what the data actually looks like...</p>
+                    <button class="start-btn" onclick="showPlots()">Plot the Data</button>
+                </div>
+            </div>
+            
+            <div id="plotSection" class="plot-section">
+                <h2 style="text-align: center; color: #1E2B3B; margin-bottom: 10px;">The Visual Truth</h2>
+                <p style="text-align: center; color: #64758B;">Look at these plots carefully</p>
+                
+                <div class="plots-row">
+                    <div class="plot-item">
+                        <h4>Dataset I</h4>
+                        <canvas id="plot1" width="200" height="200"></canvas>
+                    </div>
+                    <div class="plot-item">
+                        <h4>Dataset II</h4>
+                        <canvas id="plot2" width="200" height="200"></canvas>
+                    </div>
+                    <div class="plot-item">
+                        <h4>Dataset III</h4>
+                        <canvas id="plot3" width="200" height="200"></canvas>
+                    </div>
+                    <div class="plot-item">
+                        <h4>Dataset IV</h4>
+                        <canvas id="plot4" width="200" height="200"></canvas>
+                    </div>
+                </div>
+                
+                <div id="viewingTimer" class="timer-container" style="display: none;">
+                    <h3 class="timer-title">Study the Visualizations Above</h3>
+                    <div class="countdown" id="viewTime">00:30</div>
+                    <p class="timer-message">Look at the patterns in each plot carefully</p>
+                </div>
+                
+                <div id="part2Questions" class="questions-container" style="display: none;">
+                    <h3 style="text-align: center; margin-bottom: 20px; color: #1E2B3B;">Part 2: Analysis with Visualizations</h3>
+                    
+                    <!-- Same 5 Questions for Part 2 -->
+                    <div id="p2q1" class="question">
+                        <div class="q-header">
+                            <span class="q-number">Question 1 of 5</span>
+                            <span class="q-timer" id="p2Timer">00:00</span>
+                        </div>
+                        <div class="q-text">Which dataset has the highest Y value?</div>
+                        <div class="choices">
+                            <div class="choice" onclick="selectChoice(this, 'p2q1', 'I')">
+                                <input type="radio" name="p2q1" value="I">
+                                <label>Dataset I</label>
+                            </div>
+                            <div class="choice" onclick="selectChoice(this, 'p2q1', 'II')">
+                                <input type="radio" name="p2q1" value="II">
+                                <label>Dataset II</label>
+                            </div>
+                            <div class="choice" onclick="selectChoice(this, 'p2q1', 'III')">
+                                <input type="radio" name="p2q1" value="III">
+                                <label>Dataset III</label>
+                            </div>
+                            <div class="choice" onclick="selectChoice(this, 'p2q1', 'IV')">
+                                <input type="radio" name="p2q1" value="IV">
+                                <label>Dataset IV</label>
+                            </div>
+                        </div>
+                        <button class="next-btn" onclick="nextQuestion(2, 1)">Next →</button>
+                    </div>
+                    
+                    <div id="p2q2" class="question">
+                        <div class="q-header">
+                            <span class="q-number">Question 2 of 5</span>
+                            <span class="q-timer">00:00</span>
+                        </div>
+                        <div class="q-text">Which dataset has most X values at the same position?</div>
+                        <div class="choices">
+                            <div class="choice" onclick="selectChoice(this, 'p2q2', 'I')">
+                                <input type="radio" name="p2q2" value="I">
+                                <label>Dataset I</label>
+                            </div>
+                            <div class="choice" onclick="selectChoice(this, 'p2q2', 'II')">
+                                <input type="radio" name="p2q2" value="II">
+                                <label>Dataset II</label>
+                            </div>
+                            <div class="choice" onclick="selectChoice(this, 'p2q2', 'III')">
+                                <input type="radio" name="p2q2" value="III">
+                                <label>Dataset III</label>
+                            </div>
+                            <div class="choice" onclick="selectChoice(this, 'p2q2', 'IV')">
+                                <input type="radio" name="p2q2" value="IV">
+                                <label>Dataset IV</label>
+                            </div>
+                        </div>
+                        <button class="next-btn" onclick="nextQuestion(2, 2)">Next →</button>
+                    </div>
+                    
+                    <div id="p2q3" class="question">
+                        <div class="q-header">
+                            <span class="q-number">Question 3 of 5</span>
+                            <span class="q-timer">00:00</span>
+                        </div>
+                        <div class="q-text">Which dataset shows the WORST fit for a straight line?</div>
+                        <div class="choices">
+                            <div class="choice" onclick="selectChoice(this, 'p2q3', 'I')">
+                                <input type="radio" name="p2q3" value="I">
+                                <label>Dataset I</label>
+                            </div>
+                            <div class="choice" onclick="selectChoice(this, 'p2q3', 'II')">
+                                <input type="radio" name="p2q3" value="II">
+                                <label>Dataset II</label>
+                            </div>
+                            <div class="choice" onclick="selectChoice(this, 'p2q3', 'III')">
+                                <input type="radio" name="p2q3" value="III">
+                                <label>Dataset III</label>
+                            </div>
+                            <div class="choice" onclick="selectChoice(this, 'p2q3', 'IV')">
+                                <input type="radio" name="p2q3" value="IV">
+                                <label>Dataset IV</label>
+                            </div>
+                        </div>
+                        <button class="next-btn" onclick="nextQuestion(2, 3)">Next →</button>
+                    </div>
+                    
+                    <div id="p2q4" class="question">
+                        <div class="q-header">
+                            <span class="q-number">Question 4 of 5</span>
+                            <span class="q-timer">00:00</span>
+                        </div>
+                        <div class="q-text">For which dataset does linear regression make the MOST sense?</div>
+                        <div class="choices">
+                            <div class="choice" onclick="selectChoice(this, 'p2q4', 'I')">
+                                <input type="radio" name="p2q4" value="I">
+                                <label>Dataset I</label>
+                            </div>
+                            <div class="choice" onclick="selectChoice(this, 'p2q4', 'II')">
+                                <input type="radio" name="p2q4" value="II">
+                                <label>Dataset II</label>
+                            </div>
+                            <div class="choice" onclick="selectChoice(this, 'p2q4', 'III')">
+                                <input type="radio" name="p2q4" value="III">
+                                <label>Dataset III</label>
+                            </div>
+                            <div class="choice" onclick="selectChoice(this, 'p2q4', 'IV')">
+                                <input type="radio" name="p2q4" value="IV">
+                                <label>Dataset IV</label>
+                            </div>
+                        </div>
+                        <button class="next-btn" onclick="nextQuestion(2, 4)">Next →</button>
+                    </div>
+                    
+                    <div id="p2q5" class="question">
+                        <div class="q-header">
+                            <span class="q-number">Question 5 of 5</span>
+                            <span class="q-timer">00:00</span>
+                        </div>
+                        <div class="q-text">Which dataset would be MOST dangerous for extrapolation?</div>
+                        <div class="choices">
+                            <div class="choice" onclick="selectChoice(this, 'p2q5', 'I')">
+                                <input type="radio" name="p2q5" value="I">
+                                <label>Dataset I</label>
+                            </div>
+                            <div class="choice" onclick="selectChoice(this, 'p2q5', 'II')">
+                                <input type="radio" name="p2q5" value="II">
+                                <label>Dataset II</label>
+                            </div>
+                            <div class="choice" onclick="selectChoice(this, 'p2q5', 'III')">
+                                <input type="radio" name="p2q5" value="III">
+                                <label>Dataset III</label>
+                            </div>
+                            <div class="choice" onclick="selectChoice(this, 'p2q5', 'IV')">
+                                <input type="radio" name="p2q5" value="IV">
+                                <label>Dataset IV</label>
+                            </div>
+                        </div>
+                        <button class="next-btn" onclick="showFinalResults()">See Results →</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="resultsSection" class="results-section">
+                <h2 style="text-align: center; color: #1E2B3B; margin-bottom: 30px;">The Power of Visualization</h2>
+                
+                <div class="comparison-grid">
+                    <div class="result-box">
+                        <h4>Part 1: Numbers Only</h4>
+                        <div class="big-score" id="p1FinalScore">0/5</div>
+                        <div class="time-display" id="p1TimeDisplay">Time: 00:00</div>
+                    </div>
+                    <div class="result-box">
+                        <h4>Part 2: With Visualizations</h4>
+                        <div class="big-score" id="p2FinalScore">0/5</div>
+                        <div class="time-display" id="p2TimeDisplay">Time: 00:00</div>
+                    </div>
+                </div>
+                
+                <div class="impact-analysis">
+                    <h3 style="font-size: 22px; margin-bottom: 20px;">Visualization Impact Analysis</h3>
+                    <div id="impactSummary" style="font-size: 16px; line-height: 1.8;"></div>
+                </div>
+                
+                <div class="final-analysis">
+                    <h3>Visual Pattern Analysis</h3>
+                    <div class="analysis-grid">
+                        <div class="analysis-card">
+                            <h4>Dataset I</h4>
+                            <canvas id="final1" width="180" height="180"></canvas>
+                            <div class="analysis-text">
+                                <strong>Pattern:</strong> Standard linear relationship<br>
+                                <strong>Key Feature:</strong> Points scattered randomly around regression line<br>
+                                <strong>Use Case:</strong> Perfect for linear regression analysis
+                            </div>
+                        </div>
+                        <div class="analysis-card">
+                            <h4>Dataset II</h4>
+                            <canvas id="final2" width="180" height="180"></canvas>
+                            <div class="analysis-text">
+                                <strong>Pattern:</strong> Perfect parabolic curve<br>
+                                <strong>Key Feature:</strong> Non-linear quadratic relationship<br>
+                                <strong>Warning:</strong> Linear regression completely inappropriate
+                            </div>
+                        </div>
+                        <div class="analysis-card">
+                            <h4>Dataset III</h4>
+                            <canvas id="final3" width="180" height="180"></canvas>
+                            <div class="analysis-text">
+                                <strong>Pattern:</strong> Linear with outlier<br>
+                                <strong>Key Feature:</strong> Single point at (13, 12.74) distorts statistics<br>
+                                <strong>Impact:</strong> Outlier pulls regression line upward
+                            </div>
+                        </div>
+                        <div class="analysis-card">
+                            <h4>Dataset IV</h4>
+                            <canvas id="final4" width="180" height="180"></canvas>
+                            <div class="analysis-text">
+                                <strong>Pattern:</strong> Leverage point effect<br>
+                                <strong>Key Feature:</strong> All X=8 except one at X=19<br>
+                                <strong>Danger:</strong> Single point determines entire regression
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><div class="footer"><span><span class="code">ai2lab</span> <span class="name">Interactive Tools</span></span><span>Prof. Dehghani</span></div></div><script>
+        // Anscombe's data
+        const data = {
+            1: {x: [10,8,13,9,11,14,6,4,12,7,5], y: [8.04,6.95,7.58,8.81,8.33,9.96,7.24,4.26,10.84,4.82,5.68]},
+            2: {x: [10,8,13,9,11,14,6,4,12,7,5], y: [9.14,8.14,8.74,8.77,9.26,8.10,6.13,3.10,9.13,7.26,4.74]},
+            3: {x: [10,8,13,9,11,14,6,4,12,7,5], y: [7.46,6.77,12.74,7.11,7.81,8.84,6.08,5.39,8.15,6.42,5.73]},
+            4: {x: [8,8,8,8,8,8,8,19,8,8,8], y: [6.58,5.76,7.71,8.84,8.47,7.04,5.25,12.50,5.56,7.91,6.89]}
+        };
+        
+        // Populate tables
+        for (let i = 1; i <= 4; i++) {
+            const tbody = document.querySelector(`#table${i} tbody`);
+            for (let j = 0; j < 11; j++) {
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = data[i].x[j].toFixed(2);
+                row.insertCell(1).textContent = data[i].y[j].toFixed(2);
+            }
+        }
+        
+        // Variables
+        let studyTimer, qTimer, viewTimer, p2Timer;
+        let p1Start, p1End, p2Start, p2End;
+        let p1Answers = {}, p2Answers = {};
+        
+        // Correct answers
+        const answers = {
+            q1: 'III',  // Highest Y value (12.74)
+            q2: 'IV',   // Most X at same position (10 at X=8)
+            q3: 'II',   // Worst fit for straight line (parabola)
+            q4: 'I',    // Best for linear regression
+            q5: 'IV'    // Most dangerous for extrapolation
+        };
+        
+        function startChallenge() {
+            document.getElementById('challengeSection').style.display = 'block';
+            document.getElementById('challengeSection').scrollIntoView({behavior: 'smooth'});
+            
+            let seconds = 60;
+            studyTimer = setInterval(() => {
+                seconds--;
+                document.querySelector('#studyTimer .countdown').textContent = 
+                    `${Math.floor(seconds/60).toString().padStart(2,'0')}:${(seconds%60).toString().padStart(2,'0')}`;
+                
+                if (seconds <= 0) {
+                    clearInterval(studyTimer);
+                    startPart1();
+                }
+            }, 1000);
+        }
+        
+        function startPart1() {
+            document.getElementById('studyTimer').style.display = 'none';
+            document.getElementById('part1Questions').style.display = 'block';
+            document.getElementById('q1').classList.add('active');
+            
+            p1Start = Date.now();
+            qTimer = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - p1Start) / 1000);
+                document.querySelectorAll('#part1Questions .q-timer').forEach(el => 
+                    el.textContent = `${Math.floor(elapsed/60).toString().padStart(2,'0')}:${(elapsed%60).toString().padStart(2,'0')}`);
+            }, 1000);
+        }
+        
+        function selectChoice(element, name, value) {
+            element.parentElement.querySelectorAll('.choice').forEach(opt => 
+                opt.classList.remove('selected'));
+            element.classList.add('selected');
+            element.querySelector('input').checked = true;
+        }
+        
+        function nextQuestion(part, num) {
+            const answer = document.querySelector(`input[name="${part === 1 ? 'q' : 'p2q'}${num}"]:checked`);
+            if (answer) {
+                if (part === 1) p1Answers[`q${num}`] = answer.value;
+                else p2Answers[`q${num}`] = answer.value;
+            }
+            
+            document.getElementById(`${part === 1 ? 'q' : 'p2q'}${num}`).classList.remove('active');
+            document.getElementById(`${part === 1 ? 'q' : 'p2q'}${num + 1}`).classList.add('active');
+        }
+        
+        function finishPart1() {
+            const answer = document.querySelector('input[name="q5"]:checked');
+            if (answer) p1Answers.q5 = answer.value;
+            
+            clearInterval(qTimer);
+            p1End = Date.now();
+            
+            // Calculate score
+            let score = 0;
+            for (let i = 1; i <= 5; i++) {
+                if (p1Answers[`q${i}`] === answers[`q${i}`]) score++;
+            }
+            
+            document.getElementById('p1ScoreShow').textContent = `${score}/5 Correct`;
+            document.getElementById('q5').classList.remove('active');
+            document.getElementById('part1Complete').style.display = 'block';
+        }
+        
+        function showPlots() {
+            document.getElementById('plotSection').style.display = 'block';
+            document.getElementById('plotSection').scrollIntoView({behavior: 'smooth'});
+            
+            // Draw all plots
+            for (let i = 1; i <= 4; i++) {
+                setTimeout(() => animatePlot(i, 'plot'), i * 300);
+            }
+            
+            // Start 30-second viewing timer
+            setTimeout(() => {
+                document.getElementById('viewingTimer').style.display = 'block';
+                let viewSeconds = 30;
+                viewTimer = setInterval(() => {
+                    viewSeconds--;
+                    document.getElementById('viewTime').textContent = 
+                        `00:${viewSeconds.toString().padStart(2,'0')}`;
+                    
+                    if (viewSeconds <= 0) {
+                        clearInterval(viewTimer);
+                        startPart2();
+                    }
+                }, 1000);
+            }, 1500);
+        }
+        
+        function animatePlot(num, prefix) {
+            const canvas = document.getElementById(`${prefix}${num}`);
+            const ctx = canvas.getContext('2d');
+            const padding = 30;
+            const width = canvas.width - 2*padding;
+            const height = canvas.height - 2*padding;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Background
+            ctx.fillStyle = '#fafbfc';
+            ctx.fillRect(padding, padding, width, height);
+            
+            // Axes
+            ctx.strokeStyle = '#2C3948';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, canvas.height - padding);
+            ctx.lineTo(canvas.width - padding, canvas.height - padding);
+            ctx.stroke();
+            
+            // Grid
+            ctx.strokeStyle = '#e2e8f0';
+            ctx.lineWidth = 0.5;
+            for (let i = 1; i < 5; i++) {
+                ctx.beginPath();
+                ctx.moveTo(padding, padding + (height * i / 5));
+                ctx.lineTo(canvas.width - padding, padding + (height * i / 5));
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(padding + (width * i / 5), padding);
+                ctx.lineTo(padding + (width * i / 5), canvas.height - padding);
+                ctx.stroke();
+            }
+            
+            const xScale = x => padding + (x/20) * width;
+            const yScale = y => canvas.height - padding - (y/14) * height;
+            
+            // Points
+            const dataset = data[num];
+            let idx = 0;
+            
+            function drawNext() {
+                if (idx < dataset.x.length) {
+                    ctx.fillStyle = '#1768A2';
+                    ctx.strokeStyle = '#0F4D76';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(xScale(dataset.x[idx]), yScale(dataset.y[idx]), 6, 0, 2*Math.PI);
+                    ctx.fill();
+                    ctx.stroke();
+                    idx++;
+                    setTimeout(drawNext, 30);
+                } else {
+                    // Regression line
+                    ctx.strokeStyle = '#5043EF';
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([5, 3]);
+                    ctx.globalAlpha = 0.6;
+                    ctx.beginPath();
+                    ctx.moveTo(xScale(0), yScale(3));
+                    ctx.lineTo(xScale(20), yScale(13));
+                    ctx.stroke();
+                }
+            }
+            drawNext();
+        }
+        
+        function startPart2() {
+            document.getElementById('viewingTimer').style.display = 'none';
+            document.getElementById('part2Questions').style.display = 'block';
+            document.getElementById('p2q1').classList.add('active');
+            
+            p2Start = Date.now();
+            p2Timer = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - p2Start) / 1000);
+                document.querySelectorAll('#part2Questions .q-timer').forEach(el => 
+                    el.textContent = `${Math.floor(elapsed/60).toString().padStart(2,'0')}:${(elapsed%60).toString().padStart(2,'0')}`);
+            }, 1000);
+        }
+        
+        function showFinalResults() {
+            const answer = document.querySelector('input[name="p2q5"]:checked');
+            if (answer) p2Answers.q5 = answer.value;
+            
+            clearInterval(p2Timer);
+            p2End = Date.now();
+            
+            // Calculate scores
+            let p1Score = 0, p2Score = 0;
+            for (let i = 1; i <= 5; i++) {
+                if (p1Answers[`q${i}`] === answers[`q${i}`]) p1Score++;
+                if (p2Answers[`q${i}`] === answers[`q${i}`]) p2Score++;
+            }
+            
+            // Times
+            const p1Time = Math.floor((p1End - p1Start) / 1000);
+            const p2Time = Math.floor((p2End - p2Start) / 1000);
+            
+            // Display
+            document.getElementById('p1FinalScore').textContent = `${p1Score}/5`;
+            document.getElementById('p1TimeDisplay').textContent = 
+                `Time: ${Math.floor(p1Time/60)}:${(p1Time%60).toString().padStart(2,'0')}`;
+            document.getElementById('p2FinalScore').textContent = `${p2Score}/5`;
+            document.getElementById('p2TimeDisplay').textContent = 
+                `Time: ${Math.floor(p2Time/60)}:${(p2Time%60).toString().padStart(2,'0')}`;
+            
+            // Impact
+            const speedRatio = (p1Time / p2Time).toFixed(1);
+            const improvement = p2Score - p1Score;
+            
+            let impact = '';
+            if (improvement > 0) {
+                impact = `<p style="font-size: 22px; font-weight: bold;">
+                         Accuracy: ${p1Score}/5 → ${p2Score}/5 (+${improvement} correct!)</p>`;
+                impact += `<p>That's a <strong>${improvement * 20}% improvement</strong> with visualization!</p>`;
+            } else {
+                impact = `<p style="font-size: 22px; font-weight: bold;">
+                         Same accuracy: ${p1Score}/5 correct both times</p>`;
+            }
+            
+            impact += `<p style="margin-top: 20px;">Speed: <strong>${speedRatio}x faster</strong> with visualizations!</p>`;
+            impact += `<p style="margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.3);">
+                       <strong>Key Insight:</strong> Visualization dramatically improves both speed and accuracy. 
+                       Patterns nearly impossible to detect in tables become instantly obvious in plots!</p>`;
+            
+            document.getElementById('impactSummary').innerHTML = impact;
+            
+            // Draw final analysis plots
+            for (let i = 1; i <= 4; i++) {
+                animatePlot(i, 'final');
+            }
+            
+            document.getElementById('p2q5').classList.remove('active');
+            document.getElementById('resultsSection').style.display = 'block';
+            document.getElementById('resultsSection').scrollIntoView({behavior: 'smooth'});
+        }
+    </script></body></html>

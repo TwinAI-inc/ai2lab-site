@@ -1,0 +1,1076 @@
+<!doctype html><html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenAI Workshop: Data Storytelling with Interactive Narratives | Prof. Dehghani</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #659BEA 0%, #4B61A2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #0076D8 0%, #005CB6 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+        
+        .header .instructor {
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .tabs {
+            background: white;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+        }
+        
+        .tab-button {
+            background: none;
+            border: none;
+            padding: 1rem 2rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .tab-button:hover {
+            background: #f0f0f0;
+        }
+        
+        .tab-button.active {
+            color: #005CB6;
+            border-bottom-color: #005CB6;
+            background: #f8f9fa;
+        }
+        
+        .content-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .stage-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .stage-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .stage-number {
+            background: linear-gradient(135deg, #659BEA 0%, #4B61A2 100%);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-right: 1rem;
+        }
+        
+        .stage-title {
+            flex: 1;
+        }
+        
+        .stage-title h3 {
+            color: #2C3D50;
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stage-title p {
+            color: #7f8c8d;
+            font-size: 0.95rem;
+        }
+        
+        .prompt-box {
+            background: linear-gradient(135deg, #2d2d30 0%, #1e1e1e 100%);
+            color: #ffffff;
+            padding: 2.5rem;
+            padding-top: 3.5rem;
+            border-radius: 12px;
+            font-family: 'Monaco', 'Consolas', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.9;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border: 1px solid #444;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            white-space: pre-line;
+            word-wrap: break-word;
+            position: relative;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .prompt-box::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        .prompt-box::-webkit-scrollbar-track {
+            background: #1e1e1e;
+            border-radius: 5px;
+        }
+        
+        .prompt-box::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 5px;
+        }
+        
+        .prompt-box::-webkit-scrollbar-thumb:hover {
+            background: #777;
+        }
+        
+        .prompt-box #prompt1,
+        .prompt-box #prompt2, 
+        .prompt-box #prompt3,
+        .prompt-box #prompt4 {
+            display: block;
+            white-space: pre-line;
+            color: #f0f0f0;
+            font-size: 0.88rem;
+        }
+        
+        .prompt-header {
+            color: #4FA5F7;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .copy-button {
+            background: linear-gradient(135deg, #659BEA 0%, #4B61A2 100%);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .copy-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .skills-list {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        
+        .skills-list h4 {
+            color: #494F57;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .skills-list ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .skills-list li {
+            padding: 0.25rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        
+        .skills-list li:before {
+            content: "";
+            position: absolute;
+            left: 0;
+            color: #2887A7;
+            font-weight: bold;
+        }
+        
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .overview-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid #005CB6;
+        }
+        
+        .overview-card h3 {
+            color: #005CB6;
+            margin-bottom: 0.5rem;
+        }
+        
+        .tips-section {
+            background: linear-gradient(135deg, #D2FFF9 0%, #AA9FFC 100%);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+        
+        .tips-section h3 {
+            color: #1D01D7;
+            margin-bottom: 1rem;
+        }
+        
+        .warning-box {
+            background: #CDFFFB;
+            border-left: 4px solid #07FFEA;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+        
+        .success-box {
+            background: #d4edda;
+            border-left: 4px solid #2887A7;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+        
+        .resource-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .resource-link {
+            background: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #005CB6;
+            border: 2px solid #005CB6;
+            transition: all 0.3s ease;
+        }
+        
+        .resource-link:hover {
+            background: #005CB6;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .tab-button {
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .content-container {
+                padding: 0 1rem;
+            }
+            
+            .prompt-box {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+<style>body{margin:0;padding:26px 18px;background:#F2F5F6;font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;}.tool-shell{max-width:1100px;margin:0 auto;background:#FFFFFF;border:1px solid #E4E9EB;border-radius:10px;overflow:hidden;}.tool-band{background:linear-gradient(135deg,#D3E4F5 0%,#A6C7E8 100%);padding:16px 24px;}.tool-band h1{margin:0;font-size:30px;font-weight:800;color:#14304F;letter-spacing:-.4px;line-height:1.25;}.tool-band p{margin:6px 0 0;font-size:12px;color:#2C4C6E;text-transform:uppercase;letter-spacing:1px;font-weight:700;}.tool-body{padding:22px 24px 26px;}.tool-foot{background:#EBF3FB;border-top:1px solid #E4E9EB;padding:11px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:12px;color:#747474;}.tool-foot .code{background:#0B4F9C;color:#FFFFFF;font-weight:800;letter-spacing:.6px;padding:3px 9px;border-radius:4px;}.tool-foot .name{font-weight:700;color:#14304F;}</style></head><body><div class="tool-shell"><div class="tool-band"><h1>GenAI Workshop: Data Storytelling with Interactive Narratives</h1><p>Module 09</p></div><div class="tool-body">
+    <div class="header">
+        <h1>GenAI Workshop: Data Storytelling</h1>
+        <div class="subtitle">Creating Interactive Narratives with Claude AI</div>
+        <div class="instructor">Prof. Mohammad Dehghani | Northeastern University</div>
+    </div>
+    
+    <div class="tabs">
+        <button class="tab-button active" onclick="showTab('overview')">Overview</button>
+        <button class="tab-button" onclick="showTab('stage1')">Stage 1: Foundation</button>
+        <button class="tab-button" onclick="showTab('stage2')">Stage 2: Enhancement</button>
+        <button class="tab-button" onclick="showTab('stage3')">Stage 3: Interaction</button>
+        <button class="tab-button" onclick="showTab('stage4')">Stage 4: Professional</button>
+        <button class="tab-button" onclick="showTab('resources')">Resources</button>
+    </div>
+    
+    <div class="content-container">
+        <!-- Overview Tab -->
+        <div id="overview" class="tab-content active">
+            <h2>Workshop Overview</h2>
+            
+            <div class="overview-grid">
+                
+                <div class="overview-card">
+                    <h3>⏱ Duration</h3>
+                    <p>4 Progressive Stages (4 Weeks)</p>
+                </div>
+                <div class="overview-card">
+                    <h3>Tools</h3>
+                    <p>Claude AI, Flourish.studio, Datawrapper</p>
+                </div>
+                <div class="overview-card">
+                    <h3>Outcome</h3>
+                    <p>Professional data-driven narrative web pages</p>
+                </div>
+            </div>
+            
+            <div class="tips-section">
+                <h3>How This Workshop Works</h3>
+                <ol>
+                    <li><strong>Prepare Your Data:</strong>Create visualizations in Flourish.studio or Datawrapper</li>
+                    <li><strong>Copy Embed Codes:</strong>Get the iframe embed codes from your visualization platforms</li>
+                    <li><strong>Take Screenshots:</strong>For Stage 3, capture a screenshot of your main chart for data cards</li>
+                    <li><strong>Use Claude AI:</strong>Copy the structured prompts and paste them into Claude</li>
+                    <li><strong>Answer Claude's Questions:</strong>Claude will ask multiple-choice questions about your preferences</li>
+                    <li><strong>Provide Your Materials:</strong>Share embed codes, screenshots, and any other content</li>
+                    <li><strong>Iterate & Improve:</strong>Refine your work through each progressive stage</li>
+                </ol>
+            </div>
+            
+            <div class="warning-box">
+                <strong>Important Requirements:</strong><br>
+                • <strong>Stage 1:</strong>Have 1 embed code ready<br>
+                • <strong>Stage 2:</strong>Prepare 3 related visualizations (tells a story)<br>
+                • <strong>Stage 3:</strong>Need 4-6 embeds + screenshot of main chart<br>
+                • <strong>Stage 4:</strong>Gather 6-10 embeds + any supplementary content<br><br>Claude will ask you design questions first, then request your materials.
+            </div>
+            
+            <h3>Learning Objectives</h3>
+            <div class="overview-grid" style="margin: 2rem 0;">
+                <div class="overview-card">
+                    <h4 style="color: #005CB6; margin-bottom: 0.5rem;">Stage 1</h4>
+                    <p>Master basic HTML structure and embed your first visualization with personal style</p>
+                </div>
+                <div class="overview-card">
+                    <h4 style="color: #005CB6; margin-bottom: 0.5rem;">Stage 2</h4>
+                    <p>Build multi-section narratives with Feather Icons and professional layouts</p>
+                </div>
+                <div class="overview-card">
+                    <h4 style="color: #005CB6; margin-bottom: 0.5rem;">Stage 3</h4>
+                    <p>Add interactivity, create data cards from screenshots, and engage users</p>
+                </div>
+                <div class="overview-card">
+                    <h4 style="color: #005CB6; margin-bottom: 0.5rem;">Stage 4</h4>
+                    <p>Create publication-ready stories worthy of major data journalism outlets</p>
+                </div>
+            </div>
+            
+            <div class="success-box">
+                <strong>Key Skills You'll Develop:</strong><br>
+                • Prompt engineering for AI-powered web development<br>
+                • Data visualization integration and storytelling<br>
+                • Responsive design and user experience<br>
+                • Professional web development practices
+            </div>
+        </div>
+        
+        <!-- Stage 1 Tab -->
+        <div id="stage1" class="tab-content">
+            <div class="stage-card">
+                <div class="stage-header">
+                    <div class="stage-number">1</div>
+                    <div class="stage-title">
+                        <h3>Foundation Stage</h3>
+                        <p>Basic Structure & Personal Style</p>
+                    </div>
+                </div>
+                
+                <div class="prompt-box">
+                    <button class="copy-button" onclick="copyPrompt('prompt1')">Copy Prompt</button>
+                    <div class="prompt-header">STAGE 1 PROMPT - Copy this to Claude:</div>
+                    <div id="prompt1">==================================================
+WORKSHOP: Prof. Dehghani's Data Storytelling - STAGE 1
+==================================================
+
+Hello Claude! I need help creating my first data story webpage.
+
+STEP 1: ASK ME THESE QUESTIONS
+-------------------------------
+Please present these as multiple choice:
+
+1. What is your name?
+   
+2. Choose your color palette:
+   a) Ocean Blues (navy, teal, aqua)
+   b) Sunset Warmth (orange, pink, yellow)
+   c) Forest Greens (emerald, sage, mint)
+   d) Urban Grays (charcoal, silver, white)
+   e) Custom (I'll specify)
+
+3. Select your design style:
+   a) Minimal & Clean
+   b) Bold & Dynamic
+   c) Playful & Creative
+   d) Professional & Corporate
+   e) Artistic & Expressive
+
+4. Pick your typography style:
+   a) Modern Sans-Serif (Helvetica, Arial)
+   b) Classic Serif (Georgia, Times)
+   c) Tech-Focused (Roboto, Inter)
+   d) Journalistic (Merriweather, Playfair)
+
+5. What's your data story title?
+
+6. What topic does your visualization cover?
+
+STEP 2: EMBED CODE COLLECTION
+-------------------------------
+After I answer, ask me to provide:
+- One (1) embed code from Flourish.studio or Datawrapper
+- The embed will be an iframe like: &lt;iframe src="..."&gt;&lt;/iframe&gt;
+
+STEP 3: CREATE HTML PAGE
+-------------------------
+Build a single-page website with:
+
+STRUCTURE:
+□ Header section with title
+□ Introduction paragraph (150 words)
+□ Embedded visualization (centered)
+□ Key insights box (3 bullet points)
+□ Simple footer with author name and date
+
+FEATURES:
+□ Mobile responsive design
+□ Clean spacing and typography
+□ Subtle hover effects
+□ Professional color scheme based on my choice
+
+IMPORTANT: Wait for my embed code before generating HTML!</div>
+                </div>
+                
+                <div class="success-box">
+                    <strong>Student Hints for Stage 1:</strong><br>
+                    • Have your Flourish/Datawrapper visualization ready before starting<br>
+                    • Copy the entire embed code (including &lt;iframe&gt; tags)<br>
+                    • Choose colors that complement your data visualization<br>
+                    • Keep your first attempt simple - you'll add complexity in later stages
+                </div>
+                
+                <div class="skills-list">
+                    <h4>Skills You'll Develop:</h4>
+                    <ul>
+                        <li>Basic prompt structure</li>
+                        <li>Personal style articulation</li>
+                        <li>Simple HTML layout</li>
+                        <li>Visualization embedding</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Stage 2 Tab -->
+        <div id="stage2" class="tab-content">
+            <div class="stage-card">
+                <div class="stage-header">
+                    <div class="stage-number">2</div>
+                    <div class="stage-title">
+                        <h3>Enhancement Stage</h3>
+                        <p>Narrative Flow & Multiple Visualizations</p>
+                    </div>
+                </div>
+                
+                <div class="prompt-box">
+                    <button class="copy-button" onclick="copyPrompt('prompt2')">Copy Prompt</button>
+                    <div class="prompt-header">STAGE 2 PROMPT - Copy this to Claude:</div>
+                    <div id="prompt2">==================================================
+WORKSHOP: Prof. Dehghani's Data Storytelling - STAGE 2
+==================================================
+
+Hello Claude! Moving to Stage 2 - Enhanced Multi-Section Story.
+
+STEP 1: DESIGN PREFERENCES
+---------------------------
+Please ask me:
+
+1. Style continuity:
+   a) Keep my Stage 1 style
+   b) Evolve with new colors
+   c) Complete redesign
+
+2. Page layout type:
+   a) Vertical scroll with sticky nav
+   b) Tabbed sections (click to switch)
+   c) Horizontal slideshow
+   d) Card-based grid layout
+
+3. Section transitions:
+   a) Smooth fade effects
+   b) Slide from sides
+   c) Zoom in/out
+   d) No animations
+
+4. Icon style (using Feather Icons):
+   a) Minimal line icons
+   b) Filled icons
+   c) Colored icons
+   d) No icons
+
+5. Navigation style:
+   a) Top bar (fixed)
+   b) Side dots (like presentations)
+   c) Progress bar
+   d) Numbered sections
+
+STEP 2: CONTENT COLLECTION
+---------------------------
+I will provide:
+- Three (3) visualization embed codes
+- Brief description for each visualization
+- My main narrative theme
+
+STEP 3: BUILD ENHANCED PAGE
+----------------------------
+Create a multi-section story with:
+
+HEADER:
+□ Hero title with subtitle
+□ Navigation menu
+□ Executive summary box
+□ 3 key statistics
+
+MAIN SECTIONS (3 total):
+Each section includes:
+□ Section number with Feather icon
+□ Section title
+□ Context paragraph (150 words)
+□ Embedded visualization
+□ Insight callout box
+□ Smooth transition to next
+
+FEATURES TO ADD:
+□ Feather Icons integration (via CDN)
+□ Sticky/fixed navigation
+□ Scroll progress indicator
+□ Hover effects on cards
+□ Mobile hamburger menu
+□ Print-friendly CSS
+
+CONCLUSION:
+□ "Why This Matters" section
+□ Call-to-action buttons
+□ Share buttons
+
+NOTE: Please integrate Feather Icons using:
+&lt;script src="https://unpkg.com/feather-icons"&gt;&lt;/script&gt;</div>
+                </div>
+                
+                <div class="success-box">
+                    <strong>Student Hints for Stage 2:</strong><br>
+                    • Prepare 3 related visualizations that tell a connected story<br>
+                    • Think about the narrative flow - how does each viz build on the previous?<br>
+                    • Feather Icons will be added automatically via CDN<br>
+                    • Consider how tabs vs. scrolling affects user experience<br>
+                    • Write transition sentences that connect your sections
+                </div>
+                
+                <div class="skills-list">
+                    <h4>Skills You'll Develop:</h4>
+                    <ul>
+                        <li>Multi-section narrative structure</li>
+                        <li>Icon integration (Feather Icons)</li>
+                        <li>Advanced CSS animations</li>
+                        <li>Navigation design</li>
+                        <li>Visual hierarchy</li>
+                        <li>Professional layouts</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Stage 3 Tab -->
+        <div id="stage3" class="tab-content">
+            <div class="stage-card">
+                <div class="stage-header">
+                    <div class="stage-number">3</div>
+                    <div class="stage-title">
+                        <h3>Interaction Stage</h3>
+                        <p>User Engagement & Exploration</p>
+                    </div>
+                </div>
+                
+                <div class="prompt-box">
+                    <button class="copy-button" onclick="copyPrompt('prompt3')">Copy Prompt</button>
+                    <div class="prompt-header">STAGE 3 PROMPT - Copy this to Claude:</div>
+                    <div id="prompt3">==================================================
+WORKSHOP: Prof. Dehghani's Data Storytelling - STAGE 3
+==================================================
+
+Hello Claude! Stage 3 - Creating Interactive Data Experience.
+
+STEP 1: INTERACTION DESIGN
+---------------------------
+Ask me these questions:
+
+1. Primary interaction model:
+   a) Dashboard with live filters
+   b) Scrollytelling (scroll-triggered changes)
+   c) Choose-your-own-data-adventure
+   d) Interactive timeline
+   e) Comparison tool
+
+2. Interactive elements to include (select multiple):
+   [ ] Hover tooltips
+   [ ] Clickable cards
+   [ ] Animated counters
+   [ ] Toggle switches
+   [ ] Filter buttons
+   [ ] Search box
+   [ ] Dropdown menus
+
+3. Data cards display:
+   a) Grid layout (3 columns)
+   b) Carousel slider
+   c) Masonry layout
+   d) List with expand/collapse
+
+4. Mobile gestures:
+   a) Swipe between sections
+   b) Tap to reveal details
+   c) Pinch to zoom
+   d) Pull to refresh
+
+5. Loading experience:
+   a) Skeleton screens
+   b) Progress bars
+   c) Spinning loaders
+   d) Fade in sequence
+
+STEP 2: CONTENT REQUIREMENTS
+-----------------------------
+I will provide:
+- 4-6 visualization embed codes
+- 1 screenshot of a chart (for data cards)
+- Key metrics from the screenshot
+- Color theme preference
+
+SPECIAL REQUEST:
+Based on my screenshot, create data cards that display:
+□ Key numbers from the chart
+□ Trend indicators (up/down arrows)
+□ Mini sparklines or icons
+□ Hover effects showing details
+
+STEP 3: BUILD INTERACTIVE PAGE
+-------------------------------
+Create an interactive experience with:
+
+HERO SECTION:
+□ Animated number counters
+□ Interactive tagline
+□ Scroll hint animation
+
+DATA CARDS SECTION:
+□ Create 4-6 cards based on my screenshot
+□ Each card shows a key metric
+□ Hover reveals more info
+□ Click opens related visualization
+
+MAIN INTERACTIVE AREA:
+□ Filter controls (by time, category, etc.)
+□ 4-6 embedded visualizations
+□ Tabs or accordion for different views
+□ Comparison mode toggle
+□ Full-screen view option
+
+USER ENGAGEMENT:
+□ "Test Your Knowledge" quiz
+□ Data calculator/simulator
+□ Share specific insights
+□ Download filtered data
+□ Save view preferences
+
+TECHNICAL FEATURES:
+□ Lazy loading for performance
+□ Smooth scroll animations
+□ Keyboard navigation
+□ Touch-friendly on mobile
+□ Error states for failed embeds
+
+FOOTER SECTION:
+□ Methodology notes (collapsible)
+□ Data sources
+□ Update timestamp
+□ Feedback form</div>
+                </div>
+                
+                <div class="success-box">
+                    <strong>Student Hints for Stage 3:</strong><br>
+                    • Take a clear screenshot of your most important chart<br>
+                    • Identify 4-6 key metrics from your data to feature in cards<br>
+                    • Think about what questions users might want to explore<br>
+                    • Test interactions on both desktop and mobile<br>
+                    • Consider adding a "reset filters" button for better UX<br>
+                    • Make sure your quiz questions relate to your visualizations
+                </div>
+                
+                <div class="skills-list">
+                    <h4>Skills You'll Develop:</h4>
+                    <ul>
+                        <li>Creating data cards from screenshots</li>
+                        <li>JavaScript interactions</li>
+                        <li>User experience design</li>
+                        <li>Scrollytelling techniques</li>
+                        <li>Mobile-first thinking</li>
+                        <li>Performance optimization</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Stage 4 Tab -->
+        <div id="stage4" class="tab-content">
+            <div class="stage-card">
+                <div class="stage-header">
+                    <div class="stage-number">4</div>
+                    <div class="stage-title">
+                        <h3>Professional Stage</h3>
+                        <p>Publication-Ready Data Story</p>
+                    </div>
+                </div>
+                
+                <div class="prompt-box">
+                    <button class="copy-button" onclick="copyPrompt('prompt4')">Copy Prompt</button>
+                    <div class="prompt-header">STAGE 4 PROMPT - Copy this to Claude:</div>
+                    <div id="prompt4">==================================================
+WORKSHOP: Prof. Dehghani's Data Storytelling - STAGE 4
+==================================================
+
+Hello Claude! Final Stage - Professional Publication-Ready Story.
+
+STEP 1: PUBLICATION STRATEGY
+-----------------------------
+Please ask me:
+
+1. Target publication style:
+   a) The Pudding (creative, experimental)
+   b) FiveThirtyEight (data journalism)
+   c) NYT Upshot (analytical, serious)
+   d) Reuters Graphics (breaking news)
+   e) Bloomberg (financial focus)
+
+2. Primary audience:
+   a) General public
+   b) Policy makers
+   c) Industry professionals
+   d) Academic researchers
+   e) Mixed audience
+
+3. Opening strategy:
+   a) Human story hook
+   b) Shocking statistic
+   c) Mystery to solve
+   d) Historical comparison
+   e) Future prediction
+
+4. Advanced features (select ALL you want):
+   [ ] Video background hero
+   [ ] Parallax scrolling
+   [ ] Chapter progress bar
+   [ ] Dark mode toggle
+   [ ] Print/PDF export
+   [ ] Multiple languages
+   [ ] Audio narration option
+   [ ] AR/VR view mode
+
+5. Content types available:
+   [ ] 6-10 embed codes
+   [ ] Expert quotes
+   [ ] Photos/images
+   [ ] Video clips
+   [ ] Audio clips
+   [ ] Raw data files
+   [ ] Research papers
+
+STEP 2: COMPREHENSIVE CONTENT
+------------------------------
+Provide me with:
+- 6-10 visualization embeds
+- Any supplementary media
+- Expert quotes (or I'll use placeholders)
+- Your bio information
+- Related story links
+
+STEP 3: PROFESSIONAL BUILD
+---------------------------
+Create publication-quality site with:
+
+TECHNICAL FOUNDATION:
+□ SEO meta tags
+□ Open Graph tags
+□ Schema markup
+□ Performance optimization
+□ Accessibility (ARIA)
+□ Analytics tags
+□ Print stylesheet
+
+HERO SECTION:
+□ Video/parallax background
+□ Compelling headline
+□ Subtitle with byline
+□ Read time estimate
+□ Share buttons
+□ Audio version link
+
+NAVIGATION SYSTEM:
+□ Chapter-based menu
+□ Progress indicator
+□ Quick jump links
+□ Search functionality
+□ View mode toggle (story/data/slides)
+
+CONTENT STRUCTURE:
+Opening:
+□ Human story lead
+□ Context setting
+□ Stakes explanation
+
+Main Body (6-10 sections):
+□ Embedded visualizations
+□ Expert commentary boxes
+□ Sidebar explanations
+□ Related story links
+□ Fact check badges
+
+Interactive Elements:
+□ "What If" scenario tool
+□ Prediction calculator
+□ Comparison engine
+□ Time slider
+□ Category filters
+
+PROFESSIONAL FEATURES:
+□ Footnotes system
+□ Citation generator
+□ Methodology appendix
+□ Changelog section
+□ Corrections policy
+
+ENGAGEMENT TOOLS:
+□ Comments section
+□ Newsletter signup
+□ Social proof (view count)
+□ Related stories carousel
+□ "Follow this topic" button
+
+AUTHOR SECTION:
+□ Bio with photo
+□ Contact information
+□ Other work links
+□ Social media links
+
+FOOTER:
+□ Publication info
+□ Copyright notice
+□ Privacy policy link
+□ Terms of use
+□ RSS feed
+
+SPECIAL REQUIREMENTS:
+- Mobile-first responsive
+- 60fps animations
+- < 3 second load time
+- Works offline (PWA)
+- Shareable deep links</div>
+                </div>
+                
+                <div class="success-box">
+                    <strong>Student Hints for Stage 4:</strong><br>
+                    • This is your portfolio piece - make it exceptional<br>
+                    • Study your target publication's style before starting<br>
+                    • Write a compelling opening that hooks readers immediately<br>
+                    • Test on multiple devices and browsers<br>
+                    • Ask classmates to review before final submission<br>
+                    • Include real quotes if possible, or use realistic placeholders<br>
+                    • Consider accessibility - can someone using a screen reader understand your story?
+                </div>
+                
+                <div class="skills-list">
+                    <h4>Skills You'll Develop:</h4>
+                    <ul>
+                        <li>Professional web development</li>
+                        <li>SEO and performance optimization</li>
+                        <li>Multi-format content delivery</li>
+                        <li>Accessibility implementation</li>
+                        <li>Complete project execution</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Resources Tab -->
+        <div id="resources" class="tab-content">
+            <h2>Resources & References</h2>
+            
+            <div class="tips-section">
+                <h3>Prompt Engineering Tips</h3>
+                <ul>
+                    <li><strong>Be Specific:</strong>Include exact hex colors, dimensions, spacing</li>
+                    <li><strong>Iterate:</strong>Use "modify the above to..." for refinements</li>
+                    <li><strong>Reference Examples:</strong> "Make it similar to [website] but with..."</li>
+                    <li><strong>Debug Systematically:</strong> "The embed isn't showing, please fix..."</li>
+                    <li><strong>Save Progress:</strong>Keep copies of successful prompts</li>
+                </ul>
+            </div>
+            
+            <h3>Visualization Platforms</h3>
+            <div class="resource-links">
+                <a href="https://flourish.studio" class="resource-link" target="_blank">Flourish.studio</a>
+                <a href="https://www.datawrapper.de" class="resource-link" target="_blank">Datawrapper</a>
+                <a href="https://public.tableau.com" class="resource-link" target="_blank">Tableau Public</a>
+            </div>
+            
+            <h3>Inspiration Sites</h3>
+            <div class="resource-links">
+                <a href="https://pudding.cool" class="resource-link" target="_blank">The Pudding</a>
+                <a href="https://fivethirtyeight.com" class="resource-link" target="_blank">FiveThirtyEight</a>
+                <a href="https://graphics.reuters.com" class="resource-link" target="_blank">Reuters Graphics</a>
+                <a href="https://www.nytimes.com/section/upshot" class="resource-link" target="_blank">NYT Upshot</a>
+            </div>
+            
+            <h3>Learning Resources</h3>
+            <div class="resource-links">
+                <a href="https://docs.claude.com" class="resource-link" target="_blank">Claude Documentation</a>
+                <a href="https://www.storytellingwithdata.com" class="resource-link" target="_blank">Computation and Visualization</a>
+            </div>
+            
+            <div class="tips-section" style="margin-top: 2rem;">
+                <h3>Submission Guidelines</h3>
+                <ul>
+                    <li><strong>Week 1:</strong>Complete Stage 1 - Foundation</li>
+                    <li><strong>Week 2:</strong>Complete Stage 2 - Enhancement</li>
+                    <li><strong>Week 3:</strong>Complete Stage 3 - Interaction</li>
+                    <li><strong>Week 4:</strong>Complete Stage 4 - Professional Publication</li>
+                    <li><strong>Final:</strong>Submit GitHub repository with all stages</li>
+                </ul>
+            </div>
+            
+            <div class="success-box">
+                <strong>Pro Tip:</strong>Start collecting embed codes early! Create 8-10 visualizations so you have options for each stage. Remember to test your embed codes in a simple HTML file first.
+            </div>
+            
+            <div class="warning-box">
+                <strong>Common Issues & Solutions:</strong><br>
+                • <strong>Embed not showing:</strong>Check if the iframe code is complete<br>
+                • <strong>Layout broken:</strong>Ask Claude to "fix responsive issues"<br>
+                • <strong>Too slow:</strong>Request "lazy loading for embeds"<br>
+                • <strong>Not mobile-friendly:</strong>Say "optimize for mobile devices"
+            </div>
+        </div>
+    </div>
+    
+    <script>function showTab(tabName) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab =>tab.classList.remove('active'));
+            
+            // Remove active class from all buttons
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(button =>button.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+        
+        function copyPrompt(promptId) {
+            const promptElement = document.getElementById(promptId);
+            const promptText = promptElement.textContent || promptElement.innerText;
+            
+            navigator.clipboard.writeText(promptText).then(() => {
+                const button = event.target;
+                const originalText = button.innerText;
+                button.innerText = ' Copied!';
+                button.style.background = 'linear-gradient(135deg, #2887A7 0%, #208DC9 100%)';
+                
+                setTimeout(() => {
+                    button.innerText = originalText;
+                    button.style.background = 'linear-gradient(135deg, #659BEA 0%, #4B61A2 100%)';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = promptText;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                const button = event.target;
+                button.innerText = ' Copied!';
+                setTimeout(() => {
+                    button.innerText = 'Copy Prompt';
+                }, 2000);
+            });
+        }
+    </script>
+</div><div class="tool-foot"><span><span class="code">ai2lab</span> <span class="name">Interactive Tools</span></span><span>Prof. Dehghani</span></div></div></body></html>

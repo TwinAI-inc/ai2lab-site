@@ -1,0 +1,1298 @@
+<!doctype html><html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenAI Lab: Dashboard Creation with Real Data | Prof. Dehghani</title>
+    
+    <style>
+        @page { size: letter; margin: 0.75in; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 11pt;
+            line-height: 1.6;
+            color: #1d1d1f;
+            background: #fff;
+            min-height: 100vh;
+        }
+
+        /* ===== DOCUMENT WRAPPER ===== */
+        .document {
+            max-width: 900px;
+            margin: 0 auto;
+            background: transparent;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: #fff;
+            color: #1d1d1f;
+            padding: 2.5rem 2rem 1.8rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .header::before,
+        .header::after {
+            display: none;
+        }
+
+        .header h1 {
+            font-family: 'Inter', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+            color: #1d1d1f;
+            letter-spacing: -0.8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header .subtitle {
+            font-size: 1rem;
+            color: #86868b;
+            font-weight: 400;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header .instructor {
+            font-size: 0.9rem;
+            margin-top: 0.6rem;
+            font-weight: 500;
+            color: #006BE3;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header .badge {
+            display: inline-block;
+            background: #f5f5f7;
+            border: none;
+            color: #1d1d1f;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            margin-top: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.2px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== TABS ===== */
+        .tabs {
+            background: #fff;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            border-bottom: 1px solid #e5e5e5;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: none;
+            gap: 0;
+        }
+
+        .tab-button {
+            background: none;
+            border: none;
+            padding: 0.7rem 1.2rem;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+            border-bottom: 2px solid transparent;
+            color: #86868b;
+            font-weight: 500;
+            border-radius: 0;
+            margin-bottom: 0;
+        }
+
+        .tab-button:hover {
+            background: none;
+            color: #1d1d1f;
+        }
+
+        .tab-button.active {
+            background: none;
+            color: #006BE3;
+            font-weight: 600;
+            border-bottom-color: #006BE3;
+            box-shadow: none;
+        }
+
+        /* ===== CONTENT CONTAINER ===== */
+        .content-container {
+            max-width: 840px;
+            margin: 0 auto;
+            padding: 1.8rem 2rem;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== HEADINGS ===== */
+        h2 {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.25rem;
+            color: #1d1d1f;
+            margin-bottom: 0.6rem;
+            margin-top: 0.3rem;
+            border-bottom: none;
+            padding-bottom: 0;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        h3 {
+            font-family: 'Inter', sans-serif;
+            color: #1d1d1f;
+            font-size: 1rem;
+            margin-bottom: 0.4rem;
+            margin-top: 0.6rem;
+            font-weight: 600;
+        }
+
+        /* ===== STAGE CARDS ===== */
+        .stage-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 1.5rem;
+            margin-bottom: 1.2rem;
+            border: 1px solid #e5e5e5;
+            box-shadow: none;
+            transition: all 0.2s ease;
+        }
+
+        .stage-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+            transform: none;
+        }
+
+        .stage-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.3rem;
+        }
+
+        .stage-number {
+            background: #006BE3;
+            color: white;
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+            font-weight: bold;
+            margin-right: 1rem;
+            flex-shrink: 0;
+            box-shadow: none;
+        }
+
+        .stage-title h3 {
+            color: #1d1d1f;
+            font-size: 1.15rem;
+            margin-bottom: 0.1rem;
+            margin-top: 0;
+            border: none;
+            font-weight: 700;
+        }
+
+        .stage-title p {
+            color: #86868b;
+            font-size: 0.85rem;
+        }
+
+        /* ===== PROMPT BOX ===== */
+        .prompt-box {
+            background: #1d1d1f;
+            color: #d1d1d6;
+            padding: 1.5rem;
+            padding-top: 2.8rem;
+            border-radius: 12px;
+            font-family: 'JetBrains Mono', 'Consolas', monospace;
+            font-size: 0.78rem;
+            line-height: 1.7;
+            overflow-x: auto;
+            margin: 1rem 0;
+            border: none;
+            white-space: pre-line;
+            word-wrap: break-word;
+            position: relative;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .prompt-box::-webkit-scrollbar { width: 6px; }
+        .prompt-box::-webkit-scrollbar-track { background: #1d1d1f; border-radius: 3px; }
+        .prompt-box::-webkit-scrollbar-thumb { background: #48484a; border-radius: 3px; }
+        .prompt-box::-webkit-scrollbar-thumb:hover { background: #636366; }
+
+        .prompt-header {
+            color: #006BE3;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* ===== COPY BUTTON ===== */
+        .copy-button {
+            background: #006BE3;
+            color: white;
+            border: none;
+            padding: 0.35rem 0.9rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.72rem;
+            transition: all 0.2s ease;
+            position: absolute;
+            top: 0.7rem;
+            right: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            box-shadow: none;
+        }
+
+        .copy-button:hover {
+            transform: translateY(-1px);
+            opacity: 0.9;
+        }
+
+        /* ===== OVERVIEW GRID / KPI-STYLE CARDS ===== */
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.7rem;
+            margin: 1rem 0;
+        }
+
+        .overview-card {
+            background: #f5f5f7;
+            padding: 1rem;
+            border-radius: 12px;
+            border: none;
+            text-align: center;
+            transition: all 0.2s ease;
+            box-shadow: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .overview-card::before {
+            display: none;
+        }
+
+        .overview-card:hover {
+            background: #e8e8ed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .overview-card h3 {
+            background: none;
+            -webkit-background-clip: unset;
+            -webkit-text-fill-color: #006BE3;
+            background-clip: unset;
+            color: #006BE3;
+            margin-bottom: 0.3rem;
+            font-size: 0.75rem;
+            margin-top: 0;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .overview-card p {
+            color: #6e6e73;
+            font-size: 0.85rem;
+            line-height: 1.45;
+        }
+
+        /* ===== INFO BOXES ===== */
+        .info-box {
+            padding: 0.9rem 1.2rem;
+            border-radius: 10px;
+            margin: 0.8rem 0;
+            font-size: 0.84rem;
+            line-height: 1.55;
+            transition: all 0.2s ease;
+        }
+
+        .info-box br { line-height: 0.6; }
+        .info-box br + br { display: none; }
+
+        .info-box.tip {
+            background: #f5f5f7;
+            border-left: 3px solid #006BE3;
+            color: #1d1d1f;
+        }
+
+        .info-box.warning {
+            background: #fffbf0;
+            border-left: 3px solid #00BFAD;
+            color: #1d1d1f;
+        }
+
+        .info-box.success {
+            background: #f0faf3;
+            border-left: 3px solid #24708A;
+            color: #1d1d1f;
+        }
+
+        .info-box strong {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-size: 0.86rem;
+            color: #1d1d1f;
+        }
+
+        .info-box ol, .info-box ul { font-size: 0.84rem; margin-left: 1.2rem; }
+        .info-box li { margin-bottom: 0.15rem; line-height: 1.5; }
+
+        .info-box a {
+            color: #006BE3;
+            font-weight: 500;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .info-box a:hover {
+            text-decoration: underline;
+        }
+
+        /* ===== CODE TAGS ===== */
+        code {
+            background: #f5f5f7;
+            color: #006BE3;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82em;
+        }
+
+        /* ===== SKILLS LIST ===== */
+        .skills-list {
+            background: #f5f5f7;
+            border: none;
+            padding: 1.2rem 1.5rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+
+        .skills-list h4 {
+            color: #1d1d1f;
+            margin-bottom: 0.6rem;
+            font-size: 0.88rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .skills-list ul {
+            list-style: none;
+            padding-left: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.3rem;
+        }
+
+        .skills-list li {
+            padding: 0.25rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            color: #6e6e73;
+            font-size: 0.84rem;
+        }
+
+        .skills-list li:before {
+            content: "\2713";
+            position: absolute;
+            left: 0;
+            color: #006BE3;
+            font-weight: 700;
+        }
+
+        /* ===== DATA PREVIEW TABLE ===== */
+        .data-preview {
+            background: #fff;
+            border: 1px solid #e5e5e5;
+            border-radius: 14px;
+            padding: 1.3rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            box-shadow: none;
+        }
+
+        .data-preview h4 {
+            color: #1d1d1f;
+            margin-bottom: 0.8rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .data-preview table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.83rem;
+        }
+
+        .data-preview th {
+            background: #f5f5f7;
+            color: #1d1d1f;
+            padding: 0.65rem 0.9rem;
+            text-align: left;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .data-preview th:first-child { border-radius: 8px 0 0 0; }
+        .data-preview th:last-child { border-radius: 0 8px 0 0; }
+
+        .data-preview td {
+            padding: 0.55rem 0.9rem;
+            border-bottom: 1px solid #f0f0f0;
+            color: #6e6e73;
+        }
+
+        .data-preview tr:nth-child(even) {
+            background: #fafafa;
+        }
+
+        .data-preview tr:hover td {
+            background: #f5f5f7;
+        }
+
+        /* ===== FLOW STEPS ===== */
+        .stage-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+
+        .stage-flow .flow-step {
+            background: #f5f5f7;
+            border: none;
+            padding: 0.7rem 1rem;
+            border-radius: 10px;
+            text-align: center;
+            min-width: 140px;
+            transition: all 0.2s ease;
+            box-shadow: none;
+        }
+
+        .stage-flow .flow-step:hover {
+            background: #e8e8ed;
+            transform: none;
+            border-color: transparent;
+            box-shadow: none;
+        }
+
+        .stage-flow .flow-step .num {
+            color: #006BE3;
+            background: none;
+            -webkit-background-clip: unset;
+            -webkit-text-fill-color: #006BE3;
+            background-clip: unset;
+            font-weight: 700;
+            font-size: 0.78rem;
+            display: block;
+            margin-bottom: 0.2rem;
+            font-family: 'Inter', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .stage-flow .flow-step .label {
+            color: #1d1d1f;
+            font-size: 0.82rem;
+            font-weight: 500;
+        }
+
+        .stage-flow .flow-arrow {
+            color: #d2d2d7;
+            font-size: 1.2rem;
+        }
+
+        /* ===== STEP CHIPS ===== */
+        .step-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.6rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .step-summary .step-chip {
+            background: #f5f5f7;
+            border: none;
+            border-radius: 8px;
+            padding: 0.7rem 0.8rem;
+            text-align: center;
+            font-size: 0.78rem;
+            line-height: 1.4;
+            color: #6e6e73;
+            transition: all 0.2s ease;
+        }
+
+        .step-chip:hover {
+            background: #e8e8ed;
+            transform: none;
+            border-color: transparent;
+            box-shadow: none;
+        }
+
+        .step-chip .chip-icon {
+            font-size: 1.2rem;
+            display: block;
+            margin-bottom: 0.2rem;
+        }
+
+        .step-chip .chip-label {
+            color: #86868b;
+            font-size: 0.68rem;
+            font-style: italic;
+        }
+
+        /* ===== RESOURCE LINKS ===== */
+        a.resource-link {
+            display: inline-block;
+            background: transparent;
+            padding: 0.45rem 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #006BE3;
+            border: 1px solid #006BE3;
+            transition: all 0.2s ease;
+            font-size: 0.85rem;
+            margin: 0.25rem;
+            font-weight: 500;
+        }
+
+        a.resource-link:hover {
+            background: #006BE3;
+            color: white;
+            border-color: #006BE3;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* ===== GENERAL STRONG ===== */
+        strong { color: #1d1d1f; }
+
+        /* ===== GENERAL LINKS ===== */
+        a { color: #006BE3; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .document { margin: 0; }
+            .header { padding: 2rem 1.2rem 1.5rem; }
+            .header h1 { font-size: 1.6rem; }
+            .tabs {
+                padding: 0;
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                justify-content: flex-start;
+                -webkit-overflow-scrolling: touch;
+            }
+            .tab-button { padding: 0.55rem 0.8rem; font-size: 0.78rem; white-space: nowrap; }
+            .content-container { padding: 1.2rem 1rem; }
+            .prompt-box { font-size: 0.7rem; padding: 1rem; padding-top: 2.5rem; border-radius: 10px; }
+            .stage-card { padding: 1.2rem; border-radius: 12px; }
+            .stage-flow .flow-step { min-width: 110px; }
+            .overview-grid { grid-template-columns: 1fr 1fr; }
+            .step-summary { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (max-width: 480px) {
+            .overview-grid { grid-template-columns: 1fr; }
+            .step-summary { grid-template-columns: 1fr; }
+        }
+
+        /* ===== PRINT ===== */
+        @media print {
+            body { background: white; }
+            .document { max-width: 100%; margin: 0; padding: 0; }
+            .tabs { display: none; }
+            .tab-content { display: block !important; }
+            .copy-button { display: none; }
+            .prompt-box { max-height: none; overflow: visible; }
+            .stage-card { box-shadow: none; border: 1px solid #e5e5e5; }
+            .overview-card { box-shadow: none; border: 1px solid #e5e5e5; }
+        }
+    </style>
+<style>body{margin:0;padding:26px 18px;background:#F2F5F6;font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;}.tool-shell{max-width:1100px;margin:0 auto;background:#FFFFFF;border:1px solid #E4E9EB;border-radius:10px;overflow:hidden;}.tool-band{background:linear-gradient(135deg,#D3E4F5 0%,#A6C7E8 100%);padding:16px 24px;}.tool-band h1{margin:0;font-size:30px;font-weight:800;color:#14304F;letter-spacing:-.4px;line-height:1.25;}.tool-band p{margin:6px 0 0;font-size:12px;color:#2C4C6E;text-transform:uppercase;letter-spacing:1px;font-weight:700;}.tool-body{padding:22px 24px 26px;}.tool-foot{background:#EBF3FB;border-top:1px solid #E4E9EB;padding:11px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:12px;color:#747474;}.tool-foot .code{background:#0B4F9C;color:#FFFFFF;font-weight:800;letter-spacing:.6px;padding:3px 9px;border-radius:4px;}.tool-foot .name{font-weight:700;color:#14304F;}</style></head><body><div class="tool-shell"><div class="tool-band"><h1>GenAI Lab: Dashboard Creation with Real Data</h1><p>Module 09</p></div><div class="tool-body">
+    <div class="document">
+    <div class="header">
+        <h1>GenAI Lab: Build a Dashboard</h1>
+        <div class="subtitle">From Raw Data to Interactive Dashboard in 4 Prompts</div>
+        <div class="instructor">Prof. Mohammad Dehghani | Northeastern University</div>
+        </div>
+
+    <div class="tabs">
+        <button class="tab-button active" onclick="showTab('overview')">Overview</button>
+        <button class="tab-button" onclick="showTab('stage1')">Prompt 1: Skeleton</button>
+        <button class="tab-button" onclick="showTab('stage2')">Prompt 2: Charts</button>
+        <button class="tab-button" onclick="showTab('stage3')">Prompt 3: Interactivity</button>
+        <button class="tab-button" onclick="showTab('stage4')">Prompt 4: Polish</button>
+        <button class="tab-button" onclick="showTab('resources')">Resources</button>
+    </div>
+
+    <div class="content-container">
+        <!-- ==================== OVERVIEW ==================== -->
+        <div id="overview" class="tab-content active">
+            <h2>Lab Overview</h2>
+
+            <div class="overview-grid">
+                <div class="overview-card">
+                    <h3>Dataset</h3>
+                    <p>Global Coffee Industry &mdash; production, consumption, prices, and trade (real data)</p>
+                </div>
+                <div class="overview-card">
+                    <h3>Tool</h3>
+                    <p>Claude AI &mdash; copy each prompt, paste into Claude, get a full HTML file</p>
+                </div>
+                <div class="overview-card">
+                    <h3>Output</h3>
+                    <p>A single HTML dashboard file you can open in any browser</p>
+                </div>
+                <div class="overview-card">
+                    <h3>Duration</h3>
+                    <p>~60 minutes &mdash; 4 progressive prompts, each builds on the last</p>
+                </div>
+            </div>
+
+            <div class="stage-flow">
+                <div class="flow-step"><span class="num">PROMPT 1</span><span class="label">Skeleton + KPIs<br><small style="color:#006BE3;">coffee_countries.csv</small></span></div>
+                <div class="flow-arrow">&rarr;</div>
+                <div class="flow-step"><span class="num">PROMPT 2</span><span class="label">Charts + Layout<br><small style="color:#006BE3;">coffee_market_annual.csv</small></span></div>
+                <div class="flow-arrow">&rarr;</div>
+                <div class="flow-step"><span class="num">PROMPT 3</span><span class="label">Interactivity<br><small style="color:#006BE3;">coffee_prices_monthly.csv</small></span></div>
+                <div class="flow-arrow">&rarr;</div>
+                <div class="flow-step"><span class="num">PROMPT 4</span><span class="label">Pro Polish<br><small style="color:#86868b;">no new data</small></span></div>
+            </div>
+
+            <div class="info-box tip">
+                <strong>How This Lab Works</strong>
+                <ol style="margin:0.3rem 0 0.5rem 1.2rem; padding:0; line-height:1.6;">
+                    <li><strong>Find a dashboard you love</strong> &mdash; browse <a href="https://dribbble.com/search/dashboard" target="_blank">Dribbble</a>, <a href="https://www.pinterest.com/search/pins/?q=modern%20dashboard%20design" target="_blank">Pinterest</a>, or <a href="https://www.behance.net/search/projects?search=dashboard%20ui" target="_blank">Behance</a>. Save a screenshot.</li>
+                    <li><strong>Download the 3 CSV files</strong> (provided with this lab). You use one per stage:</li>
+                </ol>
+                <table style="width:100%; font-size:0.82rem; margin:0 0 0.5rem; border-collapse:collapse;">
+                    <tr style="background:rgba(14,165,233,0.06);"><td style="padding:3px 8px; border-bottom:1px solid #e2e8f0; font-weight:600; width:80px;">Prompt 1</td><td style="padding:3px 8px; border-bottom:1px solid #e2e8f0;">New Claude chat + <code>coffee_countries.csv</code> + screenshot &rarr; skeleton + KPIs</td></tr>
+                    <tr><td style="padding:3px 8px; border-bottom:1px solid #e2e8f0; font-weight:600;">Prompt 2</td><td style="padding:3px 8px; border-bottom:1px solid #e2e8f0;">Same chat + <code>coffee_market_annual.csv</code> &rarr; adds charts</td></tr>
+                    <tr style="background:rgba(14,165,233,0.06);"><td style="padding:3px 8px; border-bottom:1px solid #e2e8f0; font-weight:600;">Prompt 3</td><td style="padding:3px 8px; border-bottom:1px solid #e2e8f0;">Same chat + <code>coffee_prices_monthly_2024.csv</code> &rarr; adds interactivity</td></tr>
+                    <tr><td style="padding:3px 8px; font-weight:600;">Prompt 4</td><td style="padding:3px 8px;">Same chat, no new data &rarr; final polish</td></tr>
+                </table>
+                <strong style="display:inline; margin:0;">Stay in one Claude conversation for all 4 prompts.</strong> Claude remembers your work. Each prompt asks new personalization questions &mdash; every student's dashboard will be unique.
+            </div>
+
+            <div class="info-box warning">
+                <strong>Step 0: Find Your Style Reference</strong>
+                Search for a dashboard design screenshot to use as your style template:
+                <ul style="margin:0.3rem 0 0.3rem 1.2rem; padding:0; line-height:1.6;">
+                    <li><a href="https://dribbble.com/search/dashboard-UI-dark" target="_blank"><strong>Dribbble</strong></a> &mdash; search "dashboard UI dark" or "analytics dashboard"</li>
+                    <li><a href="https://www.pinterest.com/search/pins/?q=modern%20web%20dashboard%20design" target="_blank"><strong>Pinterest</strong></a> &mdash; search "modern web dashboard design"</li>
+                    <li><a href="https://www.behance.net/search/projects?search=dashboard%20concept" target="_blank"><strong>Behance</strong></a> &mdash; search "dashboard concept"</li>
+                </ul>
+                Save as PNG or JPG. Attach alongside Prompt 1 so Claude matches that design's style.
+            </div>
+
+            <div class="data-preview">
+                <h4>CSV Files &mdash; One Per Stage</h4>
+                <table>
+                    <tr><th>File</th><th>Used In</th><th>Rows</th><th>Key Columns</th></tr>
+                    <tr><td><code>coffee_countries.csv</code></td><td>Prompt 1</td><td>29</td><td>country, region, is_producer, production, export, type, arabica_pct, consumption_per_capita, altitude, employment, production_2015&ndash;2023</td></tr>
+                    <tr><td><code>coffee_market_annual.csv</code></td><td>Prompt 2</td><td>10</td><td>year, arabica_price, robusta_price, total_production, total_consumption, export_revenue, people_employed</td></tr>
+                    <tr><td><code>coffee_prices_monthly_2024.csv</code></td><td>Prompt 3</td><td>12</td><td>month, month_num, arabica_price, robusta_price</td></tr>
+                </table>
+            </div>
+
+            <div class="info-box warning">
+                <strong>Important Notes</strong>
+                <ul style="margin:0.3rem 0 0 1.2rem; padding:0; line-height:1.6;">
+                    <li><strong>Use one Claude conversation</strong> for all 4 prompts &mdash; Claude remembers your work</li>
+                    <li>Each stage introduces <strong>one new CSV</strong> &mdash; new data unlocks new features</li>
+                    <li>Each prompt asks personalization questions &mdash; your answers shape the result</li>
+                    <li>If something looks wrong, tell Claude: "Fix the chart &mdash; [describe issue]"</li>
+                </ul>
+            </div>
+
+            <h3>What You'll Learn</h3>
+            <div class="overview-grid">
+                <div class="overview-card">
+                    <h3>Prompt 1</h3>
+                    <p>Attach <code>coffee_countries.csv</code> + screenshot. Choose font, title, KPIs, analysis angle. Build skeleton with sparklines.</p>
+                </div>
+                <div class="overview-card">
+                    <h3>Prompt 2</h3>
+                    <p>Attach <code>coffee_market_annual.csv</code>. Choose chart types, colors, layout, hover style. Add Chart.js visualizations.</p>
+                </div>
+                <div class="overview-card">
+                    <h3>Prompt 3</h3>
+                    <p>Attach <code>coffee_prices_monthly.csv</code>. Choose dark mode, filters, chart org, insights. Add interactivity.</p>
+                </div>
+                <div class="overview-card">
+                    <h3>Prompt 4</h3>
+                    <p>No new data. Choose export, table, loading, mobile nav. Final polish + accessibility.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== PROMPT 1 ==================== -->
+        <div id="stage1" class="tab-content">
+            <div class="stage-card">
+                <div class="stage-header">
+                    <div class="stage-number">1</div>
+                    <div class="stage-title">
+                        <h3>Dashboard Skeleton + KPI Cards</h3>
+                        <p>Structure, layout, and key metrics</p>
+                    </div>
+                </div>
+
+                <div class="step-summary">
+                    <div class="step-chip"><span class="chip-icon">&#066C82;</span>Attach CSV<br><span class="chip-label">coffee_countries.csv</span></div>
+                    <div class="step-chip"><span class="chip-icon">&#116082;</span>Attach Screenshot<br><span class="chip-label">style reference</span></div>
+                    <div class="step-chip"><span class="chip-icon">&#115681;</span>Answer 5 Questions<br><span class="chip-label">font, title, KPIs, angle</span></div>
+                    <div class="step-chip"><span class="chip-icon">&#125A96;</span>Get HTML<br><span class="chip-label">skeleton + KPI cards</span></div>
+                </div>
+
+                <div class="prompt-box">
+                    <button class="copy-button" onclick="copyPrompt('prompt1')">Copy Prompt</button>
+                    <div class="prompt-header">PROMPT 1 &mdash; Copy this to Claude</div>
+                    <div id="prompt1">I am attaching a CSV file (coffee_countries.csv) with Global Coffee Industry data and a screenshot of a dashboard design I like. Please study the screenshot's visual style (layout, colors, cards, spacing, typography, shadows) and use it as the design reference.
+
+Before you build anything, ask me these questions so you can customize the dashboard for me:
+
+QUESTION 1 — What is your name? (will appear in footer)
+
+QUESTION 2 — Pick your dashboard title:
+  a) Global Coffee Dashboard
+  b) World Coffee Market Report
+  c) Coffee Industry Intelligence
+  d) Custom (I'll type my own)
+
+QUESTION 3 — Choose a Google Font:
+  a) Inter (modern, clean)
+  b) Poppins (friendly, rounded)
+  c) Merriweather (editorial, serious)
+  d) Space Grotesk (techy, bold)
+  e) DM Sans (compact, professional)
+
+QUESTION 4 — Which KPI metrics matter most to you? (pick 4 from the CSV columns):
+  a) Total Global Production (sum of production_million_bags_2024)
+  b) Number of Producer Countries (count where is_producer = True)
+  c) People Employed Worldwide (sum of employment_thousands)
+  d) Arabica vs Robusta Split (% based on arabica_pct weighted by production)
+  e) Top Producer's Share (Brazil's % of total)
+  f) Highest Per-Capita Consumption (max consumption_per_capita_kg)
+  g) Average Export Rate (mean of export_rate_pct for producers)
+  h) Number of Regions Represented
+
+QUESTION 5 — What angle interests you most for exploring this data?
+  a) Which countries dominate production and why?
+  b) Who drinks the most coffee and where?
+  c) Producers vs consumers — the gap
+  d) How do regions compare?
+  e) Arabica vs Robusta — the coffee type story
+
+Wait for my answers, then read coffee_countries.csv (29 rows — country, region, production, exports, type, consumption per capita, altitude, employment, historical production 2015-2023).
+
+Then create a single-file HTML dashboard with all CSS and JS inline. Hardcode the CSV data directly into the JavaScript. Use my chosen Google Font via CDN.
+
+LAYOUT:
+- Header with my chosen title + subtitle + accent line
+- 4 KPI cards in a row (responsive: 2x2 on tablet, 1 column on mobile)
+  - Each card: emoji icon, big bold number, label, small green/red % change badge (calculate from historical columns)
+  - Right side of each card: tiny inline SVG sparkline (40px tall) drawn from production_2015 through production_2024
+- 2 placeholder boxes (grey, dashed border, rounded) labeled "Chart — Coming in Prompt 2"
+- Footer with data sources: "ICO (ico.org), USDA FAS (fas.usda.gov), World Bank Commodities" + my name
+
+STYLE (use if no screenshot attached):
+- Background: #f5f5f5, cards: white, shadow: 0 2px 8px rgba(0,0,0,0.06), border-radius: 12px
+- Accent: #40376F (coffee brown), Secondary: #8574D4 (light roast)
+- Responsive mobile-first, hover: scale(1.02) + shadow increase</div>
+                </div>
+
+                <div class="info-box warning">
+                    <strong>Attach These 2 Files</strong>
+                    <ul style="margin:0.3rem 0 0.3rem 1.2rem; padding:0;"><li>Your dashboard screenshot (style reference)</li><li><code>coffee_countries.csv</code></li></ul>
+                    Claude will ask 5 personalization questions before generating. Answer them to make your dashboard unique.
+                </div>
+
+                <div class="info-box success">
+                    <strong>What You'll Get</strong>
+                    A dashboard skeleton styled to YOUR choices &mdash; your font, your title, your KPI metrics, your analysis angle. 4 KPI cards with sparklines and trend badges from the country-level data. Placeholder boxes ready for charts in Prompt 2.
+                </div>
+
+                <div class="skills-list">
+                    <h4>Skills Practiced</h4>
+                    <ul>
+                        <li>Structured prompt engineering</li>
+                        <li>HTML/CSS layout with Grid</li>
+                        <li>Responsive design (mobile-first)</li>
+                        <li>KPI card design pattern</li>
+                        <li>Inline SVG sparklines</li>
+                        <li>Color palette &amp; typography spec</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== PROMPT 2 ==================== -->
+        <div id="stage2" class="tab-content">
+            <div class="stage-card">
+                <div class="stage-header">
+                    <div class="stage-number">2</div>
+                    <div class="stage-title">
+                        <h3>Add Charts + Better Layout</h3>
+                        <p>Visualize the data with Chart.js</p>
+                    </div>
+                </div>
+
+                <div class="step-summary">
+                    <div class="step-chip"><span class="chip-icon">&#066C82;</span>Attach CSV<br><span class="chip-label">coffee_market_annual.csv</span></div>
+                    <div class="step-chip"><span class="chip-icon">&#115681;</span>Same Chat<br><span class="chip-label">continue from Prompt 1</span></div>
+                    <div class="step-chip"><span class="chip-icon">&#115681;</span>Answer 4 Questions<br><span class="chip-label">charts, colors, layout</span></div>
+                    <div class="step-chip"><span class="chip-icon">&#006C82;</span>Get HTML<br><span class="chip-label">4 charts + fullscreen</span></div>
+                </div>
+
+                <div class="prompt-box">
+                    <button class="copy-button" onclick="copyPrompt('prompt2')">Copy Prompt</button>
+                    <div class="prompt-header">PROMPT 2 &mdash; Copy this to Claude</div>
+                    <div id="prompt2">Continue building on the dashboard you just created in Prompt 1. Do not start over — upgrade the existing HTML.
+
+I am also attaching a new CSV file: coffee_market_annual.csv (10 rows — yearly global totals: arabica/robusta prices, total production, total consumption, export revenue, and employment from 2015 to 2024).
+
+Before upgrading, ask me these questions:
+
+QUESTION 1 — Pick your chart color strategy:
+  a) Monochrome (shades of one color from my existing palette)
+  b) Warm earth tones (browns, ambers, terracotta)
+  c) Cool blues and teals
+  d) High contrast (bold distinct colors per chart)
+  e) Custom (I'll give you hex codes)
+
+QUESTION 2 — Which 4 charts do you want? (pick 4):
+  a) Horizontal bar — Top producing countries (from country data already in the HTML)
+  b) Vertical bar — Per-capita consumption by country (from country data)
+  c) Line chart — Arabica price trend 2015-2024 (from the new CSV)
+  d) Doughnut — Arabica vs Robusta production split (from country data)
+  e) Dual-line chart — Production vs Consumption over time (from the new CSV)
+  f) Scatter — Production vs Export rate by country (from country data)
+  g) Radar — Compare top 5 producers across multiple metrics (from country data)
+  h) Line — Export revenue growth 2015-2024 (from the new CSV)
+
+QUESTION 3 — Chart layout preference:
+  a) 2x2 grid (all visible at once)
+  b) 1 large chart on top + 3 smaller below
+  c) Single column (scroll through)
+
+QUESTION 4 — Hover behavior on charts:
+  a) Simple tooltip (value only)
+  b) Rich tooltip (value + context, e.g., "Brazil: 62.6M bags — 35% of global production")
+  c) Crosshair + tooltip
+
+Wait for my answers. Then read the new CSV and hardcode its data into the JavaScript alongside the existing country data. Upgrade the dashboard:
+
+- Add Chart.js via CDN: &lt;script src="https://cdn.jsdelivr.net/npm/chart.js"&gt;&lt;/script&gt;
+- Replace the placeholder boxes with my 4 chosen charts
+- Each chart card should have:
+  - Title (bold) + subtitle (grey, smaller)
+  - A fullscreen expand button (top-right corner, "⤢" icon)
+  - Clicking fullscreen: chart fills viewport as an overlay (fixed position, dimmed background, close X button)
+  - Chart resizes properly in fullscreen
+- Keep all existing KPI cards and styling
+- Section title "Market Overview" above charts with thin line separator
+- Keep footer data sources</div>
+                </div>
+
+                <div class="info-box warning">
+                    <strong>Stay in the Same Chat + Attach New CSV</strong>
+                    <ul style="margin:0.3rem 0 0 1.2rem; padding:0;"><li>Attach <code>coffee_market_annual.csv</code> to the same Claude conversation</li><li>Copy and paste Prompt 2 &mdash; Claude upgrades the dashboard it already created</li></ul>
+                </div>
+
+                <div class="info-box success">
+                    <strong>What You'll Get</strong>
+                    Your 4 chosen Chart.js visualizations built from both CSVs. Each chart card has a fullscreen expand button. Hover for tooltips. The new annual market data unlocks price trends and time-series charts.
+                </div>
+
+                <div class="skills-list">
+                    <h4>Skills Practiced</h4>
+                    <ul>
+                        <li>Chart.js configuration</li>
+                        <li>Fullscreen overlay pattern</li>
+                        <li>Data visualization types</li>
+                        <li>Rich hover tooltips</li>
+                        <li>Iterative prompt chaining</li>
+                        <li>CDN library integration</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== PROMPT 3 ==================== -->
+        <div id="stage3" class="tab-content">
+            <div class="stage-card">
+                <div class="stage-header">
+                    <div class="stage-number">3</div>
+                    <div class="stage-title">
+                        <h3>Add Interactivity</h3>
+                        <p>Filters, dark mode, animations</p>
+                    </div>
+                </div>
+
+                <div class="step-summary">
+                    <div class="step-chip"><span class="chip-icon">&#066C82;</span>Attach CSV<br><span class="chip-label">coffee_prices_monthly.csv</span></div>
+                    <div class="step-chip"><span class="chip-icon">&#115681;</span>Same Chat<br><span class="chip-label">continue from Prompt 2</span></div>
+                    <div class="step-chip"><span class="chip-icon">&#115681;</span>Answer 5 Questions<br><span class="chip-label">dark mode, filters, insights</span></div>
+                    <div class="step-chip"><span class="chip-icon">&#9889;</span>Get HTML<br><span class="chip-label">interactive + animated</span></div>
+                </div>
+
+                <div class="prompt-box">
+                    <button class="copy-button" onclick="copyPrompt('prompt3')">Copy Prompt</button>
+                    <div class="prompt-header">PROMPT 3 &mdash; Copy this to Claude</div>
+                    <div id="prompt3">Continue building on the dashboard from Prompt 2. Do not start over — upgrade the existing HTML.
+
+I am also attaching a new CSV file: coffee_prices_monthly_2024.csv (12 rows — monthly Arabica and Robusta prices for each month of 2024). This adds monthly granularity for interactive drill-downs.
+
+Before adding interactivity, ask me these questions:
+
+QUESTION 1 — Dark mode style:
+  a) Dark navy (#111A27 background, blue-grey cards)
+  b) True black (#000000 background, dark grey cards)
+  c) Dark coffee (#0B081A background, brown-tinted cards)
+  d) No dark mode — keep light only
+
+QUESTION 2 — How should the charts be organized?
+  a) Keep my current grid — all charts visible at once
+  b) Tabbed view — one chart per tab, with smooth transitions
+  c) Tabs + keep 1 "featured" chart always visible above the tabs
+
+QUESTION 3 — What filters would be most useful? (pick up to 3):
+  a) Region filter (Americas / Asia / Africa / Europe)
+  b) Top N filter (Top 3 / Top 5 / Top 10)
+  c) Type filter (Arabica / Robusta / Both)
+  d) Time range slider (for price/trend charts)
+  e) Search box (type a country name to highlight it)
+
+QUESTION 4 — KPI hover behavior:
+  a) Show a mini trend chart popup (tiny line chart showing 6-year trend)
+  b) Show a detail tooltip (text-only: breakdown of the number)
+  c) Expand the card with more context
+
+QUESTION 5 — What insights matter most for your story? (pick 2-3):
+  a) Which single country dominates and by how much?
+  b) Nordic countries and their coffee obsession
+  c) Price volatility and what's driving it
+  d) The production-consumption gap
+  e) Africa's untapped potential
+  f) Arabica vs Robusta trends
+
+Wait for my answers. Then read the new CSV and hardcode its monthly price data into the JavaScript. Upgrade the dashboard with:
+
+1. DARK/LIGHT MODE TOGGLE
+   - Pill-shaped toggle in header (sun/moon unicode icons)
+   - All charts re-render with correct colors for active theme
+   - Persist choice in localStorage
+
+2. ANIMATED KPI COUNTERS
+   - Numbers count up from 0 using requestAnimationFrame (2s, ease-out)
+   - Triggered by IntersectionObserver (animate once only)
+   - Format numbers correctly during animation ($, %, M, commas)
+
+3. MY CHOSEN CHART ORGANIZATION (tabs or grid based on my answer)
+   - If tabs: sliding underline indicator, smooth fade transitions
+   - Each chart keeps its fullscreen button
+   - Add a new tab/chart option: "Monthly 2024 Prices" using the new monthly CSV data (line chart with both Arabica and Robusta lines)
+
+4. MY CHOSEN FILTERS
+   - Chip-style buttons below charts
+   - Filters dynamically update chart data using Chart.js .update()
+   - Active chip: filled accent color, others: outlined
+
+5. MY CHOSEN KPI HOVER BEHAVIOR
+
+6. INSIGHT OVERLAYS
+   - (i) icon on each chart card
+   - Click: shows semi-transparent overlay with 2-3 insights based on my chosen story angles
+   - Click again to dismiss
+
+Keep all existing charts, KPIs, fullscreen, footer, and styling.</div>
+                </div>
+
+                <div class="info-box warning">
+                    <strong>Stay in the Same Chat + Attach New CSV</strong>
+                    <ul style="margin:0.3rem 0 0 1.2rem; padding:0;"><li>Attach <code>coffee_prices_monthly_2024.csv</code> to the same conversation</li><li>Copy and paste Prompt 3 &mdash; Claude adds interactivity to the existing dashboard</li></ul>
+                </div>
+
+                <div class="info-box success">
+                    <strong>What You'll Get</strong>
+                    A fully interactive dashboard: dark/light mode, animated KPI counters, your chosen chart organization, filters that update charts live, KPI hover behavior, insight overlays, and a new monthly price chart from the third CSV. It feels like a real SaaS product.
+                </div>
+
+                <div class="info-box tip">
+                    <strong>Debugging Tips</strong>
+                    <ul style="margin:0.3rem 0 0 1.2rem; padding:0;"><li>Dark mode breaks chart colors &rarr; "Chart text and grid lines are invisible in dark mode, fix contrast"</li><li>Filters don't update &rarr; "The filter buttons aren't calling chart.update() with new data"</li><li>Hover mini-chart missing &rarr; "The KPI hover popup with trend chart is not showing"</li><li>Tab underline doesn't slide &rarr; "Make the tab indicator translateX to the active button position"</li></ul>
+                </div>
+
+                <div class="skills-list">
+                    <h4>Skills Practiced</h4>
+                    <ul>
+                        <li>JavaScript DOM manipulation</li>
+                        <li>localStorage persistence</li>
+                        <li>IntersectionObserver API</li>
+                        <li>Chart.js dynamic data updates</li>
+                        <li>Hover popup / mini-chart pattern</li>
+                        <li>Tab/filter UX with animations</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== PROMPT 4 ==================== -->
+        <div id="stage4" class="tab-content">
+            <div class="stage-card">
+                <div class="stage-header">
+                    <div class="stage-number">4</div>
+                    <div class="stage-title">
+                        <h3>Professional Polish</h3>
+                        <p>Export, accessibility, micro-interactions, mobile perfection</p>
+                    </div>
+                </div>
+
+                <div class="step-summary">
+                    <div class="step-chip"><span class="chip-icon">&#115681;</span>Same Chat<br><span class="chip-label">continue from Prompt 3</span></div>
+                    <div class="step-chip"><span class="chip-icon">&#115681;</span>Answer 5 Questions<br><span class="chip-label">export, table, mobile</span></div>
+                    <div class="step-chip"><span class="chip-icon">&#10024;</span>Get HTML<br><span class="chip-label">polished + accessible</span></div>
+                    <div class="step-chip"><span class="chip-icon">&#115A79;</span>Portfolio Ready<br><span class="chip-label">submit your work</span></div>
+                </div>
+
+                <div class="prompt-box">
+                    <button class="copy-button" onclick="copyPrompt('prompt4')">Copy Prompt</button>
+                    <div class="prompt-header">PROMPT 4 &mdash; Copy this to Claude</div>
+                    <div id="prompt4">Continue building on the dashboard from Prompt 3. Do not start over — this is the final polish pass.
+
+Before you start, ask me:
+
+QUESTION 1 — Export format:
+  a) Download as PNG image (full dashboard screenshot)
+  b) Print-friendly view (clean CSS for printing)
+  c) Both PNG export + print view
+
+QUESTION 2 — Data table style:
+  a) Collapsible table below charts (click to expand)
+  b) Side panel that slides in from the right
+  c) Full-width section at the bottom (always visible)
+  d) No data table — charts are enough
+
+QUESTION 3 — Loading experience:
+  a) Skeleton shimmer placeholders (1.5s, then fade in)
+  b) Simple fade-in (0.5s)
+  c) Staggered entrance (KPIs first, then charts slide up)
+
+QUESTION 4 — Mobile navigation:
+  a) Sticky bottom nav bar (icons: KPIs, Charts, Data, Settings)
+  b) Hamburger menu (top-right, slides in from side)
+  c) Keep desktop layout, just stack on mobile
+
+QUESTION 5 — What finishing touches do you want? (pick any):
+  a) Animated gradient header background
+  b) Scroll-to-top floating button
+  c) Toast notifications (small popups when user interacts)
+  d) All of the above
+
+Wait for my answers. Then apply the final polish:
+
+1. MY CHOSEN EXPORT (PNG via html2canvas CDN and/or print CSS)
+
+2. DATA TABLE (if chosen)
+   - Use the data already in the dashboard from the CSV
+   - Columns: Country, Production, Export, Type, Export Rate %
+   - Sortable columns (click header toggles ascending/descending)
+   - Search input: "Search countries..." — matching rows highlight, others fade
+   - Zebra-striped rows, hover highlight
+
+3. MY CHOSEN LOADING EXPERIENCE
+
+4. TOAST NOTIFICATIONS (if chosen)
+   - Fixed bottom-right, pill-shaped, blur background
+   - Triggers: dark mode toggle, filter change, export complete
+   - Auto-dismiss after 2.5 seconds
+
+5. MICRO-INTERACTIONS
+   - KPI icons: gentle bounce on hover (CSS keyframe)
+   - Filter chips: scale(0.95) on click, tactile feel
+   - Chart cards: subtle glow on hover
+   - Smooth transitions on everything (0.25s ease)
+
+6. MY CHOSEN MOBILE NAVIGATION
+
+7. ACCESSIBILITY
+   - Skip-to-content link, keyboard navigation, ARIA labels on all charts
+   - Focus-visible outlines, 4.5:1 color contrast
+   - prefers-reduced-motion: disable animations
+
+8. FOOTER
+   - Keep all existing data sources
+   - Add: your course name and university
+   - Add: my name + date + "Built with Claude AI" badge
+
+Keep everything from previous prompts. Clean up any dead CSS/JS. Add HTML comments for major sections.</div>
+                </div>
+
+                <div class="info-box warning">
+                    <strong>Same Chat, No New CSV</strong>
+                    Just copy and paste Prompt 4 into the same Claude conversation. No new data file needed &mdash; this stage is pure polish.
+                </div>
+
+                <div class="info-box success">
+                    <strong>What You'll Get</strong>
+                    A portfolio-quality dashboard with: PNG export, skeleton loading, toast notifications, sortable data table with search, micro-interactions, mobile navigation, and full accessibility. This is what you'd show in a job interview.
+                </div>
+
+                <div class="info-box tip">
+                    <strong>Testing Checklist</strong>
+                    <ul style="margin:0.3rem 0 0 1.2rem; padding:0;">
+                        <li>Toggle dark/light mode &mdash; do all charts, cards, and table update?</li>
+                        <li>Click every tab + filter combination &mdash; correct data shown?</li>
+                        <li>Click fullscreen on each chart &mdash; expands and closes properly?</li>
+                        <li>Hover each KPI card &mdash; mini trend chart popup appears?</li>
+                        <li>Click (i) on a chart &mdash; insight overlay shows and dismisses?</li>
+                        <li>Click "Download as PNG" &mdash; clean image saved?</li>
+                        <li>Type in search box &mdash; rows highlight, non-matches fade?</li>
+                        <li>Sort table by each column &mdash; ascending then descending?</li>
+                        <li>Resize to mobile &mdash; bottom nav appears, no horizontal overflow?</li>
+                        <li>Keyboard only (Tab, Enter, Escape) &mdash; all controls reachable?</li>
+                    </ul>
+                </div>
+
+                <div class="skills-list">
+                    <h4>Skills Practiced</h4>
+                    <ul>
+                        <li>html2canvas export</li>
+                        <li>Skeleton loading shimmer</li>
+                        <li>Toast notification system</li>
+                        <li>Micro-interactions &amp; keyframes</li>
+                        <li>Sortable table + search</li>
+                        <li>Accessibility (ARIA, focus)</li>
+                        <li>Mobile bottom navigation</li>
+                        <li>prefers-reduced-motion</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== RESOURCES ==================== -->
+        <div id="resources" class="tab-content">
+            <h2>Resources & Tips</h2>
+
+            <div class="info-box tip">
+                <strong>Prompt Engineering Tips for Dashboards</strong>
+                <ul style="margin:0.3rem 0 0 1.2rem; padding:0;">
+                    <li><strong>Be specific about layout:</strong> "2x2 grid" beats "arrange nicely"</li>
+                    <li><strong>Name your colors:</strong> give hex codes, not just "blue"</li>
+                    <li><strong>Iterate, don't restart:</strong> stay in the same chat and say "upgrade this"</li>
+                    <li><strong>Debug with Claude:</strong> paste broken code and describe what's wrong</li>
+                    <li><strong>Ask for alternatives:</strong> "Show me 2 different color schemes"</li>
+                </ul>
+            </div>
+
+            <h3>Chart.js Resources</h3>
+            <div style="margin: 1rem 0;">
+                <a href="https://www.chartjs.org/docs/latest/" class="resource-link" target="_blank">Chart.js Docs</a>
+                <a href="https://www.chartjs.org/docs/latest/samples/" class="resource-link" target="_blank">Chart.js Examples</a>
+            </div>
+
+            <h3>Dashboard Inspiration</h3>
+            <div style="margin: 1rem 0;">
+                <a href="https://dribbble.com/search/dashboard" class="resource-link" target="_blank">Dribbble Dashboards</a>
+                <a href="https://www.pinterest.com/search/pins/?q=modern%20dashboard%20design" class="resource-link" target="_blank">Pinterest Dashboards</a>
+                <a href="https://www.behance.net/search/projects?search=dashboard%20ui" class="resource-link" target="_blank">Behance Dashboards</a>
+                <a href="https://www.ico.org/trade_statistics.asp" class="resource-link" target="_blank">ICO Coffee Data</a>
+                <a href="https://fas.usda.gov/data/coffee-world-markets-and-trade" class="resource-link" target="_blank">USDA FAS Coffee</a>
+                <a href="https://www.worldbank.org/en/research/commodity-markets" class="resource-link" target="_blank">World Bank Commodities</a>
+            </div>
+
+            <h3>Color Palettes</h3>
+            <div style="margin: 1rem 0;">
+                <a href="https://coolors.co" class="resource-link" target="_blank">Coolors.co</a>
+                <a href="https://colorhunt.co" class="resource-link" target="_blank">Color Hunt</a>
+            </div>
+
+            <div class="info-box warning" style="margin-top: 2rem;">
+                <strong>Common Issues & Fixes</strong>
+                <ul style="margin:0.3rem 0 0 1.2rem; padding:0;">
+                    <li><strong>Chart not rendering:</strong> Check that the Chart.js CDN script tag is before your chart code</li>
+                    <li><strong>Layout overflow on mobile:</strong> Tell Claude "fix horizontal scroll on mobile"</li>
+                    <li><strong>Dark mode breaks charts:</strong> "Update Chart.js font and grid colors for dark mode"</li>
+                    <li><strong>Export captures blank:</strong> Tell Claude to "add a delay before capture"</li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function copyPrompt(promptId) {
+            const el = document.getElementById(promptId);
+            const text = el.textContent || el.innerText;
+
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = event.target;
+                const orig = btn.innerText;
+                btn.innerText = 'Copied!';
+                btn.style.background = '#24708A';
+                setTimeout(() => {
+                    btn.innerText = orig;
+                    btn.style.background = '#006BE3';
+                }, 2000);
+            }).catch(() => {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed';
+                ta.style.left = '-9999px';
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                const btn = event.target;
+                btn.innerText = 'Copied!';
+                setTimeout(() => { btn.innerText = 'Copy Prompt'; }, 2000);
+            });
+        }
+    </script>
+</div><div class="tool-foot"><span><span class="code">ai2lab</span> <span class="name">Interactive Tools</span></span><span>Prof. Dehghani</span></div></div></body></html>
