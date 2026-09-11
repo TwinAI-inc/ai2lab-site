@@ -124,8 +124,9 @@
             left: 0;
             right: 0;
             display: flex;
-            align-items: center;
+            align-items: safe center;
             justify-content: center;
+            overflow-y: auto;
         }
 
         /* Slides */
@@ -256,6 +257,7 @@
             justify-content: center;
             font-size: 24px;
             flex-shrink: 0;
+            color: #0073FF;
         }
 
         /* Footer Navigation */
@@ -282,6 +284,10 @@
             background: white;
             cursor: pointer;
             font-size: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #2C3948;
         }
 
         .nav-btn:hover:not(:disabled) {
@@ -386,6 +392,26 @@
             transform: translateX(0);
         }
 
+        .reveal-cue {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+            margin-top: 10px;
+            padding: 7px 10px;
+            border: 1px solid #BFD9FF;
+            border-radius: 999px;
+            background: #F0F7FF;
+            color: #0073FF;
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1;
+        }
+
+        .reveal-cue svg {
+            flex-shrink: 0;
+        }
+
         .vs-divider {
             font-size: 18px;
             color: #999;
@@ -434,7 +460,7 @@
         /* Annotation */
         .annotation {
             position: absolute;
-            background: #99FFF7;
+            background: #D3E4F5;
             padding: 8px 12px;
             border-radius: 6px;
             font-size: 13px;
@@ -458,7 +484,7 @@
             height: 0;
             border-left: 8px solid transparent;
             border-right: 8px solid transparent;
-            border-top: 8px solid #99FFF7;
+            border-top: 8px solid #D3E4F5;
         }
 
         /* Research card animations */
@@ -561,7 +587,7 @@
                     <div class="card" style="background: linear-gradient(135deg, #f0f7ff, #e6f2ff);">
                         <div class="rules-grid">
                             <div class="rule-item">
-                                <div class="rule-icon">⏱</div>
+                                <div class="rule-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg></div>
                                 <div>
                                     <h4>5 Minutes Total</h4>
                                     <p style="font-size: 14px;">Keep moving around</p>
@@ -569,7 +595,7 @@
                             </div>
                             
                             <div class="rule-item">
-                                <div class="rule-icon"></div>
+                                <div class="rule-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 19v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 17.5V19"/><circle cx="10" cy="8" r="3.2"/><path d="M20 19v-1.5a3.5 3.5 0 0 0-2.6-3.4"/><path d="M15.5 5.2a3.2 3.2 0 0 1 0 5.6"/></svg></div>
                                 <div>
                                     <h4>Talk to 5-6 People</h4>
                                     <p style="font-size: 14px;">Exchange cards each time</p>
@@ -577,7 +603,7 @@
                             </div>
                             
                             <div class="rule-item">
-                                <div class="rule-icon"></div>
+                                <div class="rule-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="17 3 21 7 17 11"/><path d="M21 7H7a4 4 0 0 0-4 4"/><polyline points="7 21 3 17 7 13"/><path d="M3 17h14a4 4 0 0 0 4-4"/></svg></div>
                                 <div>
                                     <h4>30-60 Seconds Each</h4>
                                     <p style="font-size: 14px;">Quick response & swap</p>
@@ -585,7 +611,7 @@
                             </div>
                             
                             <div class="rule-item">
-                                <div class="rule-icon"></div>
+                                <div class="rule-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H10a2.5 2.5 0 0 1 2 1 2.5 2.5 0 0 1 2-1h4.5A1.5 1.5 0 0 1 20 5.5v12a1 1 0 0 1-1 1h-5a2 2 0 0 0-2 1 2 2 0 0 0-2-1H5a1 1 0 0 1-1-1z"/><path d="M12 5v14"/></svg></div>
                                 <div>
                                     <h4>Practice Storytelling</h4>
                                     <p style="font-size: 14px;">Turn data into narratives</p>
@@ -612,29 +638,23 @@
             
             <div class="concept-flow">
                 <div class="concept-box" id="concept1">
-                    <div style="width: 120px; height: 120px; background: #f8f9fa; border-radius: 20px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 48px;">
-                        
-                    </div>
+                    <div style="width: 120px; height: 120px; background: #f8f9fa; border-radius: 20px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 48px;"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#0073FF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.2 9.3a2.9 2.9 0 1 1 3.6 3.1c-.6.2-.9.7-.9 1.3v.5"/><circle cx="12" cy="17.4" r="0.9" fill="#0073FF" stroke="none"/></svg></div>
                     <h3>Tricky Question</h3>
                     <p style="font-size: 14px; color: #666;">Challenges your thinking</p>
                 </div>
                 
-                <div class="arrow" id="arrow1"></div>
+                <div class="arrow" id="arrow1"><svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#0073FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg></div>
                 
                 <div class="concept-box" id="concept2">
-                    <div style="width: 120px; height: 120px; background: linear-gradient(135deg, #fff9e6, #99FFF7); border-radius: 20px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 48px;">
-                        
-                    </div>
+                    <div style="width: 120px; height: 120px; background: linear-gradient(135deg, #fff9e6, #D3E4F5); border-radius: 20px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 48px;"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#0073FF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.2 17h5.6"/><path d="M10 20.2h4"/><path d="M12 3.2a6 6 0 0 0-3.4 10.9c.5.4.8 1 .8 1.6h5.2c0-.6.3-1.2.8-1.6A6 6 0 0 0 12 3.2z"/></svg></div>
                     <h3>Spark Ideas</h3>
                     <p style="font-size: 14px; color: #666;">Forces creative thinking</p>
                 </div>
                 
-                <div class="arrow" id="arrow2"></div>
+                <div class="arrow" id="arrow2"><svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#0073FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg></div>
                 
                 <div class="concept-box" id="concept3">
-                    <div style="width: 120px; height: 120px; background: linear-gradient(135deg, #e6f2ff, #B3D7FF); border-radius: 20px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 48px;">
-                        
-                    </div>
+                    <div style="width: 120px; height: 120px; background: linear-gradient(135deg, #e6f2ff, #B3D7FF); border-radius: 20px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 48px;"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#0073FF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H10a2.5 2.5 0 0 1 2 1 2.5 2.5 0 0 1 2-1h4.5A1.5 1.5 0 0 1 20 5.5v12a1 1 0 0 1-1 1h-5a2 2 0 0 0-2 1 2 2 0 0 0-2-1H5a1 1 0 0 1-1-1z"/><path d="M12 5v14"/></svg></div>
                     <h3>Build Narrative</h3>
                     <p style="font-size: 14px; color: #666;">Create compelling stories</p>
                 </div>
@@ -642,7 +662,7 @@
 
             <div class="card" style="text-align: center; background: #f8f9fa; margin-top: 40px; opacity: 0; transition: opacity 0.8s ease;" id="constraintCard">
                 <p style="font-size: 18px; color: #333;">
-                    <strong>The Power of Constraints:</strong>Limited time + unexpected questions = better storytelling skills
+                    <strong>The Power of Constraints:</strong> Limited time + unexpected questions = better storytelling skills
                 </p>
             </div>
         </div>
@@ -668,9 +688,9 @@
                             <path d="M 30 50 Q 40 35, 50 40 T 70 50" fill="none" stroke="#0073FF" stroke-width="1.5" opacity="0.5"/>
                             <path d="M 30 50 Q 40 65, 50 60 T 70 50" fill="none" stroke="#0073FF" stroke-width="1.5" opacity="0.5"/>
                             <!-- Activation points -->
-                            <circle cx="35" cy="40" r="3" fill="#00FFE1" opacity="0.8"/>
-                            <circle cx="65" cy="40" r="3" fill="#00FFE1" opacity="0.8"/>
-                            <circle cx="50" cy="55" r="3" fill="#00FFE1" opacity="0.8"/>
+                            <circle cx="35" cy="40" r="3" fill="#0B4F9C" opacity="0.8"/>
+                            <circle cx="65" cy="40" r="3" fill="#0B4F9C" opacity="0.8"/>
+                            <circle cx="50" cy="55" r="3" fill="#0B4F9C" opacity="0.8"/>
                         </svg>
                     </div>
                     <h4 style="text-align: center; margin-bottom: 15px;">Why Our Brains Love Stories</h4>
@@ -702,30 +722,30 @@
                             <div style="position: absolute; bottom: -5px; right: 5px; font-size: 13px; color: #0073FF;">Stories</div>
                         </div>
                     </div>
-                    <h4 style="text-align: center; margin-bottom: 15px; color: #00FFE1;">The Impact on Persuasion</h4>
+                    <h4 style="text-align: center; margin-bottom: 15px; color: #0B4F9C;">The Impact on Persuasion</h4>
                     <div style="display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center; font-size: 13px;">
-                        <div style="width: 8px; height: 8px; background: #00FFE1; border-radius: 50%;"></div>
-                        <span><strong>22x</strong>more memorable than facts</span>
+                        <div style="width: 8px; height: 8px; background: #0B4F9C; border-radius: 50%;"></div>
+                        <span><strong>22x</strong> more memorable than facts</span>
                         
-                        <div style="width: 8px; height: 8px; background: #00FFE1; border-radius: 50%;"></div>
+                        <div style="width: 8px; height: 8px; background: #0B4F9C; border-radius: 50%;"></div>
                         <span>Increases belief adoption</span>
                         
-                        <div style="width: 8px; height: 8px; background: #00FFE1; border-radius: 50%;"></div>
+                        <div style="width: 8px; height: 8px; background: #0B4F9C; border-radius: 50%;"></div>
                         <span>Reduces counter-arguing</span>
                         
-                        <div style="width: 8px; height: 8px; background: #00FFE1; border-radius: 50%;"></div>
+                        <div style="width: 8px; height: 8px; background: #0B4F9C; border-radius: 50%;"></div>
                         <span>Creates lasting change</span>
                     </div>
                 </div>
             </div>
 
-            <div class="card" id="researchCard4" style="background: linear-gradient(135deg, #fff9e6, #99FFF7); text-align: center; opacity: 0; transform: scale(0.9); transition: all 0.8s ease;">
+            <div class="card" id="researchCard4" style="background: linear-gradient(135deg, #fff9e6, #D3E4F5); text-align: center; opacity: 0; transform: scale(0.9); transition: all 0.8s ease;">
                 <div style="display: flex; align-items: center; justify-content: center; gap: 30px;">
-                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #00FFE1, #00FFE8); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                        <span style="font-size: 32px;">∞</span>
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #0B4F9C, #0B4F9C); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <span style="font-size: 32px; color: #FFFFFF;">∞</span>
                     </div>
                     <div style="text-align: left;">
-                        <h4 style="color: #00FFE1; margin-bottom: 8px;">The "Flow State" Connection</h4>
+                        <h4 style="color: #0B4F9C; margin-bottom: 8px;">The "Flow State" Connection</h4>
                         <p style="font-size: 13px; margin: 0;">Narrative transportation = flow state<br>Total absorption, lose track of time<br>More receptive to new perspectives</p>
                     </div>
                 </div>
@@ -775,7 +795,7 @@
                 <div class="vs-divider">
                     <div style="text-align: center;">
                         <div>VS</div>
-                        <div style="font-size: 13px; color: #0073FF; margin-top: 8px;">Think...</div>
+                        <div class="reveal-cue"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.8 12S5.4 5.5 12 5.5 22.2 12 22.2 12 18.6 18.5 12 18.5 1.8 12 1.8 12z"/><circle cx="12" cy="12" r="2.9"/></svg> Click to reveal</div>
                     </div>
                 </div>
                 
@@ -812,7 +832,7 @@
                                 <p style="color: #666; margin: 0; font-size: 24px;">4.2/5</p>
                                 <p style="color: #999; margin: 5px 0 0 0; font-size: 13px;">Customer satisfaction</p>
                             </div>
-                            <div style="font-size: 40px; opacity: 0.2;"></div>
+                            <div style="opacity: 0.25; line-height: 0;"><svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#666" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 3 14.8 9.1 21.5 9.9 16.6 14.5 17.9 21.1 12 17.8 6.1 21.1 7.4 14.5 2.5 9.9 9.2 9.1"/></svg></div>
                         </div>
                     </div>
                     <p style="font-size: 13px; color: #999; margin-top: 15px;">Just a number</p>
@@ -821,7 +841,7 @@
                 <div class="vs-divider">
                     <div style="text-align: center;">
                         <div>VS</div>
-                        <div style="font-size: 13px; color: #0073FF; margin-top: 8px;">Think...</div>
+                        <div class="reveal-cue"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.8 12S5.4 5.5 12 5.5 22.2 12 22.2 12 18.6 18.5 12 18.5 1.8 12 1.8 12z"/><circle cx="12" cy="12" r="2.9"/></svg> Click to reveal</div>
                     </div>
                 </div>
                 
@@ -834,10 +854,10 @@
                                     <span style="font-size: 32px; color: #0073FF; font-weight: bold;">4.2</span>
                                     <span style="font-size: 18px; color: #666;">/5</span>
                                 </p>
-                                <p style="color: #0073FF; margin: 5px 0; font-size: 14px; font-weight: 600;"> 0.7 from last year</p>
+                                <p style="color: #0073FF; margin: 5px 0; font-size: 14px; font-weight: 600;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-1px;"><line x1="12" y1="19" x2="12" y2="6"/><polyline points="6 12 12 6 18 12"/></svg> 0.7 from last year</p>
                                 <p style="color: #666; margin: 5px 0 0 0; font-size: 13px;">Our best score in 5 years!</p>
                             </div>
-                            <div style="font-size: 40px; color: #00FFE8;"></div>
+                            <div style="line-height: 0;"><svg viewBox="0 0 24 24" width="40" height="40" fill="#0073FF" stroke="#0073FF" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><polygon points="12 3 14.8 9.1 21.5 9.9 16.6 14.5 17.9 21.1 12 17.8 6.1 21.1 7.4 14.5 2.5 9.9 9.2 9.1"/></svg></div>
                         </div>
                     </div>
                     <p style="font-size: 13px; color: #0073FF; margin-top: 15px;">Shows progress and achievement</p>
@@ -862,7 +882,7 @@
                 <div class="vs-divider">
                     <div style="text-align: center;">
                         <div>VS</div>
-                        <div style="font-size: 13px; color: #0073FF; margin-top: 8px;">Think...</div>
+                        <div class="reveal-cue"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.8 12S5.4 5.5 12 5.5 22.2 12 22.2 12 18.6 18.5 12 18.5 1.8 12 1.8 12z"/><circle cx="12" cy="12" r="2.9"/></svg> Click to reveal</div>
                     </div>
                 </div>
                 
@@ -870,8 +890,8 @@
                     <h3 style="color: #0073FF; font-size: 16px; margin-bottom: 15px;">After</h3>
                     <div style="background: white; padding: 20px; border-radius: 8px;">
                         <p style="color: #666; font-size: 14px; line-height: 2;">Sales: $450K<br>Costs: $320K<br>
-                            <span style="display: inline-block; background: linear-gradient(135deg, #99FFF7, #66FFF4); padding: 4px 10px; border-radius: 4px; margin: 5px 0;">
-                                <strong style="color: #00FFE1; font-size: 18px;">Profit: $130K</strong>
+                            <span style="display: inline-block; background: linear-gradient(135deg, #D3E4F5, #A6C7E8); padding: 4px 10px; border-radius: 4px; margin: 5px 0;">
+                                <strong style="color: #0B4F9C; font-size: 18px;">Profit: $130K</strong>
                                 <span style="color: #0073FF; font-weight: 600; margin-left: 10px;"> 15%</span>
                             </span><br>
                             <span style="font-size: 13px; color: #0073FF;">Best margin in company history!</span>
@@ -914,7 +934,7 @@
                 <div class="vs-divider">
                     <div style="text-align: center;">
                         <div>VS</div>
-                        <div style="font-size: 13px; color: #0073FF; margin-top: 8px;">Think...</div>
+                        <div class="reveal-cue"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.8 12S5.4 5.5 12 5.5 22.2 12 22.2 12 18.6 18.5 12 18.5 1.8 12 1.8 12z"/><circle cx="12" cy="12" r="2.9"/></svg> Click to reveal</div>
                     </div>
                 </div>
                 
@@ -925,18 +945,18 @@
                         <svg width="150" height="150" style="display: block; margin: 0 auto; position: relative;">
                             <!-- Simplified to focus on key insight -->
                             <circle cx="75" cy="75" r="50" fill="none" stroke="#f0f0f0" stroke-width="30"/>
-                            <circle cx="75" cy="75" r="50" fill="none" stroke="#00FFE8" stroke-width="30" 
+                            <circle cx="75" cy="75" r="50" fill="none" stroke="#0B4F9C" stroke-width="30" 
                                     stroke-dasharray="158 220" stroke-dashoffset="0" transform="rotate(-90 75 75)"/>
                             <circle cx="75" cy="75" r="50" fill="none" stroke="#e0e0e0" stroke-width="30" 
                                     stroke-dasharray="62 220" stroke-dashoffset="-158" transform="rotate(-90 75 75)"/>
                             <!-- Center text -->
-                            <text x="75" y="70" text-anchor="middle" style="font-size: 28px; font-weight: bold; fill: #00FFE8;">72%</text>
+                            <text x="75" y="70" text-anchor="middle" style="font-size: 28px; font-weight: bold; fill: #0B4F9C;">72%</text>
                             <text x="75" y="90" text-anchor="middle" style="font-size: 13px; fill: #666;">of revenue</text>
                         </svg>
                         <div style="margin-top: 15px;">
                             <div style="background: #fff9e6; padding: 8px 12px; border-radius: 6px; display: inline-block;">
-                                <span style="font-size: 13px; color: #00FFE1;">
-                                    <strong>Action:</strong>Focus retention efforts on premium segment
+                                <span style="font-size: 13px; color: #0B4F9C;">
+                                    <strong>Action:</strong> Focus retention efforts on premium segment
                                 </span>
                             </div>
                         </div>
@@ -976,7 +996,7 @@
                 <div class="vs-divider">
                     <div style="text-align: center;">
                         <div>VS</div>
-                        <div style="font-size: 13px; color: #0073FF; margin-top: 8px;">Think...</div>
+                        <div class="reveal-cue"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.8 12S5.4 5.5 12 5.5 22.2 12 22.2 12 18.6 18.5 12 18.5 1.8 12 1.8 12z"/><circle cx="12" cy="12" r="2.9"/></svg> Click to reveal</div>
                     </div>
                 </div>
                 
@@ -992,11 +1012,11 @@
                             <circle cx="60" cy="90" r="5" fill="#ccc"/>
                             <circle cx="80" cy="70" r="5" fill="#0073FF"/>
                             <circle cx="100" cy="60" r="5" fill="#0073FF"/>
-                            <circle cx="120" cy="50" r="7" fill="#00FFE1" stroke="#00FFE1" stroke-width="2" fill-opacity="0.7"/>
+                            <circle cx="120" cy="50" r="7" fill="#0B4F9C" stroke="#0B4F9C" stroke-width="2" fill-opacity="0.7"/>
                             <circle cx="140" cy="40" r="5" fill="#0073FF"/>
                             <circle cx="50" cy="100" r="5" fill="#ccc"/>
                             <circle cx="90" cy="80" r="5" fill="#0073FF"/>
-                            <text x="120" y="35" text-anchor="middle" style="font-size: 13px; fill: #00FFE1; font-weight: bold;">Sweet spot!</text>
+                            <text x="120" y="35" text-anchor="middle" style="font-size: 13px; fill: #0B4F9C; font-weight: bold;">Sweet spot!</text>
                         </svg>
                         <div style="margin-top: 10px; font-size: 13px;">
                             <span style="color: #0073FF;">Strong correlation: r=0.89</span>
@@ -1044,9 +1064,9 @@
 
     <!-- Footer -->
     <div class="footer">
-        <button class="nav-btn" id="prevBtn"></button>
+        <button class="nav-btn" id="prevBtn" aria-label="Previous slide"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg></button>
         <div class="dots-container" id="dots"></div>
-        <button class="nav-btn" id="nextBtn"></button>
+        <button class="nav-btn" id="nextBtn" aria-label="Next slide"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></button>
         <span class="slide-number" id="slideNum">1 / 11</span>
     </div>
 
@@ -1239,7 +1259,7 @@
                 if (timeRemaining <= 0) {
                     clearInterval(timerInterval);
                     timer.textContent = "Time's Up!";
-                    timer.style.color = '#1200FF';
+                    timer.style.color = '#0073FF';
                     btn.disabled = false;
                     btn.textContent = 'Start Activity';
                     timer.style.color = '#0073FF';

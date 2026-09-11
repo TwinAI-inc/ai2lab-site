@@ -47,15 +47,17 @@
             display: flex;
             justify-content: center;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
+            overflow-x: auto;
         }
         
         .tab-button {
             background: none;
             border: none;
-            padding: 1rem 2rem;
+            padding: 1rem 1.15rem;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 0.95rem;
+            white-space: nowrap;
             transition: all 0.3s ease;
             border-bottom: 3px solid transparent;
             color: #555;
@@ -271,20 +273,20 @@
         }
         
         .tips-section {
-            background: linear-gradient(135deg, #D2FFF9 0%, #AA9FFC 100%);
+            background: linear-gradient(135deg, #EBF3FB 0%, #D3E4F5 100%);
             padding: 1.5rem;
             border-radius: 8px;
             margin: 2rem 0;
         }
         
         .tips-section h3 {
-            color: #1D01D7;
+            color: #0B4F9C;
             margin-bottom: 1rem;
         }
         
         .warning-box {
-            background: #CDFFFB;
-            border-left: 4px solid #07FFEA;
+            background: #EBF3FB;
+            border-left: 4px solid #0B4F9C;
             padding: 1rem;
             margin: 1rem 0;
             border-radius: 4px;
@@ -364,7 +366,7 @@
             <div class="overview-grid">
                 
                 <div class="overview-card">
-                    <h3>⏱ Duration</h3>
+                    <h3><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;margin-right:5px;"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>Duration</h3>
                     <p>4 Progressive Stages (4 Weeks)</p>
                 </div>
                 <div class="overview-card">
@@ -380,22 +382,22 @@
             <div class="tips-section">
                 <h3>How This Workshop Works</h3>
                 <ol>
-                    <li><strong>Prepare Your Data:</strong>Create visualizations in Flourish.studio or Datawrapper</li>
-                    <li><strong>Copy Embed Codes:</strong>Get the iframe embed codes from your visualization platforms</li>
-                    <li><strong>Take Screenshots:</strong>For Stage 3, capture a screenshot of your main chart for data cards</li>
-                    <li><strong>Use Claude AI:</strong>Copy the structured prompts and paste them into Claude</li>
-                    <li><strong>Answer Claude's Questions:</strong>Claude will ask multiple-choice questions about your preferences</li>
-                    <li><strong>Provide Your Materials:</strong>Share embed codes, screenshots, and any other content</li>
-                    <li><strong>Iterate & Improve:</strong>Refine your work through each progressive stage</li>
+                    <li><strong>Prepare Your Data:</strong> Create visualizations in Flourish.studio or Datawrapper</li>
+                    <li><strong>Copy Embed Codes:</strong> Get the iframe embed codes from your visualization platforms</li>
+                    <li><strong>Take Screenshots:</strong> For Stage 3, capture a screenshot of your main chart for data cards</li>
+                    <li><strong>Use Claude AI:</strong> Copy the structured prompts and paste them into Claude</li>
+                    <li><strong>Answer Claude's Questions:</strong> Claude will ask multiple-choice questions about your preferences</li>
+                    <li><strong>Provide Your Materials:</strong> Share embed codes, screenshots, and any other content</li>
+                    <li><strong>Iterate & Improve:</strong> Refine your work through each progressive stage</li>
                 </ol>
             </div>
             
             <div class="warning-box">
                 <strong>Important Requirements:</strong><br>
-                • <strong>Stage 1:</strong>Have 1 embed code ready<br>
-                • <strong>Stage 2:</strong>Prepare 3 related visualizations (tells a story)<br>
-                • <strong>Stage 3:</strong>Need 4-6 embeds + screenshot of main chart<br>
-                • <strong>Stage 4:</strong>Gather 6-10 embeds + any supplementary content<br><br>Claude will ask you design questions first, then request your materials.
+                • <strong>Stage 1:</strong> Have 1 embed code ready<br>
+                • <strong>Stage 2:</strong> Prepare 3 related visualizations (tells a story)<br>
+                • <strong>Stage 3:</strong> Need 4-6 embeds + screenshot of main chart<br>
+                • <strong>Stage 4:</strong> Gather 6-10 embeds + any supplementary content<br><br>Claude will ask you design questions first, then request your materials.
             </div>
             
             <h3>Learning Objectives</h3>
@@ -969,11 +971,11 @@ SPECIAL REQUIREMENTS:
             <div class="tips-section">
                 <h3>Prompt Engineering Tips</h3>
                 <ul>
-                    <li><strong>Be Specific:</strong>Include exact hex colors, dimensions, spacing</li>
-                    <li><strong>Iterate:</strong>Use "modify the above to..." for refinements</li>
+                    <li><strong>Be Specific:</strong> Include exact hex colors, dimensions, spacing</li>
+                    <li><strong>Iterate:</strong> Use "modify the above to..." for refinements</li>
                     <li><strong>Reference Examples:</strong> "Make it similar to [website] but with..."</li>
                     <li><strong>Debug Systematically:</strong> "The embed isn't showing, please fix..."</li>
-                    <li><strong>Save Progress:</strong>Keep copies of successful prompts</li>
+                    <li><strong>Save Progress:</strong> Keep copies of successful prompts</li>
                 </ul>
             </div>
             
@@ -1001,24 +1003,24 @@ SPECIAL REQUIREMENTS:
             <div class="tips-section" style="margin-top: 2rem;">
                 <h3>Submission Guidelines</h3>
                 <ul>
-                    <li><strong>Week 1:</strong>Complete Stage 1 - Foundation</li>
-                    <li><strong>Week 2:</strong>Complete Stage 2 - Enhancement</li>
-                    <li><strong>Week 3:</strong>Complete Stage 3 - Interaction</li>
-                    <li><strong>Week 4:</strong>Complete Stage 4 - Professional Publication</li>
-                    <li><strong>Final:</strong>Submit GitHub repository with all stages</li>
+                    <li><strong>Week 1:</strong> Complete Stage 1 - Foundation</li>
+                    <li><strong>Week 2:</strong> Complete Stage 2 - Enhancement</li>
+                    <li><strong>Week 3:</strong> Complete Stage 3 - Interaction</li>
+                    <li><strong>Week 4:</strong> Complete Stage 4 - Professional Publication</li>
+                    <li><strong>Final:</strong> Submit GitHub repository with all stages</li>
                 </ul>
             </div>
             
             <div class="success-box">
-                <strong>Pro Tip:</strong>Start collecting embed codes early! Create 8-10 visualizations so you have options for each stage. Remember to test your embed codes in a simple HTML file first.
+                <strong>Pro Tip:</strong> Start collecting embed codes early! Create 8-10 visualizations so you have options for each stage. Remember to test your embed codes in a simple HTML file first.
             </div>
             
             <div class="warning-box">
                 <strong>Common Issues & Solutions:</strong><br>
-                • <strong>Embed not showing:</strong>Check if the iframe code is complete<br>
-                • <strong>Layout broken:</strong>Ask Claude to "fix responsive issues"<br>
-                • <strong>Too slow:</strong>Request "lazy loading for embeds"<br>
-                • <strong>Not mobile-friendly:</strong>Say "optimize for mobile devices"
+                • <strong>Embed not showing:</strong> Check if the iframe code is complete<br>
+                • <strong>Layout broken:</strong> Ask Claude to "fix responsive issues"<br>
+                • <strong>Too slow:</strong> Request "lazy loading for embeds"<br>
+                • <strong>Not mobile-friendly:</strong> Say "optimize for mobile devices"
             </div>
         </div>
     </div>

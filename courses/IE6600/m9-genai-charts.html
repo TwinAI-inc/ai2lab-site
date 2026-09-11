@@ -13,8 +13,8 @@
             --primary: #1E4B8A;
             --secondary: #3A8FF6;
             --accent: #107FB9;
-            --danger: #3326DC;
-            --warning: #0AF5DB;
+            --danger: #0B4F9C;
+            --warning: #107FB9;
             --dark: #1F2937;
             --light: #f8fafc;
         }
@@ -98,7 +98,7 @@
             align-items: center;
             gap: 10px;
             padding: 8px 15px;
-            background: #0F00CC;
+            background: #0B4F9C;
             color: white;
             border-radius: 5px;
             font-weight: 500;
@@ -116,17 +116,17 @@
             gap: 5px;
             margin-bottom: 20px;
             flex-wrap: wrap;
-            background: rgba(255, 255, 255, 0.1);
+            background: #EBF3FB;
+            border: 1px solid #D3E4F5;
             padding: 10px;
             border-radius: 15px;
-            backdrop-filter: blur(10px);
         }
         
         .tab {
             padding: 12px 24px;
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
+            background: #FFFFFF;
+            border: 1px solid #D3E4F5;
+            color: #14304F;
             cursor: pointer;
             border-radius: 10px;
             font-weight: 600;
@@ -152,14 +152,16 @@
         }
         
         .tab:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: #D3E4F5;
+            border-color: #A6C7E8;
             transform: translateY(-2px);
         }
         
         .tab.active {
-            background: white;
-            color: #1E4B8A;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            background: #0B4F9C;
+            border-color: #0B4F9C;
+            color: #FFFFFF;
+            box-shadow: 0 4px 12px rgba(11, 79, 156, 0.28);
         }
         
         .page {
@@ -593,7 +595,7 @@
         /* Info Box */
         .info-box {
             background: linear-gradient(135deg, #C7FEFA 0%, #8AFDF4 100%);
-            border-left: 4px solid #0AF5DB;
+            border-left: 4px solid #107FB9;
             padding: 20px;
             margin: 25px 0;
             border-radius: 10px;
@@ -609,7 +611,7 @@
         }
         
         .info-box strong {
-            color: #05D9BD;
+            color: #107FB9;
         }
         
         .stats-grid {
@@ -710,10 +712,10 @@
         <div class="tabs">
             <button class="tab active" onclick="showPage('cover')">Workshop</button>
             <button class="tab" onclick="showPage('data')">Data (CSV)</button>
-            <button class="tab" onclick="showPage('stage1')">1 Stage 1</button>
-            <button class="tab" onclick="showPage('stage2')">2 Stage 2</button>
-            <button class="tab" onclick="showPage('stage3')">3 Stage 3</button>
-            <button class="tab" onclick="showPage('stage4')">4 Stage 4</button>
+            <button class="tab" onclick="showPage('stage1')">Stage 1</button>
+            <button class="tab" onclick="showPage('stage2')">Stage 2</button>
+            <button class="tab" onclick="showPage('stage3')">Stage 3</button>
+            <button class="tab" onclick="showPage('stage4')">Stage 4</button>
             <button class="tab" onclick="showPage('dashboard')">Dashboard</button>
         </div>
 
@@ -782,7 +784,7 @@
             </p>
             
             <div class="info-box">
-                <strong>Workshop Instructions:</strong>Copy this complete dataset and use it throughout all workshop stages. 
+                <strong>Workshop Instructions:</strong> Copy this complete dataset and use it throughout all workshop stages. 
                 The data includes yearly trends, industry breakdowns, monthly metrics, and regional adoption patterns - everything you need for comprehensive visualizations.
             </div>
             
@@ -862,7 +864,7 @@ Regional,2024,,Africa,42,,,2800,48.7,Basic Automation,4.5,Emerging</textarea>
                 </div>
                 
                 <div class="info-box">
-                    <strong>Pro Tip:</strong>Copy the entire prompt below and paste it into Claude or ChatGPT. 
+                    <strong>Pro Tip:</strong> Copy the entire prompt below and paste it into Claude or ChatGPT. 
                     Then copy the Complete Dataset CSV from the Data tab and paste it where indicated. 
                     The AI will generate a complete HTML file you can save and open directly.
                 </div>
@@ -1367,7 +1369,7 @@ The final output should feel like an interactive article from the New York Times
                 let currentAngle = -Math.PI / 2;
                 const colors = [
                     '#1E4B8A', '#3A8FF6', '#0D7FE9', '#0578D4', 
-                    '#107FB9', '#2198C5', '#16C0CC'
+                    '#107FB9', '#2198C5', '#107FB9'
                 ];
                 
                 industries.forEach(([name, value], i) => {

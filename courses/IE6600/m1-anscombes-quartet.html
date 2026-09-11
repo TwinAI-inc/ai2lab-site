@@ -42,7 +42,7 @@ body { background: #F2F5F6; color: #3d3d3d; font-family: Lato, 'Lato Extended', 
 .data-card h3 { background: linear-gradient(135deg, #1A3A8F 0%, #2FC6DC 100%); color: #FFFFFF; font-size: 12px;
                 font-weight: 800; letter-spacing: .8px; text-transform: uppercase;
                 padding: 7px 10px; text-align: center; }
-.table-wrapper { padding: 8px 10px; max-height: 210px; overflow-y: auto; }
+.table-wrapper { padding: 8px 10px; }
 table { width: 100%; border-collapse: collapse; }
 th { font-size: 12px; font-weight: 800; color: #0B4F9C; padding: 5px;
      border-bottom: 1px solid #E4E9EB; }
@@ -60,7 +60,7 @@ td { font-size: 14px; color: #3d3d3d; padding: 4px 5px; text-align: center;
                  border-radius: 0 8px 8px 0; padding: 18px 20px; margin: 26px 0; }
 .stats-section h2 { font-size: 18px; font-weight: 800; color: #14304F;
                     margin-bottom: 14px; }
-.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr);
               gap: 10px; }
 .stat-item { background: #FFFFFF; border: 1px solid #E4E9EB; border-radius: 6px;
              padding: 11px 12px; text-align: center; }
@@ -413,19 +413,19 @@ canvas { width: 100%; height: auto; display: block; }
                 <div class="plots-row">
                     <div class="plot-item">
                         <h4>Dataset I</h4>
-                        <canvas id="plot1" width="200" height="200"></canvas>
+                        <canvas id="plot1" width="400" height="400"></canvas>
                     </div>
                     <div class="plot-item">
                         <h4>Dataset II</h4>
-                        <canvas id="plot2" width="200" height="200"></canvas>
+                        <canvas id="plot2" width="400" height="400"></canvas>
                     </div>
                     <div class="plot-item">
                         <h4>Dataset III</h4>
-                        <canvas id="plot3" width="200" height="200"></canvas>
+                        <canvas id="plot3" width="400" height="400"></canvas>
                     </div>
                     <div class="plot-item">
                         <h4>Dataset IV</h4>
-                        <canvas id="plot4" width="200" height="200"></canvas>
+                        <canvas id="plot4" width="400" height="400"></canvas>
                     </div>
                 </div>
                 
@@ -602,7 +602,7 @@ canvas { width: 100%; height: auto; display: block; }
                     <div class="analysis-grid">
                         <div class="analysis-card">
                             <h4>Dataset I</h4>
-                            <canvas id="final1" width="180" height="180"></canvas>
+                            <canvas id="final1" width="360" height="360"></canvas>
                             <div class="analysis-text">
                                 <strong>Pattern:</strong> Standard linear relationship<br>
                                 <strong>Key Feature:</strong> Points scattered randomly around regression line<br>
@@ -611,7 +611,7 @@ canvas { width: 100%; height: auto; display: block; }
                         </div>
                         <div class="analysis-card">
                             <h4>Dataset II</h4>
-                            <canvas id="final2" width="180" height="180"></canvas>
+                            <canvas id="final2" width="360" height="360"></canvas>
                             <div class="analysis-text">
                                 <strong>Pattern:</strong> Perfect parabolic curve<br>
                                 <strong>Key Feature:</strong> Non-linear quadratic relationship<br>
@@ -620,7 +620,7 @@ canvas { width: 100%; height: auto; display: block; }
                         </div>
                         <div class="analysis-card">
                             <h4>Dataset III</h4>
-                            <canvas id="final3" width="180" height="180"></canvas>
+                            <canvas id="final3" width="360" height="360"></canvas>
                             <div class="analysis-text">
                                 <strong>Pattern:</strong> Linear with outlier<br>
                                 <strong>Key Feature:</strong> Single point at (13, 12.74) distorts statistics<br>
@@ -629,7 +629,7 @@ canvas { width: 100%; height: auto; display: block; }
                         </div>
                         <div class="analysis-card">
                             <h4>Dataset IV</h4>
-                            <canvas id="final4" width="180" height="180"></canvas>
+                            <canvas id="final4" width="360" height="360"></canvas>
                             <div class="analysis-text">
                                 <strong>Pattern:</strong> Leverage point effect<br>
                                 <strong>Key Feature:</strong> All X=8 except one at X=19<br>
@@ -767,7 +767,8 @@ canvas { width: 100%; height: auto; display: block; }
         function animatePlot(num, prefix) {
             const canvas = document.getElementById(`${prefix}${num}`);
             const ctx = canvas.getContext('2d');
-            const padding = 30;
+            const s = canvas.width / 200;   // drawing constants below are
+            const padding = 30 * s;         // written for a 200px canvas
             const width = canvas.width - 2*padding;
             const height = canvas.height - 2*padding;
             
@@ -779,7 +780,7 @@ canvas { width: 100%; height: auto; display: block; }
             
             // Axes
             ctx.strokeStyle = '#2C3948';
-            ctx.lineWidth = 2;
+            ctx.lineWidth = 2 * s;
             ctx.beginPath();
             ctx.moveTo(padding, padding);
             ctx.lineTo(padding, canvas.height - padding);
@@ -788,7 +789,7 @@ canvas { width: 100%; height: auto; display: block; }
             
             // Grid
             ctx.strokeStyle = '#e2e8f0';
-            ctx.lineWidth = 0.5;
+            ctx.lineWidth = 0.5 * s;
             for (let i = 1; i < 5; i++) {
                 ctx.beginPath();
                 ctx.moveTo(padding, padding + (height * i / 5));
