@@ -1,0 +1,747 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Gold Sweeper - IE 7295</title><link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script><style>
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;background:#f4f6f8;color:#3d3d3d;font-size:12.5px;line-height:1.5;
+  display:flex;flex-direction:column;overflow:hidden}
+
+.band{flex:0 0 auto;background:linear-gradient(135deg,#C3E3E4 0%,#C1E2E3 100%);
+  padding:9px 16px;position:relative}
+.band::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;
+  background:linear-gradient(90deg,#F5D000 0 33.33%,#E2231A 33.33% 66.66%,#0064B0 66.66% 100%)}
+.band h1{margin:0;font-size:16px;font-weight:700;color:#20484A}
+.band .sub{display:inline-block;background:rgba(255,255,255,.75);color:#3d5f61;
+  padding:2px 9px;border-radius:999px;font-size:11px;margin-top:3px}
+.foot{flex:0 0 auto;border-top:1px solid #E4E9EB;background:#fff;padding:8px 16px;
+  text-align:center;font-size:11px;color:#a8b0b6}
+
+.stage{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:9px;
+  padding:10px 14px}
+.tabs{flex:0 0 auto;display:inline-flex;background:#fff;border:1px solid #E4E9EB;
+  border-radius:999px;padding:3px;align-self:flex-start}
+.tab{font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;color:#5b7175;background:none;
+  border:0;border-radius:999px;padding:7px 20px;cursor:pointer;white-space:nowrap}
+.tab.on{background:linear-gradient(135deg,#006064 0%,#17a2b8 100%);color:#fff}
+
+.cols{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:264px 1fr;gap:10px}
+.side{display:flex;flex-direction:column;gap:8px;min-height:0;overflow:auto;
+  padding-right:2px}
+.main{display:flex;flex-direction:column;gap:9px;min-height:0}
+
+.card{background:#fff;border:1px solid #E4E9EB;border-radius:6px;padding:10px 12px}
+.card.rule{border-left:3px solid #8FC8CA;border-radius:0 6px 6px 0}
+h2{font-size:10.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+  color:#006064;margin:0 0 6px}
+
+.ctl{margin-bottom:9px}
+.ctl:last-child{margin-bottom:0}
+.ctl .lab{display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+  font-size:11px;font-weight:700;color:#20484A;margin-bottom:2px}
+.ctl .val{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;font-weight:700;color:#006064;
+  background:#eef6f6;border-radius:999px;padding:1px 9px}
+.ctl .hint{font-size:10px;color:#a8b0b6;margin-top:3px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:10px;
+  border-radius:999px;margin:6px 0 0;cursor:pointer;outline:none;
+  background:linear-gradient(90deg,#0d5f62 0%,#17a2b8 var(--f,0%),
+             #e2e9ea var(--f,0%),#e2e9ea 100%)}
+input[type=range]::-webkit-slider-runnable-track{height:10px;background:transparent}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;margin-top:-5px;
+  width:20px;height:20px;border-radius:999px;background:#fff;border:2px solid #006064;
+  box-shadow:0 1px 4px rgba(0,0,0,.18)}
+input[type=range]::-moz-range-track{height:10px;background:transparent}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:999px;
+  background:#fff;border:2px solid #006064;box-shadow:0 1px 4px rgba(0,0,0,.18)}
+select{width:100%;font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;font-size:12px;color:#20484A;background:#fff;
+  border:1px solid #E4E9EB;border-radius:6px;padding:7px 9px;margin-top:5px;cursor:pointer}
+select:focus{outline:none;border-color:#8FC8CA}
+.btns{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
+.btn{flex:1 1 0;min-width:76px;font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;font-size:11.5px;font-weight:700;
+  border-radius:999px;padding:7px 0;cursor:pointer;border:1px solid #E4E9EB;
+  background:#fff;color:#20484A}
+.btn:hover{border-color:#8FC8CA;background:#eef6f6}
+.btn.go{border:0;color:#fff;background:linear-gradient(135deg,#006064 0%,#17a2b8 100%)}
+.btn.stop{border:0;color:#fff;background:linear-gradient(135deg,#8b1a1a 0%,#b8433f 100%)}
+.btn:disabled{background:#eef1f2;color:#9aa8ae;cursor:not-allowed;border-color:#E4E9EB}
+
+.eq{position:relative;background:rgba(143,200,202,.13);border-left:3px solid #8FC8CA;
+  border-radius:0 6px 6px 0;padding:11px 42px 11px 15px;text-align:center;
+  min-height:62px;display:flex;flex-direction:column;justify-content:center}
+.eq .cap{font-size:11px;color:#3d3d3d;margin-top:6px}
+
+/* the equation flips to its own explanation, because a student who does not
+   recognise a symbol has nowhere else to go and will not ask */
+.eq-flip{position:absolute;top:9px;right:10px;width:24px;height:24px;padding:0;
+  border:1px solid #8FC8CA;border-radius:999px;background:#fff;color:#006064;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:all .14s}
+.eq-flip:hover{background:#006064;color:#fff;border-color:#006064}
+.eq.back{background:rgba(0,96,100,.07);border-left-color:#006064;text-align:right}
+.eq.back .terms{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;
+  text-align:left;font-size:11.5px;line-height:1.5;color:#3d3d3d;width:100%}
+.eq.back .terms b{color:#006064;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:nowrap;text-align:right}
+.eq.back .lead{font-size:11.5px;color:#3d3d3d;line-height:1.55;margin-bottom:8px;
+  text-align:left}
+.viz{flex:1 1 auto;min-height:0;background:#fff;border:1px solid #E4E9EB;border-radius:6px;
+  padding:12px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.reading{flex:0 0 auto;height:58px;overflow:auto;background:rgba(0,96,100,.07);
+  border-left:3px solid #006064;border-radius:0 6px 6px 0;padding:10px 14px;
+  font-size:12px;line-height:1.55;color:#3d3d3d}
+.reading b{color:#006064;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-weight:700}
+.reads{flex:0 0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.read{background:#fff;border:1px solid #E4E9EB;border-radius:6px;padding:8px 11px}
+.read .k{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  color:#a8b0b6}
+.read .v{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:17px;font-weight:700;color:#20484A;margin-top:1px}
+.read.on .v{color:#006064}
+.read.warn .v{color:#8b1a1a}
+
+.steps{counter-reset:s;margin:0;padding:0;list-style:none}
+.steps li{counter-increment:s;position:relative;padding-left:20px;margin-bottom:5px;
+  font-size:10.5px;line-height:1.45;color:#3d3d3d}
+.steps li:last-child{margin-bottom:0}
+.steps li::before{content:counter(s);position:absolute;left:0;top:1px;width:15px;
+  height:15px;border-radius:999px;background:#006064;color:#fff;font-size:9.5px;
+  font-weight:700;display:flex;align-items:center;justify-content:center}
+.katex{font-size:1.05em}
+
+/* pieces individual tools draw with, all from the same palette */
+.tile{border:1px solid #E4E9EB;border-radius:6px;background:#f7f9f9;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;transition:all .18s}
+.tile .k{font-size:10px;color:#a8b0b6}
+.tile .v{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:22px;font-weight:700;color:#20484A}
+.tile.on{border:2px solid #006064;background:#eef6f6}
+.tile.best{border:2px solid #2e9e6b;background:rgba(0,150,90,.10)}
+.tile.best .v{color:#1d6b4a}
+.tile.bad{border:2px solid #E2231A;background:rgba(226,35,26,.08)}
+.tile.bad .v{color:#8b1a1a}
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:14px;height:100%;
+  width:100%;padding-bottom:22px}
+.bar{flex:1;max-width:92px;display:flex;flex-direction:column;justify-content:flex-end;
+  align-items:center;height:100%;position:relative}
+.bar .fill{width:100%;border-radius:5px 5px 0 0;min-height:3px;
+  background:linear-gradient(180deg,#17a2b8,#0d5f62)}
+.bar .fill.neg{background:linear-gradient(180deg,#d4685f,#8b1a1a)}
+.bar .t{position:absolute;bottom:-19px;font-size:11px;color:#a8b0b6;white-space:nowrap}
+.bar .c{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;font-weight:700;color:#006064;margin-bottom:4px}
+.work{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;color:#3d3d3d;line-height:2.1}
+.work b{color:#006064}
+/* first run: who is playing, then what the tool is for. Same pattern as the
+   Module 1 game, so a student meets one convention across the whole set. */
+.veil{position:fixed;inset:0;background:rgba(32,72,74,.42);z-index:70;display:none;
+  align-items:center;justify-content:center;padding:20px}
+.veil.on{display:flex}
+.dlg{background:#fff;border-radius:10px;padding:24px 28px;max-width:560px;width:100%;
+  box-shadow:0 18px 50px rgba(0,0,0,.24);border-top:3px solid #006064}
+.dlg h2{font-size:16px;font-weight:700;color:#20484A;margin:0;text-transform:none;
+  letter-spacing:0}
+.dlg p{font-size:12.5px;line-height:1.6;color:#3d3d3d;margin:0 0 13px}
+.dlg input{width:100%;font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;font-size:12.5px;color:#20484A;text-align:center;
+  padding:9px 12px;border:1px solid #8FC8CA;border-radius:999px;outline:none}
+.dlg input:focus{border-color:#006064}
+.dlg .go2{margin-top:11px;width:100%;font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+  color:#fff;background:linear-gradient(135deg,#006064 0%,#17a2b8 100%);border:0;
+  border-radius:999px;padding:9px 0;cursor:pointer}
+.dlg .skip{background:none;border:0;color:#9aa5a8;font-size:11px;margin-top:7px;
+  width:100%;cursor:pointer;font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}
+.dlg-head{display:flex;align-items:center;justify-content:space-between;gap:14px;
+  margin-bottom:8px}
+.ring{position:relative;flex:0 0 auto;width:36px;height:36px;padding:0;border:0;
+  background:none;cursor:pointer}
+.ring span{position:absolute;inset:0;display:flex;align-items:center;
+  justify-content:center;font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;color:#006064}
+.ring:hover span{color:#E2231A}
+.introbox{background:rgba(143,200,202,.14);border-left:3px solid #8FC8CA;
+  border-radius:0 6px 6px 0;padding:13px 15px;margin-bottom:4px}
+.introart{margin:0 0 12px}
+.introbox li{font-size:12.5px;line-height:1.6;color:#3d3d3d;margin-bottom:7px;
+  list-style:none;padding-left:14px;position:relative}
+.introbox li:last-child{margin-bottom:0}
+.introbox li::before{content:"";position:absolute;left:0;top:8px;width:5px;height:5px;
+  border-radius:999px;background:#8FC8CA}
+.introbox b{color:#20484A}
+.whois{position:absolute;right:16px;top:9px;display:flex;align-items:center}
+.whois .ul{font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+  color:#fff;background:#006064;border-radius:999px 0 0 999px;padding:3px 8px 3px 10px;
+  display:inline-flex;align-items:center;gap:5px}
+.whois .un{font-size:11px;font-weight:700;color:#006064;background:#eef6f6;
+  border:1px solid #8FC8CA;border-left:0;border-radius:0 999px 999px 0;padding:2px 11px}
+
+.vwrap{width:100%;position:relative}
+
+/* the end of a board: what they won, and the only two things left to do */
+.over{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(244,247,248,.86);backdrop-filter:blur(2px);border-radius:8px;z-index:6;
+  animation:fadein .35s ease-out}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+.overcard{background:#fff;border:1px solid #E4E9EB;border-top:3px solid #006064;border-radius:10px;
+  padding:22px 26px;box-shadow:0 18px 50px rgba(0,0,0,.18);text-align:center;max-width:430px;
+  animation:popin .45s cubic-bezier(.2,.7,.3,1)}
+.overcard h3{margin:0 0 3px;font-size:17px;font-weight:700;color:#20484A}
+.overcard .sub{font-size:11.5px;color:#a8b0b6;margin-bottom:14px}
+.overcard .tally{display:flex;gap:8px;justify-content:center;margin-bottom:14px;flex-wrap:wrap}
+.overcard .ti{display:flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;
+  border:1px solid #E4E9EB;background:#FBFCFC;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;font-weight:700;
+  color:#20484A}
+.overcard .ti svg{width:18px;height:18px;color:#C9A227}
+.overcard .ti.big{border-color:#006064;background:rgba(0,96,100,.07)}
+.overcard .ti.big svg{color:#006064}
+.overcard .ti.miss{color:#a8b0b6;border-style:dashed}
+.overcard .ti.miss svg{color:#C9CFD1}
+.overcard .big-score{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:34px;font-weight:700;color:#006064;line-height:1}
+.overcard .of{font-size:12px;color:#a8b0b6;margin-bottom:14px}
+.overcard .say{font-size:12px;line-height:1.6;color:#3d3d3d;margin-bottom:16px}
+.overcard .acts2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.overcard button{font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;cursor:pointer;padding:10px 8px;
+  border-radius:999px;border:1px solid #8FC8CA;background:#fff;color:#006064}
+.overcard button.go{background:#006064;border-color:#006064;color:#fff}
+.overcard button:hover{filter:brightness(1.06)}
+.budget{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:9px 12px;margin:0 0 10px;
+  border-radius:6px;background:rgba(0,96,100,.07);border-left:3px solid #006064}
+.budget .bk{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:#a8b0b6}
+.budget .bv{font-size:22px;font-weight:600;color:#006064;line-height:1}
+.budget .bv span{font-size:12.5px;font-weight:400;color:#a8b0b6}
+.budget .bbar{flex:1 0 100%;height:4px;border-radius:999px;background:rgba(0,96,100,.14);overflow:hidden}
+.budget .bbar i{display:block;height:100%;background:#006064;border-radius:999px;transition:width .18s}
+.budget.spent{background:rgba(139,26,26,.07);border-left-color:#8b1a1a}
+.budget.spent .bv{color:#8b1a1a}
+.budget.spent .bbar i{background:#8b1a1a}
+
+.board{display:grid;gap:4px;margin:0 auto;width:max-content;padding:10px;
+  background:#F4F7F8;border:1px solid #D3DDDF;border-radius:8px}
+ /* An unopened square has to read as a TILE you can press. A 1px hairline on
+    white did not, so the board looked like empty paper. Unopened is filled and
+    outlined; opened goes flat and pale, so the two states are obvious. */
+.cell{width:42px;height:42px;border-radius:4px;border:1.5px solid #A8BEC1;
+  background:linear-gradient(#F2F6F7,#E3EBEC);
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:15px;font-weight:700;cursor:pointer;padding:0;
+  display:flex;align-items:center;justify-content:center;color:#a8b0b6;
+  box-shadow:inset 0 1px 0 #fff;transition:background .12s,border-color .12s}
+.cell:hover:not([disabled]){background:linear-gradient(#E8F3F3,#D6E8E9);border-color:#006064}
+.cell[disabled]{cursor:default;box-shadow:none}
+.cell.seen{background:#FBFCFC;border-color:#DCE4E6;border-width:1px}
+.cell.d0{background:#FFF6D6;border-color:#E8C84A;border-width:1.5px}
+.cell.d1{color:#8b1a1a}.cell.d2{color:#B4622A}.cell.d3{color:#0064B0}
+.cell.d4{color:#2E7D6B}.cell.d5{color:#a8b0b6}
+.cell.got{background:#DFF0F0;border-color:#006064;border-width:2px}
+.cell svg{width:24px;height:24px;color:#C9A227}
+.cell.big svg{color:#006064;width:26px;height:26px}
+
+ /* the score pop, Mario coin style: it jumps off the square and fades upward */
+@keyframes rise{
+  0%{opacity:0;transform:translateX(-50%) translateY(6px) scale(.7)}
+  18%{opacity:1;transform:translateX(-50%) translateY(-8px) scale(1.15)}
+  100%{opacity:0;transform:translateX(-50%) translateY(-52px) scale(1)}
+}
+@keyframes popin{
+  0%{transform:scale(1)} 35%{transform:scale(1.3)} 70%{transform:scale(.94)} 100%{transform:scale(1)}
+}
+@keyframes glow{
+  0%{box-shadow:0 0 0 0 rgba(0,96,100,.45)} 100%{box-shadow:0 0 0 16px rgba(0,96,100,0)}
+}
+.cell{position:relative}
+.cell .pop{position:absolute;left:50%;top:-2px;z-index:4;pointer-events:none;white-space:nowrap;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:15px;font-weight:700;padding:2px 9px;border-radius:999px;
+  color:#fff;background:#C9A227;animation:rise 1.15s cubic-bezier(.2,.7,.3,1) forwards}
+.cell .pop.big{background:#006064;font-size:17px;padding:3px 11px}
+.cell.just{animation:popin .5s cubic-bezier(.2,.7,.3,1)}
+.cell.just.big{animation:popin .5s cubic-bezier(.2,.7,.3,1), glow .8s ease-out}
+.prizes{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.prize{text-align:center;padding:12px 6px 10px;border:1px solid #E4E9EB;border-radius:8px;
+  background:#FBFCFC}
+.prize.big{border-color:#006064;background:rgba(0,96,100,.06)}
+.prize svg{width:34px;height:34px;color:#C9A227;display:block;margin:0 auto 6px}
+.prize.big svg{color:#006064;width:38px;height:38px}
+.prize .pn{font-size:11px;font-weight:700;color:#20484A}
+.prize .pv{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:15px;font-weight:700;color:#006064;margin-top:2px}
+.prize .pd{font-size:10.5px;color:#a8b0b6;margin-top:3px;line-height:1.35}
+.numdemo{display:flex;gap:4px;justify-content:center;margin-bottom:6px}
+.numdemo span{width:26px;height:26px;border-radius:4px;border:1.5px solid #A8BEC1;
+  background:linear-gradient(#F2F6F7,#E3EBEC);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;font-weight:700;
+  display:flex;align-items:center;justify-content:center}
+.numdemo span:nth-child(1){color:#0064B0}
+.numdemo span:nth-child(2){color:#8b1a1a}
+.numdemo span:nth-child(3){color:#2E7D6B}
+.legend{display:flex;gap:16px;justify-content:center;margin-top:12px;font-size:11px;color:#a8b0b6;
+  flex-wrap:wrap}
+.legend b{display:inline-flex;align-items:center;gap:5px;font-weight:400;color:#3d3d3d}
+.legend svg{width:16px;height:16px}
+.scorebox{font-size:11.5px;line-height:1.6;padding:9px 12px;margin:0 0 8px;border-radius:0 6px 6px 0;
+  border-left:3px solid #006064;background:rgba(0,96,100,.07);color:#3d3d3d}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:9px 0 6px}
+.acts .btn{width:100%;margin:0;display:inline-flex;align-items:center;justify-content:center}
+.modes{display:flex;gap:6px;margin:2px 0 10px}
+.modes button{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;font-weight:700;cursor:pointer;
+  padding:8px 4px;border-radius:6px;border:1px solid #8FC8CA;background:#fff;color:#20484A}
+.modes button.on{background:#006064;border-color:#006064;color:#fff}
+</style></head><body><div class="band"><h1>Gold Sweeper</h1><div class="sub">Module 1 &middot; the nearest treasure is not the best one</div></div><div class="stage"><div class="tabs"><button class="tab on" data-t="play" type="button">The board</button><button class="tab" data-t="truth" type="button">The answer</button></div><div class="cols"><div class="side"><div class="card rule" id="controls"></div><div class="card rule" id="says"></div><div class="card rule" id="try"></div></div><div class="main"><div class="card eq" id="eq"></div><div class="viz" id="viz"></div><div class="reading" id="reading"></div><div class="reads" id="reads"></div></div></div></div><div class="foot">IE7295: Applied Reinforcement Learning &middot; Prof. Dehghani</div><div class="veil" id="name-veil"><div class="dlg"><h2>Before you start</h2><p>Put your name in so it appears on the tool. Any screenshot you take for an assignment will then carry it.</p><input type="text" id="name-in" maxlength="40" placeholder="Your name" autocomplete="name" spellcheck="false"><button class="go2" type="button" id="name-go">Start</button><button class="skip" type="button" id="name-skip">Skip</button></div></div><div class="veil" id="intro-veil"><div class="dlg"><div class="dlg-head"><h2 id="intro-hi">How this works</h2><button class="ring" id="intro-skip" type="button" aria-label="Skip"><svg viewBox="0 0 36 36" width="36" height="36"><circle cx="18" cy="18" r="15.5" fill="none" stroke="#dfe8e9" stroke-width="3"/><circle id="intro-ring" cx="18" cy="18" r="15.5" fill="none" stroke="#006064" stroke-width="3" stroke-linecap="round" stroke-dasharray="97.4" stroke-dashoffset="0" transform="rotate(-90 18 18)"/></svg><span id="intro-count">10</span></button></div><div class="introbox" id="intro-body"></div><button class="go2" type="button" id="intro-go">Got it</button></div></div><script>
+window.INTRO_SECS = 15;              // MD: the intro went past too fast
+
+// The two prizes, drawn large, so a student knows what they are hunting before
+// the board appears. Same icons the board uses.
+var INTRO_ART =
+  '<div class="prizes">' +
+    '<div class="prize big">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" ' +
+      'stroke-linejoin="round"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20"/>' +
+      '<path d="M12 21 8 9l2-6"/><path d="m12 21 4-12-2-6"/></svg>' +
+      '<div class="pn">Diamond</div><div class="pv">+100</div>' +
+      '<div class="pd">one on the board</div></div>' +
+    '<div class="prize">' +
+      '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none">' +
+      '<path d="M7 14a5 5 0 0 1 10 0 4 4 0 0 1-4 4h-2a4 4 0 0 1-4-4z"/>' +
+      '<circle cx="9" cy="9" r="2.4"/><circle cx="14.5" cy="8" r="1.8"/></svg>' +
+      '<div class="pn">Nugget</div><div class="pv">+15</div>' +
+      '<div class="pd">two or three</div></div>' +
+    '<div class="prize num">' +
+      '<div class="numdemo"><span>3</span><span>1</span><span>4</span></div>' +
+      '<div class="pn">A dug square</div><div class="pv">a distance</div>' +
+      '<div class="pd">how far to the nearest prize</div></div>' +
+  '</div>';
+
+var INTRO = ['Gold Sweeper', [
+  'Under this board there is one <b>diamond</b> and a few smaller <b>nuggets</b>.',
+  'Dig a square and it tells you one thing: <b>how far it is from the nearest prize</b>. A <b>1</b> is right beside something. A <b>6</b> is a long way from everything.',
+  'You get a small number of digs. Every square you open is one you cannot open somewhere else.',
+  'Here is the catch. The <b>nearest</b> prize is usually a nugget, so the most encouraging number on the board is often pointing at the small money.'
+], INTRO_ART];
+
+var N = 9;                                   // board is N x N
+var DIAMOND = 100, NUGGET = 15;
+
+var S = { tab:'play', n:N, digs:15, budget:15, cells:[], seen:[], got:[],
+          gems:[], score:0, just:-1, justPts:0, justBig:false };
+
+function idx(r,c){ return r*S.n + c; }
+function dist(a,b){ return Math.max(Math.abs(a.r-b.r), Math.abs(a.c-b.c)); }
+
+function newBoard(){
+  S.cells = []; S.seen = []; S.got = []; S.gems = []; S.score = 0;
+  S.budget = S.digs;
+  var taken = {};
+  function place(big){
+    for(;;){
+      var r = Math.floor(Math.random()*S.n), c = Math.floor(Math.random()*S.n);
+      if (taken[r+','+c]) continue;
+      // keep treasures off each other's laps so the numbers stay informative
+      var ok = true;
+      for (var i=0;i<S.gems.length;i++) if (dist({r:r,c:c}, S.gems[i]) < 3) ok = false;
+      if (!ok) continue;
+      taken[r+','+c] = 1;
+      S.gems.push({r:r, c:c, big:big});
+      return;
+    }
+  }
+  place(true);                               // one diamond
+  var nug = 2 + Math.floor(Math.random()*2); // two or three nuggets
+  for (var i=0;i<nug;i++) place(false);
+  for (var j=0;j<S.n*S.n;j++){ S.seen.push(false); S.got.push(false); }
+}
+
+function nearest(r,c){
+  var best = 99;
+  for (var i=0;i<S.gems.length;i++){
+    if (S.got[idx(S.gems[i].r, S.gems[i].c)]) continue;   // collected ones stop calling
+    best = Math.min(best, dist({r:r,c:c}, S.gems[i]));
+  }
+  return best === 99 ? -1 : best;
+}
+function gemAt(r,c){
+  for (var i=0;i<S.gems.length;i++) if (S.gems[i].r===r && S.gems[i].c===c) return S.gems[i];
+  return null;
+}
+function left(){ return Math.max(0, S.budget); }
+function done(){ return S.budget <= 0 || allFound(); }
+function allFound(){
+  for (var i=0;i<S.gems.length;i++) if (!S.got[idx(S.gems[i].r,S.gems[i].c)]) return false;
+  return true;
+}
+function bestScore(){
+  var t = 0;
+  for (var i=0;i<S.gems.length;i++) t += S.gems[i].big ? DIAMOND : NUGGET;
+  return t;
+}
+
+function dig(r,c){
+  var i = idx(r,c);
+  if (done() || S.seen[i]) return;
+  S.seen[i] = true; S.budget -= 1;
+  var g = gemAt(r,c);
+  if (g){
+    S.got[i] = true;
+    var pts = g.big ? DIAMOND : NUGGET;
+    S.score += pts;
+    S.just = i; S.justPts = pts; S.justBig = g.big;
+    // the animation plays on the fresh DOM, then the flag is cleared so a later
+    // repaint does not replay it
+    setTimeout(function(){ S.just = -1; }, 1200);
+  }
+  render();
+}
+
+function GEM(big){
+  return big
+    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" ' +
+      'stroke-linejoin="round"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20"/>' +
+      '<path d="M12 21 8 9l2-6"/><path d="m12 21 4-12-2-6"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none">' +
+      '<path d="M7 14a5 5 0 0 1 10 0 4 4 0 0 1-4 4h-2a4 4 0 0 1-4-4z"/>' +
+      '<circle cx="9" cy="9" r="2.4"/><circle cx="14.5" cy="8" r="1.8"/></svg>';
+}
+
+function drawBoard(reveal){
+  var h = '<div class="vwrap"><div class="board" style="grid-template-columns:repeat(' +
+          S.n + ',42px)">';
+  for (var r=0;r<S.n;r++){
+    for (var c=0;c<S.n;c++){
+      var i = idx(r,c), g = gemAt(r,c), cls = 'cell', body = '';
+      if (S.got[i]){
+        cls += ' got' + (g.big ? ' big' : '');
+        body = GEM(g.big);
+        if (!reveal && S.just === i){
+          cls += ' just' + (S.justBig ? ' big' : '');
+          body += '<span class="pop' + (S.justBig ? ' big' : '') + '">+' +
+                  S.justPts + '</span>';
+        }
+      } else if (reveal && g){
+        cls += ' got' + (g.big ? ' big' : ''); body = GEM(g.big);
+      } else if (S.seen[i]){
+        var d = nearest(r,c);
+        cls += ' seen d' + Math.min(d,5);
+        body = d < 0 ? '' : String(d);
+      }
+      var dis = (S.seen[i] || done() || reveal) ? ' disabled' : '';
+      h += '<button type="button" class="' + cls + '"' + dis +
+           ' onclick="dig(' + r + ',' + c + ')">' + body + '</button>';
+    }
+  }
+  h += '</div><div class="legend">' +
+       '<b>' + GEM(true) + 'diamond, +' + DIAMOND + '</b>' +
+       '<b>' + GEM(false) + 'nugget, +' + NUGGET + '</b>' +
+       '<b>a number is how far that square is from the nearest treasure</b>' +
+       '</div>';
+  // INSIDE .vwrap, which is the positioned ancestor. Appended after it, the
+  // card had nothing to anchor to and covered the whole viewport instead.
+  if (!reveal && done()) h += gameOver();
+  h += '</div>';
+  $('viz').innerHTML = h;
+  tiles();
+}
+
+function gameOver(){
+  var big = false, gotN = 0, missN = 0;
+  for (var i=0;i<S.gems.length;i++){
+    var g = S.gems[i], got = S.got[idx(g.r,g.c)];
+    if (got){ if (g.big) big = true; else gotN++; }
+    else if (!g.big) missN++;
+  }
+  var pct = Math.round(S.score / bestScore() * 100);
+  var tally = '<div class="ti' + (big ? ' big' : ' miss') + '">' + GEM(true) +
+              (big ? 'diamond' : 'missed') + '</div>';
+  for (var n=0;n<gotN;n++) tally += '<div class="ti">' + GEM(false) + '+' + NUGGET + '</div>';
+  for (var m=0;m<missN;m++) tally += '<div class="ti miss">' + GEM(false) + 'missed</div>';
+
+  var say = big
+    ? (pct === 100 ? 'Everything on the board, and the diamond with it.'
+                   : 'You found the diamond. That is where almost all the value was.')
+    : 'You never found the diamond. Every number you followed was pointing at the ' +
+      'nearest prize, and the nearest prize was a nugget.';
+
+  return '<div class="over"><div class="overcard">' +
+    '<h3>' + (big ? 'You found the diamond' : 'Board over') + '</h3>' +
+    '<div class="sub">' + (S.budget <= 0 ? 'out of digs' : 'everything found') + '</div>' +
+    '<div class="tally">' + tally + '</div>' +
+    '<div class="big-score">' + S.score + '</div>' +
+    '<div class="of">of a possible ' + bestScore() + ', that is ' + pct + '%</div>' +
+    '<div class="say">' + say + '</div>' +
+    '<div class="acts2">' +
+      '<button type="button" class="go" onclick="newBoard();render()">New board</button>' +
+      '<button type="button" onclick="showAnswer()">See the answer</button>' +
+    '</div></div></div>';
+}
+
+function showAnswer(){
+  S.tab = 'truth';
+  var on = document.querySelector('.tab.on');
+  if (on) on.classList.remove('on');
+  var t = document.querySelector('.tab[data-t="truth"]');
+  if (t) t.classList.add('on');
+  render();
+}
+
+function tiles(){
+  var found = 0, big = false;
+  for (var i=0;i<S.gems.length;i++){
+    if (S.got[idx(S.gems[i].r,S.gems[i].c)]){ found++; if (S.gems[i].big) big = true; }
+  }
+  $('reads').innerHTML = reads([
+    ['digs left', String(left()), left()<=3 ? 'warn' : ''],
+    ['collected', String(S.score), ''],
+    ['treasures', found + ' of ' + S.gems.length, ''],
+    ['diamond', big ? 'found' : 'not yet', big ? 'on' : 'warn']
+  ]);
+}
+
+function drawPlay(){ drawBoard(false); }
+function drawTruth(){ drawBoard(true); }
+
+function readPlay(){
+  var dug = 0;
+  for (var i=0;i<S.seen.length;i++) if (S.seen[i]) dug++;
+  if (!dug) return 'Nothing dug yet. Every square you open tells you <b>how far it is ' +
+    'from the nearest treasure</b>, and nothing else.';
+  if (done()) return 'Out of digs with <b>' + S.score + '</b> of a possible <b>' +
+    bestScore() + '</b>. Open <b>The answer</b> to see where everything was.';
+  var lowest = 99, lr = 0, lc = 0;
+  for (var r=0;r<S.n;r++) for (var c=0;c<S.n;c++){
+    var j = idx(r,c);
+    if (S.seen[j] && !S.got[j]){ var d = nearest(r,c); if (d >= 0 && d < lowest){ lowest = d; lr=r; lc=c; } }
+  }
+  var s = '<b>' + left() + '</b> digs left, <b>' + S.score + '</b> collected. ';
+  if (lowest === 99) return s + 'Nothing found yet.';
+  s += 'Your most encouraging square reads <b>' + lowest + '</b>. ';
+  if (lowest <= 1) s += 'Something is right beside it. Whether it is the diamond or a nugget, you cannot tell from the number.';
+  else if (lowest <= 3) s += 'Something is in that neighbourhood. Closing in costs digs you cannot spend elsewhere.';
+  else s += 'Everything you have opened is far from everything. This is the moment to look somewhere new.';
+  return s;
+}
+
+function readTruth(){
+  if (!S.score && !done()) return 'Dig a few squares first.';
+  var big = false;
+  for (var i=0;i<S.gems.length;i++) if (S.gems[i].big && S.got[idx(S.gems[i].r,S.gems[i].c)]) big = true;
+  return 'The board held one diamond worth <b>' + DIAMOND + '</b> and ' +
+    (S.gems.length-1) + ' nuggets worth <b>' + NUGGET + '</b> each. You collected <b>' +
+    S.score + '</b> of <b>' + bestScore() + '</b>. ' +
+    (big ? 'You found the diamond.'
+         : 'You never found the diamond. The numbers you were following were pointing at ' +
+           'the nearest treasure, and the nearest treasure was a nugget.');
+}
+
+function ctlPlay(){
+  return '<div class="budget'+(done()?' spent':'')+'">'+
+      '<div class="bk">Digs left</div><div class="bv">'+left()+'<span>/'+S.digs+'</span></div>'+
+      '<div class="bbar"><i style="width:'+(left()/S.digs*100)+'%"></i></div></div>'+
+    '<div class="lab" style="margin-bottom:5px"><span>Digs you get</span></div>'+
+    '<div class="modes">'+
+    [5,10,15,20].map(function(v){
+      return '<button type="button" class="'+(S.digs===v?'on':'')+
+             '" onclick="setDigs('+v+')">'+v+'</button>'; }).join('')+'</div>'+
+    button('New board','newBoard();render()','go')+
+    '<div class="hint">Every board is dealt at random: where the diamond is, where ' +
+    'the nuggets are, and how many there are. Changing the digs deals a new one.</div>';
+}
+function setDigs(v){ S.digs = v; newBoard(); render(); }
+function ctlTruth(){
+  return '<div class="hint">The board with everything showing. Compare it with the ' +
+         'numbers you were following.</div>';
+}
+
+var TABS = {
+  play: {
+    eq: null,
+    says: ['The number is a distance, not a count',
+           'Minesweeper counts what is next to a square. This one tells you how far ' +
+           'that square is from the nearest treasure, and the nearest treasure is ' +
+           'usually not the valuable one.'],
+    steps: ['Open a few squares far apart. That is exploring, and it costs digs.',
+            'Follow a low number and see what you find.',
+            'Watch what happens to your digs while you close in on a nugget.',
+            'Open <b>The answer</b> to see where the diamond was.'],
+    read: readPlay, controls: ctlPlay, draw: drawPlay
+  },
+  truth: {
+    eq: null,
+    says: ['Where everything was',
+           'The diamond and the nuggets, with the squares you opened still showing.'],
+    steps: ['Find the diamond. Was any number you opened pointing at it?',
+            'A low number near a nugget looks exactly like a low number near the diamond.',
+            'Start another board and spend the early digs further apart.'],
+    read: readTruth, controls: ctlTruth, draw: drawTruth
+  }
+};
+
+function onInput(id, val){ render(); }
+newBoard();
+
+var $ = function(id){ return document.getElementById(id); };
+
+function slider(id, label, min, max, val, fmt, hint, step){
+  return '<div class="ctl"><div class="lab"><span>' + label + '</span>' +
+         '<span class="val" id="v-' + id + '">' + fmt(val) + '</span></div>' +
+         '<input type="range" id="' + id + '" min="' + min + '" max="' + max +
+         '" step="' + (step || 1) + '" value="' + val + '">' +
+         (hint ? '<div class="hint">' + hint + '</div>' : '') + '</div>';
+}
+function picker(id, label, opts, sel, hint){
+  var o = opts.map(function(p){
+    return '<option value="' + p[0] + '"' + (String(p[0]) === String(sel) ? ' selected' : '') +
+           '>' + p[1] + '</option>'; }).join('');
+  return '<div class="ctl"><div class="lab"><span>' + label + '</span></div>' +
+         '<select id="' + id + '">' + o + '</select>' +
+         (hint ? '<div class="hint">' + hint + '</div>' : '') + '</div>';
+}
+function button(label, fn, kind){
+  return '<button class="btn ' + (kind || '') + '" type="button" onclick="' + fn +
+         '">' + label + '</button>';
+}
+function reads(items){
+  return items.map(function(it){
+    return '<div class="read' + (it[2] ? ' ' + it[2] : '') + '"><div class="k">' +
+           it[0] + '</div><div class="v">' + it[1] + '</div></div>'; }).join('');
+}
+function paintRange(r){
+  var pct = ((+r.value - +r.min) / ((+r.max - +r.min) || 1)) * 100;
+  r.style.setProperty('--f', pct + '%');
+}
+function wire(){
+  [].forEach.call(document.querySelectorAll('input[type=range]'), function(r){
+    paintRange(r);
+    r.addEventListener('input', function(){ paintRange(r); onInput(r.id, +r.value); });
+  });
+  [].forEach.call(document.querySelectorAll('select'), function(s){
+    s.addEventListener('change', function(){ onInput(s.id, s.value); });
+  });
+}
+var FLIP = {};                       // which tabs are currently showing the back
+
+function flipEq(){
+  FLIP[S.tab] = !FLIP[S.tab];
+  render();
+}
+function eqButton(){
+  var back = FLIP[S.tab];
+  var icon = back
+    ? '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" ' +
+      'stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M19 12H5M11 6l-6 6 6 6"/></svg>'
+    : '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" ' +
+      'stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<circle cx="12" cy="12" r="9"/><path d="M9.6 9.2a2.5 2.5 0 1 1 3.2 3.1c-.6.3-.8.7-.8 1.3v.4"/>' +
+      '<path d="M12 17.4h.01"/></svg>';
+  return '<button class="eq-flip" type="button" onclick="flipEq()" title="' +
+         (back ? 'Back to the equation' : 'What does this mean?') + '">' + icon + '</button>';
+}
+
+// Rewriting a panel that has not changed destroys whatever the pointer is on,
+// which is why Stop could not be clicked while a tool was running.
+function setIf(id, html){
+  var el = $(id);
+  if (el.innerHTML !== html) el.innerHTML = html;
+}
+
+function render(){
+  var t = TABS[S.tab];
+  if (t.eq) {
+    $('eq').style.display = '';
+    if (FLIP[S.tab] && t.explain){
+      $('eq').className = 'card eq back';
+      $('eq').innerHTML = eqButton() +
+        '<div class="lead">' + t.explain[0] + '</div><div class="terms">' +
+        t.explain[1].map(function(x){
+          return '<b>' + x[0] + '</b><span>' + x[1] + '</span>'; }).join('') +
+        '</div>';
+    } else {
+      $('eq').className = 'card eq';
+      $('eq').innerHTML = (t.explain ? eqButton() : '') +
+        '$$' + t.eq + '$$<div class="cap">' + t.cap + '</div>';
+    }
+  } else { $('eq').style.display = 'none'; }
+  setIf('says', '<h2>' + t.says[0] + '</h2>' +
+    '<div style="font-size:11.5px;line-height:1.6;color:#3d3d3d">' + t.says[1] + '</div>');
+  setIf('try', '<h2>Try this</h2><ol class="steps">' +
+    t.steps.map(function(x){ return '<li>' + x + '</li>'; }).join('') + '</ol>');
+  setIf('controls', '<h2>Controls</h2>' + t.controls());
+  t.draw();
+  $('reading').innerHTML = t.read();
+  wire();
+  if (window.renderMathInElement && t.eq && !(FLIP[S.tab] && t.explain)){
+    renderMathInElement($('eq'), {
+      delimiters: [{left:'$$', right:'$$', display:true}], throwOnError:false});
+  }
+}
+document.addEventListener('DOMContentLoaded', function(){
+  [].forEach.call(document.querySelectorAll('.tab'), function(b){
+    b.addEventListener('click', function(){
+      var on = document.querySelector('.tab.on');
+      if (on) on.classList.remove('on');
+      b.classList.add('on');
+      S.tab = b.dataset.t;
+      if (typeof onTab === 'function') onTab(S.tab);
+      render();
+    });
+  });
+  function boot(){
+    if (!window.renderMathInElement){ setTimeout(boot, 60); return; }
+    render();
+  }
+  boot();
+});
+
+/* ---- who is playing, and what this is ---------------------------------
+   Asked once, remembered after that. The name goes on the band so it lands
+   inside any screenshot a student takes for an assignment. INTRO is set by
+   each tool: a title and the four lines worth knowing before starting. */
+(function(){
+  var USER = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" ' +
+    'stroke="currentColor" stroke-width="2" stroke-linecap="round" ' +
+    'stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/>' +
+    '<path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>';
+  var nameVeil = $('name-veil'), introVeil = $('intro-veil'),
+      input = $('name-in'), band = document.querySelector('.band');
+  var timer = null, LEN = 97.4, SECS = (window.INTRO_SECS || 15);
+
+  function show(n){
+    var slot = document.getElementById('whois');
+    if (!slot){
+      slot = document.createElement('div');
+      slot.className = 'whois'; slot.id = 'whois';
+      band.appendChild(slot);
+    }
+    slot.innerHTML = n ? '<span class="ul">' + USER + 'User</span>' +
+                         '<span class="un"></span>' : '';
+    if (n) slot.querySelector('.un').textContent = n;
+    var hi = $('intro-hi');
+    if (hi && window.INTRO) hi.textContent = n ? 'Say hi, ' + n : INTRO[0];
+  }
+  function closeIntro(){
+    if (timer){ clearInterval(timer); timer = null; }
+    introVeil.classList.remove('on');
+  }
+  function openIntro(){
+    if (!window.INTRO) return;
+    $('intro-body').innerHTML =
+      (INTRO[2] ? '<div class="introart">' + INTRO[2] + '</div>' : '') +
+      '<ul style="margin:0;padding:0">' +
+      INTRO[1].map(function(x){ return '<li>' + x + '</li>'; }).join('') + '</ul>';
+    introVeil.classList.add('on');
+    var left = SECS;
+    $('intro-count').textContent = left;
+    $('intro-ring').style.strokeDashoffset = 0;
+    timer = setInterval(function(){
+      left -= 1;
+      $('intro-count').textContent = Math.max(0, left);
+      $('intro-ring').style.strokeDashoffset = LEN * (SECS - left) / SECS;
+      if (left <= 0) closeIntro();
+    }, 1000);
+  }
+  function done(){
+    var n = input.value.trim().replace(/\s+/g, ' ').slice(0, 40);
+    try { if (n) localStorage.setItem('ie7295-name', n); } catch (e) {}
+    show(n);
+    nameVeil.classList.remove('on');
+    openIntro();
+  }
+  $('name-go').addEventListener('click', done);
+  $('name-skip').addEventListener('click', function(){
+    nameVeil.classList.remove('on'); openIntro();
+  });
+  input.addEventListener('keydown', function(e){ if (e.key === 'Enter') done(); });
+  $('intro-go').addEventListener('click', closeIntro);
+  $('intro-skip').addEventListener('click', closeIntro);
+  introVeil.addEventListener('click', function(e){ if (e.target === introVeil) closeIntro(); });
+
+  var saved = null;
+  try { saved = localStorage.getItem('ie7295-name'); } catch (e) {}
+  if (saved){ show(saved); openIntro(); }          // known already, straight to the intro
+  else { nameVeil.classList.add('on'); setTimeout(function(){ input.focus(); }, 60); }
+})();
+
+</script></body></html>
