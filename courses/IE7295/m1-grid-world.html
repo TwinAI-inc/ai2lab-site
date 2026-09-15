@@ -682,14 +682,14 @@ a{color:#006064}
                 reward = envParams.goalReward;
                 terminal = true;
                 updateRobotReward(reward);
-                setTimeout(() => {
+                if (!isLearning) setTimeout(() => {
                     showTermination(true, currentReward);
                 }, 500);
             } else if (grid[y][x] === 'trap') {
                 reward = envParams.trapPenalty;
                 terminal = true;
                 updateRobotReward(reward);
-                setTimeout(() => {
+                if (!isLearning) setTimeout(() => {
                     showTermination(false, currentReward);
                 }, 500);
             } else {
@@ -715,6 +715,10 @@ a{color:#006064}
         }
         
         function showTermination(success, score) {
+            // Auto-learn shows the whole thing on the board, so the
+            // episode card would only cover it and need dismissing
+            // once per episode. Manual play still gets the card.
+            if (isLearning) return;
             const msg = document.getElementById('termination-message');
             const title = document.getElementById('term-title');
             const text = document.getElementById('term-text');
