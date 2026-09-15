@@ -252,56 +252,83 @@ function onTab(){ stopAuto(); }
 
 function best(){ return S.mu.indexOf(Math.max.apply(null, S.mu)); }
 
-var WEDGE = ['#0d5f62', '#17a2b8', '#8FC8CA', '#C3E3E4', '#4a8f92', '#2b7f82',
-             '#6fb3b6', '#a7d4d6', '#356f72', '#89c4c6'];
+/* MD's own wheel, restored. It was a canvas donut: inner 60 / outer 120, a
+   radial gradient per segment, white dividers, a white badge on each segment
+   carrying the arm number AND its percentage, and a dark centre reading
+   SPIN ME. Those five colours are his too.
 
-/* One SVG pie wedge, from fraction a to fraction b of the circle. */
-function wedge(cx, cy, r, a, b, fill, lift){
-  if (b - a >= 0.999)
-    return '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + fill + '"/>';
+   Drawn in SVG rather than canvas so it lives inside the kit's innerHTML
+   render with no canvas lifecycle to manage. The geometry, palette and badges
+   are his; the rotation is the one addition, because he asked for a roulette
+   wheel that spins. */
+var WEDGE = ['#E61E27', '#FFC72C', '#0066CC', '#6BADB1', '#9B59B6',
+             '#E8833A', '#2BB673', '#8E6FBF', '#D64C7F', '#3D9BE9'];
+
+function ringPath(cx, cy, ro, ri, a, b){
   var A = (a * 360 - 90) * Math.PI / 180, B = (b * 360 - 90) * Math.PI / 180;
-  var mid = (A + B) / 2;
-  var ox = lift ? Math.cos(mid) * 6 : 0, oy = lift ? Math.sin(mid) * 6 : 0;
-  var x1 = cx + ox + r * Math.cos(A), y1 = cy + oy + r * Math.sin(A);
-  var x2 = cx + ox + r * Math.cos(B), y2 = cy + oy + r * Math.sin(B);
-  return '<path d="M ' + (cx + ox) + ' ' + (cy + oy) + ' L ' + x1.toFixed(1) + ' ' +
-    y1.toFixed(1) + ' A ' + r + ' ' + r + ' 0 ' + ((b - a) > 0.5 ? 1 : 0) + ' 1 ' +
-    x2.toFixed(1) + ' ' + y2.toFixed(1) + ' Z" fill="' + fill + '"/>';
+  var big = (b - a) > 0.5 ? 1 : 0;
+  var x1 = cx + ro * Math.cos(A), y1 = cy + ro * Math.sin(A);
+  var x2 = cx + ro * Math.cos(B), y2 = cy + ro * Math.sin(B);
+  var x3 = cx + ri * Math.cos(B), y3 = cy + ri * Math.sin(B);
+  var x4 = cx + ri * Math.cos(A), y4 = cy + ri * Math.sin(A);
+  return 'M ' + x1.toFixed(1) + ' ' + y1.toFixed(1) +
+    ' A ' + ro + ' ' + ro + ' 0 ' + big + ' 1 ' + x2.toFixed(1) + ' ' + y2.toFixed(1) +
+    ' L ' + x3.toFixed(1) + ' ' + y3.toFixed(1) +
+    ' A ' + ri + ' ' + ri + ' 0 ' + big + ' 0 ' + x4.toFixed(1) + ' ' + y4.toFixed(1) + ' Z';
 }
 
-/* MD's roulette wheel. Wedge size IS the probability, so a preference rising
-   shows up as its slice widening on the very next step. */
 function drawWheel(){
-  var R = 78, cx = 92, cy = 92, acc = 0, parts = [], labels = [], i;
+  var RO = 106, RI = 53, cx = 120, cy = 120, acc = 0, segs = [], badges = [], i;
+  var defs = '<defs><filter id="wsh" x="-30%" y="-30%" width="160%" height="160%">' +
+    '<feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#101828" ' +
+    'flood-opacity="0.22"/></filter>';
+  for (i = 0; i < S.arms; i++){
+    var c = WEDGE[i % WEDGE.length];
+    defs += '<radialGradient id="wg' + i + '" cx="50%" cy="50%" r="50%">' +
+      '<stop offset="' + (RI / RO * 100).toFixed(0) + '%" stop-color="' + c +
+      '" stop-opacity="0.87"/><stop offset="100%" stop-color="' + c + '"/></radialGradient>';
+  }
+  defs += '</defs>';
+
   for (i = 0; i < S.arms; i++){
     var a = acc, b = acc + S.P[i];
-    parts.push(wedge(cx, cy, R, a, b, WEDGE[i % WEDGE.length], i === S.picked));
-    if (S.P[i] > 0.06){
+    segs.push('<path d="' + ringPath(cx, cy, RO, RI, a, b) + '" fill="url(#wg' + i + ')" ' +
+      'stroke="rgba(255,255,255,.85)" stroke-width="2"/>');
+    if (S.P[i] > 0.05){
       var mid = ((a + b) / 2 * 360 - 90) * Math.PI / 180;
-      // Counter-rotate each number by the wheel's own angle so it stays
-      // upright. A real wheel's numbers turn with it, but here they are labels
-      // to be read, and sideways digits are just harder to follow.
-      var lx = cx + Math.cos(mid) * R * 0.62, ly = cy + Math.sin(mid) * R * 0.62;
-      labels.push('<text x="' + lx.toFixed(1) + '" y="' + (ly + 4).toFixed(1) +
-        '" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" ' +
-        'transform="rotate(' + (-S.angle).toFixed(1) + ' ' + lx.toFixed(1) +
-        ' ' + ly.toFixed(1) + ')">' + (i + 1) + '</text>');
+      var lr = (RO + RI) / 2;
+      var lx = cx + Math.cos(mid) * lr, ly = cy + Math.sin(mid) * lr;
+      // counter-rotated so the number and percentage stay readable as it spins
+      badges.push('<g transform="rotate(' + (-S.angle).toFixed(1) + ' ' +
+        lx.toFixed(1) + ' ' + ly.toFixed(1) + ')">' +
+        '<circle cx="' + lx.toFixed(1) + '" cy="' + ly.toFixed(1) + '" r="20" ' +
+          'fill="rgba(255,255,255,.92)"/>' +
+        '<text x="' + lx.toFixed(1) + '" y="' + (ly - 2).toFixed(1) + '" ' +
+          'text-anchor="middle" font-size="15" font-weight="700" fill="' +
+          WEDGE[i % WEDGE.length] + '">' + (i + 1) + '</text>' +
+        '<text x="' + lx.toFixed(1) + '" y="' + (ly + 10).toFixed(1) + '" ' +
+          'text-anchor="middle" font-size="10" font-weight="700" fill="' +
+          WEDGE[i % WEDGE.length] + '">' + (S.P[i] * 100).toFixed(0) + '%</text></g>');
     }
     acc = b;
   }
+
   return '<div style="text-align:center">' +
-    '<svg viewBox="0 0 184 204" style="width:184px;height:204px">' +
+    '<svg viewBox="0 0 240 262" style="width:232px;height:253px">' + defs +
+      '<circle cx="' + cx + '" cy="' + cy + '" r="' + RO + '" fill="#fff" filter="url(#wsh)"/>' +
       '<g transform="rotate(' + S.angle.toFixed(1) + ' ' + cx + ' ' + cy + ')" ' +
-        'style="transition:transform .55s cubic-bezier(.2,.8,.25,1)">' +
-        parts.join('') + labels.join('') +
+        'style="transition:transform .6s cubic-bezier(.2,.85,.25,1)">' +
+        segs.join('') + badges.join('') +
       '</g>' +
-      '<polygon points="92,4 86,18 98,18" fill="#20484A"/>' +
-      '<circle cx="92" cy="92" r="15" fill="#fff"/>' +
-      '<text x="92" y="97" text-anchor="middle" font-size="12" font-weight="700" ' +
-        'fill="#20484A">' + (S.picked >= 0 ? S.picked + 1 : '?') + '</text>' +
-      '<text x="92" y="198" text-anchor="middle" font-size="10" fill="#a8b0b6">' +
-        (S.picked >= 0 ? 'landed on arm ' + (S.picked + 1) : 'press One step to spin') +
-      '</text>' +
+      '<circle cx="' + cx + '" cy="' + cy + '" r="' + (RI - 2) + '" fill="#2d2d2d"/>' +
+      '<text x="' + cx + '" y="' + (cy - 4) + '" text-anchor="middle" font-size="11" ' +
+        'font-weight="700" fill="#fff" letter-spacing="1">' +
+        (S.picked >= 0 ? 'ARM ' + (S.picked + 1) : 'SPIN ME!') + '</text>' +
+      '<text x="' + cx + '" y="' + (cy + 12) + '" text-anchor="middle" font-size="10" ' +
+        'fill="rgba(255,255,255,.7)">' +
+        (S.picked >= 0 ? (S.P[S.picked] * 100).toFixed(0) + '% chance' : '') + '</text>' +
+      '<polygon points="120,6 112,26 128,26" fill="#2d2d2d"/>' +
+      '<polygon points="120,10 115,24 125,24" fill="#fff"/>' +
     '</svg></div>';
 }
 
