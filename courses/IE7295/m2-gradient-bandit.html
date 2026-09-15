@@ -128,7 +128,7 @@ select:focus{outline:none;border-color:#8FC8CA}
 .veil{position:fixed;inset:0;background:rgba(32,72,74,.42);z-index:70;display:none;
   align-items:center;justify-content:center;padding:20px}
 .veil.on{display:flex}
-.dlg{background:#fff;border-radius:10px;padding:22px 26px;max-width:470px;width:100%;
+.dlg{background:#fff;border-radius:10px;padding:24px 28px;max-width:560px;width:100%;
   box-shadow:0 18px 50px rgba(0,0,0,.24);border-top:3px solid #006064}
 .dlg h2{font-size:16px;font-weight:700;color:#20484A;margin:0;text-transform:none;
   letter-spacing:0}
@@ -150,7 +150,8 @@ select:focus{outline:none;border-color:#8FC8CA}
 .ring:hover span{color:#E2231A}
 .introbox{background:rgba(143,200,202,.14);border-left:3px solid #8FC8CA;
   border-radius:0 6px 6px 0;padding:13px 15px;margin-bottom:4px}
-.introbox li{font-size:12px;line-height:1.5;color:#3d3d3d;margin-bottom:5px;
+.introart{margin:0 0 12px}
+.introbox li{font-size:12.5px;line-height:1.6;color:#3d3d3d;margin-bottom:7px;
   list-style:none;padding-left:14px;position:relative}
 .introbox li:last-child{margin-bottom:0}
 .introbox li::before{content:"";position:absolute;left:0;top:8px;width:5px;height:5px;
@@ -173,7 +174,9 @@ var INTRO = ['Gradient Bandit', [
 var S = {
   tab: 'soft', arms: 4, alpha: 10, temp: 100,
   H: [], P: [], mu: [], baseline: 0, steps: 0, picked: -1, lastR: 0,
-  autoOn: false, autoT: null
+  autoOn: false, autoT: null,
+  hist: [],          // {R, base} per step, for the reward panel
+  angle: 0           // where the wheel points, in degrees
 };
 
 function reset(){
@@ -183,6 +186,7 @@ function reset(){
     S.mu.push(Math.round((Math.random() * 4 - 1) * 100) / 100);
   }
   S.baseline = 0; S.steps = 0; S.picked = -1; S.lastR = 0;
+  S.hist = []; S.angle = 0;
   softmax();
   stopAuto();
 }
@@ -199,6 +203,9 @@ function sample(){
   return S.arms - 1;
 }
 function step(){
+  // The arm is chosen HERE, from the probabilities as they stand. The wheel is
+  // animated to this answer afterwards. Doing it the other way round is what
+  // made the old wheel stop on one arm and report another.
   var a = sample();
   var R = S.mu[a] + (Math.random() + Math.random() + Math.random() - 1.5) * 0.9;
   var al = S.alpha / 100;
@@ -210,7 +217,20 @@ function step(){
   }
   softmax();
   S.picked = a; S.lastR = R;
+  S.hist.push({R: R, base: S.baseline});
+  if (S.hist.length > 120) S.hist.shift();
+  spinTo(a);
   render();
+}
+
+/* Point the wheel at the arm already chosen: whole turns first so it reads as
+   a spin, then the exact centre of that arm's wedge. */
+function spinTo(a){
+  var start = 0, i;
+  for (i = 0; i < a; i++) start += S.P[i];
+  var centre = (start + S.P[a] / 2) * 360;
+  var turns = S.autoOn ? 0 : 720;
+  S.angle = S.angle - (S.angle % 360) + turns + (360 - centre);
 }
 function stopAuto(){ S.autoOn = false; if (S.autoT){ clearInterval(S.autoT); S.autoT = null; } }
 function toggleAuto(){
@@ -232,49 +252,151 @@ function onTab(){ stopAuto(); }
 
 function best(){ return S.mu.indexOf(Math.max.apply(null, S.mu)); }
 
-/* preferences on the left, probabilities on the right, so the softmax is a
-   thing you watch happen rather than a formula you are told about */
+var WEDGE = ['#0d5f62', '#17a2b8', '#8FC8CA', '#C3E3E4', '#4a8f92', '#2b7f82',
+             '#6fb3b6', '#a7d4d6', '#356f72', '#89c4c6'];
+
+/* One SVG pie wedge, from fraction a to fraction b of the circle. */
+function wedge(cx, cy, r, a, b, fill, lift){
+  if (b - a >= 0.999)
+    return '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + fill + '"/>';
+  var A = (a * 360 - 90) * Math.PI / 180, B = (b * 360 - 90) * Math.PI / 180;
+  var mid = (A + B) / 2;
+  var ox = lift ? Math.cos(mid) * 6 : 0, oy = lift ? Math.sin(mid) * 6 : 0;
+  var x1 = cx + ox + r * Math.cos(A), y1 = cy + oy + r * Math.sin(A);
+  var x2 = cx + ox + r * Math.cos(B), y2 = cy + oy + r * Math.sin(B);
+  return '<path d="M ' + (cx + ox) + ' ' + (cy + oy) + ' L ' + x1.toFixed(1) + ' ' +
+    y1.toFixed(1) + ' A ' + r + ' ' + r + ' 0 ' + ((b - a) > 0.5 ? 1 : 0) + ' 1 ' +
+    x2.toFixed(1) + ' ' + y2.toFixed(1) + ' Z" fill="' + fill + '"/>';
+}
+
+/* MD's roulette wheel. Wedge size IS the probability, so a preference rising
+   shows up as its slice widening on the very next step. */
+function drawWheel(){
+  var R = 78, cx = 92, cy = 92, acc = 0, parts = [], labels = [], i;
+  for (i = 0; i < S.arms; i++){
+    var a = acc, b = acc + S.P[i];
+    parts.push(wedge(cx, cy, R, a, b, WEDGE[i % WEDGE.length], i === S.picked));
+    if (S.P[i] > 0.06){
+      var mid = ((a + b) / 2 * 360 - 90) * Math.PI / 180;
+      // Counter-rotate each number by the wheel's own angle so it stays
+      // upright. A real wheel's numbers turn with it, but here they are labels
+      // to be read, and sideways digits are just harder to follow.
+      var lx = cx + Math.cos(mid) * R * 0.62, ly = cy + Math.sin(mid) * R * 0.62;
+      labels.push('<text x="' + lx.toFixed(1) + '" y="' + (ly + 4).toFixed(1) +
+        '" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" ' +
+        'transform="rotate(' + (-S.angle).toFixed(1) + ' ' + lx.toFixed(1) +
+        ' ' + ly.toFixed(1) + ')">' + (i + 1) + '</text>');
+    }
+    acc = b;
+  }
+  return '<div style="text-align:center">' +
+    '<svg viewBox="0 0 184 204" style="width:184px;height:204px">' +
+      '<g transform="rotate(' + S.angle.toFixed(1) + ' ' + cx + ' ' + cy + ')" ' +
+        'style="transition:transform .55s cubic-bezier(.2,.8,.25,1)">' +
+        parts.join('') + labels.join('') +
+      '</g>' +
+      '<polygon points="92,4 86,18 98,18" fill="#20484A"/>' +
+      '<circle cx="92" cy="92" r="15" fill="#fff"/>' +
+      '<text x="92" y="97" text-anchor="middle" font-size="12" font-weight="700" ' +
+        'fill="#20484A">' + (S.picked >= 0 ? S.picked + 1 : '?') + '</text>' +
+      '<text x="92" y="198" text-anchor="middle" font-size="10" fill="#a8b0b6">' +
+        (S.picked >= 0 ? 'landed on arm ' + (S.picked + 1) : 'press One step to spin') +
+      '</text>' +
+    '</svg></div>';
+}
+
+/* The arithmetic behind the wedge, because "wedge size is the probability"
+   only lands if the numbers that produced it are on screen. */
+function drawMath(){
+  var t = Math.max(0.1, S.temp / 100);
+  var m = Math.max.apply(null, S.H);
+  var e = S.H.map(function(h){ return Math.exp((h - m) / t); });
+  var sum = e.reduce(function(a, b){ return a + b; }, 0);
+  return '<div style="font-family:ui-monospace,Menlo,monospace;font-size:10.5px;' +
+    'color:#4a5a5c;background:#f7f9f9;border:1px solid #E4E9EB;border-radius:6px;' +
+    'padding:8px 10px;margin-top:6px;text-align:left">' +
+    S.H.map(function(h, i){
+      return '<div style="display:flex;justify-content:space-between;gap:8px' +
+        (i === S.picked ? ';color:#006064;font-weight:700' : '') + '">' +
+        '<span>e^H' + (i + 1) + ' = ' + e[i].toFixed(2) + '</span>' +
+        '<span>&divide; ' + sum.toFixed(2) + ' = ' + (S.P[i] * 100).toFixed(1) + '%</span>' +
+      '</div>';
+    }).join('') + '</div>';
+}
+
+/* Reward against the running average. The vertical tick on the newest dot IS
+   the advantage, the term that decides the sign of every update. */
+function drawChart(){
+  var W = 210, H = 150, n = S.hist.length;
+  if (!n)
+    return '<div style="height:' + H + 'px;display:flex;align-items:center;' +
+      'justify-content:center;font-size:11px;color:#a8b0b6;text-align:center">' +
+      'Rewards appear here.<br>The line is the running average.</div>';
+  var all = [];
+  S.hist.forEach(function(p){ all.push(p.R, p.base); });
+  var lo = Math.min.apply(null, all), hi = Math.max.apply(null, all);
+  if (hi - lo < 1){ hi += 0.5; lo -= 0.5; }
+  var x = function(i){ return 26 + (n < 2 ? 0 : i / (n - 1)) * (W - 34); };
+  var y = function(v){ return 10 + (1 - (v - lo) / (hi - lo)) * (H - 34); };
+  var dots = S.hist.map(function(p, i){
+    return '<circle cx="' + x(i).toFixed(1) + '" cy="' + y(p.R).toFixed(1) +
+      '" r="' + (i === n - 1 ? 3.4 : 1.7) + '" fill="' +
+      (p.R >= p.base ? '#17a2b8' : '#c0504d') + '"/>';
+  }).join('');
+  var line = S.hist.map(function(p, i){
+    return (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(p.base).toFixed(1);
+  }).join(' ');
+  var lastR = S.hist[n - 1].R, lastB = S.hist[n - 1].base;
+  return '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:' + H + 'px">' +
+    '<path d="' + line + '" fill="none" stroke="#20484A" stroke-width="1.6"/>' +
+    dots +
+    '<line x1="' + x(n - 1).toFixed(1) + '" y1="' + y(lastR).toFixed(1) + '" x2="' +
+      x(n - 1).toFixed(1) + '" y2="' + y(lastB).toFixed(1) + '" stroke="' +
+      (lastR >= lastB ? '#17a2b8' : '#c0504d') + '" stroke-width="1.6"/>' +
+    '<text x="3" y="' + (y(hi) + 4).toFixed(1) + '" font-size="9" fill="#a8b0b6">' +
+      hi.toFixed(1) + '</text>' +
+    '<text x="3" y="' + (y(lo) + 4).toFixed(1) + '" font-size="9" fill="#a8b0b6">' +
+      lo.toFixed(1) + '</text>' +
+    '<text x="26" y="' + (H - 3) + '" font-size="9.5" fill="#a8b0b6">' +
+      'dots are rewards, the line is the average</text></svg>';
+}
+
+function panel(title, inner){
+  return '<div><div style="font-size:10px;font-weight:700;letter-spacing:.5px;' +
+    'text-transform:uppercase;color:#a8b0b6;text-align:center;margin-bottom:8px">' +
+    title + '</div>' + inner + '</div>';
+}
+
 function drawSoft(){
   var span = Math.max(1.2, Math.max.apply(null, S.H.map(Math.abs)) * 1.15);
+  var bars = S.H.map(function(h, i){
+    var w = (Math.abs(h) / span) * 50, pos = h >= 0;
+    return '<div style="display:flex;align-items:center;gap:6px;margin-bottom:7px">' +
+      '<div style="width:34px;font-size:10px;color:' +
+        (i === S.picked ? '#006064' : '#a8b0b6') + '">arm ' + (i + 1) + '</div>' +
+      '<div style="flex:1;height:17px;position:relative;background:#f2f5f6;' +
+        'border-radius:4px">' +
+        '<div style="position:absolute;left:50%;top:0;bottom:0;width:1px;' +
+          'background:#d4dcde"></div>' +
+        '<div style="position:absolute;top:2px;bottom:2px;border-radius:3px;' +
+          (pos ? 'left:50%;' : 'right:50%;') + 'width:' + w.toFixed(1) + '%;' +
+          'background:' + (pos ? '#17a2b8' : '#c0504d') + '"></div>' +
+      '</div>' +
+      '<div style="width:42px;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;' +
+        'font-weight:700;color:#20484A;text-align:right">' + h.toFixed(2) + '</div>' +
+    '</div>';
+  }).join('');
+
   $('viz').innerHTML =
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:26px;width:100%;' +
-    'max-width:860px;align-items:center">' +
+    '<div style="display:grid;grid-template-columns:1fr 200px 1fr;gap:18px;' +
+    'width:100%;max-width:900px;align-items:start">' +
+      panel('preference H(a)', bars +
+        '<div style="font-size:10px;color:#a8b0b6;text-align:center;margin-top:4px">' +
+        'left of centre is below zero</div>') +
+      panel('softmax &rarr; &pi;(a)', drawWheel() + drawMath()) +
+      panel('reward vs baseline', drawChart()) +
+    '</div>';
 
-    '<div><div style="font-size:10px;font-weight:700;letter-spacing:.5px;' +
-      'text-transform:uppercase;color:#a8b0b6;text-align:center;margin-bottom:8px">' +
-      'preference H(a)</div>' +
-      S.H.map(function(h, i){
-        var w = (Math.abs(h) / span) * 50;
-        var pos = h >= 0;
-        return '<div style="display:flex;align-items:center;gap:7px;margin-bottom:7px">' +
-          '<div style="width:38px;font-size:10px;color:#a8b0b6">arm ' + (i + 1) + '</div>' +
-          '<div style="flex:1;height:17px;position:relative;background:#f2f5f6;' +
-            'border-radius:4px">' +
-            '<div style="position:absolute;left:50%;top:0;bottom:0;width:1px;' +
-              'background:#d4dcde"></div>' +
-            '<div style="position:absolute;top:2px;bottom:2px;border-radius:3px;' +
-              (pos ? 'left:50%;' : 'right:50%;') + 'width:' + w.toFixed(1) + '%;' +
-              'background:' + (pos ? '#17a2b8' : '#c0504d') + '"></div>' +
-          '</div>' +
-          '<div style="width:46px;font-family:ui-monospace,Menlo,monospace;font-size:11px;' +
-            'font-weight:700;color:#20484A;text-align:right">' + h.toFixed(2) + '</div>' +
-        '</div>';
-      }).join('') + '</div>' +
-
-    '<div><div style="font-size:10px;font-weight:700;letter-spacing:.5px;' +
-      'text-transform:uppercase;color:#a8b0b6;text-align:center;margin-bottom:8px">' +
-      'probability &pi;(a)</div>' +
-      S.P.map(function(p, i){
-        var w = p * 100;
-        return '<div style="display:flex;align-items:center;gap:7px;margin-bottom:7px">' +
-          '<div style="flex:1;height:17px;background:#f2f5f6;border-radius:4px;' +
-            'overflow:hidden"><div style="height:100%;width:' + w.toFixed(1) + '%;' +
-            'background:linear-gradient(90deg,#0d5f62,#17a2b8);border-radius:4px"></div></div>' +
-          '<div style="width:46px;font-family:ui-monospace,Menlo,monospace;font-size:11px;' +
-            'font-weight:700;color:' + (i === S.picked ? '#006064' : '#20484A') +
-            ';text-align:right">' + (p * 100).toFixed(1) + '%</div>' +
-        '</div>';
-      }).join('') + '</div></div>';
 
   var b = best();
   $('reads').innerHTML = reads([
@@ -533,7 +655,7 @@ document.addEventListener('DOMContentLoaded', function(){
     '<path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>';
   var nameVeil = $('name-veil'), introVeil = $('intro-veil'),
       input = $('name-in'), band = document.querySelector('.band');
-  var timer = null, LEN = 97.4, SECS = 10;
+  var timer = null, LEN = 97.4, SECS = (window.INTRO_SECS || 20);
 
   function show(n){
     var slot = document.getElementById('whois');
@@ -554,7 +676,9 @@ document.addEventListener('DOMContentLoaded', function(){
   }
   function openIntro(){
     if (!window.INTRO) return;
-    $('intro-body').innerHTML = '<ul style="margin:0;padding:0">' +
+    $('intro-body').innerHTML =
+      (INTRO[2] ? '<div class="introart">' + INTRO[2] + '</div>' : '') +
+      '<ul style="margin:0;padding:0">' +
       INTRO[1].map(function(x){ return '<li>' + x + '</li>'; }).join('') + '</ul>';
     introVeil.classList.add('on');
     var left = SECS;
