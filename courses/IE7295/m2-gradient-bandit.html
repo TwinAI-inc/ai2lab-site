@@ -314,7 +314,7 @@ function drawWheel(){
   }
 
   return '<div style="text-align:center">' +
-    '<svg viewBox="0 0 240 262" style="width:232px;height:253px">' + defs +
+    '<svg viewBox="0 0 240 240" style="width:100%;max-width:236px;height:auto">' + defs +
       '<circle cx="' + cx + '" cy="' + cy + '" r="' + RO + '" fill="#fff" filter="url(#wsh)"/>' +
       '<g transform="rotate(' + S.angle.toFixed(1) + ' ' + cx + ' ' + cy + ')" ' +
         'style="transition:transform .6s cubic-bezier(.2,.85,.25,1)">' +
@@ -327,8 +327,9 @@ function drawWheel(){
       '<text x="' + cx + '" y="' + (cy + 12) + '" text-anchor="middle" font-size="10" ' +
         'fill="rgba(255,255,255,.7)">' +
         (S.picked >= 0 ? (S.P[S.picked] * 100).toFixed(0) + '% chance' : '') + '</text>' +
-      '<polygon points="120,6 112,26 128,26" fill="#2d2d2d"/>' +
-      '<polygon points="120,10 115,24 125,24" fill="#fff"/>' +
+      // apex at the BOTTOM so it points into the wheel, not away from it
+      '<polygon points="110,4 130,4 120,28" fill="#2d2d2d"/>' +
+      '<polygon points="114,7 126,7 120,23" fill="#fff"/>' +
     '</svg></div>';
 }
 
@@ -357,8 +358,9 @@ function drawChart(){
   var W = 210, H = 150, n = S.hist.length;
   if (!n)
     return '<div style="height:' + H + 'px;display:flex;align-items:center;' +
-      'justify-content:center;font-size:11px;color:#a8b0b6;text-align:center">' +
-      'Rewards appear here.<br>The line is the running average.</div>';
+      'justify-content:center;font-size:11px;color:#a8b0b6;text-align:center;' +
+      'padding:0 6px;line-height:1.6">' +
+      'Rewards appear here.<br>The line is the<br>running average.</div>';
   var all = [];
   S.hist.forEach(function(p){ all.push(p.R, p.base); });
   var lo = Math.min.apply(null, all), hi = Math.max.apply(null, all);
@@ -388,10 +390,14 @@ function drawChart(){
       'dots are rewards, the line is the average</text></svg>';
 }
 
-function panel(title, inner){
+function panel(title, inner, centre){
   return '<div><div style="font-size:10px;font-weight:700;letter-spacing:.5px;' +
-    'text-transform:uppercase;color:#a8b0b6;text-align:center;margin-bottom:8px">' +
-    title + '</div>' + inner + '</div>';
+    'text-transform:uppercase;color:#a8b0b6;text-align:center;margin-bottom:10px">' +
+    title + '</div>' +
+    // the wheel is the tallest panel, so the other two centre their content
+    // against it while all three headings stay on the same line
+    (centre ? '<div style="min-height:236px;display:flex;flex-direction:column;' +
+              'justify-content:center">' + inner + '</div>' : inner) + '</div>';
 }
 
 function drawSoft(){
@@ -415,13 +421,13 @@ function drawSoft(){
   }).join('');
 
   $('viz').innerHTML =
-    '<div style="display:grid;grid-template-columns:1fr 200px 1fr;gap:18px;' +
-    'width:100%;max-width:900px;align-items:start">' +
+    '<div style="display:grid;grid-template-columns:1fr 250px 1fr;gap:24px;' +
+    'width:100%;max-width:980px;align-items:start;justify-items:stretch">' +
       panel('preference H(a)', bars +
-        '<div style="font-size:10px;color:#a8b0b6;text-align:center;margin-top:4px">' +
-        'left of centre is below zero</div>') +
+        '<div style="font-size:10px;color:#a8b0b6;text-align:center;margin-top:6px">' +
+        'left of centre is below zero</div>', true) +
       panel('softmax &rarr; &pi;(a)', drawWheel() + drawMath()) +
-      panel('reward vs baseline', drawChart()) +
+      panel('reward vs baseline', drawChart(), true) +
     '</div>';
 
 
