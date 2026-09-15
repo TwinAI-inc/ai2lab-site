@@ -176,7 +176,10 @@ var S = {
   H: [], P: [], mu: [], baseline: 0, steps: 0, picked: -1, lastR: 0,
   autoOn: false, autoT: null,
   hist: [],          // {R, base} per step, for the reward panel
-  angle: 0           // where the wheel points, in degrees
+  angle: 0,          // where the wheel points, in degrees
+  spinMs: 600,       // how long the current wheel movement should take
+  spinEase: 'cubic-bezier(.2,.85,.25,1)',
+  settleTo: 0, settleT: null
 };
 
 function reset(){
@@ -186,7 +189,8 @@ function reset(){
     S.mu.push(Math.round((Math.random() * 4 - 1) * 100) / 100);
   }
   S.baseline = 0; S.steps = 0; S.picked = -1; S.lastR = 0;
-  S.hist = []; S.angle = 0;
+  S.hist = []; S.angle = 0; S.spinMs = 600;
+  if (S.settleT){ clearTimeout(S.settleT); S.settleT = null; }
   softmax();
   stopAuto();
 }
@@ -236,14 +240,43 @@ function paint(){
   if (rd && t && t.read) rd.innerHTML = t.read();
 }
 
-/* Point the wheel at the arm already chosen: whole turns first so it reads as
-   a spin, then the exact centre of that arm's wedge. */
+/* Point the wheel at the arm already chosen.
+
+   MD wanted it to spin like a real wheel, and to settle rather than stop dead.
+   So a single step takes three or four fast turns, decelerates over about a
+   second and a half, deliberately overshoots the pocket by a few degrees, and
+   then rocks back into it. The overshoot is what makes it read as momentum
+   instead of an animation ending.
+
+   During a Run there is a step every 60ms, so turns and settling are dropped
+   and the wheel simply tracks. */
 function spinTo(a){
   var start = 0, i;
   for (i = 0; i < a; i++) start += S.P[i];
   var centre = (start + S.P[a] / 2) * 360;
-  var turns = S.autoOn ? 0 : 720;
-  S.angle = S.angle - (S.angle % 360) + turns + (360 - centre);
+  var target = S.angle - (S.angle % 360) + (360 - centre);
+  if (S.settleT){ clearTimeout(S.settleT); S.settleT = null; }
+
+  if (S.autoOn){
+    S.spinMs = 60;
+    S.spinEase = 'linear';
+    S.angle = target;
+    return;
+  }
+
+  var turns = 3 + Math.floor(Math.random() * 2);
+  var over = 6 + Math.random() * 4;               // past the pocket, then back
+  S.spinMs = 1500;
+  S.spinEase = 'cubic-bezier(.12,.72,.09,1)';     // fast away, long slow down
+  S.settleTo = target + 360 * turns;
+  S.angle = S.settleTo + over;
+  S.settleT = setTimeout(function(){
+    S.spinMs = 430;
+    S.spinEase = 'cubic-bezier(.34,1.4,.64,1)';   // the rock back into place
+    S.angle = S.settleTo;
+    S.settleT = null;
+    paint();
+  }, 1520);
 }
 function stopAuto(){ S.autoOn = false; if (S.autoT){ clearInterval(S.autoT); S.autoT = null; } }
 function toggleAuto(){
@@ -313,7 +346,8 @@ function drawWheel(){
       var lx = cx + Math.cos(mid) * lr, ly = cy + Math.sin(mid) * lr;
       // counter-rotated so the number and percentage stay readable as it spins
       badges.push('<g transform="rotate(' + (-S.angle).toFixed(1) + ' ' +
-        lx.toFixed(1) + ' ' + ly.toFixed(1) + ')">' +
+        lx.toFixed(1) + ' ' + ly.toFixed(1) + ')" ' +
+        'style="transition:transform ' + S.spinMs + 'ms ' + S.spinEase + '">' +
         '<circle cx="' + lx.toFixed(1) + '" cy="' + ly.toFixed(1) + '" r="20" ' +
           'fill="rgba(255,255,255,.92)"/>' +
         '<text x="' + lx.toFixed(1) + '" y="' + (ly - 2).toFixed(1) + '" ' +
@@ -330,7 +364,7 @@ function drawWheel(){
     '<svg viewBox="0 0 240 240" style="width:100%;max-width:236px;height:auto">' + defs +
       '<circle cx="' + cx + '" cy="' + cy + '" r="' + RO + '" fill="#fff" filter="url(#wsh)"/>' +
       '<g transform="rotate(' + S.angle.toFixed(1) + ' ' + cx + ' ' + cy + ')" ' +
-        'style="transition:transform .6s cubic-bezier(.2,.85,.25,1)">' +
+        'style="transition:transform ' + S.spinMs + 'ms ' + S.spinEase + '">' +
         segs.join('') + badges.join('') +
       '</g>' +
       '<circle cx="' + cx + '" cy="' + cy + '" r="' + (RI - 2) + '" fill="#2d2d2d"/>' +
