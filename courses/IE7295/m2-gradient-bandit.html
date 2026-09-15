@@ -220,7 +220,20 @@ function step(){
   S.hist.push({R: R, base: S.baseline});
   if (S.hist.length > 120) S.hist.shift();
   spinTo(a);
-  render();
+  paint();
+}
+
+/* Repaint the picture and the readouts, and NOTHING else.
+
+   MD: the Stop button did not work. render() rebuilds the controls panel, and
+   during a run step() was calling it sixteen times a second, so the button was
+   destroyed and recreated under the cursor between mousedown and mouseup and
+   the click never landed. Exactly the bug the bandits tool already had. */
+function paint(){
+  var t = TABS[S.tab];
+  if (t && t.draw) t.draw();
+  var rd = $('reading');
+  if (rd && t && t.read) rd.innerHTML = t.read();
 }
 
 /* Point the wheel at the arm already chosen: whole turns first so it reads as
@@ -238,7 +251,7 @@ function toggleAuto(){
   S.autoOn = true;
   S.autoT = setInterval(function(){
     if (S.steps >= 400){ stopAuto(); render(); return; }
-    step();
+    step();               // step() paints; the controls are left alone
   }, 60);
   render();
 }
