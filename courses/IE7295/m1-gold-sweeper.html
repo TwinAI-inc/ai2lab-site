@@ -272,7 +272,7 @@ select:focus{outline:none;border-color:#8FC8CA}
   padding:8px 4px;border-radius:6px;border:1px solid #8FC8CA;background:#fff;color:#20484A}
 .modes button.on{background:#006064;border-color:#006064;color:#fff}
 </style></head><body><div class="band"><h1>Gold Sweeper</h1><div class="sub">Module 1 &middot; the nearest treasure is not the best one</div></div><div class="stage"><div class="tabs"><button class="tab on" data-t="play" type="button">The board</button><button class="tab" data-t="truth" type="button">The answer</button></div><div class="cols"><div class="side"><div class="card rule" id="controls"></div><div class="card rule" id="says"></div><div class="card rule" id="try"></div></div><div class="main"><div class="card eq" id="eq"></div><div class="viz" id="viz"></div><div class="reading" id="reading"></div><div class="reads" id="reads"></div></div></div></div><div class="foot">IE7295: Applied Reinforcement Learning &middot; Prof. Dehghani</div><div class="veil" id="name-veil"><div class="dlg"><h2>Before you start</h2><p>Put your name in so it appears on the tool. Any screenshot you take for an assignment will then carry it.</p><input type="text" id="name-in" maxlength="40" placeholder="Your name" autocomplete="name" spellcheck="false"><button class="go2" type="button" id="name-go">Start</button><button class="skip" type="button" id="name-skip">Skip</button></div></div><div class="veil" id="intro-veil"><div class="dlg"><div class="dlg-head"><h2 id="intro-hi">How this works</h2><button class="ring" id="intro-skip" type="button" aria-label="Skip"><svg viewBox="0 0 36 36" width="36" height="36"><circle cx="18" cy="18" r="15.5" fill="none" stroke="#dfe8e9" stroke-width="3"/><circle id="intro-ring" cx="18" cy="18" r="15.5" fill="none" stroke="#006064" stroke-width="3" stroke-linecap="round" stroke-dasharray="97.4" stroke-dashoffset="0" transform="rotate(-90 18 18)"/></svg><span id="intro-count">10</span></button></div><div class="introbox" id="intro-body"></div><button class="go2" type="button" id="intro-go">Got it</button></div></div><script>
-window.INTRO_SECS = 15;              // MD: the intro went past too fast
+window.INTRO_SECS = 20;              // MD: the intro went past too fast
 
 // The two prizes, drawn large, so a student knows what they are hunting before
 // the board appears. Same icons the board uses.
@@ -686,7 +686,7 @@ document.addEventListener('DOMContentLoaded', function(){
     '<path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>';
   var nameVeil = $('name-veil'), introVeil = $('intro-veil'),
       input = $('name-in'), band = document.querySelector('.band');
-  var timer = null, LEN = 97.4, SECS = (window.INTRO_SECS || 15);
+  var timer = null, LEN = 97.4, SECS = (window.INTRO_SECS || 20);
 
   function show(n){
     var slot = document.getElementById('whois');
