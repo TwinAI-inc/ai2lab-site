@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chart Explorer: Channels and Baselines</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--ac:#0B4F9C;--dp:#154173;--bd:#D3E4F5;--mi:#A6C7E8;--tn:#E7EDF5;
+--pa:#FBFCFD;--ik:#3d3d3d;--mu:#a8b0b6;--bc:#747474;--ln:#E4E9EB;
+--ye:#F5D000;--rd:#E2231A;--gr:#1B5E43;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font:15px/1.6 Lato,Helvetica,Arial,sans-serif;color:var(--ik);background:#F0F4F8;padding:26px 16px}
+.shell{max-width:1060px;margin:0 auto;background:#fff;border-radius:8px;overflow:hidden;
+ box-shadow:0 1px 3px rgba(20,48,79,.10)}
+.band{background:linear-gradient(135deg,var(--bd),var(--mi));padding:18px 26px}
+.band h1{font-size:24px;font-weight:900;color:var(--dp)}
+.band p{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#2C4C6E;margin-top:3px}
+.steps{display:flex;gap:0;border-bottom:1px solid var(--ln);background:var(--pa)}
+.stp{flex:1;padding:11px 8px;text-align:center;font-size:12.5px;font-weight:700;color:var(--mu);
+ border-bottom:3px solid transparent;cursor:pointer;user-select:none}
+.stp.on{color:var(--ac);border-bottom-color:var(--ac);background:#fff}
+.stp.done{color:var(--gr)}
+.stp small{display:block;font-size:10.5px;font-weight:400;color:var(--mu)}
+.pane{padding:22px 26px;display:none}
+.pane.on{display:block}
+h2{font-size:18px;color:var(--dp);margin-bottom:5px}
+.sub{font-size:13.5px;color:var(--bc);margin-bottom:16px}
+.split{display:flex;gap:20px;flex-wrap:wrap}
+.chart{flex:1 1 470px;min-width:330px}
+.side{flex:1 1 280px;min-width:250px}
+svg{display:block;background:#fff;border:1px solid var(--ln);border-radius:6px}
+.gl{stroke:#E4E9EB;stroke-width:1}
+.ax{stroke:#9AA7B2;stroke-width:1.5}
+.bar{fill:var(--ac);transition:y .5s cubic-bezier(.4,0,.2,1),height .5s cubic-bezier(.4,0,.2,1),fill .25s}
+.tick,.clab,.leg{font:11px Lato,sans-serif;fill:#747474}
+.tick{text-anchor:end}
+.clab,.leg{text-anchor:middle}
+.leg{text-anchor:start}
+.vlab{font:700 11.5px Lato,sans-serif;fill:var(--dp);text-anchor:middle}
+.ttl{font:700 15px Lato,sans-serif;fill:var(--dp)}
+.hot{cursor:pointer}
+.hot:hover .bar{fill:#0d5fbd}
+.hot rect[fill="transparent"]{transition:fill .15s}
+.hot:hover rect[fill="transparent"]{fill:rgba(11,79,156,.07)}
+.hot.picked rect[fill="transparent"]{fill:rgba(11,79,156,.12)}
+.info{background:var(--tn);border-left:4px solid var(--ac);border-radius:0 6px 6px 0;padding:14px 16px;min-height:190px}
+.info .k{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ac)}
+.info h3{font-size:16px;color:var(--dp);margin:4px 0 6px}
+.info .ch{display:inline-block;background:#fff;border:1px solid var(--mi);border-radius:999px;
+ padding:2px 10px;font-size:11.5px;font-weight:700;color:var(--dp);margin-bottom:8px}
+.info p{font-size:13.5px;color:var(--ik)}
+.rk{display:inline-block;background:var(--dp);color:#fff;border-radius:999px;padding:1px 8px;
+ font-size:11px;font-weight:700;margin-left:5px}
+.dots{display:flex;gap:6px;margin:14px 0 0;flex-wrap:wrap}
+.dot{width:11px;height:11px;border-radius:999px;border:2px solid var(--mi);background:#fff}
+.dot.on{background:var(--ac);border-color:var(--ac)}
+.hint{font-size:12px;color:var(--bc);margin-top:8px}
+.ctrl{display:flex;align-items:center;gap:12px;margin:14px 0 6px;flex-wrap:wrap}
+.ctrl label{font-size:13px;font-weight:700;color:var(--dp)}
+input[type=range]{flex:1;min-width:180px;accent-color:var(--ac)}
+.val{font:700 14px Lato;color:var(--ac);min-width:74px}
+.warnbox{background:#FDF0EF;border-left:4px solid var(--rd);border-radius:0 6px 6px 0;padding:12px 15px;margin-top:12px;font-size:13.5px}
+.okbox{background:#EAF3EE;border-left:4px solid var(--gr);border-radius:0 6px 6px 0;padding:12px 15px;margin-top:12px;font-size:13.5px}
+.chrow{display:flex;gap:16px;flex-wrap:wrap;margin-top:6px}
+.chcard{flex:1 1 200px;border:1px solid var(--ln);border-radius:6px;padding:12px;text-align:center;cursor:pointer}
+.chcard.sel{border-color:var(--ac);background:var(--tn)}
+.chcard h4{font-size:13.5px;color:var(--dp)}
+.chcard .rk2{font-size:11px;color:var(--bc);margin-top:3px}
+.nm{margin:16px 0 6px;text-align:left;max-width:420px;margin-left:auto;margin-right:auto}
+.nm label{display:block;font-size:11.5px;font-weight:700;letter-spacing:.06em;
+ text-transform:uppercase;color:var(--ac);margin-bottom:4px}
+.nm input{width:100%;padding:10px 13px;border:1px solid var(--mi);border-radius:6px;
+ font:15px Lato;color:var(--ik)}
+.modes{display:flex;gap:14px;margin-top:18px;flex-wrap:wrap}
+.mode{flex:1 1 200px;border:1px solid var(--mi);background:#fff;border-radius:8px;
+ padding:16px 14px;cursor:pointer;text-align:left;font:inherit}
+.mode:hover{border-color:var(--ac);background:var(--tn)}
+.mode b{display:block;font-size:16px;color:var(--dp);margin-bottom:3px}
+.mode span{font-size:12.5px;color:var(--bc)}
+.cert{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.dec{margin-bottom:12px}
+.dl{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--bc);margin-bottom:4px}
+.seg{display:flex;border:1px solid var(--ln);border-radius:999px;overflow:hidden}
+.seg button{flex:1;border:0;background:#fff;padding:7px 6px;font:700 12.5px Lato;color:var(--bc);cursor:pointer}
+.seg button.on{background:var(--ac);color:#fff}
+.btn{display:inline-block;background:var(--ac);color:#fff;border:0;border-radius:999px;
+ padding:10px 24px;font:700 14px Lato;cursor:pointer;margin-top:14px}
+.btn:disabled{background:#B8C4CE;cursor:not-allowed}
+.btn.ghost{background:#fff;color:var(--dp);border:1px solid var(--mi)}
+.prog{display:flex;gap:5px;margin-bottom:14px}
+.pg{flex:1;height:5px;border-radius:999px;background:var(--ln)}
+.pg.done{background:var(--gr)} .pg.now{background:var(--ac)}
+.qhead{margin-bottom:8px}
+.qtag{display:inline-block;background:var(--tn);color:var(--ac);border-radius:999px;
+ padding:3px 12px;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.qrow{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start}
+.qmain{flex:1 1 380px;min-width:300px}
+.qside{flex:0 1 330px;min-width:250px}
+.qside svg{border:1px solid var(--ln);border-radius:6px;background:var(--pa);padding:4px}
+.ltr{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;
+ border-radius:999px;background:var(--tn);color:var(--ac);font-weight:700;font-size:12.5px;
+ margin-right:11px;flex-shrink:0}
+.opt{display:flex;align-items:center}
+.opt.right .ltr{background:var(--gr);color:#fff}
+.opt.wrong .ltr{background:var(--rd);color:#fff}
+.q{font-size:16.5px;font-weight:700;color:var(--dp);margin-bottom:12px}
+.opt{display:block;border:1px solid var(--ln);border-radius:6px;padding:11px 14px;margin-bottom:9px;
+ cursor:pointer;font-size:14px;background:#fff}
+.opt:hover{border-color:var(--mi)}
+.opt.right{border-color:var(--gr);background:#EAF3EE}
+.opt.wrong{border-color:var(--rd);background:#FDF0EF}
+.why{background:var(--tn);border-left:4px solid var(--ac);border-radius:0 6px 6px 0;
+ padding:12px 15px;margin-top:10px;font-size:13.5px;display:none}
+.vital{color:var(--ac);font-weight:700}
+.qz-snap{margin:10px 0;border:1px solid var(--ln);border-radius:6px;overflow:hidden}
+.qz-snap-h{background:var(--tn);padding:6px 11px;font-size:11px;font-weight:700;
+ letter-spacing:.05em;text-transform:uppercase;color:var(--ac)}
+.score{font-size:15px;font-weight:700;color:var(--dp)}
+.foot{background:#EBF3FB;border-top:1px solid var(--ln);padding:11px 26px;display:flex;
+ justify-content:space-between;font-size:12px;color:var(--bc)}
+.code{background:var(--ac);color:#fff;font-weight:700;padding:2px 8px;border-radius:4px}
+.cite{font-size:11.5px;color:var(--bc);margin-top:10px}
+</style></head><body>
+<div class="shell">
+ <div class="band"><h1>Chart Explorer</h1>
+  <p>Module 03 &middot; IE6600: Computation and Visualization</p></div>
+ <div class="steps" id="steps" style="display:none">
+  <div class="stp on" data-s="0">1. Anatomy<small>click the chart</small></div>
+  <div class="stp" data-s="1">2. Baseline<small>move the axis</small></div>
+  <div class="stp" data-s="2">3. Decisions<small>gridlines and more</small></div>
+  <div class="stp" data-s="3">4. Channels<small>compare three</small></div>
+  <div class="stp" data-s="4">5. Quiz<small>seven questions</small></div>
+ </div>
+
+ <div class="pane on" id="pw">
+  <div style="max-width:560px;margin:10px auto 6px;text-align:center">
+   <h2>How do you want to go through this?</h2>
+   <div class="sub">If you have not seen this material yet, start with learning mode and it will
+     take you through a real chart a piece at a time. If you just want to check
+     what you already know, go straight to the questions. You can download a
+     certificate either way.</div>
+   <div class="nm"><label for="nm">Your name</label>
+     <input id="nm" placeholder="So the certificate has your name on it"></div>
+   <div class="modes">
+    <button class="mode" id="mLearn">
+      <b>Learning mode</b><span>Four steps, then the quiz. About 15 minutes.</span></button>
+    <button class="mode" id="mQuiz">
+      <b>Quiz mode</b><span>Seven questions. About 5 minutes.</span></button>
+   </div>
+  </div>
+ </div>
+ <div class="pane" id="p0">
+  <h2>Click the parts of this chart</h2>
+  <div class="sub">Seven parts of it will tell you what they are doing and why they are there.
+   The numbers are real: they come from the NHIS workbook you used in Module 1.</div>
+  <div class="split">
+   <div class="chart" id="achart"><svg id="cv" viewBox="0 0 720 380" width="100%" role="img" aria-label="Survey respondents by US region">
+<g class="hot" data-part="grid">
+<rect x="62" y="46" width="634" height="256" fill="transparent"/>
+<line class="gl" x1="62" y1="302.0" x2="696" y2="302.0"/>
+<line class="gl" x1="62" y1="238.0" x2="696" y2="238.0"/>
+<line class="gl" x1="62" y1="174.0" x2="696" y2="174.0"/>
+<line class="gl" x1="62" y1="110.0" x2="696" y2="110.0"/>
+<line class="gl" x1="62" y1="46.0" x2="696" y2="46.0"/>
+</g>
+<g class="hot" data-part="yaxis">
+<rect x="10" y="38" width="54" height="272" fill="transparent"/>
+<line class="ax" id="baseline" x1="62" y1="302" x2="696" y2="302"/>
+<line class="ax" x1="62" y1="40" x2="62" y2="302"/>
+<text class="tick" id="tk0" x="52" y="306.0">0</text>
+<text class="tick" id="tk1" x="52" y="242.0">0</text>
+<text class="tick" id="tk2" x="52" y="178.0">0</text>
+<text class="tick" id="tk3" x="52" y="114.0">0</text>
+<text class="tick" id="tk4" x="52" y="50.0">0</text>
+</g>
+<g class="hot" data-part="bars">
+<rect class="bar" id="b0" x="92.1" y="302" width="98.3" height="0" rx="2"/>
+<rect class="bar" id="b1" x="250.6" y="302" width="98.3" height="0" rx="2"/>
+<rect class="bar" id="b2" x="409.1" y="302" width="98.3" height="0" rx="2"/>
+<rect class="bar" id="b3" x="567.6" y="302" width="98.3" height="0" rx="2"/>
+</g>
+<g class="hot" data-part="labels">
+<text class="vlab" id="v0" x="141.2" y="0">4332</text>
+<text class="vlab" id="v1" x="299.8" y="0">3054</text>
+<text class="vlab" id="v2" x="458.2" y="0">2632</text>
+<text class="vlab" id="v3" x="616.8" y="0">1982</text>
+</g>
+<g class="hot" data-part="xaxis">
+<rect x="62" y="304" width="634" height="44" fill="transparent"/>
+<text class="clab" x="141.2" y="322">South</text>
+<text class="clab" x="299.8" y="322">West</text>
+<text class="clab" x="458.2" y="322">North</text>
+<text class="clab" x="458.2" y="335">Central</text>
+<text class="clab" x="458.2" y="348">Midwest</text>
+<text class="clab" x="616.8" y="322">Northeast</text>
+</g>
+<g class="hot" data-part="title">
+<rect x="22" y="6" width="694" height="30" fill="transparent"/>
+<text class="ttl" x="28" y="26">Respondents by US region</text>
+</g>
+<g class="hot" data-part="color">
+<rect x="604" y="10" width="86" height="22" fill="transparent"/>
+<rect x="608" y="14" width="13" height="13" rx="2" fill="#0B4F9C"/>
+<text class="leg" x="626" y="25">one fill</text>
+</g>
+</svg>
+    <div class="dots" id="dots"></div>
+    <div class="hint" id="hint">Nothing clicked yet. Try the bars.</div>
+   </div>
+   <div class="side"><div class="info" id="info">
+     <div class="k">Pick a part</div><h3>Start anywhere you like</h3>
+     <p>Some parts of a chart carry the numbers and some are only there to
+        help a reader get to them. It is worth knowing which is which before
+        you start changing anything. Click any part and it will tell you.</p></div>
+    <button class="btn" id="go1" disabled>Next: the baseline &rsaquo;</button></div>
+  </div>
+ </div>
+
+ <div class="pane" id="p1">
+  <h2>Now move the axis and watch what happens</h2>
+  <div class="sub">Nothing about the data changes here. Only the point where the axis begins.</div>
+  <div class="split">
+   <div class="chart" id="bchart"></div>
+   <div class="side">
+    <div class="ctrl"><label for="bs">Axis starts at</label>
+     <input type="range" id="bs" min="0" max="1950" step="10" value="0">
+     <span class="val" id="bsv">0</span></div>
+    <div id="bmsg" class="okbox">At zero, bar length is proportional to the number. The Northeast has 1,982
+      respondents and the South has 4,332, so the South bar is about 2.2 times
+      the Northeast one. That is exactly the real ratio.</div>
+    <div class="cite">Counted from the Raw Data sheet of <b>M01_NHIS_Workbook.xlsx</b>, 12,000 rows, 2017 to 2024. Source: IPUMS NHIS, University of Minnesota, nhis.ipums.org. The sample is unweighted, so it describes the sample and not the country.</div>
+    <button class="btn" id="go2" disabled>Next: the channels &rsaquo;</button>
+   </div>
+  </div>
+ </div>
+
+ <div class="pane" id="p2">
+  <h2>Gridlines, labels, color and emphasis</h2>
+  <div class="sub">These are the four things students ask me about most, and none of them has
+   a single right answer. Try each setting and see what it did to the chart.</div>
+  <div class="split">
+   <div class="chart" id="dchart"></div>
+   <div class="side">
+    <div class="dec">
+     <div class="dl">Gridlines</div>
+     <div class="seg" data-d="grid">
+      <button data-v="0">None</button><button data-v="1" class="on">Light</button><button data-v="2">Heavy</button></div>
+    </div>
+    <div class="dec">
+     <div class="dl">Value labels</div>
+     <div class="seg" data-d="lab">
+      <button data-v="1" class="on">On</button><button data-v="0">Off</button></div>
+    </div>
+    <div class="dec">
+     <div class="dl">Color</div>
+     <div class="seg" data-d="col">
+      <button data-v="0" class="on">One color</button><button data-v="1">One per bar</button></div>
+    </div>
+    <div class="dec">
+     <div class="dl">Emphasis</div>
+     <div class="seg" data-d="emp">
+      <button data-v="0" class="on">None</button><button data-v="1">Highlight the South</button></div>
+    </div>
+    <div class="info" id="dinfo" style="min-height:150px">
+     <div class="k">Try one</div><h3>Have a go at the switches</h3>
+     <p>Each of these changes what a reader notices first, without changing a single
+        number. That is worth seeing for yourself rather than being told.</p></div>
+    <button class="btn" id="go3" disabled>Next: the channels &rsaquo;</button>
+   </div>
+  </div>
+ </div>
+
+ <div class="pane" id="p3">
+  <h2>The same numbers, drawn three ways</h2>
+  <div class="sub">Try to put the four regions in order using each one. You will find that the
+   first is easy, the second is harder, and the third is nearly impossible.</div>
+  <div class="chrow">
+   <div class="chcard" data-c="len"><h4>Length</h4><div id="cl"></div><div class="rk2">click to read</div></div>
+   <div class="chcard" data-c="area"><h4>Area</h4><div id="ca"></div><div class="rk2">click to read</div></div>
+   <div class="chcard" data-c="sat"><h4>Color saturation</h4><div id="cs"></div><div class="rk2">click to read</div></div>
+  </div>
+  <div class="info" id="cinfo" style="margin-top:14px;min-height:0">
+   <div class="k">Compare them</div><h3>Which one was easiest?</h3>
+   <p>All three show the same four values. Click any of them to see how well people
+      actually read that channel when it was tested.</p></div>
+  <button class="btn" id="go4" disabled>Next: the quiz &rsaquo;</button>
+ </div>
+
+ <div class="pane" id="p4">
+  <h2>Questions</h2>
+  <div class="sub">There are seven, and you get an explanation after each one. Nothing is sent
+   anywhere, so answer honestly and take it again if you want to.</div>
+  <div id="qbox"></div>
+  <div style="display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap">
+   <button class="btn" id="qnext" style="display:none">Next question &rsaquo;</button>
+   <span class="score" id="sc"></span></div>
+ </div>
+
+ <div class="foot"><span><span class="code">IE6600</span> Computation and Visualization</span>
+  <span>Prof. Dehghani</span></div>
+</div>
+<script>
+var PARTS=[{"id": "bars", "name": "The bars", "channel": "Length", "rank": 3, "text": "The bars are the <b>mark</b>. Their height is the <b>channel</b>, and the channel here is length. Cleveland and McGill put length at rank 3 of six, so a reader compares these fairly well by eye. This is the part of the chart actually carrying the number."}, {"id": "yaxis", "name": "The value axis", "channel": "Position along a common scale", "rank": 1, "text": "Every bar starts from the same line, so you are really reading <b>position along a common scale</b>, rank 1, the most accurately decoded channel there is. That shared baseline is what makes it rank 1 rather than rank 2."}, {"id": "xaxis", "name": "The category axis", "channel": "Position, categorical", "rank": null, "text": "Position here carries no quantity at all. The order of the coffees is a choice you made. Sorted by value it helps the reader; alphabetical, it hides the ranking. Same channel, different amount of help."}, {"id": "grid", "name": "The gridlines", "channel": "Reference, not data", "rank": null, "text": "Gridlines encode nothing. They exist so the eye can get from a bar back to a number. Too heavy and they compete with the bars for attention; absent and the reader has to guess. This is formatting, not encoding."}, {"id": "title", "name": "The title", "channel": "The claim", "rank": null, "text": "A title that names the columns tells the reader what they can already see. A title that states the finding does work. Compare <i>Orders by coffee type</i> with <i>Iced Latte outsells Cappuccino by 29 orders</i>."}, {"id": "color", "name": "The fill color", "channel": "Nothing, here", "rank": 6, "text": "All seven bars share one color, which is correct: color is carrying no variable, so it should not vary. If you colored each bar differently, a reader would spend attention looking for a meaning that is not there. Saturation is rank 6 of six, the weakest channel for a quantity."}, {"id": "labels", "name": "The value labels", "channel": "The exact number", "rank": null, "text": "Printing the number lets a reader get precision the channel cannot give them. It also makes the chart honest about small differences: 131 and 129 look identical as bars, and they nearly are."}], DATA=[{"n": "South", "v": 4332}, {"n": "West", "v": 3054}, {"n": "North Central\nMidwest", "v": 2632}, {"n": "Northeast", "v": 1982}], QZ=[{"tag": "Marks and channels", "q": "A chart uses one <span class=\"vital\">mark</span> per order and varies how dark that mark is to show the order total. What is the channel here?", "options": ["The mark is a point and the channel is shading", "The mark is shading and the channel is a point", "There is no channel, only a mark"], "answer": 0, "why": "The mark is the thing drawn, a point. The channel is the visual property you vary to carry a value, here shading. Keeping the two words apart is the whole vocabulary of this module."}, {"tag": "Accuracy ranking", "q": "Two designs show the same quantity. One uses the length of a bar, the other uses the area of a circle. Which do readers decode more accurately, and why?", "options": ["Area, because a circle uses two dimensions so it carries more information", "They are equivalent, it is a matter of taste", "Length, because it sits higher in the measured ranking"], "answer": 2, "snap": "<div class=\"qz-snap\"><div class=\"qz-snap-h\">Look at this</div><div style=\"overflow-x:auto\"><table style=\"border-collapse:collapse;width:100%;font-size:13px\"><tr><th style=\"text-align:left;padding:6px 10px;border-bottom:2px solid #cfd8dc\">Rank</th><th style=\"text-align:left;padding:6px 10px;border-bottom:2px solid #cfd8dc\">Perceptual task</th></tr><tr><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">1</td><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">Position along a common scale</td></tr><tr><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">2</td><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">Position along non-aligned scales</td></tr><tr><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">3</td><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">Length, direction, angle</td></tr><tr><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">4</td><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">Area</td></tr><tr><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">5</td><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">Volume, curvature</td></tr><tr><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">6</td><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">Shading, color saturation</td></tr></table><div style=\"font-size:11.5px;color:#66797f;padding:8px 10px\">Cleveland and McGill, Journal of the American Statistical Association, 79(387), 531 to 554, 1984.</div></div></div>", "why": "Cleveland and McGill measured this rather than argued it. Length sits at rank 3 and area at rank 4, so the same difference is read more accurately as a bar than as a bubble. Area using two dimensions is exactly the problem: readers do not decode it linearly."}, {"tag": "Accuracy ranking", "q": "You must show a precise comparison of twelve values to a room that will act on it. Which channel should carry the number?", "options": ["Color saturation, because it looks modern", "Position along a common scale", "Angle, as slices of a pie"], "answer": 1, "why": "Position on a shared axis is rank 1, the most accurately decoded of all. Angle is rank 3 and saturation is rank 6, the worst. When precision matters, spend your best channel on the number that matters."}, {"tag": "Baselines", "q": "A bar chart of quarterly revenue starts its y axis at 90 rather than at 0. The bars run from 92 to 98. What has that done?", "options": ["Nothing, the numbers on the axis are still correct", "It made a 6 percent difference look like a threefold one", "It made the chart more accurate by using the space well"], "answer": 1, "why": "Bar length is the channel doing the work, so the reader compares lengths, not axis labels. Cutting the baseline breaks the link between length and value. The axis being labelled honestly does not repair it, because almost nobody reads the axis before forming an impression."}, {"tag": "Baselines", "q": "When is starting a y axis somewhere other than zero defensible?", "options": ["Never, zero is always required", "Whenever the data is clustered, for any chart type", "On a line chart tracking change over time, where the reader is looking at the shape of the movement rather than comparing lengths"], "answer": 2, "why": "The rule is not about zero, it is about the channel. Bars encode value as length, so a cut baseline lies. A line encodes change as slope, and a temperature chart starting at zero Kelvin would hide everything. Ask what the channel is before you ask about the axis."}, {"tag": "Variable types", "q": "You have a categorical variable with nineteen levels. Which channel is the worst choice for it?", "options": ["Shape", "Position along a categorical axis", "A separate small multiple per level"], "answer": 0, "why": "Your own slide says it: shape should not be used for a categorical variable with many factors. Nobody can hold nineteen shapes in mind or tell them apart at chart size. Position or small multiples both survive nineteen levels; shape does not survive seven."}, {"tag": "Putting it together", "q": "A scatter plot shows price against wait time, with point size as order count and point color as region. A reader says the eastern region is clearly busiest. What is wrong with that reading?", "options": ["Nothing, that is what the chart shows", "Busiest is carried by size, which is rank 4, so it is the least reliable thing on the chart to judge by eye", "Color cannot show region"], "answer": 1, "why": "Four variables are on that chart and they are not equally readable. Position is rank 1 and 2, color is rank 6 and only separates groups, and size is rank 4. A claim about which group is busiest rests on the weakest channel present. If busiest is the point, it needs its own bar chart."}];
+var MAXV=4800, PL=62, PT=46, PW=634, PH=256, GAP=158.500, BARW=98.270;
+var seen={}, step=0, base=0, chSeen={}, uName='', stamp='';
+var TAKE=['A mark is what is drawn, a channel is what varies',
+          'Position beats length beats area beats color',
+          'Cut the baseline and bar length stops meaning value',
+          'Gridlines and labels are formatting, not encoding',
+          'One accent beats a rainbow'];
+
+function draw(start){
+  var top=MAXV, span=top-start;
+  for(var i=0;i<DATA.length;i++){
+    var v=DATA[i].v, frac=Math.max(0,(v-start)/span);
+    var h=PH*frac, y=PT+PH-h;
+    var b=document.getElementById('b'+i);
+    if(b){b.setAttribute('y',y);b.setAttribute('height',h);}
+    var t=document.getElementById('v'+i);
+    if(t){t.setAttribute('y',y-6);}
+  }
+  for(var k=0;k<5;k++){
+    var e=document.getElementById('tk'+k);
+    if(e) e.textContent=Math.round(start+span*k/4);
+  }
+}
+function showInfo(p){
+  var rk=p.rank?'<span class="rk">rank '+p.rank+' of 6</span>':'';
+  document.getElementById('info').innerHTML=
+    '<div class="k">'+(p.rank?'Carries the number':'Helps the reader')+'</div>'+
+    '<h3>'+p.name+'</h3><span class="ch">'+p.channel+rk+'</span><p>'+p.text+'</p>';
+}
+function dots(){
+  var d=document.getElementById('dots'); d.innerHTML='';
+  for(var i=0;i<PARTS.length;i++){
+    d.innerHTML+='<span class="dot'+(seen[PARTS[i].id]?' on':'')+'"></span>';
+  }
+  var n=Object.keys(seen).length;
+  document.getElementById('hint').textContent=
+    n===PARTS.length?'All seven found. Move on when you are ready.':
+    (n+' of '+PARTS.length+' found. Keep clicking.');
+  document.getElementById('go1').disabled = n < PARTS.length;
+  if(n===PARTS.length) mark(0);
+}
+function mark(i){ document.querySelectorAll('.stp')[i].classList.add('done'); }
+function go(i){
+  step=i;
+  document.getElementById('pw').classList.remove('on');
+  ['p0','p1','p2','p3','p4'].forEach(function(id,j){
+    document.getElementById(id).classList.toggle('on',j===i);});
+  document.querySelectorAll('.stp').forEach(function(s,j){s.classList.toggle('on',j===i);});
+  // ONE chart, moved to whichever pane is showing. Appending it to the
+  // baseline pane and leaving it there emptied step 1 the moment you went
+  // back, and appendChild on the way back put it under the progress dots.
+  var cv=document.getElementById('cv');
+  if(cv){
+    if(i===0){ var a=document.getElementById('achart'); a.insertBefore(cv,a.firstChild); draw(0); }
+    else if(i===1){ document.getElementById('bchart').appendChild(cv); draw(base); }
+    else if(i===2){ var e=document.getElementById('dchart'); e.insertBefore(cv,e.firstChild); draw(0); applyDec(); }
+  }
+}
+document.querySelectorAll('.hot').forEach(function(g){
+  g.addEventListener('click',function(){
+    var id=g.getAttribute('data-part');
+    var p=PARTS.filter(function(x){return x.id===id;})[0];
+    if(!p) return;
+    document.querySelectorAll('.hot').forEach(function(o){o.classList.remove('picked');});
+    g.classList.add('picked');
+    seen[id]=1; showInfo(p); dots();
+  });
+});
+document.querySelectorAll('.stp').forEach(function(s){
+  s.addEventListener('click',function(){go(+s.getAttribute('data-s'));});
+});
+function startMode(which){
+  uName=(document.getElementById('nm').value||'').trim();
+  stamp=new Date().toLocaleString(undefined,{year:'numeric',month:'short',
+        day:'numeric',hour:'2-digit',minute:'2-digit'});
+  document.getElementById('pw').classList.remove('on');
+  document.getElementById('steps').style.display='flex';
+  if(which==='quiz'){ go(4); renderQ(); } else { go(0); }
+}
+document.getElementById('mLearn').onclick=function(){startMode('learn');};
+document.getElementById('mQuiz').onclick=function(){startMode('quiz');};
+document.getElementById('go1').onclick=function(){go(1);};
+document.getElementById('go2').onclick=function(){go(2);};
+document.getElementById('go3').onclick=function(){go(3);};
+document.getElementById('go4').onclick=function(){go(4);renderQ();};
+
+var bs=document.getElementById('bs');
+bs.addEventListener('input',function(){
+  base=+bs.value; document.getElementById('bsv').textContent=base; draw(base);
+  var m=document.getElementById('bmsg'), lo=DATA[DATA.length-1].v, hi=DATA[0].v;
+  var ratio=((hi-base)/(lo-base));
+  if(base===0){ m.className='okbox';
+    m.innerHTML='At zero, bar length is proportional to the number. The Northeast has 1,982 respondents and the South has 4,332, so the South bar is about 2.2 times the Northeast one. That is exactly the real ratio.'; }
+  else { m.className='warnbox';
+    m.innerHTML='Starting at <b>'+base+'</b>, the tallest bar is now <b>'+ratio.toFixed(1)+
+      ' times</b> the shortest one. The real ratio is still 2.2. Nothing about the data changed, only where the axis begins.';
+    document.getElementById('go2').disabled=false; mark(1); }
+});
+
+// ---- step 3: the four formatting decisions --------------------------------
+var dec={grid:1,lab:1,col:0,emp:0}, decSeen={};
+var PAL=['#0B4F9C','#1B5E43','#B8860B','#7A4FA3'];
+var DTXT={
+ grid:[ {t:'No gridlines',p:'Cleanest, and it works when the exact values are printed or when the reader only needs the ranking. Take them away and the chart can only be read as a comparison, not as numbers.'},
+        {t:'Light gridlines',p:'The usual right answer. They let the eye travel from a bar back to the axis without competing with the data. Light grey, behind the bars, never on top.'},
+        {t:'Heavy gridlines',p:'Now the grid is drawing attention it has not earned. Gridlines encode nothing, so the moment they are as strong as the bars they are noise pretending to be information.'} ],
+ lab:[ {t:'No value labels',p:'Right when the point is the shape, not the number. Also right when there are so many bars that the labels would collide. The reader then depends entirely on your gridlines.'},
+       {t:'Value labels on',p:'Right when a reader will quote the number, and right when differences are small enough that the channel cannot resolve them. With only four bars there is room, so this is nearly free.'} ],
+ col:[ {t:'One color',p:'Correct here. Color is carrying no variable, so it should not vary. A single fill tells the reader there is nothing to decode in the color.'},
+       {t:'One color per bar',p:'This is the most common formatting mistake in the course. The region is already encoded by position on the axis. Coloring each bar differently encodes it a second time and invites the reader to hunt for a meaning that is not there.'} ],
+ emp:[ {t:'No emphasis',p:'Neutral. Right when you are showing the reader the data and letting them find their own point.'},
+       {t:'One bar highlighted',p:'This is what color is FOR. One accent against a muted field says here is the thing I am talking about. It only works while it is rare: highlight two bars and you are back to a rainbow.'} ]
+};
+function applyDec(){
+  document.querySelectorAll('.gl').forEach(function(g){
+    g.style.stroke = dec.grid===0?'transparent':(dec.grid===1?'#E4E9EB':'#8A9AA6');
+    g.style.strokeWidth = dec.grid===2?'1.6':'1';
+  });
+  document.querySelectorAll('.vlab').forEach(function(t){ t.style.display = dec.lab?'':'none'; });
+  for(var i=0;i<DATA.length;i++){
+    var b=document.getElementById('b'+i); if(!b) continue;
+    if(dec.emp===1) b.style.fill = (i===0?'#0B4F9C':'#C3CFDA');
+    else b.style.fill = dec.col===1 ? PAL[i%PAL.length] : '#0B4F9C';
+  }
+}
+document.querySelectorAll('.seg').forEach(function(s){
+  s.querySelectorAll('button').forEach(function(b){
+    b.addEventListener('click',function(){
+      var key=s.getAttribute('data-d'), v=+b.getAttribute('data-v');
+      s.querySelectorAll('button').forEach(function(o){o.classList.remove('on');});
+      b.classList.add('on'); dec[key]=v; decSeen[key]=1; applyDec();
+      var info=DTXT[key][v];
+      document.getElementById('dinfo').innerHTML='<div class="k">'+
+        (key==='grid'?'Gridlines':key==='lab'?'Value labels':key==='col'?'Color':'Emphasis')+
+        '</div><h3>'+info.t+'</h3><p>'+info.p+'</p>';
+      if(Object.keys(decSeen).length===4){document.getElementById('go3').disabled=false;mark(2);}
+    });
+  });
+});
+
+// step 4: the three channels
+var CH={len:{t:'Length',r:'Rank 3 of 6',p:'You ranked these almost instantly. Length shares a baseline, so the comparison is close to rank 1 position. This is why the bar chart survives everything.'},
+ area:{t:'Area',r:'Rank 4 of 6',p:'Harder, and you probably underestimated the differences. Readers do not decode area linearly: doubling a value looks like much less than double. Two dimensions carry less, not more.'},
+ sat:{t:'Color saturation',r:'Rank 6 of 6',p:'You can pick the darkest and the lightest and almost nothing in between. Saturation is the weakest channel measured. It is fine for a category, and poor for a quantity.'}};
+document.querySelectorAll('.chcard').forEach(function(c){
+  c.addEventListener('click',function(){
+    document.querySelectorAll('.chcard').forEach(function(o){o.classList.remove('sel');});
+    c.classList.add('sel');
+    var k=c.getAttribute('data-c'), d=CH[k]; chSeen[k]=1;
+    document.getElementById('cinfo').innerHTML='<div class="k">'+d.r+'</div><h3>'+d.t+'</h3><p>'+d.p+'</p>'+
+      '<div class="cite">Cleveland and McGill, Journal of the American Statistical Association, 79(387), 531 to 554, 1984.</div>';
+    if(Object.keys(chSeen).length===3){document.getElementById('go4').disabled=false;mark(3);}
+  });
+});
+function mini(id,kind){
+  var el=document.getElementById(id), w=200,h=110,s='<svg viewBox="0 0 '+w+' '+h+'" width="100%">';
+  var lo=1982,hi=4332;
+  for(var i=0;i<DATA.length;i++){
+    var v=DATA[i].v, f=(v-lo)/(hi-lo), x=16+i*46;
+    if(kind==='len'){ var bh=12+f*80; s+='<rect x="'+x+'" y="'+(h-10-bh)+'" width="26" height="'+bh+'" fill="#0B4F9C" rx="2"/>'; }
+    else if(kind==='area'){ var r=7+f*16; s+='<circle cx="'+(x+13)+'" cy="'+(h/2)+'" r="'+r+'" fill="#0B4F9C"/>'; }
+    else { var o=(0.18+f*0.82).toFixed(2); s+='<rect x="'+x+'" y="'+(h/2-18)+'" width="26" height="36" rx="2" fill="#0B4F9C" opacity="'+o+'"/>'; }
+  }
+  el.innerHTML=s+'</svg>';
+}
+mini('cl','len'); mini('ca','area'); mini('cs','sat');
+
+function certPNG(){
+  var W=900,H=520,S=2,c=document.createElement('canvas');
+  c.width=W*S; c.height=H*S; var x=c.getContext('2d'); x.scale(S,S);
+  x.fillStyle='#FFFFFF'; x.fillRect(0,0,W,H);
+  var g=x.createLinearGradient(0,0,W,96);
+  g.addColorStop(0,'#D3E4F5'); g.addColorStop(1,'#A6C7E8');
+  x.fillStyle=g; x.fillRect(0,0,W,96);
+  x.fillStyle='#14304F'; x.font='800 30px Lato, Helvetica, Arial, sans-serif';
+  x.fillText('Chart Explorer', 44, 50);
+  x.fillStyle='#2C4C6E'; x.font='700 13px Lato, Helvetica, Arial, sans-serif';
+  x.fillText('MODULE 03  ·  IE6600: COMPUTATION AND VISUALIZATION', 44, 74);
+  var marks=['#F5D000','#E2231A','#0064B0'];
+  for(var i=0;i<3;i++){ x.fillStyle=marks[i]; x.fillRect(44+i*70,112,60,4); }
+  if(uName){
+    x.font='800 24px Lato, Helvetica, Arial, sans-serif';
+    var w=x.measureText(uName).width;
+    x.fillStyle='#F5D000'; x.fillRect(44,150,w+12,14);
+    x.fillStyle='#14304F'; x.fillText(uName,50,162);
+  }
+  x.fillStyle='#0B4F9C'; x.font='800 62px Lato, Helvetica, Arial, sans-serif';
+  x.fillText(score+' / '+QZ.length, 44, 232);
+  x.fillStyle='#747474'; x.font='400 14px Lato, Helvetica, Arial, sans-serif';
+  x.fillText(stamp, 44, 260);
+  x.fillStyle='#0B4F9C'; x.font='800 13px Lato, Helvetica, Arial, sans-serif';
+  x.fillText('WHAT TO TAKE AWAY', 44, 300);
+  x.strokeStyle='#E2EAF3'; x.lineWidth=1;
+  x.beginPath(); x.moveTo(44,310); x.lineTo(W-44,310); x.stroke();
+  var y=336;
+  TAKE.forEach(function(t){
+    x.fillStyle='#0B4F9C'; x.beginPath(); x.arc(51,y-5,3.5,0,6.3); x.fill();
+    x.fillStyle='#154173'; x.font='700 14px Lato, Helvetica, Arial, sans-serif';
+    x.fillText(t,66,y); y+=26;
+  });
+  x.fillStyle='#EBF3FB'; x.fillRect(0,H-44,W,44);
+  x.fillStyle='#0B4F9C'; x.fillRect(44,H-33,66,22);
+  x.fillStyle='#FFFFFF'; x.font='800 12px Lato, Helvetica, Arial, sans-serif';
+  x.fillText('IE6600',55,H-18);
+  x.fillStyle='#14304F'; x.font='700 12px Lato, Helvetica, Arial, sans-serif';
+  x.fillText('Computation and Visualization',120,H-18);
+  x.fillStyle='#747474'; x.font='400 12px Lato, Helvetica, Arial, sans-serif';
+  x.fillText('Prof. Dehghani',W-140,H-18);
+  var a=document.createElement('a');
+  a.download='chart-explorer'+(uName?'-'+uName.replace(/[^A-Za-z0-9]+/g,'-'):'')+'.png';
+  a.href=c.toDataURL('image/png');
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+function again(){ qi=0; score=0; renderQ(); }
+
+
+// A figure for every question, drawn here rather than described in words.
+// The quiz pane was the only step with no graphics in it and it showed.
+var A='#0B4F9C', D='#154173', G='#C3CFDA', R='#E2231A', GR='#1B5E43';
+function sv(inner,h){return '<svg viewBox="0 0 300 '+(h||150)+'" width="100%" style="max-width:320px">'+inner+'</svg>';}
+var FIG=[
+ // 1 mark vs channel: same point, four darknesses
+ sv('<text x="8" y="16" font="700 11px Lato" fill="'+D+'" font-size="11" font-weight="700">one mark, four values</text>'+
+    [0,1,2,3].map(function(i){return '<circle cx="'+(46+i*62)+'" cy="86" r="17" fill="'+A+'" opacity="'+(0.25+i*0.25)+'"/>';}).join('')+
+    '<text x="8" y="132" font-size="10.5" fill="#747474">the mark never changes, the shading does</text>',150),
+ // 2 length vs area for the same four numbers
+ sv('<text x="8" y="16" font-size="11" font-weight="700" fill="'+D+'">length</text>'+
+    [58,42,32,22].map(function(v,i){return '<rect x="'+(10+i*26)+'" y="'+(96-v)+'" width="18" height="'+v+'" fill="'+A+'" rx="2"/>';}).join('')+
+    '<text x="160" y="16" font-size="11" font-weight="700" fill="'+D+'">area</text>'+
+    [22,17,14,11].map(function(r,i){return '<circle cx="'+(178+i*34)+'" cy="66" r="'+r+'" fill="'+A+'"/>';}).join('')+
+    '<text x="8" y="132" font-size="10.5" fill="#747474">identical numbers, two channels</text>',150),
+ // 3 twelve values on a common scale
+ sv('<text x="8" y="16" font-size="11" font-weight="700" fill="'+D+'">twelve values, one scale</text>'+
+    '<line x1="10" y1="100" x2="292" y2="100" stroke="#9AA7B2"/>'+
+    [40,58,31,66,49,72,38,55,62,44,69,52].map(function(v,i){
+      return '<rect x="'+(14+i*23)+'" y="'+(100-v)+'" width="15" height="'+v+'" fill="'+A+'" rx="2"/>';}).join('')+
+    '<text x="8" y="130" font-size="10.5" fill="#747474">rank them by eye, then imagine them as pie slices</text>',150),
+ // 4 the cut baseline, side by side
+ sv('<text x="8" y="14" font-size="10.5" font-weight="700" fill="'+GR+'">axis at 0</text>'+
+    [92,95,96,98].map(function(v,i){return '<rect x="'+(12+i*22)+'" y="'+(112-v*0.92)+'" width="15" height="'+(v*0.92)+'" fill="'+A+'" rx="2"/>';}).join('')+
+    '<line x1="8" y1="112" x2="100" y2="112" stroke="#9AA7B2"/>'+
+    '<text x="164" y="14" font-size="10.5" font-weight="700" fill="'+R+'">axis at 90</text>'+
+    [2,5,6,8].map(function(v,i){return '<rect x="'+(168+i*22)+'" y="'+(112-v*11)+'" width="15" height="'+(v*11)+'" fill="'+R+'" rx="2"/>';}).join('')+
+    '<line x1="164" y1="112" x2="256" y2="112" stroke="#9AA7B2"/>'+
+    '<text x="8" y="136" font-size="10.5" fill="#747474">92 to 98 in both. Only the axis moved.</text>',150),
+ // 5 a line chart where zero would flatten everything
+ sv('<text x="8" y="16" font-size="11" font-weight="700" fill="'+D+'">change over time</text>'+
+    '<polyline fill="none" stroke="'+A+'" stroke-width="2.5" points="14,84 60,70 106,78 152,54 198,60 244,36 288,44"/>'+
+    [84,70,78,54,60,36,44].map(function(y,i){return '<circle cx="'+(14+i*45.7)+'" cy="'+y+'" r="3.2" fill="'+A+'"/>';}).join('')+
+    '<line x1="10" y1="104" x2="292" y2="104" stroke="#9AA7B2"/>'+
+    '<text x="8" y="130" font-size="10.5" fill="#747474">the reader is reading slope, not length</text>',150),
+ // 6 nineteen shapes
+ sv('<text x="8" y="16" font-size="11" font-weight="700" fill="'+D+'">nineteen categories as shape</text>'+
+    Array.apply(null,{length:19}).map(function(_,i){
+      var x=16+(i%10)*29, y=44+Math.floor(i/10)*34, k=i%5;
+      if(k===0) return '<circle cx="'+x+'" cy="'+y+'" r="8" fill="'+A+'"/>';
+      if(k===1) return '<rect x="'+(x-7)+'" y="'+(y-7)+'" width="14" height="14" fill="'+A+'"/>';
+      if(k===2) return '<polygon points="'+x+','+(y-8)+' '+(x+8)+','+(y+7)+' '+(x-8)+','+(y+7)+'" fill="'+A+'"/>';
+      if(k===3) return '<polygon points="'+x+','+(y-9)+' '+(x+9)+','+y+' '+x+','+(y+9)+' '+(x-9)+','+y+'" fill="'+A+'"/>';
+      return '<rect x="'+(x-7)+'" y="'+(y-7)+'" width="14" height="14" rx="6" fill="'+A+'"/>';}).join('')+
+    '<text x="8" y="130" font-size="10.5" fill="#747474">now find the seventh one again</text>',150),
+ // 7 scatter with size and color
+ sv('<text x="8" y="16" font-size="11" font-weight="700" fill="'+D+'">four variables at once</text>'+
+    '<line x1="22" y1="108" x2="292" y2="108" stroke="#9AA7B2"/><line x1="22" y1="28" x2="22" y2="108" stroke="#9AA7B2"/>'+
+    [[58,78,9,A],[96,62,6,GR],[134,84,13,A],[170,50,7,GR],[208,70,10,A],[246,44,5,GR],[272,66,8,A]]
+      .map(function(p){return '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="'+p[2]+'" fill="'+p[3]+'" opacity="0.8"/>';}).join('')+
+    '<text x="8" y="132" font-size="10.5" fill="#747474">position, position, size, color</text>',150)
+];
+
+// step 5: the quiz
+var qi=0, score=0, locked=false;
+function renderQ(){
+  var q=QZ[qi], b=document.getElementById('qbox');
+  var h='<div class="prog">';
+  for(var k=0;k<QZ.length;k++)
+    h+='<span class="pg'+(k<qi?' done':k===qi?' now':'')+'"></span>';
+  h+='</div>';
+  h+='<div class="qhead"><span class="qtag">'+(q.tag||'Question')+'</span></div>';
+  h+='<div class="qrow"><div class="qmain"><div class="q">'+(qi+1)+'. '+q.q+'</div>';
+  for(var i=0;i<q.options.length;i++)
+    h+='<div class="opt" data-i="'+i+'"><span class="ltr">'+
+       String.fromCharCode(65+i)+'</span><span>'+q.options[i]+'</span></div>';
+  h+='</div><div class="qside">'+(FIG[qi]||'')+(q.snap||'')+'</div></div>';
+  h+='<div class="why" id="why"></div>';
+  b.innerHTML=h; locked=false;
+  document.getElementById('qnext').style.display='none';
+  document.getElementById('sc').textContent='Question '+(qi+1)+' of '+QZ.length+(qi?'   Score '+score+'/'+qi:'');
+  b.querySelectorAll('.opt').forEach(function(o){
+    o.addEventListener('click',function(){
+      if(locked) return; locked=true;
+      var pick=+o.getAttribute('data-i');
+      if(pick===q.answer){score++;o.classList.add('right');}
+      else{o.classList.add('wrong');b.querySelectorAll('.opt')[q.answer].classList.add('right');}
+      var w=document.getElementById('why'); w.style.display='block'; w.innerHTML=q.why;
+      document.getElementById('qnext').style.display='inline-block';
+      document.getElementById('sc').textContent='Question '+(qi+1)+' of '+QZ.length+'   Score '+score+'/'+(qi+1);
+    });
+  });
+}
+document.getElementById('qnext').onclick=function(){
+  qi++;
+  if(qi<QZ.length){renderQ();return;}
+  var pct=Math.round(score/QZ.length*100), C=2*Math.PI*54;
+  var ring='<svg viewBox="0 0 130 130" width="130" height="130">'+
+   '<circle cx="65" cy="65" r="54" fill="none" stroke="#E4E9EB" stroke-width="13"/>'+
+   '<circle cx="65" cy="65" r="54" fill="none" stroke="'+(pct>=70?'#1B5E43':'#0B4F9C')+
+   '" stroke-width="13" stroke-linecap="round" stroke-dasharray="'+(C*pct/100)+' '+C+
+   '" transform="rotate(-90 65 65)"/>'+
+   '<text x="65" y="60" text-anchor="middle" font-size="30" font-weight="800" fill="#154173">'+score+'</text>'+
+   '<text x="65" y="82" text-anchor="middle" font-size="13" fill="#747474">of '+QZ.length+'</text></svg>';
+  document.getElementById('qbox').innerHTML=
+   '<div style="display:flex;gap:26px;align-items:center;flex-wrap:wrap">'+ring+
+   '<div style="flex:1 1 300px"><h2>'+(pct>=70?'That is a good score':'Worth going back through it')+'</h2>'+
+   '<p class="sub">'+(uName?uName+', e':'E')+'very question came back to which channel was '+
+   'carrying the number. Take the certificate with you.</p></div></div>'+
+   '<div class="cert"><button class="btn" onclick="certPNG()">Download your certificate</button>'+
+   '<button class="btn ghost" onclick="again()">Try the questions again</button>'+
+   '<button class="btn ghost" onclick="go(0)">Back to learning mode</button></div>';
+  document.getElementById('qnext').style.display='none';
+  document.getElementById('sc').textContent=''; mark(4);
+};
+draw(0); dots();
+</script></body></html>

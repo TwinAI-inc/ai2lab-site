@@ -136,6 +136,27 @@ canvas { width: 100%; height: auto; display: block; }
 .analysis-text { padding: 12px 14px; font-size: 14px; color: #4A5560; }
 
 /* the course footer band */
+/* Explore further. Shown only on the results screen, after both parts are
+   scored, so it rewards finishing rather than competing with the quiz.
+   The play mark is inline SVG: the tool has to work with no network and
+   Canvas strips most of what an embed would need. */
+.explore { margin-top: 32px; padding: 22px 24px; background: #FFFFFF;
+           border: 1px solid #E4E9EB; border-radius: 8px;
+           display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+.explore .thumb { flex: 0 0 168px; height: 95px; border-radius: 6px;
+                  background: linear-gradient(135deg, #1A3A8F 0%, #2FC6DC 100%);
+                  display: flex; align-items: center; justify-content: center; }
+.explore .body { flex: 1 1 260px; min-width: 240px; }
+.explore .eyebrow { font-size: 11px; font-weight: 800; letter-spacing: .06em;
+                    text-transform: uppercase; color: #0B4F9C; margin-bottom: 5px; }
+.explore h4 { font-size: 16px; font-weight: 800; color: #14304F; margin: 0 0 6px; }
+.explore p { font-size: 13px; line-height: 1.6; color: #3d3d3d; margin: 0 0 10px; }
+.explore .meta { font-size: 12px; color: #6B7A8C; margin-bottom: 12px; }
+.explore a.watch { display: inline-flex; align-items: center; gap: 8px;
+                   background: #0B4F9C; color: #FFFFFF; text-decoration: none;
+                   font-size: 13px; font-weight: 700; padding: 9px 16px;
+                   border-radius: 999px; }
+.explore a.watch:hover { background: #14304F; }
 .footer { background: #EBF3FB; border-top: 1px solid #E4E9EB; padding: 11px 24px;
           display: flex; align-items: center; justify-content: space-between;
           gap: 12px; flex-wrap: wrap; font-size: 12px; color: #747474; }
@@ -636,6 +657,37 @@ canvas { width: 100%; height: auto; display: block; }
                                 <strong>Danger:</strong> Single point determines entire regression
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <div class="explore">
+                    <div class="thumb">
+                        <svg width="46" height="46" viewBox="0 0 24 24" fill="none"
+                             stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round"
+                             stroke-linejoin="round" aria-hidden="true">
+                          <circle cx="12" cy="12" r="9.2"></circle>
+                          <path d="M10.2 8.6l6 3.4-6 3.4z" fill="#FFFFFF" stroke="none"></path>
+                        </svg>
+                    </div>
+                    <div class="body">
+                        <div class="eyebrow">Explore further</div>
+                        <h4>Same Stats, Different Graphs</h4>
+                        <p>Anscombe made four datasets that share their summary statistics.
+                           Researchers at Autodesk went further and built a method that moves
+                           points into any shape you like while the mean, the standard deviation
+                           and the correlation stay put. Watch a cloud of points turn into a
+                           dinosaur without the numbers moving.</p>
+                        <div class="meta">Autodesk Research, CHI 2017. 1 minute 19 seconds, no narration.</div>
+                        <a class="watch" href="https://www.youtube.com/watch?v=DbJyPELmhJc"
+                           target="_blank" rel="noopener">
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                               stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                               stroke-linejoin="round" aria-hidden="true">
+                            <rect x="2" y="4" width="20" height="14" rx="2"></rect>
+                            <path d="M10 9l5 3-5 3z"></path>
+                          </svg>
+                          Watch on YouTube
+                        </a>
                     </div>
                 </div>
             </div>
