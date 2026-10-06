@@ -212,7 +212,25 @@ input[type=range]{flex:1;min-width:180px;accent-color:var(--ac)}
  justify-content:center;background:var(--tn);color:var(--ac);
  transition:background .2s,color .2s,transform .25s}
 .pIcon svg{width:25px;height:25px;background:transparent;border:0;border-radius:0}
-.pk:hover .pIcon{transform:rotate(-4deg) scale(1.06)}
+/* MD, 2026-10-06: "when they hover the mouse the icon gets a short animation
+   or colour change." Hover goes to the mid blue with a deep glyph, which is a
+   real change but still reads as not-yet-chosen; selecting it fills with the
+   accent and knocks the glyph out white. Each mark then moves in its own way,
+   because three identical nudges is not an animation, it is a tic. */
+.pk:hover .pIcon{background:var(--mi);color:var(--dp);transform:translateY(-2px) scale(1.05)}
+.pk.on:hover .pIcon{background:var(--ac);color:#fff}
+.pk:hover .ic-rocket{animation:liftOff .55s cubic-bezier(.2,.8,.3,1)}
+.pk:hover .ic-trophy{animation:wobble .55s ease}
+.pk:hover .ic-doc .bars{animation:drawBars .5s ease}
+@keyframes liftOff{0%,100%{transform:translateY(0)}48%{transform:translateY(-3.5px)}}
+@keyframes wobble{0%,100%{transform:rotate(0)}28%{transform:rotate(-9deg)}
+                  62%{transform:rotate(6deg)}}
+.ic-doc .bars{stroke-dasharray:11;stroke-dashoffset:0}
+@keyframes drawBars{from{stroke-dashoffset:11}to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){
+  .pk:hover .pIcon{transform:none}
+  .pk:hover .ic-rocket,.pk:hover .ic-trophy,.pk:hover .ic-doc .bars{animation:none}
+}
 .pk.on .pIcon{background:var(--ac);color:#fff}
 .fld{margin:12px 0}
 .fld label{display:block;font-size:11.5px;font-weight:700;letter-spacing:.06em;
@@ -357,11 +375,11 @@ input[type=range]{flex:1;min-width:180px;accent-color:var(--ac)}
   <div class="sub">One form per student, per piece of work. Everyone on the team fills
    in their own, including members of teams that are not presenting.</div>
   <div class="pick" id="pick">
-   <button class="pk" data-v="Hackathon"><span class="pIcon"><svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3c4 2.5 6.5 7 6.5 12 0 1.6-.2 3-.6 4.3L17 26l-5.9-6.7c-.4-1.3-.6-2.7-.6-4.3C10.5 10 13 5.5 17 3z"/><circle cx="17" cy="13" r="3.2"/><path d="M11.4 19.5 7 22l1.6-5M22.6 19.5 27 22l-1.6-5"/><path d="M15 27.5c.6 2 1.2 3.2 2 4 .8-.8 1.4-2 2-4"/></svg></span><span class="pTxt">
+   <button class="pk" data-v="Hackathon"><span class="pIcon"><svg class="ic-rocket" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3c4 2.5 6.5 7 6.5 12 0 1.6-.2 3-.6 4.3L17 26l-5.9-6.7c-.4-1.3-.6-2.7-.6-4.3C10.5 10 13 5.5 17 3z"/><circle cx="17" cy="13" r="3.2"/><path d="M11.4 19.5 7 22l1.6-5M22.6 19.5 27 22l-1.6-5"/><path d="M15 27.5c.6 2 1.2 3.2 2 4 .8-.8 1.4-2 2-4"/></svg></span><span class="pTxt">
     <b>Hackathon</b><span>The team sprint built on Modules 1 to 5.</span></span></button>
-   <button class="pk" data-v="Project 1"><span class="pIcon"><svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="4" width="20" height="26" rx="2.5"/><path d="M12 22v-5M17 22v-9M22 22v-6"/><path d="M12 9h7"/></svg></span><span class="pTxt">
+   <button class="pk" data-v="Project 1"><span class="pIcon"><svg class="ic-doc" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="4" width="20" height="26" rx="2.5"/><path class="bars" d="M12 22v-5M17 22v-9M22 22v-6"/><path d="M12 9h7"/></svg></span><span class="pTxt">
     <b>Project 1</b><span>The first term project.</span></span></button>
-   <button class="pk" data-v="Project 2"><span class="pIcon"><svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5h12v7a6 6 0 0 1-12 0V5z"/><path d="M11 7H7.5v2A4.5 4.5 0 0 0 11 13.4M23 7h3.5v2A4.5 4.5 0 0 1 23 13.4"/><path d="M17 18v5M12.5 29h9l-1-5h-7l-1 5z"/></svg></span><span class="pTxt">
+   <button class="pk" data-v="Project 2"><span class="pIcon"><svg class="ic-trophy" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5h12v7a6 6 0 0 1-12 0V5z"/><path d="M11 7H7.5v2A4.5 4.5 0 0 0 11 13.4M23 7h3.5v2A4.5 4.5 0 0 1 23 13.4"/><path d="M17 18v5M12.5 29h9l-1-5h-7l-1 5z"/></svg></span><span class="pTxt">
     <b>Project 2</b><span>The final term project.</span></span></button>
   </div>
   <div class="two">
