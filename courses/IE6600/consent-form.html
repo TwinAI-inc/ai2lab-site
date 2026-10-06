@@ -295,16 +295,61 @@ input[type=range]{flex:1;min-width:180px;accent-color:var(--ac)}
 .chk.warn.on .bx{background:var(--rd);border-color:var(--rd)}
 .chk.warn b{color:var(--rd)}
 .declgap{height:4px}
+
+/* ---- the step rail, vertical ------------------------------------------
+   MD, 2026-10-06: "I want it to have a timeline on the left, step 1, step 2,
+   step 3, and a vertical line connecting them."
+
+   The horizontal tab strip the other tools use reads as navigation. A form
+   that has to be done in order reads better as a timeline, so the steps run
+   down the left with a line joining them, the line turns green behind the
+   steps already done, and the pane sits to its right. */
+.work{display:flex;align-items:stretch}
+.vrail{flex:0 0 234px;background:var(--pa);border-right:1px solid var(--ln);
+ padding:24px 18px 24px 22px}
+.panes{flex:1;min-width:0}
+.panes .pane{padding:22px 26px}
+.vstep{position:relative;padding:0 0 30px 44px;cursor:pointer;user-select:none}
+.vstep:last-child{padding-bottom:0}
+.vstep:before{content:"";position:absolute;left:13px;top:30px;bottom:0;width:2px;
+ background:var(--ln)}
+.vstep:last-child:before{display:none}
+.vstep .n{position:absolute;left:0;top:0;width:28px;height:28px;border-radius:999px;
+ border:2px solid var(--mi);background:#fff;color:var(--mu);display:flex;
+ align-items:center;justify-content:center;font:800 12.5px Lato,sans-serif;
+ transition:background .18s,border-color .18s,color .18s}
+.vstep b{display:block;font-size:14px;font-weight:700;color:var(--mu);
+ line-height:1.25;padding-top:4px}
+.vstep small{display:block;font-size:11.5px;color:var(--mu);margin-top:3px;
+ line-height:1.4}
+.vstep:hover .n{border-color:var(--ac)}
+.vstep.on .n{background:var(--ac);border-color:var(--ac);color:#fff}
+.vstep.on b{color:var(--dp)}
+.vstep.done .n{background:var(--gr);border-color:var(--gr);color:#fff;font-size:0}
+.vstep.done .n:after{content:"";width:5px;height:10px;border:solid #fff;
+ border-width:0 2.5px 2.5px 0;transform:rotate(45deg);margin-top:-2px}
+.vstep.done:before{background:var(--gr)}
+.vstep.done b{color:var(--bc)}
+@media (max-width:720px){
+  .work{display:block}
+  .vrail{border-right:0;border-bottom:1px solid var(--ln);padding:18px 20px}
+}
 </style>
 <div class="shell">
  <div class="band"><h1>Contribution and Consent Form</h1>
   <p>IE6600: Computation and Visualization</p><div class="mlrule"><i style="background:#F5D000"></i><i style="background:#E2231A"></i><i style="background:#0064B0"></i></div></div>
- <div class="steps" id="steps">
-  <div class="stp on" data-s="0">1. Which work<small>and who you are</small></div>
-  <div class="stp" data-s="1">2. Declarations<small>five to confirm</small></div>
-  <div class="stp" data-s="2">3. Your contribution<small>what you did</small></div>
-  <div class="stp" data-s="3">4. Sign<small>then download</small></div>
- </div>
+ <div class="work">
+  <div class="vrail" id="steps">
+   <div class="vstep on" data-s="0"><span class="n">1</span>
+    <b>Which work</b><small>and who you are</small></div>
+   <div class="vstep" data-s="1"><span class="n">2</span>
+    <b>Declarations</b><small>five to confirm</small></div>
+   <div class="vstep" data-s="2"><span class="n">3</span>
+    <b>Your contribution</b><small>what you did</small></div>
+   <div class="vstep" data-s="3"><span class="n">4</span>
+    <b>Sign</b><small>then download</small></div>
+  </div>
+  <div class="panes">
 
  <!-- 1 ----------------------------------------------------------------- -->
  <div class="pane on" id="p0">
@@ -367,7 +412,7 @@ input[type=range]{flex:1;min-width:180px;accent-color:var(--ac)}
   <div class="sub">Everything you are signing is on the right. Sign on the left, then
    download the form and hand it in.</div>
   <div class="split" style="gap:18px">
-   <div class="chart" style="flex:1 1 380px;min-width:330px">
+   <div class="chart" style="flex:1 1 320px;min-width:290px">
     <div class="sigtabs">
      <button id="tDraw" class="on">Draw it</button>
      <button id="tType">Type it</button>
@@ -387,7 +432,7 @@ input[type=range]{flex:1;min-width:180px;accent-color:var(--ac)}
      <span class="hint" id="dt" style="margin-top:9px"></span>
     </div>
    </div>
-   <div class="side" style="flex:1 1 420px;min-width:330px">
+   <div class="side" style="flex:1 1 360px;min-width:300px">
     <div class="rev">
      <div class="rh">What you are signing</div>
      <dl id="review"></dl>
@@ -403,6 +448,8 @@ input[type=range]{flex:1;min-width:180px;accent-color:var(--ac)}
    work tells you to. Nothing on this page is sent anywhere.</div>
  </div>
 
+  </div>
+ </div>
  <div class="foot"><span><span class="code">IE6600</span> Computation and Visualization</span>
   <span>Prof. Dehghani</span></div>
 </div>
@@ -455,9 +502,9 @@ var AREAS = ["Finding the data","Cleaning and processing","Analysis",
 function go(i){
   ['p0','p1','p2','p3'].forEach(function(id,j){
     document.getElementById(id).classList.toggle('on', j===i);});
-  document.querySelectorAll('.stp').forEach(function(s,j){
+  document.querySelectorAll('.vstep').forEach(function(s,j){
     s.classList.toggle('on', j===i);
-    if(j<i) s.classList.add('done');
+    s.classList.toggle('done', j<i);
   });
   window.scrollTo(0,0);
 }
@@ -515,7 +562,7 @@ document.getElementById('n2').onclick=function(){
   review();
   go(3);
 };
-document.querySelectorAll('.stp').forEach(function(s){
+document.querySelectorAll('.vstep').forEach(function(s){
   s.onclick=function(){ go(+s.getAttribute('data-s')); };
 });
 
