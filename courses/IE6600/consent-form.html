@@ -252,7 +252,18 @@ input[type=range]{flex:1;min-width:180px;accent-color:var(--ac)}
 .chk.on .bx{background:var(--gr);border-color:var(--gr)}
 .chk.on .bx:after{content:"";position:absolute;left:6px;top:2px;width:5px;height:10px;
  border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
-.chk span{font-size:14px;color:var(--ik);line-height:1.6}
+.chk .ct{font-size:14px;color:var(--ik);line-height:1.6}
+.ci{flex:0 0 22px;height:22px;color:var(--mi);margin-top:1px;
+ transition:color .18s}
+.ci svg{width:22px;height:22px;background:transparent;border:0;border-radius:0;
+ display:block}
+.chk:hover .ci{color:var(--ac)}
+.chk.on .ci{color:var(--gr)}
+/* the fifth is the one about reporting a teammate, so its mark and its words
+   stay red whether it is ticked or not */
+.chk.warn .ci{color:var(--rd)}
+.chk.warn .ct{color:var(--rd)}
+.chk.warn.on .ci{color:var(--rd)}
 .areas{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 2px}
 .area{border:1px solid var(--ln);background:#fff;border-radius:999px;padding:6px 14px;
  font:700 12.5px Lato;color:var(--bc);cursor:pointer;user-select:none}
@@ -486,6 +497,26 @@ var DECLS = [
    is drawn in red and kept apart from the four above. */
 var FLAG = "I am aware that if a teammate did not participate enough in this " +
            "project, it is on me to tell the instructor, and I have done so.";
+/* One mark per declaration, so the five are told apart at a glance rather
+   than read as five identical lines of small print. Drawn inline, like every
+   other mark in this tool, so the file stays self-contained. */
+var DICO = [
+ '<path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/>',
+ '<path d="M16 19v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 17.5V19"/>'+
+   '<circle cx="10" cy="8" r="3.2"/><path d="M20 19v-1.5a3.5 3.5 0 0 0-2.6-3.4"/>'+
+   '<path d="M15.5 5.2a3.2 3.2 0 0 1 0 5.6"/>',
+ '<path d="M10 13.5a4 4 0 0 0 5.7.4l2.6-2.6a4 4 0 0 0-5.7-5.7l-1.5 1.5"/>'+
+   '<path d="M14 10.5a4 4 0 0 0-5.7-.4L5.7 12.7a4 4 0 0 0 5.7 5.7l1.5-1.5"/>',
+ '<path d="M11 3.5l1.7 4.8 4.8 1.7-4.8 1.7L11 16.5 9.3 11.7 4.5 10l4.8-1.7z"/>'+
+   '<path d="M18 15l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/>',
+ '<path d="M6 21V3.5"/><path d="M6 4.5h11l-1.7 3.4L17 11.5H6z"/>'
+];
+function dIcon(i){
+  return '<span class="ci"><svg viewBox="0 0 24 24" fill="none" '+
+         'stroke="currentColor" stroke-width="1.9" stroke-linecap="round" '+
+         'stroke-linejoin="round">'+DICO[i]+'</svg></span>';
+}
+
 var AREAS = ["Finding the data","Cleaning and processing","Analysis",
              "Charts and visuals","Writing the narrative","Building the deck",
              "Presenting"];
@@ -495,11 +526,12 @@ var AREAS = ["Finding the data","Cleaning and processing","Analysis",
   var c = document.getElementById('chks');
   DECLS.forEach(function(t,i){
     c.innerHTML += '<div class="chk" data-i="'+i+'"><span class="bx"></span>'+
-                   '<span>'+t+'</span></div>';
+                   dIcon(i)+'<span class="ct">'+t+'</span></div>';
   });
   c.innerHTML += '<div class="declgap"></div>'+
                  '<div class="chk warn" data-i="'+DECLS.length+'">'+
-                 '<span class="bx"></span><span>'+FLAG+'</span></div>';
+                 '<span class="bx"></span>'+dIcon(DECLS.length)+
+                 '<span class="ct">'+FLAG+'</span></div>';
   c.querySelectorAll('.chk').forEach(function(el){
     el.onclick = function(){ el.classList.toggle('on'); gate1(); };
   });
