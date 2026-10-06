@@ -363,6 +363,26 @@ input[type=range]{flex:1;min-width:180px;accent-color:var(--ac)}
   .work{display:block}
   .vrail{border-right:0;border-bottom:1px solid var(--ln);padding:18px 20px}
 }
+
+/* MD, 2026-10-06: "ask them how many times they have met as part of this, did
+   they discuss issues and resolve them, use graphics for it."
+   A number box would get a 3 typed into it without a thought. The meter fills
+   as it is read, so picking 2 after a seven week project looks like what it
+   is. The bars under the discs are the same count drawn a second way. */
+.meter{display:flex;gap:9px;align-items:flex-end;margin:6px 0 2px;flex-wrap:wrap}
+.mt{position:relative;display:flex;flex-direction:column;align-items:center;
+ gap:5px;cursor:pointer;user-select:none}
+.mt i{display:block;width:12px;border-radius:3px 3px 0 0;background:var(--ln);
+ transition:background .16s,height .16s}
+.mt u{display:flex;align-items:center;justify-content:center;width:34px;height:34px;
+ border-radius:999px;border:2px solid var(--mi);background:#fff;color:var(--bc);
+ font:800 13px Lato,sans-serif;text-decoration:none;
+ transition:background .16s,border-color .16s,color .16s,transform .16s}
+.mt:hover u{border-color:var(--ac);transform:translateY(-2px)}
+.mt.fill i{background:var(--mi)}
+.mt.fill u{border-color:var(--ac);color:var(--ac)}
+.mt.pick i{background:var(--ac)}
+.mt.pick u{background:var(--ac);border-color:var(--ac);color:#fff}
 </style>
 <div class="shell">
  <div class="band"><h1>Contribution and Consent Form</h1>
@@ -426,6 +446,16 @@ input[type=range]{flex:1;min-width:180px;accent-color:var(--ac)}
   <div class="sub">This is the part that is actually read. Mark the areas you worked on,
    then say in your own words what you contributed. Be specific enough that a
    teammate reading it would recognise it as true.</div>
+  <div class="fld"><label>How many times did your team meet
+    <span class="req">required</span></label>
+   <div class="meter" id="meet"></div>
+   <div class="hint" id="meetc">Click a number. Count every time the team sat
+    down together, in person or on a call.</div></div>
+
+  <div class="fld"><label>When something went wrong, did the team talk it through
+    <span class="req">required</span></label>
+   <div class="areas" id="resolve"></div></div>
+
   <div class="fld"><label>Areas you worked on</label>
    <div class="areas" id="areas"></div></div>
   <div class="fld"><label for="ct">Your contribution, in your own words
@@ -487,7 +517,8 @@ input[type=range]{flex:1;min-width:180px;accent-color:var(--ac)}
   <span>Prof. Dehghani</span></div>
 </div>
 <script>
-var S = {work:"", name:"", nuid:"", team:"", decl:[], areas:[], contrib:"", note:"",
+var S = {work:"", name:"", nuid:"", team:"", decl:[], meets:0, resolve:"",
+         areas:[], contrib:"", note:"",
          sigMode:"draw", signed:false, stamp:""};
 
 var DECLS = [
@@ -521,6 +552,16 @@ function dIcon(i){
          'stroke-linejoin="round">'+DICO[i]+'</svg></span>';
 }
 
+var MEETS = ["1","2","3","4","5","6","7+"];
+function meetsText(){
+  if(!S.meets) return "";
+  if(S.meets===MEETS.length) return "7 or more times";
+  return S.meets===1 ? "once" : (MEETS[S.meets-1] + " times");
+}
+var RESOLVE = ["Yes, we worked it out",
+               "We talked, but it stayed unresolved",
+               "Nothing went wrong"];
+
 var AREAS = ["Finding the data","Cleaning and processing","Analysis",
              "Charts and visuals","Writing the narrative","Building the deck",
              "Presenting"];
@@ -544,6 +585,33 @@ var AREAS = ["Finding the data","Cleaning and processing","Analysis",
   AREAS.forEach(function(t){ a.innerHTML += '<span class="area">'+t+'</span>'; });
   a.querySelectorAll('.area').forEach(function(el){
     el.onclick = function(){ el.classList.toggle('on'); };
+  });
+
+  var m = document.getElementById('meet');
+  MEETS.forEach(function(t,i){
+    m.innerHTML += '<span class="mt" data-v="'+(i+1)+'">'+
+                   '<i style="height:'+(9+i*5)+'px"></i><u>'+t+'</u></span>';
+  });
+  m.querySelectorAll('.mt').forEach(function(el){
+    el.onclick = function(){
+      S.meets = +el.getAttribute('data-v');
+      m.querySelectorAll('.mt').forEach(function(o,k){
+        o.classList.toggle('fill', k+1 < S.meets);
+        o.classList.toggle('pick', k+1 === S.meets);
+      });
+      document.getElementById('meetc').textContent =
+        'The team met ' + meetsText() + '.';
+      gate2();
+    };
+  });
+
+  var rv = document.getElementById('resolve');
+  RESOLVE.forEach(function(t){ rv.innerHTML += '<span class="area">'+t+'</span>'; });
+  rv.querySelectorAll('.area').forEach(function(el){
+    el.onclick = function(){
+      rv.querySelectorAll('.area').forEach(function(o){o.classList.remove('on');});
+      el.classList.add('on'); S.resolve = el.textContent; gate2();
+    };
   });
   document.querySelectorAll('.pk').forEach(function(b){
     b.onclick = function(){
@@ -582,7 +650,7 @@ function gate1(){
 }
 function gate2(){
   var n=(document.getElementById('ct').value||'').trim().length;
-  document.getElementById('n2').disabled = n < 40;
+  document.getElementById('n2').disabled = (n < 40) || !S.meets || !S.resolve;
   document.getElementById('ctc').textContent = n < 40
     ? 'Two or three sentences. Name the parts you built, not the areas you helped with.'
     : 'That is enough to go on.';
@@ -642,6 +710,8 @@ function review(){
                 '<div class="wide">' +
                 row('Name', esc(S.name) + '  &middot;  NUID ' + esc(S.nuid)) +
                 row('Declared', 'All five confirmed, including the one in red') +
+                row('Team met', esc(meetsText())) +
+                row('When something went wrong', esc(S.resolve)) +
                 row('Areas', S.areas.length? esc(S.areas.join(', ')) : 'none marked') +
                 row('Contribution', esc(S.contrib)) +
                 (S.note ? row('Note', esc(S.note)) : '') +
@@ -724,11 +794,19 @@ document.getElementById('dl').onclick=function(){
         x.beginPath(); x.moveTo(44,y); x.lineTo(W-44,y); x.stroke(); }
       y+=22;
     }
+    function labelWidth(ks){
+      x.font='400 13px Lato, Helvetica, Arial, sans-serif';
+      var w=0;
+      ks.forEach(function(k){ w=Math.max(w, x.measureText(k).width); });
+      return Math.max(166, Math.ceil(w) + 18);
+    }
+    var COLX = 44 + labelWidth(['Piece of work','Name','NUID','Group',
+                                'Times the team met','When something went wrong']);
     function pair(k,v){
       if(on){ x.fillStyle='#747474'; x.font='400 13px Lato, Helvetica, Arial, sans-serif';
         x.fillText(k,44,y);
         x.fillStyle='#14304F'; x.font='700 15px Lato, Helvetica, Arial, sans-serif';
-        x.fillText(v,210,y); }
+        x.fillText(v,COLX,y); }
       y+=26;
     }
     function flow(text,left,width,lh,col){
@@ -761,6 +839,11 @@ document.getElementById('dl').onclick=function(){
       flow(t, 66, W-120, 20, red ? '#E2231A' : null); y+=4;
     });
     y+=6;
+
+    head('How the team worked');
+    pair('Times the team met', meetsText());
+    pair('When something went wrong', S.resolve);
+    y+=8;
 
     head('Areas worked on');
     flow(S.areas.length ? S.areas.join('  ·  ') : 'None marked', 44, W-88, 20);
