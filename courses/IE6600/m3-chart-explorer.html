@@ -275,7 +275,7 @@ input[type=range]{flex:1;min-width:180px;accent-color:var(--ac)}
 <g class="hot" data-part="yaxis">
 <rect x="10" y="38" width="54" height="272" fill="transparent"/>
 <line class="ax" id="baseline" x1="62" y1="302" x2="696" y2="302"/>
-<line class="ax" x1="62" y1="40" x2="62" y2="302"/>
+<line class="ax" id="yline" x1="62" y1="40" x2="62" y2="302"/>
 <text class="tick" id="tk0" x="52" y="306.0">0</text>
 <text class="tick" id="tk1" x="52" y="242.0">0</text>
 <text class="tick" id="tk2" x="52" y="178.0">0</text>
@@ -307,8 +307,18 @@ input[type=range]{flex:1;min-width:180px;accent-color:var(--ac)}
 </g>
 <g class="hot" data-part="color">
 <rect x="604" y="10" width="86" height="22" fill="transparent"/>
-<rect x="608" y="14" width="13" height="13" rx="2" fill="#0B4F9C"/>
-<text class="leg" x="626" y="25">one fill</text>
+<g id="leg1"><rect x="608" y="14" width="13" height="13" rx="2" fill="#0B4F9C"/>
+<text class="leg" x="626" y="25">one fill</text></g>
+<g id="leg4" style="display:none">
+<rect id="lgs0" x="300" y="15" width="11" height="11" rx="2" fill="#0B4F9C"/>
+<text class="leg" id="lgt0" x="316" y="25">South</text>
+<rect id="lgs1" x="398" y="15" width="11" height="11" rx="2" fill="#1B5E43"/>
+<text class="leg" id="lgt1" x="414" y="25">West</text>
+<rect id="lgs2" x="496" y="15" width="11" height="11" rx="2" fill="#B8860B"/>
+<text class="leg" id="lgt2" x="512" y="25">Midwest</text>
+<rect id="lgs3" x="594" y="15" width="11" height="11" rx="2" fill="#7A4FA3"/>
+<text class="leg" id="lgt3" x="610" y="25">Northeast</text>
+</g>
 </g>
 </svg>
     <div class="dots" id="dots"></div>
@@ -342,9 +352,10 @@ input[type=range]{flex:1;min-width:180px;accent-color:var(--ac)}
  </div>
 
  <div class="pane" id="p2">
-  <h2>Gridlines, labels, color and emphasis</h2>
-  <div class="sub">These are the four things students ask me about most, and none of them has
-   a single right answer. Try each setting and see what it did to the chart.</div>
+  <h2>Formatting decisions, and what each one costs</h2>
+  <div class="sub">Eight switches, and not one of them has a single right answer. Change any
+   of them and the numbers stay identical while what a reader notices does not. Watch the
+   panel: it tells you what the combination you have built is doing.</div>
   <div class="split">
    <div class="chart" id="dchart"></div>
    <div class="side">
@@ -359,9 +370,19 @@ input[type=range]{flex:1;min-width:180px;accent-color:var(--ac)}
       <button data-v="1" class="on">On</button><button data-v="0">Off</button></div>
     </div>
     <div class="dec">
+     <div class="dl">Y axis numbers</div>
+     <div class="seg" data-d="yax">
+      <button data-v="0" class="on">Shown</button><button data-v="1">Hidden</button><button data-v="2">No axis at all</button></div>
+    </div>
+    <div class="dec">
      <div class="dl">Color</div>
      <div class="seg" data-d="col">
       <button data-v="0" class="on">One color</button><button data-v="1">One per bar</button></div>
+    </div>
+    <div class="dec">
+     <div class="dl">Legend</div>
+     <div class="seg" data-d="leg">
+      <button data-v="1" class="on">Shown</button><button data-v="0">Hidden</button></div>
     </div>
     <div class="dec">
      <div class="dl">Emphasis</div>
@@ -417,7 +438,7 @@ input[type=range]{flex:1;min-width:180px;accent-color:var(--ac)}
   <span>Prof. Dehghani</span></div>
 </div>
 <script>
-var PARTS=[{"id": "bars", "name": "The bars", "channel": "Length", "rank": 3, "text": "The bars are the <b>mark</b>. Their height is the <b>channel</b>, and the channel here is length. Cleveland and McGill put length at rank 3 of six, so a reader compares these fairly well by eye. This is the part of the chart actually carrying the number."}, {"id": "yaxis", "name": "The value axis", "channel": "Position along a common scale", "rank": 1, "text": "Every bar starts from the same line, so you are really reading <b>position along a common scale</b>, rank 1, the most accurately decoded channel there is. That shared baseline is what makes it rank 1 rather than rank 2."}, {"id": "xaxis", "name": "The category axis", "channel": "Position, categorical", "rank": null, "text": "Position here carries no quantity at all. The order of the coffees is a choice you made. Sorted by value it helps the reader; alphabetical, it hides the ranking. Same channel, different amount of help."}, {"id": "grid", "name": "The gridlines", "channel": "Reference, not data", "rank": null, "text": "Gridlines encode nothing. They exist so the eye can get from a bar back to a number. Too heavy and they compete with the bars for attention; absent and the reader has to guess. This is formatting, not encoding."}, {"id": "title", "name": "The title", "channel": "The claim", "rank": null, "text": "A title that names the columns tells the reader what they can already see. A title that states the finding does work. Compare <i>Orders by coffee type</i> with <i>Iced Latte outsells Cappuccino by 29 orders</i>."}, {"id": "color", "name": "The fill color", "channel": "Nothing, here", "rank": 6, "text": "All seven bars share one color, which is correct: color is carrying no variable, so it should not vary. If you colored each bar differently, a reader would spend attention looking for a meaning that is not there. Saturation is rank 6 of six, the weakest channel for a quantity."}, {"id": "labels", "name": "The value labels", "channel": "The exact number", "rank": null, "text": "Printing the number lets a reader get precision the channel cannot give them. It also makes the chart honest about small differences: 131 and 129 look identical as bars, and they nearly are."}], DATA=[{"n": "South", "v": 4332}, {"n": "West", "v": 3054}, {"n": "Midwest", "v": 2632}, {"n": "Northeast", "v": 1982}], QZ=[{"tag": "Marks and channels", "q": "A chart uses one <span class=\"vital\">mark</span> per order and varies how dark that mark is to show the order total. What is the channel here?", "options": ["The mark is a point and the channel is shading", "The mark is shading and the channel is a point", "There is no channel, only a mark"], "answer": 0, "why": "The mark is the thing drawn, a point. The channel is the visual property you vary to carry a value, here shading. Keeping the two words apart is the whole vocabulary of this module."}, {"tag": "Accuracy ranking", "q": "Two designs show the same quantity. One uses the length of a bar, the other uses the area of a circle. Which do readers decode more accurately, and why?", "options": ["Area, because a circle uses two dimensions so it carries more information", "They are equivalent, it is a matter of taste", "Length, because it sits higher in the measured ranking"], "answer": 2, "snap": "<div class=\"qz-snap\"><div class=\"qz-snap-h\">Look at this</div><div style=\"overflow-x:auto\"><table style=\"border-collapse:collapse;width:100%;font-size:13px\"><tr><th style=\"text-align:left;padding:6px 10px;border-bottom:2px solid #cfd8dc\">Rank</th><th style=\"text-align:left;padding:6px 10px;border-bottom:2px solid #cfd8dc\">Perceptual task</th></tr><tr><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">1</td><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">Position along a common scale</td></tr><tr><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">2</td><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">Position along non-aligned scales</td></tr><tr><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">3</td><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">Length, direction, angle</td></tr><tr><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">4</td><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">Area</td></tr><tr><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">5</td><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">Volume, curvature</td></tr><tr><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">6</td><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">Shading, color saturation</td></tr></table><div style=\"font-size:11.5px;color:#66797f;padding:8px 10px\">Cleveland and McGill, Journal of the American Statistical Association, 79(387), 531 to 554, 1984.</div></div></div>", "why": "Cleveland and McGill measured this rather than argued it. Length sits at rank 3 and area at rank 4, so the same difference is read more accurately as a bar than as a bubble. Area using two dimensions is exactly the problem: readers do not decode it linearly."}, {"tag": "Accuracy ranking", "q": "You must show a precise comparison of twelve values to a room that will act on it. Which channel should carry the number?", "options": ["Color saturation, because it looks modern", "Position along a common scale", "Angle, as slices of a pie"], "answer": 1, "why": "Position on a shared axis is rank 1, the most accurately decoded of all. Angle is rank 3 and saturation is rank 6, the worst. When precision matters, spend your best channel on the number that matters."}, {"tag": "Baselines", "q": "A bar chart of quarterly revenue starts its y axis at 90 rather than at 0. The bars run from 92 to 98. What has that done?", "options": ["Nothing, the numbers on the axis are still correct", "It made a 6 percent difference look like a threefold one", "It made the chart more accurate by using the space well"], "answer": 1, "why": "Bar length is the channel doing the work, so the reader compares lengths, not axis labels. Cutting the baseline breaks the link between length and value. The axis being labelled honestly does not repair it, because almost nobody reads the axis before forming an impression."}, {"tag": "Baselines", "q": "When is starting a y axis somewhere other than zero defensible?", "options": ["Never, zero is always required", "Whenever the data is clustered, for any chart type", "On a line chart tracking change over time, where the reader is looking at the shape of the movement rather than comparing lengths"], "answer": 2, "why": "The rule is not about zero, it is about the channel. Bars encode value as length, so a cut baseline lies. A line encodes change as slope, and a temperature chart starting at zero Kelvin would hide everything. Ask what the channel is before you ask about the axis."}, {"tag": "Variable types", "q": "You have a categorical variable with nineteen levels. Which channel is the worst choice for it?", "options": ["Shape", "Position along a categorical axis", "A separate small multiple per level"], "answer": 0, "why": "Your own slide says it: shape should not be used for a categorical variable with many factors. Nobody can hold nineteen shapes in mind or tell them apart at chart size. Position or small multiples both survive nineteen levels; shape does not survive seven."}, {"tag": "Putting it together", "q": "A scatter plot shows price against wait time, with point size as order count and point color as region. A reader says the eastern region is clearly busiest. What is wrong with that reading?", "options": ["Nothing, that is what the chart shows", "Busiest is carried by size, which is rank 4, so it is the least reliable thing on the chart to judge by eye", "Color cannot show region"], "answer": 1, "why": "Four variables are on that chart and they are not equally readable. Position is rank 1 and 2, color is rank 6 and only separates groups, and size is rank 4. A claim about which group is busiest rests on the weakest channel present. If busiest is the point, it needs its own bar chart."}];
+var PARTS=[{"id": "bars", "name": "The bars", "channel": "Length", "rank": 3, "text": "The bars are the <b>mark</b>. Their height is the <b>channel</b>, and the channel here is length. Cleveland and McGill put length at rank 3 of six, so a reader compares these fairly well by eye. This is the part of the chart actually carrying the number."}, {"id": "yaxis", "name": "The value axis", "channel": "Position along a common scale", "rank": 1, "text": "Every bar starts from the same line, so you are really reading <b>position along a common scale</b>, rank 1, the most accurately decoded channel there is. That shared baseline is what makes it rank 1 rather than rank 2."}, {"id": "xaxis", "name": "The category axis", "channel": "Position, categorical", "rank": null, "text": "Position here carries no quantity at all. The order of the regions is a choice you made. Sorted by value it helps the reader; alphabetical, it hides the ranking. Same channel, different amount of help."}, {"id": "grid", "name": "The gridlines", "channel": "Reference, not data", "rank": null, "text": "Gridlines encode nothing. They exist so the eye can get from a bar back to a number. Too heavy and they compete with the bars for attention; absent and the reader has to guess. This is formatting, not encoding."}, {"id": "title", "name": "The title", "channel": "The claim", "rank": null, "text": "A title that names the columns tells the reader what they can already see. A title that states the finding does work. Compare <i>Respondents by US region</i>, the title above, with <i>The South has more than twice the respondents of the Northeast</i>."}, {"id": "color", "name": "The fill color", "channel": "Nothing, here", "rank": 6, "text": "All four bars share one color, which is correct: color is carrying no variable, so it should not vary. If you colored each bar differently, a reader would spend attention looking for a meaning that is not there. Saturation is rank 6 of six, the weakest channel for a quantity."}, {"id": "labels", "name": "The value labels", "channel": "The exact number", "rank": null, "text": "Printing the number lets a reader get precision the channel cannot give them. West and Midwest sit at 3,054 and 2,632: the bars tell you which is taller, the labels tell you the gap is 422."}], DATA=[{"n": "South", "v": 4332}, {"n": "West", "v": 3054}, {"n": "Midwest", "v": 2632}, {"n": "Northeast", "v": 1982}], QZ=[{"tag": "Marks and channels", "q": "A chart uses one <span class=\"vital\">mark</span> per order and varies how dark that mark is to show the order total. What is the channel here?", "options": ["The mark is a point and the channel is shading", "The mark is shading and the channel is a point", "There is no channel, only a mark"], "answer": 0, "why": "The mark is the thing drawn, a point. The channel is the visual property you vary to carry a value, here shading. Keeping the two words apart is the whole vocabulary of this module."}, {"tag": "Accuracy ranking", "q": "Two designs show the same quantity. One uses the length of a bar, the other uses the area of a circle. Which do readers decode more accurately, and why?", "options": ["Area, because a circle uses two dimensions so it carries more information", "They are equivalent, it is a matter of taste", "Length, because it sits higher in the measured ranking"], "answer": 2, "snap": "<div class=\"qz-snap\"><div class=\"qz-snap-h\">Look at this</div><div style=\"overflow-x:auto\"><table style=\"border-collapse:collapse;width:100%;font-size:13px\"><tr><th style=\"text-align:left;padding:6px 10px;border-bottom:2px solid #cfd8dc\">Rank</th><th style=\"text-align:left;padding:6px 10px;border-bottom:2px solid #cfd8dc\">Perceptual task</th></tr><tr><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">1</td><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">Position along a common scale</td></tr><tr><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">2</td><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">Positions along nonaligned scales</td></tr><tr><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">3</td><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">Length, direction, angle</td></tr><tr><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">4</td><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">Area</td></tr><tr><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">5</td><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">Volume, curvature</td></tr><tr><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">6</td><td style=\"padding:6px 10px;border-bottom:1px solid #e6edf0\">Shading, color saturation</td></tr></table><div style=\"font-size:11.5px;color:#66797f;padding:8px 10px\">Cleveland and McGill, Journal of the American Statistical Association, 79(387), 531 to 554, 1984.</div></div></div>", "why": "Cleveland and McGill measured this rather than argued it. Length sits at rank 3 and area at rank 4, so the same difference is read more accurately as a bar than as a bubble. Area using two dimensions is exactly the problem: readers do not decode it linearly."}, {"tag": "Accuracy ranking", "q": "You must show a precise comparison of twelve values to a room that will act on it. Which channel should carry the number?", "options": ["Color saturation, because it looks modern", "Position along a common scale", "Angle, as slices of a pie"], "answer": 1, "why": "Position on a shared axis is rank 1, the most accurately decoded of all. Angle is rank 3 and saturation is rank 6, the worst. When precision matters, spend your best channel on the number that matters."}, {"tag": "Baselines", "q": "A bar chart of quarterly revenue starts its y axis at 90 rather than at 0. The bars run from 92 to 98. What has that done?", "options": ["Nothing, the numbers on the axis are still correct", "It made a 6 percent difference look like a threefold one", "It made the chart more accurate by using the space well"], "answer": 1, "why": "Bar length is the channel doing the work, so the reader compares lengths, not axis labels. Cutting the baseline breaks the link between length and value. The axis being labelled honestly does not repair it, because almost nobody reads the axis before forming an impression."}, {"tag": "Baselines", "q": "When is starting a y axis somewhere other than zero defensible?", "options": ["Never, zero is always required", "Whenever the data is clustered, for any chart type", "On a line chart tracking change over time, where the reader is looking at the shape of the movement rather than comparing lengths"], "answer": 2, "why": "The rule is not about zero, it is about the channel. Bars encode value as length, so a cut baseline lies. A line encodes change as slope, and a temperature chart starting at zero Kelvin would hide everything. Ask what the channel is before you ask about the axis."}, {"tag": "Variable types", "q": "You have a categorical variable with nineteen levels. Which channel is the worst choice for it?", "options": ["Shape", "Position along a categorical axis", "A separate small multiple per level"], "answer": 0, "why": "Your own slide says it: shape should not be used for a categorical variable with many factors. Nobody can hold nineteen shapes in mind or tell them apart at chart size. Position or small multiples both survive nineteen levels; shape does not survive seven."}, {"tag": "Putting it together", "q": "A scatter plot shows price against wait time, with point size as order count and point color as region. A reader says the eastern region is clearly busiest. What is wrong with that reading?", "options": ["Nothing, that is what the chart shows", "Busiest is carried by size, which is rank 4, so it is the least reliable thing on the chart to judge by eye", "Color cannot show region"], "answer": 1, "why": "Four variables are on that chart and they are not equally readable. Position is rank 1 and 2, color is rank 6 and only separates groups, and size is rank 4. A claim about which group is busiest rests on the weakest channel present. If busiest is the point, it needs its own bar chart."}];
 var MAXV=4800, PL=62, PT=46, PW=634, PH=256, GAP=158.500, BARW=98.270;
 var seen={}, step=0, base=0, chSeen={}, uName='', stamp='';
 var TAKE=['A mark is what is drawn, a channel is what varies',
@@ -518,7 +539,7 @@ bs.addEventListener('input',function(){
 });
 
 // ---- step 3: the four formatting decisions --------------------------------
-var dec={grid:1,lab:1,col:0,emp:0,sort:0,wide:1}, decSeen={};
+var dec={grid:1,lab:1,yax:0,col:0,leg:1,emp:0,sort:0,wide:1}, decSeen={};
 var ORDER0=DATA.slice();
 var PAL=['#0B4F9C','#1B5E43','#B8860B','#7A4FA3'];
 var DTXT={
@@ -527,6 +548,11 @@ var DTXT={
         {t:'Heavy gridlines',p:'Now the grid is drawing attention it has not earned. Gridlines encode nothing, so the moment they are as strong as the bars they are noise pretending to be information.'} ],
  lab:[ {t:'No value labels',p:'Right when the point is the shape, not the number. Also right when there are so many bars that the labels would collide. The reader then depends entirely on your gridlines.'},
        {t:'Value labels on',p:'Right when a reader will quote the number, and right when differences are small enough that the channel cannot resolve them. With only four bars there is room, so this is nearly free.'} ],
+ yax:[ {t:'Axis numbers shown',p:'The default, and right whenever a reader has to get a value off the chart themselves. With the value labels also on, notice that the same numbers are now printed twice: once up the side and once on top of each bar.'},
+        {t:'Axis numbers hidden',p:'Often the better chart. If every bar is already labelled with its value, the axis numbers are a second copy of information the reader has in front of them. Take them away and the chart gets quieter without losing anything. Turn the value labels off as well and you will see what you just gave up.'},
+        {t:'No axis at all',p:'Only defensible when the values are printed and the point is the ranking. The line is the thing that says all the bars start from the same place, so removing it removes the reader\'s guarantee that the lengths are comparable.'} ],
+ leg:[ {t:'No legend',p:'Right here. A legend earns its place when color is carrying a variable the reader cannot get anywhere else. With one fill there is nothing to look up, and the region names are already under the bars.'},
+       {t:'Legend shown',p:'Try this with one color per bar and watch what it costs. The legend names exactly what the x axis already names, so the reader looks up something they were already told, and the chart has to be read in two places instead of one. A legend is only free when it is the only route to the meaning.'} ],
  col:[ {t:'One color',p:'Correct here. Color is carrying no variable, so it should not vary. A single fill tells the reader there is nothing to decode in the color.'},
        {t:'One color per bar',p:'This is the most common formatting mistake in the course. The region is already encoded by position on the axis. Coloring each bar differently encodes it a second time and invites the reader to hunt for a meaning that is not there.'} ],
  sort:[ {t:'Sorted by value',p:'Almost always the right answer. A reader can rank four bars instantly when they are already in order, and the shape of the drop tells them something on its own.'},
@@ -537,6 +563,22 @@ var DTXT={
  emp:[ {t:'No emphasis',p:'Neutral. Right when you are showing the reader the data and letting them find their own point.'},
        {t:'One bar highlighted',p:'This is what color is FOR. One accent against a muted field says here is the thing I am talking about. It only works while it is rare: highlight two bars and you are back to a rainbow.'} ]
 };
+/* MD, 2026-10-05: the y axis and the legend are only interesting in
+   combination with the labels and the color, so the panel says what the
+   current combination is doing rather than leaving it to be noticed. */
+function comboNote(){
+  if(!dec.lab && dec.yax!==0)
+    return 'nothing on this chart carries a number any more. A reader can rank the regions and nothing else.';
+  if(dec.lab && dec.yax===0)
+    return 'the same numbers are printed twice, once up the axis and once on the bars. One of the two can go.';
+  if(dec.leg===1 && dec.col===1)
+    return 'the legend is naming what the x axis already names. That is the same double encoding the color switch just showed you.';
+  if(dec.leg===1 && dec.col===0 && dec.emp===0)
+    return 'the legend has one entry and nothing to distinguish. It is taking up space to say that one color means one thing.';
+  if(!dec.lab && dec.grid===0)
+    return 'no labels and no gridlines, so the chart is a ranking only. That is a fine choice if ranking is the point.';
+  return '';
+}
 function applyDec(){
   // sort and width change geometry, so the bars are repositioned rather than
   // just recoloured. DATA is reordered in place and draw() called again.
@@ -562,6 +604,28 @@ function applyDec(){
     g.style.strokeWidth = dec.grid===2?'1.6':'1';
   });
   document.querySelectorAll('.vlab').forEach(function(t){ t.style.display = dec.lab?'':'none'; });
+
+  // the y axis: its numbers, then the line itself
+  for(var q=0;q<5;q++){
+    var tkel=document.getElementById('tk'+q);
+    if(tkel) tkel.style.display = dec.yax===0?'':'none';
+  }
+  var yl=document.getElementById('yline');
+  if(yl) yl.style.display = dec.yax===2?'none':'';
+
+  // the legend: one swatch when one fill is doing the work, four when the
+  // bars are coloured separately, and the names follow the current sort
+  var l1=document.getElementById('leg1'), l4=document.getElementById('leg4');
+  if(l1&&l4){
+    l1.style.display = (dec.leg===1 && dec.col===0 && dec.emp===0)?'':'none';
+    l4.style.display = (dec.leg===1 && (dec.col===1 || dec.emp===1))?'':'none';
+    for(var q=0;q<DATA.length;q++){
+      var tx=document.getElementById('lgt'+q), sw=document.getElementById('lgs'+q);
+      if(tx) tx.textContent=DATA[q].n;
+      if(sw) sw.setAttribute('fill', dec.emp===1 ? (q===0?'#0B4F9C':'#C3CFDA')
+                                                 : PAL[q%PAL.length]);
+    }
+  }
   for(var i=0;i<DATA.length;i++){
     var b=document.getElementById('b'+i); if(!b) continue;
     if(dec.emp===1) b.style.fill = (i===0?'#0B4F9C':'#C3CFDA');
@@ -576,10 +640,14 @@ document.querySelectorAll('.seg').forEach(function(s){
       b.classList.add('on'); dec[key]=v; decSeen[key]=1; applyDec();
       var info=DTXT[key][v];
       document.getElementById('dinfo').innerHTML='<div class="k">'+
-        ({grid:'Gridlines',lab:'Value labels',col:'Color',emp:'Emphasis',
-          sort:'Sort order',wide:'Bar width'}[key])+
+        ({grid:'Gridlines',lab:'Value labels',yax:'Y axis numbers',col:'Color',
+          leg:'Legend',emp:'Emphasis',sort:'Sort order',wide:'Bar width'}[key])+
         '</div><h3>'+info.t+'</h3><p>'+info.p+'</p>';
-      if(Object.keys(decSeen).length===6){document.getElementById('go3').disabled=false;mark(2);}
+      var note=comboNote();
+      if(note) document.getElementById('dinfo').innerHTML+=
+        '<div style="margin-top:9px;padding-top:9px;border-top:1px solid #D3E4F5;'+
+        'font-size:12.5px"><b>Right now:</b> '+note+'</div>';
+      if(Object.keys(decSeen).length===8){document.getElementById('go3').disabled=false;mark(2);}
     });
   });
 });
