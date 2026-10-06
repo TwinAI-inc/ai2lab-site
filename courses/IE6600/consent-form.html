@@ -393,11 +393,15 @@ input[type=range]{flex:1;min-width:180px;accent-color:var(--ac)}
    <button class="pk" data-v="Project 2"><span class="pIcon"><svg class="ic-trophy" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5h12v7a6 6 0 0 1-12 0V5z"/><path d="M11 7H7.5v2A4.5 4.5 0 0 0 11 13.4M23 7h3.5v2A4.5 4.5 0 0 1 23 13.4"/><path d="M17 18v5M12.5 29h9l-1-5h-7l-1 5z"/></svg></span><span class="pTxt">
     <b>Project 2</b><span>The final term project.</span></span></button>
   </div>
+  <div class="fld"><label for="nm">Your full name</label>
+   <input id="nm" placeholder="As it appears in Canvas"></div>
   <div class="two">
-   <div class="fld"><label for="nm">Your full name</label>
-    <input id="nm" placeholder="As it appears in Canvas"></div>
-   <div class="fld"><label for="tm">Team or group number</label>
-    <input id="tm" placeholder="For example, Group 7"></div>
+   <div class="fld"><label for="id">Your NUID</label>
+    <input id="id" inputmode="numeric" autocomplete="off"
+           placeholder="Digits only"></div>
+   <div class="fld"><label for="tm">Group number</label>
+    <input id="tm" inputmode="numeric" autocomplete="off"
+           placeholder="Just the number, for example 7"></div>
   </div>
   <div class="err" id="e0"></div>
   <button class="btn" id="n0">Next: the declarations &rsaquo;</button>
@@ -483,7 +487,7 @@ input[type=range]{flex:1;min-width:180px;accent-color:var(--ac)}
   <span>Prof. Dehghani</span></div>
 </div>
 <script>
-var S = {work:"", name:"", team:"", decl:[], areas:[], contrib:"", note:"",
+var S = {work:"", name:"", nuid:"", team:"", decl:[], areas:[], contrib:"", note:"",
          sigMode:"draw", signed:false, stamp:""};
 
 var DECLS = [
@@ -584,13 +588,25 @@ function gate2(){
     : 'That is enough to go on.';
 }
 
+['id','tm'].forEach(function(k){
+  var el=document.getElementById(k);
+  el.addEventListener('input', function(){
+    var clean=el.value.replace(/[^0-9]/g,'');
+    if(clean!==el.value) el.value=clean;
+  });
+});
+
 document.getElementById('n0').onclick=function(){
   clear('e0');
   S.name=(document.getElementById('nm').value||'').trim();
+  S.nuid=(document.getElementById('id').value||'').trim();
   S.team=(document.getElementById('tm').value||'').trim();
   if(!S.work) return fail('e0','Choose which piece of work this form is for.');
   if(!S.name) return fail('e0','Put your full name in, because it goes on the form.');
-  if(!S.team) return fail('e0','Put your team or group number in.');
+  if(!/^[0-9]{6,12}$/.test(S.nuid))
+    return fail('e0','Your NUID is the number on your Husky Card, digits only.');
+  if(!/^[0-9]{1,3}$/.test(S.team))
+    return fail('e0','The group number is a number on its own, so 7 rather than Group 7.');
   go(1);
 };
 document.getElementById('n1').onclick=function(){
@@ -622,9 +638,9 @@ function review(){
   function esc(x){ return (x||'').replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
   function cell(k,v){ return '<div class="c">'+row(k,v)+'</div>'; }
   d.className='grid2';
-  d.innerHTML = cell('Work', esc(S.work)) + cell('Team', esc(S.team)) +
+  d.innerHTML = cell('Work', esc(S.work)) + cell('Group', esc(S.team)) +
                 '<div class="wide">' +
-                row('Name', esc(S.name)) +
+                row('Name', esc(S.name) + '  &middot;  NUID ' + esc(S.nuid)) +
                 row('Declared', 'All five confirmed, including the one in red') +
                 row('Areas', S.areas.length? esc(S.areas.join(', ')) : 'none marked') +
                 row('Contribution', esc(S.contrib)) +
@@ -729,7 +745,8 @@ document.getElementById('dl').onclick=function(){
     }
 
     head('Who and what');
-    pair('Piece of work', S.work); pair('Name', S.name); pair('Team', S.team);
+    pair('Piece of work', S.work); pair('Name', S.name);
+    pair('NUID', S.nuid); pair('Group', S.team);
     y+=8;
 
     head('Declared');
@@ -794,7 +811,8 @@ document.getElementById('dl').onclick=function(){
 
   var slug=function(t){ return (t||'').replace(/[^A-Za-z0-9]+/g,'-').replace(/^-|-$/g,''); };
   var a=document.createElement('a');
-  a.download='consent-'+slug(S.work).toLowerCase()+'-'+slug(S.team)+'-'+slug(S.name)+'.png';
+  a.download='consent-'+slug(S.work).toLowerCase()+'-group'+slug(S.team)+
+             '-'+slug(S.nuid)+'-'+slug(S.name)+'.png';
   a.href=c.toDataURL('image/png');
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
 };
