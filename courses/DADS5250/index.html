@@ -1589,6 +1589,44 @@ body {
 .rrx-startbtn { justify-self: start; margin-top: 4px; }
 #emx-c3d { width: 100%; height: 100%; display: block; cursor: grab; }
 #emx-c3d:active { cursor: grabbing; }
+
+/* ---- react trace player v2 ---- */
+.rx2-grid { grid-template-columns: 400px 1fr; }
+.rx2-ring svg { width: 100%; max-width: 360px; display: block; margin: 0 auto; }
+.rx2-stateh { font-family: 'Outfit',sans-serif; font-size: 10px; font-weight: 700;
+  letter-spacing: .12em; color: var(--blue); margin: 10px 0 6px; }
+.rx2-stateh .r { float: right; color: var(--soft); font-weight: 500; letter-spacing: 0; text-transform: none; }
+.rx2-score { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700;
+  color: var(--ink); margin-left: auto; }
+.rx2-feed { max-height: calc(100vh - 460px); min-height: 180px; overflow-y: auto;
+  display: grid; gap: 8px; padding: 2px 2px 6px; }
+.rx2-beat { display: grid; grid-template-columns: 96px 1fr; gap: 10px; align-items: start; }
+.rx2-beat .k { font-family: 'Outfit',sans-serif; font-size: 9.5px; font-weight: 700;
+  letter-spacing: .08em; border-radius: 999px; padding: 3px 0; text-align: center; margin-top: 2px; }
+.rx2-beat .b { display: grid; gap: 2px; }
+.rx2-beat .t { font-size: 13px; color: var(--ink); line-height: 1.45; }
+.rx2-beat .w { font-size: 11px; color: var(--soft); }
+.rx2-verdict { background: var(--bg); border: 1px dashed var(--line); border-radius: 8px;
+  padding: 7px 11px; font-size: 12px; color: var(--muted); }
+.rx2-verdict .ok { color: #16a34a; } .rx2-verdict .no { color: #B45309; }
+.rx2-ctl { border-top: 1px solid var(--border); padding-top: 10px; margin-top: 8px;
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.rx2-ask { font-size: 12.5px; color: var(--muted); margin: 0; width: 100%; }
+.rx2-ask b { color: var(--ink); }
+.rx2-choices { display: flex; gap: 8px; }
+.rx2-done { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--ink); margin: 0; }
+@media (max-width: 980px) { .rx2-grid { grid-template-columns: 1fr; } }
+
+/* ---- equal card bottoms in every tool (MD 2026-10-07) ---- */
+.emx-canvas { align-items: stretch; }
+.emx-map-card { display: flex; flex-direction: column; }
+.emx-map-card > .emx-map, .emx-map-card > .ckx-list, .emx-map-card > .rrx-docs,
+.emx-map-card > .rx2-ring { flex: 1 1 auto; }
+.emx-side { display: flex; flex-direction: column; max-height: none; }
+.emx-side .emx-card { flex: 1; display: flex; flex-direction: column; }
+.emx-side .emx-card > .rx2-feed { flex: 1 1 auto; max-height: none; min-height: 140px; }
+.emx-side .emx-card > *:last-child { margin-top: auto; }
+.rx2-ring { display: grid; place-items: center; }
 </style>
 </head>
 <body>
@@ -1732,11 +1770,11 @@ const MODULES = [
       { id: 'retrieval-race', type: 'Game', icon: 'flag', title: 'RAG Retrieval <em>Race</em>', desc: 'The test: be the retriever. Rank documents against the cosine similarity oracle and learn why lookalike distractors fool pure similarity.', time: '~15 min', color: 'crimson' }
     ]},
   { n: 6, phase: 'core', short: 'Agents', name: 'Agents and LangGraph',
-    lede: 'A tool-using agent is just a loop. Thought, Action, Observation, Thought, until it has the answer.',
+    lede: 'A chain answers in one pass; an agent works in a loop: reason about what is missing, call a tool, read the result, decide again. These two stops make the loop physical before the labs make it code.',
     meta: ['Phase 2', '~3 hrs'],
     tools: [
-      { id: 'storyline-agents', type: 'Story', icon: 'book', title: 'How Agents Learned <em>to Use Tools</em>', desc: 'STRIPS to BDI to AlphaGo to ReAct to LangGraph. A short history of giving language models hands.', time: '~10 min', color: 'gold' },
-      { id: 'react-player', type: 'Player', icon: 'robot', title: 'ReAct Trace <em>Player</em>', desc: 'A canned ReAct trace with playback controls. Step through Thought → Action → Observation.', time: '~10 min', color: 'cyan' }
+      { id: 'storyline-agents', type: 'Story', icon: 'book', title: 'How Agents Learned <em>to Use Tools</em>', desc: 'Where agents came from: sixty years of machines that act, from STRIPS planners to the tool-calling LLM. Know which problem each era solved before you build.', time: '~10 min', color: 'gold' },
+      { id: 'react-player', type: 'Player', icon: 'robot', title: 'ReAct Trace <em>Player</em>', desc: 'The loop, live: a ring the agent travels as real traces play. Then switch to Predict mode and make the agent\'s next move yourself, scored.', time: '~10 min', color: 'cyan' }
     ]},
   /* M07 Hackathon removed from this page (MD 2026-10-07): tools site shows tool modules only */
   { n: 8, phase: 'adv', short: 'Multi-Agent', name: 'Multi-Agent Systems with CrewAI', lede: 'Multiple agents, multiple roles, coordinated work. The CrewAI way.', meta: ['Phase 3', '~3 hrs'],
@@ -1802,6 +1840,20 @@ const SPLASHES = {
    M05 tools are done first; remaining modules get entries next pass.
    ============================================================ */
 const HELP_SVG = {
+  'react-loop': `<svg viewBox="0 0 640 170" xmlns="http://www.w3.org/2000/svg" font-family="Outfit,sans-serif">
+    <defs><marker id="hl-arr" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><polygon points="0 0, 6 3.5, 0 7" fill="#94a3b8"/></marker></defs>
+    <g font-size="11.5" font-weight="700">
+      <rect x="40" y="60" width="120" height="40" rx="20" fill="#EEF3FB" stroke="#0055D4" stroke-width="1.6"/><text x="100" y="85" text-anchor="middle" fill="#0055D4">THOUGHT</text>
+      <rect x="250" y="60" width="120" height="40" rx="20" fill="#E6F5F2" stroke="#0D9488" stroke-width="1.6"/><text x="310" y="85" text-anchor="middle" fill="#0D9488">ACTION</text>
+      <rect x="460" y="60" width="130" height="40" rx="20" fill="#F1F5F9" stroke="#64748b" stroke-width="1.6"/><text x="525" y="85" text-anchor="middle" fill="#475569">OBSERVATION</text>
+    </g>
+    <line x1="160" y1="80" x2="244" y2="80" stroke="#94a3b8" stroke-width="1.6" marker-end="url(#hl-arr)"/>
+    <line x1="370" y1="80" x2="454" y2="80" stroke="#94a3b8" stroke-width="1.6" marker-end="url(#hl-arr)"/>
+    <path d="M 525 101 C 525 148, 100 148, 100 104" fill="none" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#hl-arr)"/>
+    <text x="312" y="142" text-anchor="middle" font-size="10.5" fill="#64748b">loop until the model judges the state sufficient</text>
+    <line x1="100" y1="60" x2="100" y2="28" stroke="#16a34a" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#hl-arr)"/>
+    <text x="100" y="18" text-anchor="middle" font-size="11" font-weight="700" fill="#16a34a">ANSWER</text>
+  </svg>`,
   'embeddings': `<svg viewBox="0 0 640 170" xmlns="http://www.w3.org/2000/svg" font-family="Outfit,sans-serif">
     <g font-size="11" fill="#0f172a">
       <rect x="8" y="18" width="128" height="24" rx="12" fill="#fff" stroke="#CFDAEA"/><text x="72" y="34" text-anchor="middle">"The cat sat"</text>
@@ -1875,6 +1927,21 @@ const HELP_SVG = {
 };
 
 const TOOL_HELP = {
+  'react-player': {
+    what: 'A tool-using agent is a loop, not a one-shot answer: it reasons about what it needs, calls a tool, reads the result into its state, and decides again, until it judges the state sufficient and exits with an answer. This player makes the loop physical: a live ring the agent travels, a trace you can step through, and a state panel that fills as observations land.',
+    svg: 'react-loop',
+    steps: ['Watch mode: step through a real trace and watch the ring light up as the agent moves Thought, Action, Observation.',
+            'Predict mode: before each beat, YOU choose the agent\'s move: think, call a tool, or answer. Score yourself against the real trace.',
+            'Watch the state panel: every observation becomes a chip, and that growing state is exactly what LangGraph passes between nodes in Lab 2.'],
+    example: 'Open the Math solver scenario in Predict mode: it is Lab 1\'s agent, beat for beat. Can you call every move?'
+  },
+  'storyline-agents': {
+    what: 'Machines that act is an idea older than machine learning: sixty years run from STRIPS planners through game-playing systems to today\'s tool-calling language models. Knowing the lineage tells you which problem each era solved, and why the ReAct pattern was the unlock that made LLM agents practical.',
+    steps: ['Step through the illustrated scenes in order; each one is a single idea.',
+            'At each era, note what the system could DECIDE on its own, and what it still could not.',
+            'Finish at the modern agent and connect it to the loop you just learned: the deck\'s Thought, Action, Observation.'],
+    example: 'Watch for the moment planning and language merge: everything before it plans without words, everything after it plans in them.'
+  },
   'embeddings': {
     what: 'An embedding model turns a piece of text into a vector: a long list of numbers that encodes its meaning. Texts that mean similar things get similar numbers, so they land close together in space. That single trick powers semantic search and RAG: your question becomes a point on the same map, and the nearest chunks are the relevant ones.',
     svg: 'embeddings',
@@ -4229,92 +4296,233 @@ function renderEmbeddings() {
    TOOL: REACT TRACE PLAYER (M06)
    ============================================================ */
 function renderReact() {
-  const RX_SCENARIOS = [
+  /* v2 (MD 2026-10-07): the loop made visible. A live Thought-Action-
+     Observation ring the agent travels, a Predict mode where the student
+     makes the agent's choice before each beat, and a state panel that fills
+     as observations land (the bridge to LangGraph state in Lab 2). */
+  const SCEN = [
+    { label: 'Math solver (Lab 1)', query: 'Multiply 10 by 3, then add 7.',
+      steps: [
+        { kind:'thought', t:'Two operations. The calculator tool handles math; start with the product.', why:'The model plans before touching any tool.' },
+        { kind:'action', t:'calculator("10 * 3")', why:'Natural language became an exact tool call. No multiply prompt exists anywhere.' },
+        { kind:'observation', t:'30', fact:'product = 30' },
+        { kind:'thought', t:'Now add 7 to the result I just observed.', why:'The loop reuses what the last Observation put into state.' },
+        { kind:'action', t:'calculator("30 + 7")', why:'Second cycle: same tool, new arguments, built from state.' },
+        { kind:'observation', t:'37', fact:'sum = 37' },
+        { kind:'final', t:'10 times 3 is 30, plus 7 makes 37.', why:'The model judges the state sufficient and exits the loop. That judgment IS the agent.' }
+      ]},
     { label: 'Population comparison', query: 'How much larger is Brazil\'s population than Australia\'s?',
       steps: [
-        { kind:'thought', t:'I need two numbers: Brazil\'s population and Australia\'s. Let me look up Brazil first.' },
-        { kind:'action', t:'search("population of Brazil 2024")' },
-        { kind:'observation', t:'~211 million people (UN World Population Prospects, 2024 revision).' },
-        { kind:'thought', t:'Got it. Now I need Australia.' },
-        { kind:'action', t:'search("population of Australia 2024")' },
-        { kind:'observation', t:'~27 million people (ABS, mid-2024).' },
-        { kind:'thought', t:'Divide. 211 / 27 ≈ 7.8. That is the ratio.' },
-        { kind:'final', t:'Brazil\'s population is about 7.8× larger than Australia\'s (211M vs 27M, mid-2024 estimates).' }
+        { kind:'thought', t:'I need two numbers: Brazil\'s population and Australia\'s. Let me look up Brazil first.', why:'The plan decomposes the question into lookups.' },
+        { kind:'action', t:'search("population of Brazil 2024")', why:'A thought alone cannot know this; the tool can.' },
+        { kind:'observation', t:'~211 million people (UN World Population Prospects, 2024 revision).', fact:'Brazil = 211M' },
+        { kind:'thought', t:'Got it. Now I need Australia.', why:'State has one number; the plan needs two.' },
+        { kind:'action', t:'search("population of Australia 2024")', why:'Second cycle of the same loop.' },
+        { kind:'observation', t:'~27 million people (ABS, mid-2024).', fact:'Australia = 27M' },
+        { kind:'thought', t:'Divide. 211 / 27 is about 7.8. That is the ratio.', why:'Arithmetic over state needs no tool.' },
+        { kind:'final', t:'Brazil\'s population is about 7.8 times Australia\'s (211M vs 27M, mid-2024 estimates).', why:'Enough in state to answer with sources. Exit.' }
       ]},
     { label: 'ED wait time analysis', query: 'Is this hospital\'s ED wait time above the national benchmark?',
       steps: [
-        { kind:'thought', t:'I need the national benchmark first, then this hospital\'s actual median wait.' },
-        { kind:'action', t:'lookup("CMS Emergency Department wait time benchmark 2024")' },
-        { kind:'observation', t:'CMS 2024 benchmark: 174 minutes median door-to-provider time in US EDs.' },
-        { kind:'thought', t:'Now I need the hospital\'s actual number from the QI dashboard.' },
-        { kind:'action', t:'query_dashboard("median door-to-provider minutes, Q1 2026, site=NorthEast ED")' },
-        { kind:'observation', t:'241 minutes, 95% CI [228, 255], N = 1,840 visits.' },
-        { kind:'thought', t:'Gap = 241 − 174 = 67 minutes. CI does not cross the benchmark, so the difference is significant.' },
-        { kind:'final', t:'Yes — this ED is 67 minutes (38%) above the CMS benchmark. Statistically significant at α = 0.05. Recommend a bottleneck audit at triage intake.' }
+        { kind:'thought', t:'I need the national benchmark first, then this hospital\'s actual median wait.', why:'Comparison questions need both sides in state.' },
+        { kind:'action', t:'lookup("CMS Emergency Department wait time benchmark 2024")', why:'External fact: only a tool can fetch it.' },
+        { kind:'observation', t:'CMS 2024 benchmark: 174 minutes median door-to-provider time in US EDs.', fact:'benchmark = 174 min' },
+        { kind:'thought', t:'Now the hospital\'s actual number, from the QI dashboard.', why:'Half the comparison is still missing.' },
+        { kind:'action', t:'query_dashboard("median door-to-provider minutes, Q1 2026, site=NorthEast ED")', why:'A different tool for a different source.' },
+        { kind:'observation', t:'241 minutes, 95% CI [228, 255], N = 1,840 visits.', fact:'this ED = 241 min, CI [228, 255]' },
+        { kind:'thought', t:'Gap is 241 minus 174: 67 minutes, and the CI never crosses the benchmark. Significant.', why:'Reasoning over state: no tool required.' },
+        { kind:'final', t:'Yes: 67 minutes (38%) above the CMS benchmark, statistically significant. Recommend a triage bottleneck audit.', why:'State is sufficient, with uncertainty handled. Exit.' }
       ]},
-    { label: 'Slow Python loop fix', query: 'Why is this loop slow, and how do I fix it?',
+    { label: 'Python fix (error + recovery)', query: 'Why is this loop slow, and how do I fix it?',
       steps: [
-        { kind:'thought', t:'The user has a for-loop over a DataFrame. I should check how it accesses values.' },
-        { kind:'action', t:'code_analyze("for i in range(len(df)):\\n    total += df[\'price\'][i]")' },
-        { kind:'observation', t:'pandas `df[col][i]` inside a range-loop is O(n²): each access rebuilds a full Series then indexes it. On 10k rows: 336ms.' },
-        { kind:'thought', t:'The fix is vectorized summation. Let me verify the speedup.' },
-        { kind:'action', t:'benchmark("df[\'price\'].sum()", n=10000)' },
-        { kind:'observation', t:'Elapsed: 0.4ms. Speedup: 840×.' },
-        { kind:'thought', t:'Root cause confirmed; remedy verified. The answer is clear.' },
-        { kind:'final', t:'The loop uses O(n²) pandas indexing. Replace with `df[\'price\'].sum()` — confirmed 840× faster (0.4ms vs 336ms on 10k rows). For large DataFrames, always prefer vectorized operations or `.values` access.' }
+        { kind:'thought', t:'The user loops over a DataFrame. I should check how it accesses values.', why:'Diagnose before prescribing.' },
+        { kind:'action', t:'code_analyze("for i in range(len(df)): total += df[\'price\'][i]")', why:'The analyzer tool sees what eyes miss.' },
+        { kind:'observation', t:'df[col][i] in a range-loop is O(n squared): each access rebuilds a Series. 336ms on 10k rows.', fact:'cause: O(n2) indexing, 336ms' },
+        { kind:'thought', t:'The fix is vectorized summation. Verify the speedup before claiming it.', why:'An agent that verifies beats one that asserts.' },
+        { kind:'action', t:'benchmark("df.price.sum()", n=10000)', why:'Second cycle: measure the remedy.' },
+        { kind:'observation', t:'AttributeError: column name with space requires bracket syntax.', fact:'benchmark call failed' },
+        { kind:'thought', t:'The tool call failed. Fix the syntax and try again; do not give up or guess.', why:'THE TEACHING BEAT: observations include errors, and the loop is how agents recover from them.' },
+        { kind:'action', t:'benchmark("df[\'price\'].sum()", n=10000)', why:'Third cycle: corrected call.' },
+        { kind:'observation', t:'Elapsed: 0.4ms. Speedup: 840x.', fact:'fix: .sum(), 840x faster' },
+        { kind:'final', t:'The loop uses O(n squared) pandas indexing. Replace it with df[\'price\'].sum(): verified 840 times faster.', why:'Cause found, failure recovered, fix measured. Exit.' }
+      ]},
+    { label: 'No tool needed', query: 'Our API returns prices in cents. A customer sees 1999. What should the display show?',
+      steps: [
+        { kind:'thought', t:'Cents to dollars is a division by 100. I already know everything this needs; no tool adds anything.', why:'The first judgment is always: do I even need a tool?' },
+        { kind:'final', t:'$19.99. Divide cents by 100 and format as currency.', why:'Zero cycles. A good agent exits immediately when reasoning alone suffices; tools have cost.' }
       ]}
   ];
+  const R = { scen: 0, step: 0, mode: 'watch', score: 0, asked: 0, timer: null, lastVerdict: '' };
+  window.RXV2 = R;
+
+  const KINDC = { thought: ['THOUGHT', '#0055D4'], action: ['ACTION', '#0D9488'],
+                  observation: ['OBSERVATION', '#64748b'], final: ['ANSWER', '#16a34a'] };
+
   $('tool-body').innerHTML = `
-    <div class="react-scenario-bar">
-      <span class="rx-scene-lbl">Scenario</span>
-      <div class="seg" id="rx-scenarios"></div>
+    <div class="ins-bar">
+      <div class="ins-seg" id="rx-scen"></div>
+      <div class="ins-seg" id="rx-mode">
+        <button class="seg-btn active" data-m="watch">Watch</button>
+        <button class="seg-btn" data-m="predict">Predict</button>
+      </div>
+      <span class="rx2-score" id="rx-scorechip"></span>
     </div>
-    <div class="rx-query" id="rx-query"></div>
-    <div class="react-controls">
-      <button class="react-btn" onclick="rx_back()" title="Restart"><svg><use href="#i-skip-back"/></svg></button>
-      <button class="react-btn play" id="rx-play" onclick="rx_play()"><svg><use href="#i-play"/></svg></button>
-      <button class="react-btn" onclick="rx_fwd()" title="Step"><svg><use href="#i-skip-fwd"/></svg></button>
-      <div class="react-progress">
-        <span class="step-n" id="rx-step">Step 0 / 8</span>
-        <input type="range" id="rx-range" min="0" max="8" step="1" value="0">
+    <div class="emx-canvas rx2-grid">
+      <div class="emx-map-card">
+        <div class="emx-map-head"><span>THE LOOP, LIVE</span><span id="rx-cycles"></span></div>
+        <div class="rx2-ring" id="rx-ring"></div>
+        <div class="h rx2-stateh">STATE <span class="r">what the agent knows so far</span></div>
+        <p class="chips" id="rx-state"></p>
+      </div>
+      <div class="emx-side">
+        <div class="emx-card">
+          <div class="h">USER QUERY</div>
+          <p class="sent" id="rx-q"></p>
+          <div class="h">THE TRACE <span class="r" id="rx-prog"></span></div>
+          <div class="rx2-feed" id="rx-feed"></div>
+          <div id="rx-controls"></div>
+        </div>
       </div>
     </div>
-    <div id="rx-out"></div>`;
-  window.RX_SCEN = 0; window.rx_step = 0; window.rx_int = null;
-  function loadScenario(idx) {
-    if (window.rx_int) { clearInterval(window.rx_int); window.rx_int = null; }
-    window.RX_SCEN = idx; window.rx_step = 0;
-    window.RX = RX_SCENARIOS[idx].steps;
-    $('rx-query').innerHTML = `<span class="rx-q-lbl">User query</span> <span class="rx-q-txt">${RX_SCENARIOS[idx].query}</span>`;
-    $('rx-range').max = window.RX.length;
-    $('rx-play').innerHTML = '<svg><use href="#i-play"/></svg>';
-    document.querySelectorAll('#rx-scenarios .seg-btn').forEach((b,i) => b.classList.toggle('active', i === idx));
-    paint();
+    <div class="ins-status" id="rx-status"></div>`;
+
+  function scen() { return SCEN[R.scen]; }
+  function ring() {
+    const steps = scen().steps.slice(0, R.step);
+    const cur = R.step > 0 ? scen().steps[R.step - 1].kind : null;
+    const cycles = steps.filter(s => s.kind === 'action').length;
+    $('rx-cycles').textContent = cycles ? `CYCLE ${cycles}` : '';
+    // exact geometry: ring center/radius, node circles of radius NR sitting ON
+    // the ring; every arc starts and ends exactly at a node's edge.
+    const CX = 150, CY = 192, RR = 82, NR = 34;
+    const ANG = { thought: -Math.PI / 2, action: Math.PI / 6, observation: 5 * Math.PI / 6 };
+    const pos = k => [CX + RR * Math.cos(ANG[k]), CY + RR * Math.sin(ANG[k])];
+    const gap = Math.asin(NR / RR) + 0.1;           // angular half-width of a node + breathing room
+    const onRing = a => [CX + RR * Math.cos(a), CY + RR * Math.sin(a)];
+    const arc = (k1, k2) => {
+      const [x1, y1] = onRing(ANG[k1] + gap), [x2, y2] = onRing(ANG[k2] - gap);
+      return `<path d="M ${x1.toFixed(1)} ${y1.toFixed(1)} A ${RR} ${RR} 0 0 1 ${x2.toFixed(1)} ${y2.toFixed(1)}"
+        fill="none" stroke="#B9C6DC" stroke-width="2.2" marker-end="url(#rx-arr)"/>`;
+    };
+    const node = (k, label, color) => {
+      const [x, y] = pos(k); const on = cur === k;
+      return `<g><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${NR}"
+          fill="${on ? color : '#fff'}" stroke="${color}" stroke-width="2.5"/>
+        <text x="${x.toFixed(1)}" y="${(y + 4).toFixed(1)}" text-anchor="middle" font-size="10.5"
+          font-weight="700" fill="${on ? '#fff' : color}" font-family="Outfit,sans-serif">${label}</text></g>`;
+    };
+    const done = cur === 'final';
+    const [tx, ty] = pos('thought');            // exit goes straight up from THOUGHT
+    const pillW = 104, pillH = 32, pillY = 10;
+    $('rx-ring').innerHTML = `<svg viewBox="0 0 340 320" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="rx-arr" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+        <polygon points="0 0, 7 4, 0 8" fill="#B9C6DC"/></marker>
+      <marker id="rx-arr-g" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+        <polygon points="0 0, 7 4, 0 8" fill="#16a34a"/></marker></defs>
+      ${arc('thought', 'action')}${arc('action', 'observation')}${arc('observation', 'thought')}
+      ${node('thought', 'THOUGHT', '#0055D4')}
+      ${node('action', 'ACTION', '#0D9488')}
+      ${node('observation', 'OBSERVE', '#64748b')}
+      <line x1="${tx}" y1="${(ty - NR - 2).toFixed(1)}" x2="${tx}" y2="${pillY + pillH + 8}"
+        stroke="${done ? '#16a34a' : '#D7DEE9'}" stroke-width="2.2" stroke-dasharray="5 4"
+        marker-end="url(#rx-arr${done ? '-g' : ''})"/>
+      <g><rect x="${CX - pillW / 2}" y="${pillY}" width="${pillW}" height="${pillH}" rx="${pillH / 2}"
+          fill="${done ? '#16a34a' : '#fff'}" stroke="#16a34a" stroke-width="2"/>
+        <text x="${CX}" y="${pillY + 21}" text-anchor="middle" font-size="11" font-weight="700"
+          fill="${done ? '#fff' : '#16a34a'}" font-family="Outfit,sans-serif">ANSWER</text></g>
+      <text x="${CX}" y="${CY + 4}" text-anchor="middle" font-size="10" fill="#94a3b8"
+        font-family="JetBrains Mono,monospace">${done ? 'exited' : (cycles ? 'cycle ' + cycles : 'ready')}</text>
+    </svg>`;
+    const facts = steps.filter(s => s.fact).map(s => `<span class="chip">${s.fact}</span>`);
+    $('rx-state').innerHTML = facts.join('') || '<span class="note">empty: the agent has not observed anything yet</span>';
   }
-  $('rx-scenarios').innerHTML = RX_SCENARIOS.map((s,i) => `<button class="seg-btn${i===0?' active':''}" data-i="${i}">${s.label}</button>`).join('');
-  document.querySelectorAll('#rx-scenarios .seg-btn').forEach(b => b.addEventListener('click', () => loadScenario(+b.dataset.i)));
-  window.rx_back = () => { window.rx_step = 0; paint(); };
-  window.rx_fwd = () => { if (window.rx_step < window.RX.length) window.rx_step++; paint(); };
-  window.rx_play = () => {
-    if (window.rx_int) { clearInterval(window.rx_int); window.rx_int = null; $('rx-play').innerHTML = '<svg><use href="#i-play"/></svg>'; return; }
-    $('rx-play').innerHTML = '<svg><use href="#i-pause"/></svg>';
-    window.rx_int = setInterval(() => {
-      if (window.rx_step >= window.RX.length) { clearInterval(window.rx_int); window.rx_int = null; $('rx-play').innerHTML = '<svg><use href="#i-play"/></svg>'; return; }
-      window.rx_step++; paint();
-    }, 1100);
-  };
-  $('rx-range').addEventListener('input', e => { window.rx_step = parseInt(e.target.value); paint(); });
+  function feed() {
+    const steps = scen().steps.slice(0, R.step);
+    $('rx-feed').innerHTML = steps.map(s => {
+      const [lbl, col] = KINDC[s.kind];
+      return `<div class="rx2-beat">
+        <span class="k" style="background:${col}1a;color:${col}">${lbl}</span>
+        <div class="b"><span class="t">${s.t}</span>${s.why ? `<span class="w">${s.why}</span>` : ''}</div>
+      </div>`;
+    }).join('') + (R.lastVerdict ? `<div class="rx2-verdict">${R.lastVerdict}</div>` : '');
+    const f = $('rx-feed'); f.scrollTop = f.scrollHeight;
+    $('rx-prog').textContent = `step ${R.step} of ${scen().steps.length}`;
+    $('rx-q').textContent = scen().query;
+  }
+  function controls() {
+    const total = scen().steps.length;
+    if (R.mode === 'watch') {
+      $('rx-controls').innerHTML = `
+        <div class="rx2-ctl">
+          <button class="ins-btn ghost" id="rx-restart">Restart</button>
+          <button class="ins-btn" id="rx-next">${R.step >= total ? 'Done' : 'Next step'}</button>
+          <button class="ins-btn ghost" id="rx-auto">${R.timer ? 'Pause' : 'Auto play'}</button>
+        </div>`;
+      $('rx-next').addEventListener('click', () => { if (R.step < total) { R.step++; R.lastVerdict=''; paint(); } });
+      $('rx-restart').addEventListener('click', () => { stopT(); R.step = 0; R.lastVerdict=''; paint(); });
+      $('rx-auto').addEventListener('click', () => {
+        if (R.timer) stopT();
+        else R.timer = setInterval(() => { if (R.step < total) { R.step++; paint(); } else stopT(); }, 1100);
+        controls();
+      });
+    } else {
+      const nxt = scen().steps[R.step];
+      if (!nxt) {
+        $('rx-controls').innerHTML = `<div class="rx2-ctl">
+          <p class="rx2-done">Trace complete. Score ${R.score} of ${R.asked * 10}.</p>
+          <button class="ins-btn ghost" id="rx-restart">Play again</button></div>`;
+        $('rx-restart').addEventListener('click', () => { R.step = 0; R.score = 0; R.asked = 0; R.lastVerdict=''; paint(); });
+        return;
+      }
+      if (nxt.kind === 'observation') {
+        $('rx-controls').innerHTML = `<div class="rx2-ctl">
+          <p class="rx2-ask">The tool runs. What comes back is the environment's move, not the agent's.</p>
+          <button class="ins-btn" id="rx-run">Read the observation</button></div>`;
+        $('rx-run').addEventListener('click', () => { R.step++; R.lastVerdict=''; paint(); });
+        return;
+      }
+      $('rx-controls').innerHTML = `<div class="rx2-ctl">
+        <p class="rx2-ask"><b>Your move.</b> What should the agent do next?</p>
+        <div class="rx2-choices">
+          <button class="ins-btn ghost" data-k="thought">Think</button>
+          <button class="ins-btn ghost" data-k="action">Call a tool</button>
+          <button class="ins-btn ghost" data-k="final">Answer now</button>
+        </div></div>`;
+      $('rx-controls').querySelectorAll('[data-k]').forEach(b => b.addEventListener('click', () => {
+        R.asked++;
+        const right = b.dataset.k === nxt.kind;
+        if (right) { R.score += 10; R.lastVerdict = `<b class="ok">Right.</b> ${nxt.why || ''}`; }
+        else { R.lastVerdict = `<b class="no">The agent chose ${KINDC[nxt.kind][0]}.</b> ${nxt.why || ''}`; }
+        R.step++; paint();
+      }));
+    }
+  }
+  function stopT() { if (R.timer) { clearInterval(R.timer); R.timer = null; } }
   function paint() {
-    $('rx-step').textContent = `Step ${window.rx_step} / ${window.RX.length}`;
-    $('rx-range').value = window.rx_step;
-    $('rx-out').innerHTML = window.RX.slice(0, window.rx_step).map(s => `<div class="react-step ${s.kind}"><div class="lbl">${s.kind === 'final' ? 'Final Answer' : s.kind}</div><div class="txt">${s.t}</div></div>`).join('');
+    ring(); feed(); controls();
+    $('rx-scorechip').textContent = R.mode === 'predict' ? `score ${R.score}` : '';
+    $('rx-status').textContent = `${scen().label}  |  ${R.mode} mode  |  `
+      + `the loop: Thought then Action then Observation, repeated until the model exits with an answer  |  `
+      + `state chips come from observations, exactly like LangGraph state in Lab 2`;
   }
-  loadScenario(0);
+  R.showAll = () => { R.mode = 'watch'; R.step = scen().steps.length; paint(); };
+  $('rx-scen').innerHTML = SCEN.map((s, i) =>
+    `<button class="seg-btn ${i === 0 ? 'active' : ''}" data-i="${i}">${s.label}</button>`).join('');
+  $('rx-scen').querySelectorAll('.seg-btn').forEach(b => b.addEventListener('click', () => {
+    $('rx-scen').querySelectorAll('.seg-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active'); stopT();
+    R.scen = +b.dataset.i; R.step = 0; R.score = 0; R.asked = 0; R.lastVerdict = '';
+    paint();
+  }));
+  $('rx-mode').querySelectorAll('.seg-btn').forEach(b => b.addEventListener('click', () => {
+    $('rx-mode').querySelectorAll('.seg-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active'); stopT();
+    R.mode = b.dataset.m; R.step = 0; R.score = 0; R.asked = 0; R.lastVerdict = '';
+    paint();
+  }));
+  paint();
 }
 
-/* ============================================================
-   TOOL: PROMPT INJECTION LAB (M11)
-   ============================================================ */
 function renderInjection() {
   const ATTACKS = [
     { id:1, tier:'easy', n:'Direct override', d:'Tell the bot to ignore prior instructions.',
@@ -4830,11 +5038,7 @@ function autoFillCurrent() {
       if (b) b.click();
     });
   } else if (id === 'react-player') {
-    if (window.RX && typeof window.rx_step !== 'undefined') {
-      window.rx_step = window.RX.length;
-      const range = document.getElementById('rx-range');
-      if (range) { range.value = window.RX.length; range.dispatchEvent(new Event('input')); }
-    }
+    if (window.RXV2 && window.RXV2.showAll) window.RXV2.showAll();
   } else if (id === 'injection') {
     const fv = document.getElementById('fire-v');
     if (fv) { fv.click(); fv.click(); fv.click(); }
