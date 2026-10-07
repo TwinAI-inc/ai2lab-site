@@ -1627,6 +1627,17 @@ body {
 .emx-side .emx-card > .rx2-feed { flex: 1 1 auto; max-height: none; min-height: 140px; }
 .emx-side .emx-card > *:last-child { margin-top: auto; }
 .rx2-ring { display: grid; place-items: center; }
+
+/* pre-launch splash as a proper card, matched to the help panel */
+.tool-pre { align-items: stretch; }
+.tool-pre .tool-splash { background: var(--paper); border: 1px solid var(--border);
+  border-radius: 16px; padding: 24px 26px; margin: 0; text-align: left;
+  box-shadow: 0 6px 24px rgba(15,23,42,.05); justify-content: flex-start; }
+.tool-pre .splash-icon-wrap { margin: 0 0 14px; width: 60px; height: 60px; border-radius: 16px; }
+.tool-pre .splash-icon-wrap svg { width: 30px; height: 30px; }
+.tool-pre .splash-meta { justify-content: flex-start; margin-bottom: 14px; }
+.tool-pre .splash-body { text-align: left; font-size: 13.5px; line-height: 1.7; margin-bottom: 18px; }
+.tool-pre .splash-launch { margin-top: auto; align-self: flex-start; }
 </style>
 </head>
 <body>
@@ -1821,7 +1832,7 @@ const SPLASHES = {
   'chunking': 'RAG does not embed whole documents — it cuts them into chunks first, then embeds each one. This lab shows the splitter\'s actual output as you drag size and overlap, and runs a live retrieval preview on top: pick a question and watch which chunk wins, with a verdict on whether the answer survived the cut.',
   'embeddings': 'Every dot on this map is a sentence turned into a real vector, computed live in your browser: tf-idf weights, true cosine similarity, honest PCA projection. Spin the space in true 3-D, rank neighbors, compare any pair, then embed your own query and watch it land among its meaning-mates. The labs swap in neural embeddings; the geometry is the same.',
   'retrieval-race': 'A real race against a real retriever. Every score you see is true tf-idf cosine between the query and each document; the machine takes its top 3 and you try to beat it on actual relevance. It opens with a worked example, then three modes — solo, timed, and sabotage, where keyword lookalikes genuinely outscore the right answers and the machine falls for them.',
-  'react-player': 'A ReAct agent does not answer in one shot — it reasons, calls a tool, reads the observation, reasons again, and repeats until it has a confident answer. Step through three real multi-step traces: a population lookup, a hospital ED wait-time analysis, and a Python performance diagnosis.',
+  'react-player': 'An agent is a loop, and this player makes it physical: a live ring the agent travels as real traces step through it, with a state panel that fills as observations land. Five traces with different shapes — including Lab 1\'s math solver, a tool call that fails and recovers, and a case where no tool is needed at all. Then switch to Predict mode and make the agent\'s next move yourself, scored.',
   'injection': 'Prompt injection is the OWASP #1 LLM risk: an attacker hides malicious instructions inside untrusted input — a user message, a retrieved document, a tool response — hoping the model follows them instead of its system prompt. This lab gives you ten real attack patterns across three tiers of sophistication. Fire them at a vulnerable bot and a hardened one, and read the explanation of why each attack succeeds or fails.',
   'schema-builder': 'Structured output is what makes language models useful inside production pipelines. Instead of returning free text you define a JSON schema and the model fills it in. Click fields from an unstructured invoice to build a typed JSON object and its schema — the exact extraction pattern used in real pipelines.',
   'crew-router': 'A multi-agent crew outperforms a single agent when each role specializes in what it is best at. Assign subtasks to the right agent — Researcher, Analyst, Writer — run the crew, and watch how clean hand-offs produce better output than one overloaded agent doing everything.',
@@ -1849,8 +1860,8 @@ const HELP_SVG = {
     </g>
     <line x1="160" y1="80" x2="244" y2="80" stroke="#94a3b8" stroke-width="1.6" marker-end="url(#hl-arr)"/>
     <line x1="370" y1="80" x2="454" y2="80" stroke="#94a3b8" stroke-width="1.6" marker-end="url(#hl-arr)"/>
-    <path d="M 525 101 C 525 148, 100 148, 100 104" fill="none" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#hl-arr)"/>
-    <text x="312" y="142" text-anchor="middle" font-size="10.5" fill="#64748b">loop until the model judges the state sufficient</text>
+    <path d="M 525 101 C 525 134, 100 134, 100 104" fill="none" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#hl-arr)"/>
+    <text x="312" y="158" text-anchor="middle" font-size="10.5" fill="#64748b">loop until the model judges the state sufficient</text>
     <line x1="100" y1="60" x2="100" y2="28" stroke="#16a34a" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#hl-arr)"/>
     <text x="100" y="18" text-anchor="middle" font-size="11" font-weight="700" fill="#16a34a">ANSWER</text>
   </svg>`,
