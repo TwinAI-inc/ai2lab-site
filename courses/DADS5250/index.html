@@ -739,6 +739,42 @@
   .splash-launch:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,85,212,.4); }
   .splash-launch svg { width: 18px; height: 18px; }
 
+  /* ---- tool help: how the method works, shown under the splash ---- */
+  .tool-help { max-width: 820px; margin: 10px auto 48px; background: var(--paper);
+    border: 1px solid var(--border); border-radius: 16px; padding: 26px 30px 24px;
+    box-shadow: 0 6px 24px rgba(15,23,42,.05); text-align: left; }
+  .tool-help h3 { font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 700;
+    letter-spacing: .09em; text-transform: uppercase; color: var(--blue); margin: 0 0 10px; }
+  .tool-help .th-what { font-family: 'Lora', serif; font-size: 14.5px; line-height: 1.75;
+    color: var(--muted); margin: 0 0 18px; }
+  .tool-help .th-diagram { background: var(--blue-soft); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 10px; margin: 0 0 20px; display: flex; justify-content: center; }
+  .tool-help .th-diagram svg { width: 100%; max-width: 640px; height: auto; display: block; }
+  .tool-help .th-steps { display: grid; gap: 10px; margin: 0 0 16px; }
+  .tool-help .th-step { display: flex; gap: 12px; align-items: baseline; }
+  .tool-help .th-step b { flex: 0 0 22px; height: 22px; display: grid; place-items: center;
+    background: linear-gradient(135deg, var(--blue), var(--blue-light)); color: #fff;
+    border-radius: 999px; font-size: 11.5px; font-weight: 700; transform: translateY(3px); }
+  .tool-help .th-step span { font-family: 'Outfit', sans-serif; font-size: 13.5px;
+    line-height: 1.55; color: var(--ink); }
+  .tool-help .th-example { background: #F7FAFF; border: 1px dashed var(--line);
+    border-radius: 10px; padding: 10px 14px; font-family: 'Outfit', sans-serif;
+    font-size: 12.5px; color: var(--muted); }
+  .tool-help .th-example b { color: var(--blue); font-weight: 700; margin-right: 6px;
+    letter-spacing: .05em; font-size: 11px; }
+
+  /* pre-launch: splash + help side by side so everything fits one screen */
+  .tool-pre { display: grid; grid-template-columns: 300px 1fr; gap: 26px;
+    max-width: 1120px; margin: 14px auto 30px; align-items: start; }
+  .tool-pre .tool-splash { margin: 6px 0 0; max-width: none; padding: 0; }
+  .tool-pre .tool-help { margin: 0; }
+  @media (max-width: 980px) { .tool-pre { grid-template-columns: 1fr; } }
+
+  /* standard tool frame (MD 2026-10-07): a launched tool lives inside one
+     viewport; the page itself never scrolls up and down */
+  #tool-body.launched { max-height: calc(100vh - 160px); overflow-y: auto;
+    border-radius: 12px; }
+
   /* ====== Tool: Tokenizer ====== */
   .tok-card { background: linear-gradient(180deg, #fff, #FAFCFF); border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 14px; }
   .tok-input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px; resize: vertical; min-height: 70px; outline: none; transition: border-color .15s; }
@@ -1162,6 +1198,391 @@
   .home-item svg { width: 16px; height: 16px; color: var(--blue); flex-shrink: 0; }
   .home-item .label { font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 13px; color: var(--ink); }
   .home-item .hint { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: var(--soft); }
+
+/* ============================================================
+   INSTRUMENT RESTYLE (MD 2026-10-07): match the IE7374 RL tools.
+   Calm, neutral, one accent. Color is for data, not decoration.
+   Overrides the colorful variants above; placed last so it wins.
+   ============================================================ */
+.tool-card, .tool-card.gold, .tool-card.olive, .tool-card.crimson,
+.tool-card.purple, .tool-card.cyan {
+  border-top: 1px solid var(--border); border-radius: 12px;
+}
+.tool-card::before, .tool-card.gold::before, .tool-card.olive::before,
+.tool-card.crimson::before, .tool-card.purple::before, .tool-card.cyan::before {
+  display: none;
+}
+.tool-card:hover { transform: translateY(-2px); border-color: var(--blue);
+  box-shadow: 0 8px 22px rgba(15,23,42,0.08); }
+.tool-thumb { filter: saturate(0.18) contrast(0.96); opacity: .92;
+  transition: filter .35s ease, opacity .35s ease; aspect-ratio: 16/8; }
+.tool-card:hover .tool-thumb { filter: saturate(1); opacity: 1; }
+.tool-icon, .tool-card.gold .tool-icon, .tool-card.olive .tool-icon,
+.tool-card.crimson .tool-icon, .tool-card.purple .tool-icon, .tool-card.cyan .tool-icon {
+  color: var(--muted); }
+.tool-icon svg { width: 22px; height: 22px; }
+.tool-type, .tool-card.gold .tool-type, .tool-card.olive .tool-type,
+.tool-card.crimson .tool-type, .tool-card.purple .tool-type, .tool-card.cyan .tool-type {
+  color: var(--soft); }
+.tool-title em, .tool-card.gold .tool-title em, .tool-card.olive .tool-title em,
+.tool-card.crimson .tool-title em, .tool-card.purple .tool-title em,
+.tool-card.cyan .tool-title em { color: var(--blue); }
+.meta-chip.gold, .meta-chip.purple { background: var(--bg); color: var(--muted); }
+
+/* splash: neutral icon chip, flat single-accent button */
+.splash-icon-wrap { background: #F1F5F9 !important; color: var(--ink) !important;
+  border: 1px solid var(--border); }
+.splash-launch { background: var(--blue); box-shadow: none; border-radius: 8px;
+  padding: 11px 26px; font-size: 14px; }
+.splash-launch:hover { transform: none; background: var(--blue-deep); box-shadow: none; }
+.tool-open, .tool-card.gold .tool-open, .tool-card.olive .tool-open,
+.tool-card.crimson .tool-open, .tool-card.purple .tool-open,
+.tool-card.cyan .tool-open { color: var(--muted); }
+.tool-card:hover .tool-open { color: var(--blue); }
+.mod-item .count { background: #E5EAF2; color: var(--muted); }
+.mod-item.active .count { background: rgba(255,255,255,0.28); color: #fff; }
+.mod-header .kicker { color: var(--soft); }
+.path-list { display: grid; gap: 10px; max-width: 980px; }
+.path-row { display: grid; grid-template-columns: 46px 118px 1fr 38px; gap: 16px;
+  align-items: center; background: var(--paper); border: 1px solid var(--border);
+  border-radius: 12px; padding: 12px 16px 12px 10px; cursor: pointer;
+  text-decoration: none; color: inherit; transition: border-color .2s, box-shadow .2s; }
+.path-row:hover { border-color: var(--blue); box-shadow: 0 6px 18px rgba(15,23,42,.07); }
+.pr-num { font-family: 'JetBrains Mono', monospace; font-size: 17px; font-weight: 600;
+  color: #B9C3D2; text-align: center; }
+.pr-thumb { width: 118px; height: 72px; object-fit: cover; border-radius: 8px;
+  filter: saturate(0.18) contrast(0.96); opacity: .92; transition: filter .35s, opacity .35s; }
+.path-row:hover .pr-thumb { filter: saturate(1); opacity: 1; }
+.pr-meta { font-family: 'Outfit', sans-serif; font-size: 10.5px; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--soft); margin-bottom: 3px;
+  display: flex; align-items: center; gap: 10px; }
+.pr-start { background: var(--blue-soft); color: var(--blue); border: 1px solid var(--border);
+  border-radius: 999px; padding: 1px 9px; font-size: 9.5px; letter-spacing: .1em; }
+.pr-title { font-family: 'Lora', Georgia, serif; font-size: 17px; font-weight: 700;
+  color: var(--ink); line-height: 1.2; }
+.pr-title em { font-style: italic; color: var(--blue); font-weight: 400; }
+.pr-desc { font-family: 'Lora', serif; font-size: 13px; line-height: 1.5;
+  color: var(--muted); margin-top: 3px; }
+.pr-open { color: var(--soft); display: grid; place-items: center; }
+.pr-open svg { width: 16px; height: 16px; transition: transform .2s; }
+.path-row:hover .pr-open { color: var(--blue); }
+.path-row:hover .pr-open svg { transform: translateX(3px); }
+@media (max-width: 760px) { .path-row { grid-template-columns: 34px 1fr 30px; } .pr-thumb { display: none; } }
+/* ---- instrument tool chrome (shared by upgraded tools) ---- */
+.ins-bar { display: flex; align-items: center; gap: 12px; background: var(--paper);
+  border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px;
+  margin: 4px auto 12px; max-width: 1120px; flex-wrap: wrap; }
+.ins-seg { display: flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.ins-seg .seg-btn { border: none; background: #fff; padding: 7px 14px; font-family: 'Outfit',sans-serif;
+  font-size: 12px; font-weight: 600; color: var(--muted); cursor: pointer; }
+.ins-seg .seg-btn.active { background: var(--blue); color: #fff; }
+.ins-field { display: flex; align-items: center; gap: 8px; }
+.ins-field.grow { flex: 1; min-width: 220px; }
+.ins-field label { font-family: 'Outfit',sans-serif; font-size: 10px; font-weight: 700;
+  letter-spacing: .12em; color: var(--soft); }
+.ins-field input { flex: 1; border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px;
+  font-family: 'Outfit',sans-serif; font-size: 13px; color: var(--ink); outline: none; }
+.ins-field input:focus { border-color: var(--blue); }
+.ins-btn { border: none; background: var(--blue); color: #fff; border-radius: 8px; padding: 9px 16px;
+  font-family: 'Outfit',sans-serif; font-size: 12.5px; font-weight: 700; cursor: pointer; }
+.ins-btn:hover { background: var(--blue-deep); }
+.ins-btn.ghost { background: #fff; color: var(--muted); border: 1px solid var(--border); }
+.ins-btn.ghost:hover { color: var(--ink); border-color: var(--line); }
+.ins-status { max-width: 1120px; margin: 10px auto 24px; font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px; color: var(--soft); padding: 0 4px; }
+
+/* ---- embedding explorer v2 ---- */
+.emx-canvas { display: grid; grid-template-columns: 1fr 360px; gap: 14px; max-width: 1120px; margin: 0 auto; }
+.emx-map-card { background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
+  padding: 12px 14px 14px; }
+.emx-map-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;
+  font-family: 'Outfit',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; color: var(--soft); }
+.emx-leg { display: inline-flex; align-items: center; gap: 5px; margin-left: 12px; font-size: 10px;
+  font-weight: 600; letter-spacing: .02em; color: var(--muted); text-transform: none; }
+.emx-leg .sw { width: 9px; height: 9px; border-radius: 3px; display: inline-block; }
+.emx-map { position: relative; width: 100%; aspect-ratio: 4/3; background: #FBFCFE;
+  border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.emx-map svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.emx-dot { position: absolute; width: 13px; height: 13px; border-radius: 50%; border: 2px solid #fff;
+  transform: translate(-50%, -50%); cursor: pointer; box-shadow: 0 1px 4px rgba(15,23,42,.25); padding: 0; }
+.emx-dot:hover { transform: translate(-50%, -50%) scale(1.35); }
+.emx-dot.sel { outline: 3px solid rgba(0,85,212,.35); transform: translate(-50%,-50%) scale(1.3); }
+.emx-dot.cmp { outline: 3px solid rgba(124,58,237,.35); transform: translate(-50%,-50%) scale(1.3); }
+.emx-star { position: absolute; transform: translate(-50%, -58%); color: #B45309; font-size: 21px;
+  text-shadow: 0 1px 3px rgba(15,23,42,.3); pointer-events: none; }
+.emx-side .emx-card { background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
+  padding: 14px 16px; font-family: 'Outfit',sans-serif; }
+.emx-card .h { font-size: 10px; font-weight: 700; letter-spacing: .12em; color: var(--blue);
+  margin: 12px 0 6px; }
+.emx-card .h:first-child { margin-top: 0; }
+.emx-card .h .r { float: right; color: var(--soft); font-weight: 500; letter-spacing: 0; }
+.emx-card p { font-size: 12.5px; line-height: 1.55; color: var(--muted); margin: 0 0 8px; }
+.emx-card p.sent { color: var(--ink); font-weight: 600; font-size: 13px; }
+.emx-card p.note, .emx-card .note { font-size: 11px; color: var(--soft); }
+.emx-row { display: grid; grid-template-columns: 1fr 64px 42px; gap: 8px; align-items: center;
+  padding: 4px 0; border-bottom: 1px dashed #EDF1F7; }
+.emx-row .t { font-size: 11px; line-height: 1.35; color: var(--muted); }
+.emx-row.top .t { color: var(--ink); font-weight: 600; }
+.emx-row .v { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--ink);
+  text-align: right; }
+.emx-bar { display: inline-block; height: 7px; background: #EEF3FB; border-radius: 999px;
+  overflow: hidden; width: 100%; }
+.emx-bar span { display: block; height: 100%; background: var(--blue); border-radius: 999px; }
+.emx-row.top .emx-bar span { background: #0A3FA8; }
+.emx-big { font-family: 'JetBrains Mono', monospace; font-size: 26px; font-weight: 700;
+  color: var(--ink); margin: 4px 0 6px; }
+.emx-big span { font-family: 'Outfit',sans-serif; font-size: 11px; font-weight: 600; color: var(--soft); }
+.chips .chip { display: inline-block; background: var(--blue-soft); color: var(--blue);
+  border: 1px solid var(--border); border-radius: 999px; padding: 2px 10px; font-size: 11px;
+  font-weight: 600; margin: 0 5px 5px 0; }
+@media (max-width: 980px) { .emx-canvas { grid-template-columns: 1fr; } }
+/* ---- chunking lab v2 ---- */
+.ckx-slider { display: flex; align-items: center; gap: 10px; }
+.ckx-slider label { font-family: 'Outfit',sans-serif; font-size: 10px; font-weight: 700;
+  letter-spacing: .1em; color: var(--soft); white-space: nowrap; }
+.ckx-slider label b { color: var(--ink); font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+.ckx-slider input[type=range] { width: 150px; accent-color: #0055D4; }
+.ckx-list { max-height: 52vh; overflow-y: auto; display: grid; gap: 8px; padding-right: 4px; }
+.ckx-chunk { border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px 10px;
+  background: #FBFCFE; cursor: pointer; }
+.ckx-chunk:hover { border-color: var(--line); }
+.ckx-chunk.sel { border-color: var(--ink); }
+.ckx-chunk.hit { border-color: var(--blue); background: var(--blue-soft); }
+.ckx-chead { display: flex; align-items: center; gap: 10px; margin-bottom: 4px;
+  font-family: 'Outfit',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .06em; }
+.ckx-chead .n { font-family: 'JetBrains Mono', monospace; color: #B9C3D2; font-size: 12px; }
+.ckx-chead .len { color: var(--soft); font-weight: 600; }
+.ckx-chead .ovl { color: #7C3AED; font-weight: 600; }
+.ckx-chead .brk { color: #B45309; font-weight: 700; }
+.ckx-chead .ret { margin-left: auto; color: var(--blue); font-family: 'JetBrains Mono', monospace; }
+.ckx-ctext { font-family: 'Lora', serif; font-size: 12px; line-height: 1.55; color: var(--muted); }
+.ckx-ctext .ovshade { background: #F1EBFD; border-radius: 3px; }
+.qchip { cursor: pointer; border: 1px solid var(--border); background: #fff; color: var(--muted); }
+.qchip.on { background: var(--blue); color: #fff; border-color: var(--blue); }
+.verdict { border-radius: 8px; padding: 8px 12px; font-size: 12px; font-weight: 600; }
+.verdict.ok { background: #EAF7EF; color: #166534; }
+.verdict.bad { background: #FDF0E7; color: #9A3412; }
+.warn { color: #B45309; }
+.ckx-slider input[type=range] { -webkit-appearance: none; appearance: none; height: 4px;
+  background: #E1E8F2; border-radius: 999px; outline: none; }
+.ckx-slider input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 15px;
+  height: 15px; border-radius: 50%; background: var(--blue); border: 2.5px solid #fff;
+  box-shadow: 0 1px 4px rgba(15,23,42,.3); cursor: pointer; }
+/* ---- retrieval race v2 ---- */
+.rrx-desc { font-family: 'Outfit',sans-serif; font-size: 12px; color: var(--muted); flex: 1; }
+.rrx-clock { font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 700;
+  color: var(--ink); background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+  padding: 4px 12px; }
+.rrx-clock.warn { color: #B42318; border-color: #F3C3BD; background: #FDF0EE; }
+.rrx-query { font-family: 'Lora', serif; font-size: 15.5px; font-weight: 700; color: var(--ink);
+  background: var(--blue-soft); border: 1px solid var(--border); border-radius: 10px;
+  padding: 10px 14px; margin-bottom: 10px; }
+.rrx-docs { display: grid; gap: 8px; max-height: 48vh; overflow-y: auto; padding-right: 4px; }
+.rrx-doc { display: grid; grid-template-columns: 34px 1fr auto; gap: 10px; align-items: center;
+  border: 1px solid var(--border); border-radius: 10px; background: #FBFCFE;
+  padding: 9px 12px; cursor: pointer; font-family: 'Outfit',sans-serif; }
+.rrx-doc:hover { border-color: var(--line); }
+.rrx-doc.me, .rrx-doc.p1 { border-color: var(--blue); background: var(--blue-soft); }
+.rrx-doc.p2 { border-color: #7C3AED; background: var(--purple-soft); }
+.rrx-doc.rel { border-left: 4px solid #16a34a; }
+.rrx-doc.dis { border-left: 4px solid #D4A017; opacity: .92; }
+.rrx-doc .id { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #B9C3D2; font-weight: 700; }
+.rrx-doc .txt { font-size: 12.5px; line-height: 1.45; color: var(--ink); }
+.rrx-doc .pickmark { font-size: 10px; font-weight: 700; letter-spacing: .08em; color: var(--blue); }
+.rrx-doc .score { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink); }
+.rrx-doc .emx-bar { width: 70px; }
+.rrx-doc .tags b { font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+  border-radius: 999px; padding: 2px 8px; margin-left: 5px; }
+.rrx-doc .tags .ok { background: #EAF7EF; color: #166534; }
+.rrx-doc .tags .no { background: #FBF3DE; color: #92610A; }
+.rrx-doc .tags .mach { background: #EEF3FB; color: var(--blue); }
+.rrx-doc.rel, .rrx-doc.dis { grid-template-columns: 34px 1fr; }
+.rrx-doc .rbody { display: grid; gap: 6px; }
+.rrx-doc .rmeta { display: flex; align-items: center; gap: 10px; }
+.rrx-doc .rmeta .emx-bar { width: 110px; flex: none; }
+.rrx-scores { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.rrx-scores .cell { background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
+  text-align: center; padding: 8px 4px; }
+.rrx-scores .cell.turn { border-color: var(--blue); background: var(--blue-soft); }
+.rrx-scores .n { font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 700; color: var(--ink); }
+.rrx-scores .l { font-size: 9px; font-weight: 700; letter-spacing: .1em; color: var(--soft); }
+.rrx-actions { display: flex; gap: 8px; margin-bottom: 4px; }
+#rrx-fb p { font-size: 12.5px; line-height: 1.55; color: var(--muted); margin: 0 0 8px; }
+#rrx-fb p b { color: var(--ink); }
+.rrx-metrics { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink);
+  background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; }
+.emx-axis { position: absolute; font-family: 'JetBrains Mono', monospace; font-size: 9px;
+  color: #AEB8C8; pointer-events: none; letter-spacing: .02em; }
+.emx-axis.left { left: 8px; top: 50%; transform: translateY(-50%); }
+.emx-axis.right { right: 8px; top: 50%; transform: translateY(-50%); }
+.emx-axis.top { top: 6px; left: 50%; transform: translateX(-50%); }
+.emx-axis.bottom { bottom: 6px; left: 50%; transform: translateX(-50%); }
+.ckx-ownq { display: flex; gap: 8px; margin: 2px 0 10px; }
+.ckx-ownq input { flex: 1; border: 1px solid var(--border); border-radius: 8px; padding: 7px 11px;
+  font-family: 'Outfit',sans-serif; font-size: 12px; color: var(--ink); outline: none; }
+.ckx-ownq input:focus { border-color: var(--blue); }
+.ckx-ownq .ins-btn { padding: 7px 14px; font-size: 11.5px; }
+.ckx-ctext mark { background: #FFF1C2; border-radius: 3px; padding: 0 2px; }
+
+/* ---- scale + fit pass (MD 2026-10-07): larger, clearer, one window ---- */
+.tool-shell h2 { font-size: 26px; margin: 0 0 10px; }
+.crumbs { margin-bottom: 10px; }
+#tool-body.launched { max-height: calc(100vh - 150px); }
+.emx-canvas { max-width: 1280px; grid-template-columns: 1fr 420px; }
+.ins-bar, .ins-status { max-width: 1280px; }
+.emx-map { aspect-ratio: auto; height: clamp(380px, 56vh, 580px); }
+.emx-dot { width: 16px; height: 16px; }
+.emx-star { font-size: 26px; }
+.emx-axis { font-size: 10.5px; color: #9AA6BA; }
+.emx-leg { font-size: 11.5px; }
+.emx-card p { font-size: 13.5px; }
+.emx-card p.sent { font-size: 14.5px; }
+.emx-card .h { font-size: 11px; }
+.emx-row .t { font-size: 12.5px; }
+.emx-row .v { font-size: 11.5px; }
+.emx-side { max-height: calc(100vh - 290px); overflow-y: auto; }
+.ins-status { font-size: 11.5px; }
+.ckx-list { max-height: calc(100vh - 330px); }
+.ckx-ctext { font-size: 13px; line-height: 1.6; }
+.ckx-chead { font-size: 11px; }
+.rrx-docs { max-height: calc(100vh - 400px); }
+.rrx-doc .txt { font-size: 13.5px; line-height: 1.5; }
+.rrx-query { font-size: 17px; }
+.rrx-desc { font-size: 13px; }
+#rrx-fb p { font-size: 13px; }
+.chips .chip { font-size: 12px; }
+.verdict { font-size: 13px; }
+.tool-help .th-what { font-size: 15px; }
+.tool-help .th-step span { font-size: 14px; }
+/* ---- storyline instrument restyle (MD 2026-10-07): the story frames now
+   match the rest of the platform. One ground, one accent, aligned edges. ---- */
+.sl-wrap { background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
+  padding: 20px 24px; box-shadow: 0 6px 24px rgba(15,23,42,.05); gap: 14px; }
+.sl-seg, .sl-seg.done { background: #E5EAF2; box-shadow: none; }
+.sl-seg.done { background: #C5D4EE; }
+.sl-seg.active, .sl-seg.active.theme-gold, .sl-seg.active.theme-olive {
+  background: var(--blue); box-shadow: none; height: 7px; }
+.sl-scene { align-items: start; min-height: 0; gap: 28px; padding: 2px 2px; }
+.sl-img-wrap { animation: none; }
+.sl-img-inner, .sl-scene.theme-blue .sl-img-inner, .sl-scene.theme-olive .sl-img-inner {
+  border: 1px solid var(--border); border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(15,23,42,.10); background: var(--bg); }
+.sl-year-badge, .sl-scene.theme-blue .sl-year-badge, .sl-scene.theme-olive .sl-year-badge {
+  top: 10px; left: 10px; background: #fff; color: var(--ink); border: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(15,23,42,.14); font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; font-weight: 700; padding: 5px 12px; }
+.sl-text { animation: none; gap: 12px; }
+.sl-text .label, .sl-scene.theme-blue .sl-text .label, .sl-scene.theme-olive .sl-text .label {
+  color: var(--soft); letter-spacing: .14em; font-size: 10.5px; }
+.sl-text h3 { font-size: 32px; }
+.sl-text h3 em, .sl-scene.theme-blue .sl-text h3 em, .sl-scene.theme-olive .sl-text h3 em {
+  color: var(--blue); }
+.sl-text .lede { font-size: 15px; color: var(--muted); }
+.sl-text .lede strong, .sl-scene.theme-blue .sl-text .lede strong,
+.sl-scene.theme-olive .sl-text .lede strong { color: var(--ink); }
+.sl-fact, .sl-scene.theme-blue .sl-fact, .sl-scene.theme-olive .sl-fact {
+  background: #F7FAFF; border: 1px dashed var(--line); border-left: 3px solid var(--blue);
+  border-radius: 10px; font-style: normal; font-family: 'Outfit', sans-serif;
+  font-size: 12.5px; color: var(--muted); }
+.sl-fact .fact-tag, .sl-scene.theme-blue .sl-fact .fact-tag,
+.sl-scene.theme-olive .sl-fact .fact-tag { color: var(--blue); }
+.sl-fact strong, .sl-scene.theme-blue .sl-fact strong,
+.sl-scene.theme-olive .sl-fact strong { color: var(--ink); font-style: normal; }
+.sl-nav { border-top: 1px solid var(--border); padding-top: 14px; margin-top: 2px; }
+.sl-nav button { background: var(--blue); border-radius: 8px; box-shadow: none;
+  text-transform: none; letter-spacing: 0; font-size: 13px; font-weight: 700;
+  padding: 10px 20px; }
+.sl-nav button:hover { transform: none; background: var(--blue-deep); box-shadow: none; }
+.sl-nav button.ghost { background: #fff; color: var(--muted);
+  box-shadow: 0 0 0 1px var(--border) inset; }
+.sl-nav button.ghost:hover { background: var(--bg); color: var(--ink); }
+.sl-counter { font-style: normal; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+.sl-counter .now, .sl-counter .now.theme-gold, .sl-counter .now.theme-olive {
+  color: var(--ink); font-size: 18px; font-family: 'JetBrains Mono', monospace; }
+.sl-img-placeholder { background: var(--bg); color: var(--muted); }
+.sl-img-placeholder .ph-year { color: var(--soft); }
+
+
+/* ---- one icon style, calm hover (MD 2026-10-07): no photos, no jumps ---- */
+.pr-tile { width: 118px; height: 72px; border-radius: 8px; background: #F3F6FB;
+  border: 1px solid var(--border); display: grid; place-items: center; color: var(--ink); }
+.pr-tile svg { width: 30px; height: 30px; }
+.icon-tile { background: #F3F6FB !important; border: 1px solid var(--border);
+  display: grid; place-items: center; color: var(--ink); box-shadow: none !important; }
+.tile-icon.icon-tile { border-radius: 14px; }
+.tile-icon.icon-tile svg { width: 34px; height: 34px; }
+.feat-icon.icon-tile { border-radius: 20px; color: var(--ink); }
+.feat-icon.icon-tile svg { width: 52px; height: 52px; }
+
+.tool-card:hover, .lab-card:hover, .lab-btn.colab:hover, .faculty-link:hover,
+.rou-btn:hover, .rou-btn.primary:hover, .fire-btn:not(:disabled):hover,
+.attack-card:hover, .mode-modal-card button.primary:hover, .rr-doc:hover,
+.feat-card:hover, .app-tile:hover, .sl-nav button:hover {
+  transform: none; }
+.feat-card:hover, .app-tile:hover { box-shadow: 0 8px 22px rgba(15,23,42,.10); border-color: var(--blue); }
+.tool-card:hover .tool-open svg, .faculty-link:hover .fl-arrow,
+.path-row:hover .pr-open svg, .tool-card:hover .tool-thumb { transform: none; }
+.emx-dot:hover { transform: translate(-50%, -50%); outline: 3px solid rgba(0,85,212,.25); }
+.emx-dot.sel { transform: translate(-50%, -50%); }
+.emx-dot.cmp { transform: translate(-50%, -50%); }
+
+/* home page joins the one-accent system */
+.feat-card, .feat-card.gold, .feat-card.crimson, .feat-card.cyan, .feat-card.olive,
+.feat-card.purple, .feat-card.blue { background: var(--paper); border: 1px solid var(--border);
+  box-shadow: 0 6px 24px rgba(15,23,42,.06); }
+.feat-cat { color: var(--soft) !important; }
+.feat-body h2 em { color: var(--blue) !important; }
+.btn-open { background: var(--blue) !important; color: #fff !important; box-shadow: none !important; }
+.tile-cat { color: var(--soft) !important; }
+.tile-title em { color: var(--blue) !important; }
+.tile-open { color: var(--blue) !important; }
+.app-tile { border: 1px solid var(--border) !important; }
+
+/* ---- ground pattern + icon fill hover + alignment polish (MD 2026-10-07) ---- */
+
+/* 1. the ground: a fine engineering dot grid under a faint blue wash */
+body {
+  background:
+    radial-gradient(circle at 12% -8%, rgba(0,85,212,.055), transparent 46%),
+    radial-gradient(circle at 92% 2%, rgba(124,58,237,.035), transparent 40%),
+    radial-gradient(rgba(15,23,42,.045) 1px, transparent 1.1px),
+    var(--bg) !important;
+  background-size: auto, auto, 23px 23px, auto !important;
+  background-attachment: fixed !important;
+}
+/* tool canvases get a whisper of the same grid so panels sit on it, not float */
+.emx-map { background:
+  radial-gradient(rgba(15,23,42,.05) 1px, transparent 1.1px) 0 0/20px 20px, #FBFCFE; }
+
+/* 2. icons FILL with the accent on hover: color moves, nothing jumps */
+.pr-tile, .tile-icon.icon-tile, .feat-icon.icon-tile, .splash-icon-wrap {
+  transition: background .3s ease, color .3s ease, border-color .3s ease; }
+.path-row:hover .pr-tile {
+  background: linear-gradient(135deg, var(--blue), var(--blue-deep));
+  color: #fff; border-color: var(--blue); }
+.app-tile:hover .tile-icon.icon-tile,
+.feat-card:hover .feat-icon.icon-tile {
+  background: linear-gradient(135deg, var(--blue), var(--blue-deep)) !important;
+  color: #fff; border-color: var(--blue); }
+.path-row:hover .pr-title em,
+.app-tile:hover .tile-title em { color: var(--blue-deep) !important; }
+
+/* 3. alignment polish */
+.path-row { grid-template-columns: 46px 118px 1fr 38px; padding: 14px 18px 14px 12px;
+  align-items: center; }
+.pr-num { align-self: center; line-height: 1; }
+.pr-body { display: flex; flex-direction: column; gap: 3px; justify-content: center; }
+.pr-meta { margin-bottom: 0; }
+.pr-desc { margin-top: 0; }
+.path-list { gap: 12px; }
+.app-tile { display: flex; flex-direction: column; }
+.tile-icon.icon-tile { margin-bottom: 16px; }
+.tile-foot { margin-top: auto; }
+.emx-map-head, .ckx-chead { align-items: baseline; }
+.ins-bar { padding: 12px 16px; }
+.mod-section-h { align-items: baseline; }
+.tool-pre { align-items: stretch; }
+.tool-pre .tool-splash { display: flex; flex-direction: column; justify-content: center; }
 </style>
 </head>
 <body>
@@ -1183,6 +1604,10 @@
   <symbol id="i-construction" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="9" rx="1"/><line x1="3" y1="11" x2="21" y2="11"/><line x1="9" y1="11" x2="9" y2="20"/><line x1="15" y1="11" x2="15" y2="20"/><path d="M6 7h12M7 4h10"/></symbol>
   <symbol id="i-arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></symbol>
   <symbol id="i-sparkle" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8z"/><path d="M19 16l.7 2.3L22 19l-2.3.7L19 22l-.7-2.3L16 19l2.3-.7z" opacity="0.6"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M9 7h7M9 11h5"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-scissors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.6"/><circle cx="6" cy="18" r="2.6"/><path d="M8.2 7.8 20 19M8.2 16.2 20 5M14.5 11.5l-2.3 1"/></symbol>
+  <symbol id="i-flag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22V3"/><path d="M5 4h12l-2.5 4L17 12H5"/></symbol>
   <symbol id="i-play" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="6 4 20 12 6 20"/></symbol>
   <symbol id="i-pause" viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></symbol>
   <symbol id="i-skip-back" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="18 6 8 12 18 18"/><rect x="5" y="6" width="2" height="12"/></symbol>
@@ -1195,7 +1620,7 @@
     <div class="brand">
       <div class="code">DADS 5250</div>
       <div class="sub">Generative AI in Practice</div>
-      <div class="tag">course platform &middot; 14 modules</div>
+      <div class="tag">interactive course tools</div>
     </div>
     <div class="home-item" id="home-item" onclick="goHome()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
@@ -1248,6 +1673,10 @@ const $ = id => document.getElementById(id);
 
 const ICON = {
   thermometer: '<svg><use href="#i-thermometer"/></svg>',
+  book: '<svg><use href="#i-book"/></svg>',
+  target: '<svg><use href="#i-target"/></svg>',
+  scissors: '<svg><use href="#i-scissors"/></svg>',
+  flag: '<svg><use href="#i-flag"/></svg>',
   tokens: '<svg><use href="#i-tokens"/></svg>',
   puzzle: '<svg><use href="#i-puzzle"/></svg>',
   chain: '<svg><use href="#i-chain"/></svg>',
@@ -1265,7 +1694,7 @@ const MODULES = [
     lede: 'Open the box. See how a language model actually responds to your call. Slide the temperature, count the tokens, and watch probability turn into text.',
     meta: ['Phase 1', '~3 hrs'],
     tools: [
-      { id: 'storyline', type: 'Story', icon: 'sparkle', title: 'How LLMs Got Here <em>(1948 to today)</em>', desc: 'A short illustrated history. Shannon’s information theory to ELIZA to attention to GPT to today.', time: '~10 min', color: 'gold' },
+      { id: 'storyline', type: 'Story', icon: 'book', title: 'How LLMs Got Here <em>(1948 to today)</em>', desc: 'A short illustrated history. Shannon’s information theory to ELIZA to attention to GPT to today.', time: '~10 min', color: 'gold' },
       { id: 'temperature', type: 'Sandbox', icon: 'thermometer', title: 'Temperature <em>Explorer</em>', desc: 'Interactive slider showing how temperature shapes the probability of the next word.', time: '~10 min', color: 'crimson' },
       { id: 'tokenizer', type: 'Sandbox', icon: 'tokens', title: 'Tokenizer <em>Explorer</em>', desc: 'Word, character, and subword tokenization side by side. The same sentence costs different numbers of tokens.', time: '~8 min', color: 'cyan' },
       { id: 'transformer', type: 'Playground', icon: 'chain', external: 'https://poloclub.github.io/transformer-explainer/', title: 'Transformer <em>Explainer</em>', desc: 'Open the Polo Club interactive: every layer, attention head, and softmax of GPT-2 visualized live.', time: '~20 min', color: 'purple' }
@@ -1274,7 +1703,7 @@ const MODULES = [
     lede: 'A great prompt has parts. Role, task, context, format, examples. Drop them in, watch the quality climb.',
     meta: ['Phase 1', '~3 hrs'],
     tools: [
-      { id: 'storyline-prompting', type: 'Story', icon: 'sparkle', title: 'The Art of the <em>Prompt</em>', desc: 'Turing test to ELIZA to chain-of-thought to Constitutional AI. How talking to the model became a discipline.', time: '~10 min', color: 'gold' },
+      { id: 'storyline-prompting', type: 'Story', icon: 'book', title: 'The Art of the <em>Prompt</em>', desc: 'Turing test to ELIZA to chain-of-thought to Constitutional AI. How talking to the model became a discipline.', time: '~10 min', color: 'gold' },
       { id: 'prompt-anatomy', type: 'Builder', icon: 'puzzle', title: 'Prompt Anatomy <em>Builder</em>', desc: 'Drag role / task / context / format / examples blocks. Compare bare task vs structured prompt side by side.', time: '~15 min', color: 'blue' }
     ]},
   { n: 3, phase: 'found', short: 'Structured Output', name: 'Structured Output and Function Calling', lede: 'Turn free text into a typed object. JSON, schemas, and tool calls.', meta: ['Phase 1', '~3 hrs'],
@@ -1288,24 +1717,22 @@ const MODULES = [
       { id: 'chain-viz', type: 'Visualizer', icon: 'chain', title: 'Chain <em>Visualizer</em>', desc: 'Add PromptTemplate / ChatModel / OutputParser nodes. Run the chain. Watch input and output at every stage.', time: '~12 min', color: 'olive' }
     ]},
   { n: 5, phase: 'core', short: 'RAG', name: 'Retrieval-Augmented Generation',
-    lede: 'Chunk the document, embed the chunks, retrieve the relevant ones, ground the answer. The full RAG pipeline, made visible.',
-    meta: ['Phase 2', '~3 hrs'],
+    lede: 'A language model can only answer from what it has already seen. RAG gives it a library: documents are cut into chunks, chunks become vectors, your question retrieves the nearest ones, and the model writes from them, with sources. The four stops below make each step of that pipeline visible.',
+    meta: ['Phase 2', '~47 min of tools'],
     tools: [
-      { id: 'storyline-rag', type: 'Story', icon: 'sparkle', title: 'How Retrieval <em>Got Smart</em>', desc: 'From card catalogs to TF-IDF to BERT to RAG. A short history of finding the right document.', time: '~10 min', color: 'gold' },
-      { id: 'chunking', type: 'Sandbox', icon: 'grid', title: 'Text <em>Chunking</em>', desc: 'Basic vs recursive chunking. Adjustable chunk size and overlap. Visual boundaries on a sample document.', time: '~10 min', color: 'gold' },
-      { id: 'embeddings', type: 'Explorer', icon: 'sparkle', title: 'Embedding <em>Space Explorer</em>', desc: 'Real OpenAI embeddings reduced to 2D. Click any dot to highlight its 3 nearest neighbors.', time: '~12 min', color: 'purple' },
-      { id: 'retrieval-race', type: 'Game', icon: 'shield', title: 'RAG Retrieval <em>Race</em>', desc: 'Play the retriever. Pick which docs you think are relevant. Compete against the cosine-similarity oracle.', time: '~15 min', color: 'crimson' }
+      { id: 'storyline-rag', type: 'Story', icon: 'book', title: 'How Retrieval <em>Got Smart</em>', desc: 'Where retrieval came from: eight illustrated scenes, from the card catalog to the 2020 RAG paper. Know which problem each era solved before you build.', time: '~10 min', color: 'gold' },
+      { id: 'embeddings', type: 'Explorer', icon: 'target', title: 'Embedding <em>Space Explorer</em>', desc: 'The core trick: meaning becomes distance. Real OpenAI embeddings on a 2D map; click any sentence to meet its nearest neighbors, then drop your own query in.', time: '~12 min', color: 'purple' },
+      { id: 'chunking', type: 'Sandbox', icon: 'scissors', title: 'Text <em>Chunking</em>', desc: 'The first judgment call: cut a real document into chunks. Size and overlap decide what retrieval can ever find; drag the sliders and feel the tradeoff.', time: '~10 min', color: 'gold' },
+      { id: 'retrieval-race', type: 'Game', icon: 'flag', title: 'RAG Retrieval <em>Race</em>', desc: 'The test: be the retriever. Rank documents against the cosine similarity oracle and learn why lookalike distractors fool pure similarity.', time: '~15 min', color: 'crimson' }
     ]},
   { n: 6, phase: 'core', short: 'Agents', name: 'Agents and LangGraph',
     lede: 'A tool-using agent is just a loop. Thought, Action, Observation, Thought, until it has the answer.',
     meta: ['Phase 2', '~3 hrs'],
     tools: [
-      { id: 'storyline-agents', type: 'Story', icon: 'sparkle', title: 'How Agents Learned <em>to Use Tools</em>', desc: 'STRIPS to BDI to AlphaGo to ReAct to LangGraph. A short history of giving language models hands.', time: '~10 min', color: 'gold' },
+      { id: 'storyline-agents', type: 'Story', icon: 'book', title: 'How Agents Learned <em>to Use Tools</em>', desc: 'STRIPS to BDI to AlphaGo to ReAct to LangGraph. A short history of giving language models hands.', time: '~10 min', color: 'gold' },
       { id: 'react-player', type: 'Player', icon: 'robot', title: 'ReAct Trace <em>Player</em>', desc: 'A canned ReAct trace with playback controls. Step through Thought → Action → Observation.', time: '~10 min', color: 'cyan' }
     ]},
-  { n: 7, phase: 'core', short: 'Hackathon', name: 'Hackathon', special: 'hackathon',
-    lede: 'No lab. No notebook. Build something real with everything you have learned so far. 48 hours, your stack, your team, your demo.',
-    meta: ['Phase 2', 'Hackathon · 48 hrs'], tools: [] },
+  /* M07 Hackathon removed from this page (MD 2026-10-07): tools site shows tool modules only */
   { n: 8, phase: 'adv', short: 'Multi-Agent', name: 'Multi-Agent Systems with CrewAI', lede: 'Multiple agents, multiple roles, coordinated work. The CrewAI way.', meta: ['Phase 3', '~3 hrs'],
     tools: [
       { id: 'crew-router', type: 'Simulator', icon: 'robot', title: 'Crew <em>Router</em>', desc: 'Assign subtasks to Researcher, Analyst, and Writer agents, then run the crew and watch the hand-offs play out.', time: '~10 min', color: 'purple' }
@@ -1322,7 +1749,7 @@ const MODULES = [
     lede: 'Model Context Protocol. Guardrails. And the gamified Prompt Injection Lab where you attack one bot and defend another.',
     meta: ['Phase 3', '~3 hrs'],
     tools: [
-      { id: 'storyline-security', type: 'Story', icon: 'sparkle', title: 'How Prompt Injection <em>Became a Discipline</em>', desc: 'From XSS to indirect injection to red-team olympiads. A short history of attacking language models.', time: '~10 min', color: 'gold' },
+      { id: 'storyline-security', type: 'Story', icon: 'book', title: 'How Prompt Injection <em>Became a Discipline</em>', desc: 'From XSS to indirect injection to red-team olympiads. A short history of attacking language models.', time: '~10 min', color: 'gold' },
       { id: 'injection', type: 'Game', icon: 'shield', title: 'Prompt <em>Injection Lab</em>', desc: 'Ten attack cards across three tiers. Drag-to-fire at vulnerable and hardened bots. Live scoreboard. Hall of Fame.', time: '~20 min', color: 'crimson' }
     ]},
   { n: 12, phase: 'prod', short: 'n8n Automation', name: 'Workflow Automation with n8n', lede: 'Move your prototype out of the notebook. Trigger flows, connect tools, ship a workflow.', meta: ['Phase 4', '~3 hrs'],
@@ -1333,7 +1760,7 @@ const MODULES = [
     tools: [
       { id: 'tune-or-not', type: 'Game', icon: 'shield', title: 'Tune <em>or Not?</em>', desc: 'Decision game: for each scenario, choose prompt, RAG, fine-tune, or tools — and learn when fine-tuning is actually the answer.', time: '~10 min', color: 'gold' }
     ]},
-  { n: 14, phase: 'prod', short: 'Final Project', name: 'Final Project', special: 'final', lede: 'Build something useful. Demonstrate it live. The same 4D arc applied to a real problem you care about.', meta: ['Phase 4', 'Capstone'], tools: [] }
+  /* M14 Final Project removed from this page (MD 2026-10-07): tools site shows tool modules only */
 ];
 
 /* Tool splash intro text — shown before the interactive content loads */
@@ -1347,9 +1774,9 @@ const SPLASHES = {
   'tokenizer': 'Your API bill is measured in tokens, not words or characters. Before your text reaches the model it gets cut into subword pieces. This tool shows three different tokenization strategies side by side on the same sentence, with a cost calculator so you can see exactly what you are paying for.',
   'prompt-anatomy': 'A well-engineered prompt has structure: role, task, context, format, and examples — each component adds a different kind of guidance. Toggle blocks on and off, watch the quality score update, and compare a bare task against a fully-built prompt to see how much each piece contributes.',
   'chain-viz': 'A LangChain chain is just a pipeline: text goes in, each node transforms it, and output comes out. Pick one of four chain types — Q&amp;A, extraction, summarization, or classification — choose a scenario, and step through what happens at each stage.',
-  'chunking': 'RAG does not embed whole documents — it cuts them into chunks first, then embeds each one. The chunk size and overlap shape what the retriever can and cannot surface. Drag the sliders on a real document excerpt and watch the chunk boundaries shift across three different strategies.',
-  'embeddings': 'When you embed a sentence it becomes a point in a high-dimensional space. Sentences with similar meaning land close together. This explorer shows real embeddings projected to 2D so you can see the clusters — and lets you drop a semantic query onto the map to see which sentences surface nearest.',
-  'retrieval-race': 'A RAG retriever ranks documents by cosine similarity to the query. You play the retriever: read the query, select the documents you think it would return, and check your picks against the oracle. Four modes — solo, timed, 2-player duel, and sabotage, where distractors share keywords with the query but answer a different question.',
+  'chunking': 'RAG does not embed whole documents — it cuts them into chunks first, then embeds each one. This lab shows the splitter\'s actual output as you drag size and overlap, and runs a live retrieval preview on top: pick a question and watch which chunk wins, with a verdict on whether the answer survived the cut.',
+  'embeddings': 'Every dot on this map is a sentence turned into a real vector, computed live in your browser: tf-idf weights, true cosine similarity, honest PCA projection. Rank neighbors, compare any pair, then embed your own query into the same space and see exactly why the top match won. The labs swap in neural embeddings; the geometry is the same.',
+  'retrieval-race': 'A real race against a real retriever. Every score you see is true tf-idf cosine between the query and each document; the machine takes its top 3 and you try to beat it on actual relevance. Four modes — solo, timed, two player, and sabotage, where keyword lookalikes genuinely outscore the right answers and the machine falls for them.',
   'react-player': 'A ReAct agent does not answer in one shot — it reasons, calls a tool, reads the observation, reasons again, and repeats until it has a confident answer. Step through three real multi-step traces: a population lookup, a hospital ED wait-time analysis, and a Python performance diagnosis.',
   'injection': 'Prompt injection is the OWASP #1 LLM risk: an attacker hides malicious instructions inside untrusted input — a user message, a retrieved document, a tool response — hoping the model follows them instead of its system prompt. This lab gives you ten real attack patterns across three tiers of sophistication. Fire them at a vulnerable bot and a hardened one, and read the explanation of why each attack succeeds or fails.',
   'schema-builder': 'Structured output is what makes language models useful inside production pipelines. Instead of returning free text you define a JSON schema and the model fills it in. Click fields from an unstructured invoice to build a typed JSON object and its schema — the exact extraction pattern used in real pipelines.',
@@ -1358,6 +1785,122 @@ const SPLASHES = {
   'platform-picker': 'Hugging Face, OpenRouter, Amazon Bedrock, Together AI — four major GenAI platforms, each built for a different job. Knowing which to reach for is a practical skill. Match each platform to its best use case and you will know when to use each one.',
   'flow-builder': 'An n8n workflow is a directed graph: a trigger starts it, processors transform the data, and actions ship the result. Load a preset (Email Triage Bot, Feedback Digest, or On-Demand Report) or build your own from the node palette, then run the flow to watch a real JSON payload evolve node by node.',
   'tune-or-not': 'Fine-tuning is powerful — and usually the wrong first answer. For most problems, prompt engineering, retrieval, or function calling gets you there cheaper and faster. Work through four real scenarios, choose the approach that fits, and learn when fine-tuning is actually justified.'
+};
+
+/* ============================================================
+   TOOL HELP (MD 2026-10-07): every tool teaches BEFORE it launches.
+   what  = the method in plain language (the learning material)
+   svg   = a drawn diagram of the mechanism (key for HELP_SVG)
+   steps = how to use the tool, numbered
+   example = one concrete thing to try
+   M05 tools are done first; remaining modules get entries next pass.
+   ============================================================ */
+const HELP_SVG = {
+  'embeddings': `<svg viewBox="0 0 640 170" xmlns="http://www.w3.org/2000/svg" font-family="Outfit,sans-serif">
+    <g font-size="11" fill="#0f172a">
+      <rect x="8" y="18" width="128" height="24" rx="12" fill="#fff" stroke="#CFDAEA"/><text x="72" y="34" text-anchor="middle">"The cat sat"</text>
+      <rect x="8" y="58" width="128" height="24" rx="12" fill="#fff" stroke="#CFDAEA"/><text x="72" y="74" text-anchor="middle">"A kitten rests"</text>
+      <rect x="8" y="118" width="128" height="24" rx="12" fill="#fff" stroke="#CFDAEA"/><text x="72" y="134" text-anchor="middle">"Stocks fell 3%"</text>
+    </g>
+    <g stroke="#94a3b8" stroke-width="1.5" marker-end="none">
+      <line x1="140" y1="30" x2="186" y2="52"/><line x1="140" y1="70" x2="186" y2="72"/><line x1="140" y1="130" x2="186" y2="96"/>
+    </g>
+    <rect x="190" y="40" width="130" height="68" rx="10" fill="#fff" stroke="#CFDAEA"/>
+    <text x="255" y="62" text-anchor="middle" font-size="10.5" fill="#475569">embedding model</text>
+    <text x="255" y="82" text-anchor="middle" font-size="11.5" fill="#0055D4" font-weight="700">[0.12, -0.83, ...]</text>
+    <text x="255" y="98" text-anchor="middle" font-size="9.5" fill="#94a3b8">1,536 numbers per text</text>
+    <line x1="324" y1="74" x2="366" y2="74" stroke="#94a3b8" stroke-width="1.5"/>
+    <rect x="370" y="8" width="262" height="154" rx="10" fill="#fff" stroke="#CFDAEA"/>
+    <text x="501" y="26" text-anchor="middle" font-size="10.5" fill="#475569">the map: similar meaning lands nearby</text>
+    <g fill="#0055D4"><circle cx="446" cy="66" r="6"/><circle cx="468" cy="54" r="6"/><circle cx="460" cy="80" r="4" opacity=".55"/><circle cx="432" cy="52" r="4" opacity=".55"/></g>
+    <g fill="#7C3AED"><circle cx="576" cy="124" r="6"/><circle cx="554" cy="136" r="4" opacity=".55"/><circle cx="590" cy="138" r="4" opacity=".55"/></g>
+    <path d="M 455 40 l 3.5 7.5 8 .9 -6 5.5 1.7 7.9 -7.2-4.2 -7.2 4.2 1.7-7.9 -6-5.5 8-.9 z" fill="#F9AB00"/>
+    <text x="446" y="106" text-anchor="middle" font-size="9.5" fill="#0055D4">cat cluster</text>
+    <text x="572" y="156" text-anchor="middle" font-size="9.5" fill="#7C3AED">finance cluster</text>
+    <text x="492" y="38" font-size="9.5" fill="#B45309">your query</text>
+  </svg>`,
+  'chunking': `<svg viewBox="0 0 640 150" xmlns="http://www.w3.org/2000/svg" font-family="Outfit,sans-serif">
+    <text x="18" y="24" font-size="11" fill="#475569">one long document</text>
+    <rect x="18" y="32" width="604" height="26" rx="6" fill="#fff" stroke="#CFDAEA"/>
+    <g font-size="11" fill="#475569">
+      <text x="18" y="86">cut into chunks</text><text x="140" y="86" fill="#94a3b8">(size = how long, overlap = the shared seam)</text>
+    </g>
+    <g>
+      <rect x="18"  y="94" width="170" height="30" rx="6" fill="#EEF3FB" stroke="#0055D4"/>
+      <rect x="166" y="94" width="170" height="30" rx="6" fill="#EEF3FB" stroke="#0055D4"/>
+      <rect x="314" y="94" width="170" height="30" rx="6" fill="#EEF3FB" stroke="#0055D4"/>
+      <rect x="462" y="94" width="160" height="30" rx="6" fill="#EEF3FB" stroke="#0055D4"/>
+      <rect x="166" y="94" width="22" height="30" fill="#7C3AED" opacity=".28"/>
+      <rect x="314" y="94" width="22" height="30" fill="#7C3AED" opacity=".28"/>
+      <rect x="462" y="94" width="22" height="30" fill="#7C3AED" opacity=".28"/>
+    </g>
+    <g font-size="10" fill="#0055D4" font-weight="700">
+      <text x="103" y="113" text-anchor="middle">chunk 1</text><text x="251" y="113" text-anchor="middle">chunk 2</text>
+      <text x="399" y="113" text-anchor="middle">chunk 3</text><text x="542" y="113" text-anchor="middle">chunk 4</text>
+    </g>
+    <text x="177" y="142" font-size="9.5" fill="#7C3AED">overlap: context survives the cut</text>
+  </svg>`,
+  'retrieval-race': `<svg viewBox="0 0 640 150" xmlns="http://www.w3.org/2000/svg" font-family="Outfit,sans-serif">
+    <rect x="12" y="56" width="150" height="38" rx="19" fill="#0055D4"/>
+    <text x="87" y="79" text-anchor="middle" font-size="11.5" fill="#fff" font-weight="700">"refund policy?"</text>
+    <g stroke="#94a3b8" stroke-width="1.3"><line x1="166" y1="68" x2="222" y2="28"/><line x1="166" y1="73" x2="222" y2="66"/><line x1="166" y1="79" x2="222" y2="104"/><line x1="166" y1="84" x2="222" y2="138"/></g>
+    <g font-size="10.5">
+      <rect x="226" y="12" width="250" height="28" rx="6" fill="#fff" stroke="#16a34a" stroke-width="1.6"/><text x="238" y="30" fill="#0f172a">Refunds and returns FAQ</text>
+      <rect x="226" y="50" width="250" height="28" rx="6" fill="#fff" stroke="#16a34a" stroke-width="1.6"/><text x="238" y="68" fill="#0f172a">2024 policy update memo</text>
+      <rect x="226" y="88" width="250" height="28" rx="6" fill="#fff" stroke="#CFDAEA"/><text x="238" y="106" fill="#64748b">Shipping rates table</text>
+      <rect x="226" y="126" width="250" height="28" rx="6" fill="#fff" stroke="#CFDAEA"/><text x="238" y="144" fill="#64748b">Company history page</text>
+    </g>
+    <g font-size="10.5" font-weight="700">
+      <rect x="488" y="14" width="118" height="24" rx="12" fill="#EAF7EF"/><text x="547" y="30" text-anchor="middle" fill="#16a34a">cosine 0.91</text>
+      <rect x="488" y="52" width="118" height="24" rx="12" fill="#EAF7EF"/><text x="547" y="68" text-anchor="middle" fill="#16a34a">cosine 0.84</text>
+      <rect x="488" y="90" width="118" height="24" rx="12" fill="#F1F5F9"/><text x="547" y="106" text-anchor="middle" fill="#64748b">cosine 0.37</text>
+      <rect x="488" y="128" width="118" height="24" rx="12" fill="#F1F5F9"/><text x="547" y="144" text-anchor="middle" fill="#64748b">cosine 0.12</text>
+    </g>
+  </svg>`,
+  'storyline-rag': `<svg viewBox="0 0 640 120" xmlns="http://www.w3.org/2000/svg" font-family="Outfit,sans-serif">
+    <line x1="30" y1="60" x2="610" y2="60" stroke="#CFDAEA" stroke-width="2"/>
+    <g>
+      <circle cx="80" cy="60" r="9" fill="#0055D4"/><text x="80" y="34" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">card catalog</text><text x="80" y="92" text-anchor="middle" font-size="10" fill="#64748b">find by title</text>
+      <circle cx="250" cy="60" r="9" fill="#0055D4"/><text x="250" y="34" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">TF-IDF / BM25</text><text x="250" y="92" text-anchor="middle" font-size="10" fill="#64748b">find by keywords</text>
+      <circle cx="420" cy="60" r="9" fill="#0055D4"/><text x="420" y="34" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">dense retrieval</text><text x="420" y="92" text-anchor="middle" font-size="10" fill="#64748b">find by meaning</text>
+      <circle cx="575" cy="60" r="11" fill="#7C3AED"/><text x="575" y="34" text-anchor="middle" font-size="11" font-weight="700" fill="#7C3AED">RAG, 2020</text><text x="575" y="92" text-anchor="middle" font-size="10" fill="#64748b">retrieve, then write</text>
+    </g>
+  </svg>`
+};
+
+const TOOL_HELP = {
+  'embeddings': {
+    what: 'An embedding model turns a piece of text into a vector: a long list of numbers that encodes its meaning. Texts that mean similar things get similar numbers, so they land close together in space. That single trick powers semantic search and RAG: your question becomes a point on the same map, and the nearest chunks are the relevant ones.',
+    svg: 'embeddings',
+    steps: ['Click any dot: every other sentence gets ranked by true cosine similarity, with the shared terms that explain the score.',
+            'Click a second dot to compare the pair: one number, and exactly why.',
+            'Type a query to embed it into the same space; the star lands on the map and the top 5 are retrieved with scores.'],
+    example: 'Type "my package never arrived" and watch it land beside delivery complaints that share no words with it.'
+  },
+  'chunking': {
+    what: 'RAG never embeds a whole document: it cuts the text into chunks first, and each chunk becomes one searchable vector. Chunk size and overlap decide what retrieval can ever find. Too small, chunks lose their context; too large, retrieval goes blurry. The overlap is the seam that keeps a sentence from being cut off from the context that made it meaningful.',
+    svg: 'chunking',
+    steps: ['Pick a strategy and drag size and overlap: the splitter output updates live, with overlap shaded and mid sentence cuts flagged.',
+            'Pick a question in the retrieval preview and watch which chunk wins, with its cosine score.',
+            'Read the verdict: if the cut separated question words from the answer, change the settings until it flips green.'],
+    example: 'Set size 200 with 0 overlap and find a sentence sliced mid-thought, then add overlap 50 and watch it heal.'
+  },
+  'retrieval-race': {
+    what: 'A RAG retriever ranks every chunk by cosine similarity: how aligned the chunk\'s vector is with the query\'s vector. Highest scores get retrieved; everything else stays on the shelf. This game makes you the retriever, and the uncomfortable lesson is that pure similarity sometimes picks a lookalike distractor over the document that actually answers.',
+    svg: 'retrieval-race',
+    steps: ['Read the query, then pick the documents that actually answer it.',
+            'Check: real cosine scores are revealed, the machine\'s top 3 is marked, and you score against the ground truth.',
+            'Graduate to sabotage mode and beat the machine: keyword lookalikes outscore right answers there, and it falls for them.'],
+    example: 'In sabotage mode, "refund policy for software" loves a hardware refund page: same words, wrong answer.'
+  },
+  'storyline-rag': {
+    what: 'Finding the right document is an old problem with a long history: card catalogs found books by title, TF-IDF and BM25 found pages by keywords, dense retrieval found passages by meaning, and in 2020 the RAG paper wired that retrieval directly into a language model. Knowing the lineage tells you exactly which problem each era solved, and which one your RAG system inherits.',
+    svg: 'storyline-rag',
+    steps: ['Step through the eight illustrated scenes in order; each one is a single idea.',
+            'At each era, note what it could find and what it still missed.',
+            'Finish at 2020 and connect the last scene to the pipeline you build in Lab 2.'],
+    example: 'Scene 4 shows why "car" never matched "automobile" for TF-IDF, and why embeddings ended that problem.'
+  }
 };
 
 /* ============================================================
@@ -1734,7 +2277,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
 let view = { kind: 'home' };
 
+/* Pretty URL slugs (MD 2026-10-07): #tool=embedding-explorer etc.
+   Old internal ids keep working so existing links and slides never break. */
+const TOOL_SLUGS = {
+  'storyline': 'llm-history',
+  'storyline-prompting': 'prompting-history',
+  'storyline-rag': 'retrieval-history',
+  'storyline-agents': 'agents-history',
+  'storyline-security': 'security-history',
+  'temperature': 'temperature-lab',
+  'tokenizer': 'tokenizer-lab',
+  'chain-viz': 'chain-visualizer',
+  'chunking': 'chunking-lab',
+  'embeddings': 'embedding-explorer',
+  'injection': 'injection-lab'
+};
+const SLUG_TO_ID = Object.fromEntries(Object.entries(TOOL_SLUGS).map(([id, slug]) => [slug, id]));
+function toolSlug(id) { return TOOL_SLUGS[id] || id; }
+
 function findTool(id) {
+  id = SLUG_TO_ID[id] || id;
   for (const m of MODULES) for (const t of (m.tools||[])) if (t.id === id) return { tool: t, module: m };
   return null;
 }
@@ -1772,89 +2334,30 @@ function renderModule() {
       ? `<div class="special-banner final"><strong>Final project.</strong> Pick a problem that matters to you. Build it with the stack you choose.</div>`
       : '';
   const toolsBlock = m.tools.length === 0
-    ? (plan && (plan.labs.length || plan.content.length) ? '' : `<div class="placeholder"><svg><use href="#i-construction"/></svg><div><strong>Module ${m.n} interactives coming soon.</strong></div><div style="margin-top:6px;">${m.special ? 'No interactive tools for this module by design.' : 'Storylines, labs, and gamified exercises are queued in the build pipeline.'}</div></div>`)
-    : `<div class="mod-section"><div class="mod-section-h"><span class="hi"><svg><use href="#i-sparkle"/></svg>Interactive Tools & Storyline</span><span class="sub">${m.tools.length} item${m.tools.length>1?'s':''} · storyline first</span></div>
-        <div class="tools-grid">
-         ${m.tools.map(t => `
-           <a class="tool-card ${t.color || 'blue'}" data-toolid="${t.id}"${t.external ? ` data-external="${t.external}"` : ''}>
-             <img class="tool-thumb" src="images/apps/${t.id}.jpg" alt="${t.title.replace(/<[^>]*>/g,'')}" onerror="this.style.display='none'">
-             <div class="tool-icon">${ICON[t.icon]}<div class="tool-type-row"><div class="tool-type">${t.type}</div><div class="tool-time">${t.time}</div></div></div>
-             <div class="tool-title">${t.title}</div>
-             <div class="tool-desc">${t.desc}</div>
-             <div class="tool-open"><span>${t.external ? 'Open in new tab' : 'Open'}</span><svg><use href="#i-arrow-right"/></svg></div>
+    ? `<div class="placeholder"><svg><use href="#i-construction"/></svg><div><strong>Module ${m.n} interactives coming soon.</strong></div><div style="margin-top:6px;">Storylines and gamified exercises are queued in the build pipeline.</div></div>`
+    : (() => {
+        const totalMin = m.tools.reduce((s, t) => s + (parseInt((t.time || '').replace(/[^0-9]/g, '')) || 0), 0);
+        return `<div class="mod-section">
+        <div class="mod-section-h">
+          <span class="hi"><svg><use href="#i-sparkle"/></svg>The Learning Path</span>
+          <span class="sub">${m.tools.length} stops &middot; about ${totalMin} min &middot; best taken in order</span>
+        </div>
+        <div class="path-list">
+         ${m.tools.map((t, i) => `
+           <a class="path-row" data-toolid="${t.id}"${t.external ? ` data-external="${t.external}"` : ''}>
+             <div class="pr-num">${String(i + 1).padStart(2, '0')}</div>
+             <span class="pr-tile">${ICON[t.icon] || ICON.sparkle}</span>
+             <div class="pr-body">
+               <div class="pr-meta">${t.type} &middot; ${t.time}${i === 0 ? '<span class="pr-start">start here</span>' : ''}</div>
+               <div class="pr-title">${t.title}</div>
+               <div class="pr-desc">${t.desc}</div>
+             </div>
+             <div class="pr-open"><svg><use href="#i-arrow-right"/></svg></div>
            </a>
          `).join('')}
         </div></div>`;
-  const labsBlock = (plan && plan.labs.length) ? `
-    <div class="mod-section">
-      <div class="mod-section-h">
-        <span class="hi"><svg><use href="#i-grid"/></svg>Colab Labs</span>
-        <span class="sub">Source on GitHub · open instantly in Google Colab</span>
-      </div>
-      <div class="labs-grid">
-        ${plan.labs.map(L => `
-          <div class="lab-card${L.coming ? ' coming' : ''}">
-            <div class="lab-h">
-              <div class="lab-ico"><svg><use href="#i-grid"/></svg></div>
-              <div>
-                <div class="lab-title">${L.title}</div>
-                <div class="lab-desc">${L.desc}</div>
-                ${L.file ? `<div class="lab-file">${L.file}</div>` : ''}
-              </div>
-            </div>
-            <div class="lab-actions">
-              ${L.coming
-                ? `<span class="lab-btn disabled">Coming soon</span>`
-                : `<a href="${L.colab}" target="_blank" rel="noopener" class="lab-btn colab">
-                    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                      <path fill="#F9AB00" d="M4.54 9.46a6.23 6.23 0 0 0 0 8.83l1.92 1.92 2.6-2.6-1.92-1.92a2.55 2.55 0 0 1 0-3.61l1.92-1.92-2.6-2.6L4.54 9.46Z"/>
-                      <path fill="#F9AB00" d="M27.46 22.54a6.23 6.23 0 0 0 0-8.83l-1.92-1.92-2.6 2.6 1.92 1.92a2.55 2.55 0 0 1 0 3.61l-1.92 1.92 2.6 2.6 1.92-1.92Z"/>
-                      <path fill="#E8710A" d="M16 7.27a6.23 6.23 0 1 0 0 17.46 6.23 6.23 0 0 0 0-17.46Zm0 9.78a3.32 3.32 0 1 1 0-6.64 3.32 3.32 0 0 1 0 6.64Z"/>
-                    </svg>
-                    <span class="colab-text">Open in Colab</span>
-                   </a>
-                   <a href="${L.github}" target="_blank" rel="noopener" class="lab-btn github">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.2.8-.5v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.6.1-3.2 0 0 1-.3 3.2 1.2.9-.3 1.9-.4 2.9-.4 1 0 2 .1 2.9.4 2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.1 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.5A11.5 11.5 0 0 0 12 .5z"/></svg>
-                    GitHub
-                   </a>`
-              }
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    </div>` : '';
-  const planBlock = (plan && (plan.content.length || plan.quiz.length || plan.handson.length || plan.observational)) ? `
-    <div class="mod-section">
-      <div class="plan-card">
-        <details ${m.special ? 'open' : ''}>
-          <summary>
-            <div class="mod-section-h" style="margin:0; padding:0; border:none;">
-              <span class="hi"><svg><use href="#i-puzzle"/></svg>Module Plan</span>
-              <span class="sub">${m.special ? (m.special==='hackathon'?'Hackathon brief':'Capstone brief') : '10–15 minute lab, exercises, and assignment'}</span>
-            </div>
-            <span class="chev">▶</span>
-          </summary>
-          <div class="plan-content">
-            ${plan.content.length ? `<div class="plan-block">
-              <div class="plan-h">Lab Content</div>
-              <ul>${plan.content.map(c => `<li>${c}</li>`).join('')}</ul>
-            </div>` : ''}
-            ${(plan.quiz.length || plan.handson.length || plan.observational) ? `<div class="plan-block">
-              <div class="plan-h">Exercises</div>
-              ${plan.quiz.length ? `<div class="plan-sub">Quiz (MC)</div><ul>${plan.quiz.map(q => `<li>${q}</li>`).join('')}</ul>` : ''}
-              ${plan.handson.length ? `<div class="plan-sub">Hands-on</div><ul>${plan.handson.map(h => `<li>${h}</li>`).join('')}</ul>` : ''}
-              ${plan.observational ? `<div class="plan-sub">Observational</div><ul><li>${plan.observational}</li></ul>` : ''}
-            </div>` : ''}
-          </div>
-          ${plan.tags && plan.tags.length ? `<div class="plan-tags">${plan.tags.map(t => `<span class="plan-tag">${t}</span>`).join('')}</div>` : ''}
-        </details>
-      </div>
-    </div>` : '';
-  const assignmentBlock = (plan && plan.assignment) ? `
-    <div class="assignment-callout">
-      <span class="ac-tag">${m.special==='hackathon' ? 'Deliverable' : m.special==='final' ? 'Capstone' : 'Assignment M' + String(m.n).padStart(2,'0')}</span>
-      <div class="ac-body">${plan.assignment}</div>
-    </div>` : '';
+      })();
+  /* labs / module plan / assignment blocks removed (MD 2026-10-07): this page is tools only */
   const isInstructor = window.MODE === 'instructor';
   const facultyBlock = (isInstructor && plan && plan.scripts && plan.scripts.length) ? `
     <div class="faculty-section">
@@ -1884,7 +2387,7 @@ function renderModule() {
     <div class="module-content">
       <div class="mod-header">
         <div class="left">
-          <div class="kicker">Module ${m.n} of ${MODULES.length}${m.special ? ' &middot; ' + (m.special === 'hackathon' ? 'Hackathon' : 'Final Project') : ''}</div>
+          <div class="kicker">Module ${String(m.n).padStart(2,'0')}</div>
           <h2>${head}</h2>
           <p class="lede">${m.lede}</p>
         </div>
@@ -1894,12 +2397,9 @@ function renderModule() {
       </div>
       ${banner}
       ${toolsBlock}
-      ${labsBlock}
-      ${planBlock}
-      ${assignmentBlock}
       ${facultyBlock}
     </div>`;
-  document.querySelectorAll('.tool-card[data-toolid]').forEach(c => {
+  document.querySelectorAll('.tool-card[data-toolid], .path-row[data-toolid]').forEach(c => {
     c.addEventListener('click', () => {
       const ext = c.dataset.external;
       if (ext) { window.open(ext, '_blank', 'noopener'); return; }
@@ -1935,11 +2435,14 @@ function renderTool() {
     'tune-or-not': renderTuneOrNot
   };
   const fn = renderers[tool.id] || renderStub;
+  // clean shareable URL: always show the pretty slug in the address bar
+  history.replaceState(null, '', '#tool=' + toolSlug(tool.id));
   const splashTxt = SPLASHES[tool.id] || tool.desc;
   const colorVar = { blue:'var(--blue)', gold:'var(--gold)', crimson:'var(--crimson)', purple:'var(--purple)', cyan:'var(--cyan)', olive:'var(--olive)' }[tool.color] || 'var(--blue)';
   const softVar = { blue:'var(--blue-soft)', gold:'var(--gold-soft)', crimson:'var(--crimson-soft)', purple:'var(--purple-soft)', cyan:'var(--cyan-soft)', olive:'var(--olive-soft)' }[tool.color] || 'var(--blue-soft)';
   const btnLabel = { Story:'Begin story', Game:'Play', Builder:'Open builder', Explorer:'Explore', Sandbox:'Launch', Visualizer:'Launch', Simulator:'Launch', Player:'Launch' }[tool.type] || 'Launch';
-  $('tool-body').innerHTML = `
+  const help = TOOL_HELP[tool.id];
+  const splashHtml = `
     <div class="tool-splash">
       <div class="splash-icon-wrap" style="background:${softVar};color:${colorVar}">${ICON[tool.icon] || ICON.sparkle}</div>
       <div class="splash-meta">
@@ -1951,7 +2454,24 @@ function renderTool() {
         <svg><use href="#i-play"/></svg> ${btnLabel}
       </button>
     </div>`;
-  document.getElementById('splash-launch-btn').addEventListener('click', fn);
+  const helpHtml = help ? `
+    <div class="tool-help">
+      <h3>How it works</h3>
+      <p class="th-what">${help.what}</p>
+      ${help.svg && HELP_SVG[help.svg] ? `<div class="th-diagram">${HELP_SVG[help.svg]}</div>` : ''}
+      <div class="th-steps">${help.steps.map((st, i) => `<div class="th-step"><b>${i + 1}</b><span>${st}</span></div>`).join('')}</div>
+      <div class="th-example"><b>TRY THIS</b>${help.example}</div>
+    </div>` : '';
+  const tb = $('tool-body');
+  tb.classList.remove('launched');
+  tb.innerHTML = help ? `<div class="tool-pre">${splashHtml}${helpHtml}</div>` : splashHtml;
+  document.getElementById('splash-launch-btn').addEventListener('click', () => {
+    tb.classList.add('launched');   // standard frame: the launched tool lives in one screen
+    fn();
+  });
+  if (window.AUTO_FILL) {           // #tool=x&auto=1 opens the tool already launched
+    setTimeout(() => { tb.classList.add('launched'); fn(); }, 40);
+  }
 }
 
 function goModule(n) { view = { kind: 'module', n, toolId: null }; render(); }
@@ -1972,7 +2492,7 @@ function renderHome() {
   const feat = apps.find(a => a.id === 'temperature') || apps[0];
   const tile = a => `
     <a class="app-tile ${a.color || 'blue'}" data-appid="${a.id}"${a.external ? ` data-ext="${a.external}"` : ''}>
-      <div class="tile-icon"><img src="images/apps/${a.id}.jpg" alt="" loading="lazy" onerror="this.style.display='none'"></div>
+      <div class="tile-icon icon-tile">${ICON[a.icon] || ICON.sparkle}</div>
       <div class="tile-cat">${a.type} &middot; M${a.n}</div>
       <div class="tile-title">${a.title}</div>
       <div class="tile-desc">${a.desc}</div>
@@ -1986,7 +2506,7 @@ function renderHome() {
         <p class="home-sub">Every interactive in the course, in one place. Open any app and start playing &mdash; no module hunting, no setup.</p>
       </div>
       <div class="feat-card ${feat.color || 'blue'}" data-appid="${feat.id}">
-        <div class="feat-icon"><img src="images/apps/${feat.id}.jpg" alt="" onerror="this.style.display='none'"></div>
+        <div class="feat-icon icon-tile">${ICON[feat.icon] || ICON.sparkle}</div>
         <div class="feat-body">
           <div class="feat-cat">Featured &middot; ${feat.type} &middot; M${feat.n} ${feat.short}</div>
           <h2>${feat.title}</h2>
@@ -2856,265 +3376,409 @@ function renderChainViz() {
    TOOL: TEXT CHUNKING LAB (M05)
    ============================================================ */
 function renderChunking() {
-  $('tool-body').innerHTML = `
-    <div class="ck-controls">
-      <div class="ck-control"><label>Chunk Size <span class="v" id="ck-sz-v">200</span></label>
-        <input type="range" id="ck-sz" min="50" max="500" step="10" value="200"></div>
-      <div class="ck-control"><label>Overlap <span class="v" id="ck-ov-v">40</span></label>
-        <input type="range" id="ck-ov" min="0" max="120" step="5" value="40"></div>
-      <div class="ck-control"><label>Strategy</label>
-        <div class="ck-strategy">
-          <button data-strat="fixed" class="active">Fixed</button>
-          <button data-strat="recursive">Recursive</button>
-          <button data-strat="sentence">Sentence</button>
-        </div></div>
-    </div>
-    <div class="ck-stats">
-      <div class="ck-stat"><span class="n" id="ck-count">—</span>Chunks</div>
-      <div class="ck-stat"><span class="n" id="ck-avg">—</span>Avg chars</div>
-      <div class="ck-stat"><span class="n" id="ck-cov">—</span>Total chars</div>
-    </div>
-    <div class="ck-doc" id="ck-doc"></div>`;
-  const DOC = `Generative AI has changed how decision makers interact with simulation. Where analysts once translated a process map into code by hand, large language models can now turn a natural-language description of a clinic, a warehouse, or a supply chain into a runnable discrete-event model in seconds. The implications for OR/MS practice are large. Faster model creation lowers the barrier for domain experts who are not professional modelers, and it shifts the analyst's role from typing simulation code to designing experiments, validating assumptions, and interpreting results. Retrieval-augmented generation lets the model ground its answers in the organization's own documents — process standards, prior model libraries, safety protocols, operating procedures — so the simulation reflects how work actually happens rather than how a generic textbook says it should. Together these patterns produce a new analyst workflow: describe the system, retrieve the relevant context, generate a candidate model, run it, examine the results, and iterate. The role of the simulationist becomes less about coding and more about judgment, scenario design, and storytelling with data.`;
-  window.ck_strat = 'fixed';
-  function chunk(size, ov, strat) {
-    const chunks = [];
-    if (strat === 'sentence') {
+  /* v2 (MD 2026-10-07): real retrieval preview on top of the splitter, plus
+     health diagnostics. Same honest math as the Embedding Explorer. */
+  const DOC = `Generative AI has changed how decision makers interact with simulation. Where analysts once translated a process map into code by hand, large language models can now turn a natural-language description of a clinic, a warehouse, or a supply chain into a runnable discrete-event model in seconds. The implications for OR/MS practice are large. Faster model creation lowers the barrier for domain experts who are not professional modelers, and it shifts the analyst's role from typing simulation code to designing experiments, validating assumptions, and interpreting results. Retrieval-augmented generation lets the model ground its answers in the organization's own documents, including process standards, prior model libraries, safety protocols, and operating procedures, so the simulation reflects how work actually happens rather than how a generic textbook says it should. Together these patterns produce a new analyst workflow: describe the system, retrieve the relevant context, generate a candidate model, run it, examine the results, and iterate. The role of the simulationist becomes less about coding and more about judgment, scenario design, and storytelling with data. None of this removes the need for rigor. A generated model is a hypothesis, not an answer: it must be verified against the real process, calibrated on observed data, and stress tested at the edges where the stakes are highest. Teams that skip validation ship confident nonsense faster than ever before. The discipline that protects them is familiar: document assumptions, compare against a baseline, and quantify uncertainty before any recommendation reaches a decision maker. Tooling is moving in the same direction. Modern platforms embed copilots that draft model fragments, suggest experiment designs, and explain anomalous outputs in plain language. The practical skill for the next decade is a hybrid one: enough modeling judgment to catch a wrong assumption, and enough fluency with generative tools to move at the new speed of the field.`;
+  const PRESETS = [
+    { q: 'What does RAG ground answers in?', a: "the organization's own documents" },
+    { q: 'What can a language model turn a description into?', a: 'runnable discrete-event model' },
+    { q: 'What does the analyst role shift toward?', a: 'judgment, scenario design, and storytelling' },
+    { q: 'What happens to teams that skip validation?', a: 'ship confident nonsense' }
+  ];
+  const STOP = new Set(('a an the of in on for to and or with is are be not no it its this that how what '
+    + 'can now once by hand their from into less more about rather than says should').split(' '));
+  const stem = w => w.toLowerCase().replace(/[^a-z0-9-]/g, '')
+    .replace(/(ization|ations|ation|ingly|ings|ing|ers|ies|ied|es|ed|er|ly|s)$/, '');
+  const tok = s => s.split(/\s+/).map(stem).filter(w => w.length > 2 && !STOP.has(w));
+
+  const S = { strat: 'recursive', size: 300, ov: 50, query: PRESETS[0], sel: null };
+
+  function split() {
+    const size = S.size, ov = S.ov, chunks = [];
+    if (S.strat === 'sentence') {
       const sents = DOC.match(/[^.!?]+[.!?]+\s*/g) || [DOC];
       let cur = '', start = 0;
       sents.forEach(s => {
-        if ((cur + s).length > size && cur.length) { chunks.push({ s: start, e: start + cur.length, t: cur }); start += Math.max(0, cur.length - ov); cur = cur.slice(cur.length - ov) + s; }
-        else { cur += s; }
+        if ((cur + s).length > size && cur.length) {
+          chunks.push({ s: start, t: cur });
+          start += Math.max(0, cur.length - ov);
+          cur = cur.slice(Math.max(0, cur.length - ov)) + s;
+        } else cur += s;
       });
-      if (cur) chunks.push({ s: start, e: start + cur.length, t: cur });
-      return chunks;
-    }
-    const stride = Math.max(1, size - ov);
-    let i = 0;
-    while (i < DOC.length) {
-      const e = Math.min(DOC.length, i + size);
-      let cut = e;
-      if (strat === 'recursive' && e < DOC.length) {
-        const back = DOC.slice(i, e);
-        const m = Math.max(back.lastIndexOf('. '), back.lastIndexOf(', '), back.lastIndexOf(' '));
-        if (m > size * 0.6) cut = i + m + 1;
+      if (cur) chunks.push({ s: start, t: cur });
+    } else {
+      let i = 0;
+      while (i < DOC.length) {
+        const e = Math.min(DOC.length, i + size);
+        let cut = e;
+        if (S.strat === 'recursive' && e < DOC.length) {
+          const back = DOC.slice(i, e);
+          const m = Math.max(back.lastIndexOf('. '), back.lastIndexOf(', '), back.lastIndexOf(' '));
+          if (m > size * 0.6) cut = i + m + 1;
+        }
+        chunks.push({ s: i, t: DOC.slice(i, cut) });
+        if (cut >= DOC.length) break;
+        i = Math.max(i + 1, cut - ov);
       }
-      chunks.push({ s: i, e: cut, t: DOC.slice(i, cut) });
-      if (cut >= DOC.length) break;
-      i = Math.max(i + 1, cut - ov);
     }
+    chunks.forEach((c, i) => {
+      c.i = i;
+      c.toks = tok(c.t);
+      c.broken = !/[.!?]\s*$/.test(c.t.trim());
+      c.ovLen = i === 0 ? 0 : Math.max(0, (chunks[i-1].s + chunks[i-1].t.length) - c.s);
+    });
     return chunks;
   }
-  function repaint() {
-    const sz = parseInt($('ck-sz').value), ov = parseInt($('ck-ov').value);
-    $('ck-sz-v').textContent = sz; $('ck-ov-v').textContent = ov;
-    const chunks = chunk(sz, ov, window.ck_strat);
-    const html = chunks.map((c, i) => `<span class="ck-chunk c${i % 6}">${c.t.replace(/</g,'&lt;')}</span>`).join(' ');
-    $('ck-doc').innerHTML = html;
-    $('ck-count').textContent = chunks.length;
-    $('ck-avg').textContent = Math.round(chunks.reduce((a, c) => a + c.t.length, 0) / chunks.length);
-    $('ck-cov').textContent = chunks.reduce((a, c) => a + c.t.length, 0);
+  function vectorize(chunks, qtoks) {
+    const df = {};
+    chunks.forEach(c => new Set(c.toks).forEach(w => df[w] = (df[w] || 0) + 1));
+    const vocab = Object.keys(df), vIdx = Object.fromEntries(vocab.map((w, i) => [w, i]));
+    const idf = vocab.map(w => Math.log(chunks.length / df[w]) + 1);
+    const vec = toks => {
+      const v = new Float64Array(vocab.length);
+      toks.forEach(w => { const i = vIdx[w]; if (i !== undefined) v[i] += 1; });
+      for (let i = 0; i < v.length; i++) v[i] *= idf[i];
+      const n = Math.hypot(...v) || 1;
+      for (let i = 0; i < v.length; i++) v[i] /= n;
+      return v;
+    };
+    const cvecs = chunks.map(c => vec(c.toks));
+    const qv = vec(qtoks);
+    const cosine = (a, b) => { let s = 0; for (let i = 0; i < a.length; i++) s += a[i] * b[i]; return s; };
+    return chunks.map((c, i) => ({ c, sim: cosine(qv, cvecs[i]) })).sort((x, y) => y.sim - x.sim);
   }
-  $('ck-sz').addEventListener('input', repaint);
-  $('ck-ov').addEventListener('input', repaint);
-  document.querySelectorAll('.ck-strategy button').forEach(b => {
-    b.addEventListener('click', () => {
-      document.querySelectorAll('.ck-strategy button').forEach(x => x.classList.remove('active'));
-      b.classList.add('active'); window.ck_strat = b.dataset.strat; repaint();
-    });
-  });
-  repaint();
+
+  $('tool-body').innerHTML = `
+    <div class="ins-bar">
+      <div class="ins-seg" id="ckx-seg">
+        <button class="seg-btn" data-s="fixed">Fixed size</button>
+        <button class="seg-btn active" data-s="recursive">Recursive</button>
+        <button class="seg-btn" data-s="sentence">Sentence aware</button>
+      </div>
+      <div class="ckx-slider"><label>SIZE <b id="ckx-szv">300</b></label>
+        <input type="range" id="ckx-sz" min="80" max="600" step="10" value="300"></div>
+      <div class="ckx-slider"><label>OVERLAP <b id="ckx-ovv">50</b></label>
+        <input type="range" id="ckx-ov" min="0" max="150" step="5" value="50"></div>
+    </div>
+    <div class="emx-canvas">
+      <div class="emx-map-card">
+        <div class="emx-map-head"><span>WHAT THE SPLITTER OUTPUTS</span><span id="ckx-count"></span></div>
+        <div class="ckx-list" id="ckx-list"></div>
+      </div>
+      <div class="emx-side" id="ckx-side"></div>
+    </div>
+    <div class="ins-status" id="ckx-status"></div>`;
+
+  function render() {
+    const chunks = split();
+    const ranked = vectorize(chunks, tok(S.query.q));
+    const hit = ranked[0];
+    const answerIn = S.query.a ? hit.c.t.toLowerCase().includes(S.query.a.toLowerCase()) : null;
+    const broken = chunks.filter(c => c.broken).length;
+    const tokens = Math.round(chunks.reduce((a, c) => a + c.t.length, 0) / 4);
+    const simOf = i => { const r = ranked.find(r => r.c.i === i); return r ? r.sim : 0; };
+
+    $('ckx-count').textContent = `${chunks.length} CHUNKS`;
+    $('ckx-list').innerHTML = chunks.map(c => {
+      const isHit = c.i === hit.c.i, isSel = c.i === S.sel;
+      return `<div class="ckx-chunk ${isHit ? 'hit' : ''} ${isSel ? 'sel' : ''}" data-i="${c.i}">
+        <div class="ckx-chead">
+          <span class="n">${String(c.i + 1).padStart(2, '0')}</span>
+          <span class="len">${c.t.length} chars</span>
+          ${c.ovLen ? `<span class="ovl">${c.ovLen} overlap</span>` : ''}
+          ${c.broken ? `<span class="brk">cut mid sentence</span>` : ''}
+          ${isHit ? `<span class="ret">RETRIEVED &middot; ${hit.sim.toFixed(3)}</span>` : ''}
+        </div>
+        <div class="ckx-ctext">${(() => {
+          let body = c.t.slice(c.ovLen).replace(/</g,'&lt;');
+          if (isHit && S.query.a) {
+            const rx = new RegExp(S.query.a.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+            body = body.replace(rx, mt => `<mark>${mt}</mark>`);
+          }
+          return (c.ovLen ? `<span class="ovshade">${c.t.slice(0, c.ovLen).replace(/</g,'&lt;')}</span>` : '') + body;
+        })()}</div>
+      </div>`;
+    }).join('');
+    $('ckx-list').querySelectorAll('.ckx-chunk').forEach(el =>
+      el.addEventListener('click', () => { S.sel = +el.dataset.i === S.sel ? null : +el.dataset.i; render(); }));
+
+    const selC = S.sel != null ? chunks.find(c => c.i === S.sel) : null;
+    $('ckx-side').innerHTML = `
+      <div class="emx-card">
+        <div class="h">RETRIEVAL PREVIEW</div>
+        <p class="chips">${PRESETS.map((p, i) => `<button class="chip qchip ${p.q === S.query.q ? 'on' : ''}" data-i="${i}">${p.q}</button>`).join('')}</p>
+        <div class="ckx-ownq"><input id="ckx-q" type="text" placeholder="or ask your own question" value="${S.query.custom ? S.query.q.replace(/"/g,'&quot;') : ''}"><button class="ins-btn" id="ckx-qgo">Ask</button></div>
+        <div class="h">TOP 3 CHUNKS FOR THIS QUESTION <span class="r">cosine</span></div>
+        ${ranked.slice(0, 3).map((r, k) => `
+          <div class="emx-row ${k === 0 ? 'top' : ''}">
+            <span class="t">Chunk ${String(r.c.i + 1).padStart(2, '0')}: ${r.c.t.slice(0, 64).replace(/</g,'&lt;')}&hellip;</span>
+            <span class="emx-bar"><span style="width:${Math.max(2, Math.round(r.sim * 100))}%"></span></span>
+            <span class="v">${r.sim.toFixed(3)}</span>
+          </div>`).join('')}
+        ${answerIn == null ? '' : answerIn
+          ? `<p class="verdict ok">The answer phrase sits inside the retrieved chunk. This chunking works for this question.</p>`
+          : `<p class="verdict bad">The retrieved chunk does NOT contain the answer phrase: the cut separated the question's words from the answer. Change size or overlap and watch this verdict flip.</p>`}
+        ${selC ? `
+        <div class="h">CHUNK ${String(selC.i + 1).padStart(2, '0')} UNDER THE GLASS</div>
+        <p class="note">${selC.t.length} chars &middot; ~${Math.round(selC.t.length / 4)} tokens &middot; similarity to question ${simOf(selC.i).toFixed(3)}${selC.broken ? ' &middot; ends mid sentence' : ''}</p>
+        <p class="chips">${[...new Set(selC.toks)].slice(0, 10).map(w => `<span class="chip">${w}</span>`).join('')}</p>` : ''}
+        <div class="h">HEALTH</div>
+        <p class="note">${broken ? `<b class="warn">${broken} chunk${broken > 1 ? 's' : ''} cut mid sentence.</b> Sentence aware or recursive splitting heals most of these.` : 'No chunk ends mid sentence at these settings.'}
+        <br>~${tokens.toLocaleString()} tokens to embed &middot; happens on every re-index, not once.</p>
+      </div>`;
+    $('ckx-side').querySelectorAll('.qchip').forEach(el =>
+      el.addEventListener('click', () => { S.query = PRESETS[+el.dataset.i]; render(); }));
+    const qgo = () => { const t = $('ckx-q').value.trim(); if (t) { S.query = { q: t, a: null, custom: true }; render(); } };
+    $('ckx-qgo').addEventListener('click', qgo);
+    $('ckx-q').addEventListener('keydown', e => { if (e.key === 'Enter') qgo(); });
+
+    $('ckx-status').textContent = `${S.strat} splitter  |  size ${S.size}  |  overlap ${S.ov}  |  `
+      + `${chunks.length} chunks, avg ${Math.round(chunks.reduce((a, c) => a + c.t.length, 0) / chunks.length)} chars  |  `
+      + `${broken} broken cut${broken === 1 ? '' : 's'}  |  tf-idf retrieval preview live`;
+  }
+  document.querySelectorAll('#ckx-seg .seg-btn').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('#ckx-seg .seg-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active'); S.strat = b.dataset.s; S.sel = null; render();
+  }));
+  $('ckx-sz').addEventListener('input', () => { S.size = +$('ckx-sz').value; $('ckx-szv').textContent = S.size; render(); });
+  $('ckx-ov').addEventListener('input', () => { S.ov = +$('ckx-ov').value; $('ckx-ovv').textContent = S.ov; render(); });
+  render();
 }
 
 /* ============================================================
    TOOL: RAG RETRIEVAL RACE (M05) — NEW gamified tool
    ============================================================ */
 function renderRetrievalRace() {
-  $('tool-body').innerHTML = `
-    <div class="rr-modebar">
-      <button class="rr-mode active" data-mode="solo">Solo</button>
-      <button class="rr-mode" data-mode="timed">Solo · Timed</button>
-      <button class="rr-mode" data-mode="duel">2-Player Duel</button>
-      <button class="rr-mode" data-mode="sabotage">Sabotage Round</button>
-      <div class="rr-mode-desc" id="rr-mode-desc">Take your time. Pick the docs you think a cosine retriever would return.</div>
-    </div>
-    <div class="rr-q"><div class="lbl" id="rr-qlbl">User Query</div><div class="txt" id="rr-query"></div></div>
-    <div class="rr-grid">
-      <div>
-        <div style="font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin-bottom:8px;font-weight:600;display:flex;justify-content:space-between;align-items:center;">
-          <span>Document Corpus <span style="text-transform:none;letter-spacing:0;color:var(--muted);font-weight:400;font-size:11px;">— click the docs the retriever should return</span></span>
-          <span class="rr-turn" id="rr-turn"></span>
-        </div>
-        <div class="rr-docs" id="rr-docs"></div>
-      </div>
-      <div class="rr-side">
-        <h4>Scoreboard</h4>
-        <div class="rr-score" id="rr-scorebox"></div>
-        <div class="rr-timer" id="rr-timer"></div>
-        <div class="rr-actions">
-          <button class="primary" id="rr-check">Check Picks</button>
-          <button class="reset" onclick="rr_next()">Next Round</button>
-        </div>
-        <div class="rr-feedback" id="rr-fb"></div>
-      </div>
-    </div>`;
+  /* v2 (MD 2026-10-07): a real race against a real retriever. Scores are true
+     tf-idf cosine, the machine's top 3 is marked, and you win by beating it. */
+  const K = 3;  // the retriever returns top K
   const NORMAL = [
     { q: 'How do I reset a customer password in the admin portal?',
       docs: [
-        { t: 'Admin → Users → click row → "Reset password" sends a one-time link to the user\'s email.', r: true },
-        { t: 'Password complexity requirements: at least 12 characters, one symbol, one digit, no reuse for 24 cycles.', r: true },
+        { t: 'Admin, then Users, then click the row and choose Reset password: a one time link goes to the user.', r: true },
+        { t: 'Password complexity rules: at least 12 characters, one symbol, one digit, no reuse for 24 cycles.', r: true },
         { t: 'Quarterly revenue narrative for the EMEA region featured strong growth in financial services.', r: false },
-        { t: 'If the user\'s email bounces, admins can issue a temporary password via the same row action.', r: true },
-        { t: 'Database migration guide for the legacy billing system — last updated three years ago.', r: false },
-        { t: 'Holiday schedule for the customer support team for the upcoming fiscal year.', r: false }
-      ] },
-    { q: 'What is the recommended retraining cadence for a churn prediction model in production?',
+        { t: 'If the user email bounces, an admin can issue a temporary password from the same row action.', r: true },
+        { t: 'Database migration guide for the legacy billing system, last updated three years ago.', r: false },
+        { t: 'Holiday schedule for the customer support team for the upcoming fiscal year.', r: false } ] },
+    { q: 'What is the recommended retraining cadence for a churn model in production?',
       docs: [
-        { t: 'Monitor PSI weekly on the top 15 features; retrain when drift exceeds 0.2 on any of them.', r: true },
-        { t: 'Default retraining cadence for tabular churn models is monthly, with rolling 12-month training windows.', r: true },
-        { t: 'Cookie policy for the marketing website — updated for the latest privacy regulation cycle.', r: false },
-        { t: 'Champion-challenger framework: shadow new candidate weekly; promote only when uplift is significant at p < .05.', r: true },
+        { t: 'Monitor drift weekly on the top features; retrain the churn model when drift passes the threshold.', r: true },
+        { t: 'Default retraining cadence for tabular churn models is monthly, on rolling twelve month windows.', r: true },
+        { t: 'Cookie policy for the marketing website, updated for the latest privacy regulation cycle.', r: false },
+        { t: 'Shadow a challenger model weekly and promote it only when the uplift is statistically significant.', r: true },
         { t: 'Brand color palette and typography guidelines for product marketing materials.', r: false },
-        { t: 'Internal travel reimbursement form, version 4.2, with updated meal per-diems.', r: false }
-      ] }
+        { t: 'Internal travel reimbursement form, version 4.2, with updated meal per diems.', r: false } ] },
+    { q: 'What is the response time promise for priority support tickets?',
+      docs: [
+        { t: 'Priority tickets get a first response within one hour, around the clock, every day.', r: true },
+        { t: 'The support satisfaction survey is sent two days after each ticket closes.', r: false },
+        { t: 'Enterprise plans include a four hour resolution target for priority incidents.', r: true },
+        { t: 'Office visitors must sign in at the front desk and wear a badge at all times.', r: false },
+        { t: 'Standard tickets are answered within one business day in order of arrival.', r: true },
+        { t: 'The brand voice guide asks support writers to avoid jargon in replies.', r: false } ] }
   ];
   const SABOTAGE = [
-    { q: 'How does the simulation engine handle entity routing through the queue?',
+    { q: 'How does the simulation engine route entities through the queue?',
       docs: [
-        { t: 'Entity routing is driven by the connector\'s priority and the destination server\'s capacity, not by FIFO order alone.', r: true },
-        { t: 'The simulation engine\'s queue uses a priority heap. Entities with lower priority numbers leave first.', r: true },
-        { t: 'A new "Simulation Routing" benchmarking dataset is now available for download in the engineering portal.', r: false },
-        { t: 'Simulation entities can be routed through external HTTP endpoints — see the integration appendix.', r: false },
-        { t: 'Queue overflow policy: when entity count > capacity, simulation drops oldest unless preempt flag is set.', r: true },
-        { t: 'Routing protocol simulation engines used in network labs are unrelated to discrete-event simulation.', r: false }
-      ] },
-    { q: 'What metric tracks how an embedding model handles paraphrased customer feedback?',
+        { t: 'Connector priority and destination capacity drive how work items move between stations.', r: true },
+        { t: 'The engine queue is a priority heap: entities with lower priority numbers leave first.', r: true },
+        { t: 'A new simulation routing benchmark dataset is available in the engineering portal for download.', r: false },
+        { t: 'Simulation entities can call external endpoints; see the integration appendix for details.', r: false },
+        { t: 'Queue overflow policy: past capacity, the oldest entity is dropped unless preempt is set.', r: true },
+        { t: 'Routing protocol simulation engines in network labs are unrelated to discrete event queues.', r: false } ] },
+    { q: 'Which metric tracks how an embedding model handles paraphrased feedback?',
       docs: [
-        { t: 'Sentence-pair cosine similarity on a held-out paraphrase set is the canonical eval metric for sentence embedders.', r: true },
-        { t: 'Customer feedback dashboard tracks satisfaction trend, NPS, and category-level sentiment over time.', r: false },
-        { t: 'STS-Benchmark (Semantic Textual Similarity) measures embedding quality on paraphrased and adversarial pairs.', r: true },
-        { t: 'Embedding model latency benchmark: 256-token input, batch size 64, single A100. Reported in milliseconds.', r: false },
-        { t: 'For paraphrase-robust retrieval, combine dense embeddings with sparse BM25 in a hybrid retriever.', r: true },
-        { t: 'Customer-feedback paraphrase generator was released as a separate tool for QA teams. No embedding model required.', r: false }
-      ] }
+        { t: 'Sentence pair cosine similarity on a held out paraphrase set is the canonical evaluation.', r: true },
+        { t: 'The customer feedback dashboard tracks satisfaction trend and category level sentiment.', r: false },
+        { t: 'The STS benchmark measures embedding quality on paraphrased and adversarial sentence pairs.', r: true },
+        { t: 'Embedding model latency benchmark: 256 token input, batch 64, reported in milliseconds.', r: false },
+        { t: 'For paraphrase robust retrieval, combine dense vectors with sparse keyword scores.', r: true },
+        { t: 'A customer feedback paraphrase generator shipped as a separate tool; no embedding model involved.', r: false } ] },
+    { q: 'How much memory does the vector index need in production?',
+      docs: [
+        { t: 'Plan roughly four kilobytes per stored vector at 1,536 dimensions in float32, plus graph overhead.', r: true },
+        { t: 'The vector index of the quarterly report lists every figure and the page it appears on.', r: false },
+        { t: 'Product quantization cuts index memory by an order of magnitude at a small recall cost.', r: true },
+        { t: 'In production, memory leaks in the logging agent were fixed in the latest platform release.', r: false },
+        { t: 'Keeping the index in RAM is what makes approximate nearest neighbor search fast.', r: true },
+        { t: 'A memory palace is a mnemonic indexing technique for remembering long vector sequences.', r: false } ] }
   ];
-  window.rr = { mode: 'solo', round: 0, score: 0, p1Score: 0, p2Score: 0, picks: new Set(), p1Picks: new Set(), p2Picks: new Set(), turn: 1, revealed: false, deadline: 0, timerId: null, deck: NORMAL };
+  const STOP = new Set(('a an the of in on for to and or with is are be not no it its this that how what '
+    + 'which do does can then choose see new past').split(' '));
+  const stem = w => w.toLowerCase().replace(/[^a-z0-9]/g, '')
+    .replace(/(ization|ations|ation|ingly|ings|ing|ers|ies|ied|es|ed|er|ly|s)$/, '');
+  const tok = s => s.split(/\s+/).map(stem).filter(w => w.length > 2 && !STOP.has(w));
+  function scoreRound(r) {
+    const docsTok = r.docs.map(d => tok(d.t)), qtok = tok(r.q), df = {};
+    docsTok.forEach(ts => new Set(ts).forEach(w => df[w] = (df[w] || 0) + 1));
+    const vocab = Object.keys(df), vIdx = Object.fromEntries(vocab.map((w, i) => [w, i]));
+    const idf = vocab.map(w => Math.log(r.docs.length / df[w]) + 1);
+    const vec = ts => { const v = new Float64Array(vocab.length);
+      ts.forEach(w => { const i = vIdx[w]; if (i !== undefined) v[i] += 1; });
+      for (let i = 0; i < v.length; i++) v[i] *= idf[i];
+      const n = Math.hypot(...v) || 1; for (let i = 0; i < v.length; i++) v[i] /= n; return v; };
+    const qv = vec(qtok), dv = docsTok.map(vec);
+    const cos = (a, b) => { let s = 0; for (let i = 0; i < a.length; i++) s += a[i] * b[i]; return s; };
+    const sims = dv.map(v => cos(qv, v));
+    const topK = sims.map((s, i) => ({ s, i })).sort((a, b) => b.s - a.s).slice(0, K).map(x => x.i);
+    return { sims, topK: new Set(topK) };
+  }
+
+  const RR = { mode: 'solo', round: 0, score: 0, p1: 0, p2: 0, picks: new Set(),
+    p1Picks: new Set(), p2Picks: new Set(), turn: 1, revealed: false,
+    deadline: 0, timerId: null, deck: NORMAL, eng: null };
   const DESCS = {
-    solo: 'Take your time. Pick the docs you think a cosine retriever would return.',
-    timed: '30 seconds per round. Fewer seconds = bigger bonus. Misclicks still cost you.',
-    duel: 'Two players alternate picks. Each player\'s hits count to their own column. First to 3 hits per round wins.',
-    sabotage: 'The distractors share keywords with the query but have wrong meaning. Read carefully — this is where most RAG systems fail.'
+    solo: 'Pick the documents that actually answer the query. The retriever picks its top 3 by cosine. Beat it.',
+    timed: '30 seconds per round; remaining seconds become bonus points. Misclicks still cost you.',
+    duel: 'Two players alternate picks; each player scores their own hits. Steal the good documents first.',
+    sabotage: 'Distractors share keywords with the query but answer something else. Cosine falls for them. Will you?'
   };
   function setMode(m) {
-    if (window.rr.timerId) { clearInterval(window.rr.timerId); window.rr.timerId = null; }
-    window.rr.mode = m;
-    window.rr.deck = m === 'sabotage' ? SABOTAGE : NORMAL;
-    window.rr.round = 0; window.rr.score = 0; window.rr.p1Score = 0; window.rr.p2Score = 0;
-    window.rr.picks.clear(); window.rr.p1Picks.clear(); window.rr.p2Picks.clear();
-    window.rr.turn = 1; window.rr.revealed = false;
-    $('rr-mode-desc').textContent = DESCS[m];
-    $('rr-fb').classList.remove('show');
-    document.querySelectorAll('.rr-mode').forEach(b => b.classList.toggle('active', b.dataset.mode === m));
-    paintRR(); startTimerIfNeeded();
+    if (RR.timerId) { clearInterval(RR.timerId); RR.timerId = null; }
+    Object.assign(RR, { mode: m, deck: m === 'sabotage' ? SABOTAGE : NORMAL, round: 0,
+      score: 0, p1: 0, p2: 0, turn: 1, revealed: false });
+    RR.picks.clear(); RR.p1Picks.clear(); RR.p2Picks.clear();
+    document.querySelectorAll('#rrx-seg .seg-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === m));
+    $('rrx-desc').textContent = DESCS[m];
+    paint(); timer();
   }
-  function startTimerIfNeeded() {
-    $('rr-timer').innerHTML = '';
-    if (window.rr.mode !== 'timed') return;
-    window.rr.deadline = Date.now() + 30000;
+  function timer() {
+    $('rrx-timer').innerHTML = '';
+    if (RR.mode !== 'timed') return;
+    RR.deadline = Date.now() + 30000;
     const tick = () => {
-      const remaining = Math.max(0, Math.ceil((window.rr.deadline - Date.now())/1000));
-      $('rr-timer').innerHTML = `<div class="rr-clock${remaining<=5?' warn':''}"><span class="lbl">Time Left</span><span class="n">${remaining}s</span></div>`;
-      if (remaining <= 0 && !window.rr.revealed) { clearInterval(window.rr.timerId); window.rr.timerId = null; window.rr.deadline = 0; doCheck(); }
+      const rem = Math.max(0, Math.ceil((RR.deadline - Date.now()) / 1000));
+      $('rrx-timer').innerHTML = `<div class="rrx-clock${rem <= 5 ? ' warn' : ''}">${rem}s</div>`;
+      if (rem <= 0 && !RR.revealed) { clearInterval(RR.timerId); RR.timerId = null; check(); }
     };
-    tick();
-    window.rr.timerId = setInterval(tick, 250);
+    tick(); RR.timerId = setInterval(tick, 250);
   }
-  window.rr_next = () => {
-    window.rr.round = (window.rr.round + 1) % window.rr.deck.length;
-    window.rr.picks.clear(); window.rr.p1Picks.clear(); window.rr.p2Picks.clear();
-    window.rr.turn = 1; window.rr.revealed = false;
-    $('rr-fb').classList.remove('show');
-    if (window.rr.timerId) { clearInterval(window.rr.timerId); window.rr.timerId = null; }
-    paintRR(); startTimerIfNeeded();
-  };
-  function paintRR() {
-    const r = window.rr.deck[window.rr.round];
-    $('rr-query').textContent = r.q;
-    if (window.rr.mode === 'duel') {
-      $('rr-scorebox').innerHTML = `
-        <div class="cell ${window.rr.turn===1?'turn':''}"><div class="n" id="rr-p1">${window.rr.p1Score}</div><div class="l">Player 1</div></div>
-        <div class="cell ${window.rr.turn===2?'turn':''}"><div class="n" id="rr-p2">${window.rr.p2Score}</div><div class="l">Player 2</div></div>`;
-      $('rr-turn').innerHTML = `<span class="turn-pill p${window.rr.turn}">Player ${window.rr.turn}’s turn</span>`;
-    } else {
-      $('rr-scorebox').innerHTML = `
-        <div class="cell"><div class="n">${window.rr.round + 1}</div><div class="l">Round</div></div>
-        <div class="cell"><div class="n">${window.rr.score}</div><div class="l">Score</div></div>`;
-      $('rr-turn').innerHTML = '';
-    }
-    const ix = r.docs.map((d, i) => ({...d, i})).sort((a, b) => (window.rr.revealed ? (b.r - a.r) : 0));
-    $('rr-docs').innerHTML = ix.map(d => {
-      const isP1 = window.rr.mode==='duel' && window.rr.p1Picks.has(d.i);
-      const isP2 = window.rr.mode==='duel' && window.rr.p2Picks.has(d.i);
-      const picked = window.rr.mode==='duel' ? (isP1 || isP2) : window.rr.picks.has(d.i);
-      const klass = isP1 ? ' picked-p1' : isP2 ? ' picked-p2' : picked ? ' picked' : '';
-      const reveal = window.rr.revealed ? (d.r ? ' reveal relevant' : ' reveal distractor') : '';
-      const sim = window.rr.revealed ? (d.r ? (0.78 - 0.04 * d.i).toFixed(2) : (0.31 - 0.02 * d.i).toFixed(2)) : '';
-      return `<div class="rr-doc${klass}${reveal}" data-i="${d.i}"><div class="rank">D${d.i + 1}</div><div class="body">${d.t}</div><div class="sim">${sim}</div></div>`;
+  function next() {
+    RR.round = (RR.round + 1) % RR.deck.length;
+    RR.picks.clear(); RR.p1Picks.clear(); RR.p2Picks.clear();
+    RR.turn = 1; RR.revealed = false;
+    if (RR.timerId) { clearInterval(RR.timerId); RR.timerId = null; }
+    paint(); timer();
+  }
+  function paint() {
+    const r = RR.deck[RR.round];
+    RR.eng = scoreRound(r);
+    $('rrx-query').textContent = r.q;
+    $('rrx-round').textContent = `ROUND ${RR.round + 1} OF ${RR.deck.length}`;
+    const order = r.docs.map((d, i) => i);
+    if (RR.revealed) order.sort((a, b) => RR.eng.sims[b] - RR.eng.sims[a]);
+    $('rrx-docs').innerHTML = order.map(i => {
+      const d = r.docs[i];
+      const mine = RR.mode === 'duel'
+        ? (RR.p1Picks.has(i) ? 'p1' : RR.p2Picks.has(i) ? 'p2' : '')
+        : (RR.picks.has(i) ? 'me' : '');
+      const sim = RR.eng.sims[i];
+      const isTopK = RR.eng.topK.has(i);
+      return `<div class="rrx-doc ${mine} ${RR.revealed ? (d.r ? 'rel' : 'dis') : ''}" data-i="${i}">
+        <span class="id">D${i + 1}</span>
+        <div class="rbody">
+          <span class="txt">${d.t}</span>
+          ${RR.revealed ? `<div class="rmeta">
+            <span class="emx-bar"><span style="width:${Math.max(2, Math.round(sim * 100))}%"></span></span>
+            <span class="score">${sim.toFixed(3)}</span>
+            <span class="tags">${d.r ? '<b class="ok">relevant</b>' : '<b class="no">distractor</b>'}${isTopK ? '<b class="mach">cosine picked</b>' : ''}</span>
+          </div>` : ''}
+        </div>
+        ${RR.revealed ? '' : `<span class="pickmark">${mine ? (mine === 'me' ? 'picked' : mine.toUpperCase()) : ''}</span>`}
+      </div>`;
     }).join('');
-    document.querySelectorAll('.rr-doc').forEach(el => {
-      el.addEventListener('click', () => {
-        if (window.rr.revealed) return;
-        const i = parseInt(el.dataset.i);
-        if (window.rr.mode === 'duel') {
-          const set = window.rr.turn === 1 ? window.rr.p1Picks : window.rr.p2Picks;
-          const other = window.rr.turn === 1 ? window.rr.p2Picks : window.rr.p1Picks;
-          if (other.has(i)) return;
-          if (set.has(i)) set.delete(i); else { set.add(i); window.rr.turn = window.rr.turn === 1 ? 2 : 1; }
-        } else {
-          if (window.rr.picks.has(i)) window.rr.picks.delete(i); else window.rr.picks.add(i);
-        }
-        paintRR();
-      });
-    });
-  }
-  function doCheck() {
-    if (window.rr.revealed) return;
-    const r = window.rr.deck[window.rr.round];
-    const fb = $('rr-fb');
-    if (window.rr.mode === 'duel') {
-      let h1 = 0, m1 = 0, h2 = 0, m2 = 0;
-      r.docs.forEach((d, i) => {
-        if (window.rr.p1Picks.has(i)) { if (d.r) h1++; else m1++; }
-        if (window.rr.p2Picks.has(i)) { if (d.r) h2++; else m2++; }
-      });
-      const p1Earned = Math.max(0, h1 * 100 - m1 * 50);
-      const p2Earned = Math.max(0, h2 * 100 - m2 * 50);
-      window.rr.p1Score += p1Earned;
-      window.rr.p2Score += p2Earned;
-      const winner = p1Earned > p2Earned ? 'Player 1 wins the round' : p2Earned > p1Earned ? 'Player 2 wins the round' : 'It\'s a tie';
-      fb.innerHTML = `<strong>${winner}.</strong> P1: ${h1} hits / ${m1} misses → +${p1Earned}. P2: ${h2} hits / ${m2} misses → +${p2Earned}.`;
-    } else {
-      let hits = 0, miss = 0;
-      r.docs.forEach((d, i) => { if (window.rr.picks.has(i) && d.r) hits++; if (window.rr.picks.has(i) && !d.r) miss++; });
-      const total = r.docs.filter(d => d.r).length;
-      let earned = Math.max(0, hits * 100 - miss * 50);
-      let bonus = 0;
-      if (window.rr.mode === 'timed' && window.rr.deadline) {
-        const remaining = Math.max(0, Math.ceil((window.rr.deadline - Date.now())/1000));
-        bonus = remaining * 5;
-        earned += bonus;
+    $('rrx-docs').querySelectorAll('.rrx-doc').forEach(el => el.addEventListener('click', () => {
+      if (RR.revealed) return;
+      const i = +el.dataset.i;
+      if (RR.mode === 'duel') {
+        const mineSet = RR.turn === 1 ? RR.p1Picks : RR.p2Picks;
+        const otherSet = RR.turn === 1 ? RR.p2Picks : RR.p1Picks;
+        if (otherSet.has(i)) return;
+        if (mineSet.has(i)) mineSet.delete(i);
+        else { mineSet.add(i); RR.turn = RR.turn === 1 ? 2 : 1; }
+      } else {
+        RR.picks.has(i) ? RR.picks.delete(i) : RR.picks.add(i);
       }
-      window.rr.score += earned;
-      const sabNote = window.rr.mode === 'sabotage' ? ' Sabotage rounds are deliberately keyword-loaded — production RAG needs reranking, not just BM25, to survive them.' : '';
-      fb.innerHTML = `<strong>${hits} of ${total} relevant docs found.</strong> ${miss ? miss + ' distractor' + (miss > 1 ? 's' : '') + ' picked. ' : ''}+${earned} points${bonus ? ' (incl. +' + bonus + ' time bonus)' : ''}.${sabNote}`;
-    }
-    window.rr.revealed = true;
-    fb.classList.add('show');
-    if (window.rr.timerId) { clearInterval(window.rr.timerId); window.rr.timerId = null; }
-    paintRR();
+      paint();
+    }));
+    const sb = RR.mode === 'duel'
+      ? `<div class="cell ${RR.turn === 1 ? 'turn' : ''}"><div class="n">${RR.p1}</div><div class="l">PLAYER 1</div></div>
+         <div class="cell ${RR.turn === 2 ? 'turn' : ''}"><div class="n">${RR.p2}</div><div class="l">PLAYER 2</div></div>`
+      : `<div class="cell"><div class="n">${RR.score}</div><div class="l">SCORE</div></div>
+         <div class="cell"><div class="n">${K}</div><div class="l">RETRIEVER TOP K</div></div>`;
+    $('rrx-scores').innerHTML = sb;
+    if (!RR.revealed) $('rrx-fb').innerHTML = `<p class="note">${RR.mode === 'duel' ? `Player ${RR.turn} to pick.` : `Select the documents you believe answer the query, then check.`}</p>`;
   }
-  $('rr-check').addEventListener('click', doCheck);
-  document.querySelectorAll('.rr-mode').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
+  function check() {
+    if (RR.revealed) return;
+    const r = RR.deck[RR.round], eng = RR.eng;
+    const relevant = new Set(r.docs.map((d, i) => d.r ? i : -1).filter(i => i >= 0));
+    const machineHits = [...eng.topK].filter(i => relevant.has(i)).length;
+    let html = '';
+    if (RR.mode === 'duel') {
+      const tally = (set) => { let h = 0, m = 0; set.forEach(i => relevant.has(i) ? h++ : m++); return { h, m, pts: Math.max(0, h * 100 - m * 50) }; };
+      const a = tally(RR.p1Picks), b = tally(RR.p2Picks);
+      RR.p1 += a.pts; RR.p2 += b.pts;
+      html = `<p><b>${a.pts === b.pts ? 'Tie round.' : (a.pts > b.pts ? 'Player 1 takes the round.' : 'Player 2 takes the round.')}</b>
+        P1 ${a.h} hits, ${a.m} misses, +${a.pts}. P2 ${b.h} hits, ${b.m} misses, +${b.pts}.</p>`;
+    } else {
+      let h = 0, m = 0; RR.picks.forEach(i => relevant.has(i) ? h++ : m++);
+      let pts = Math.max(0, h * 100 - m * 50), bonus = 0, beat = 0;
+      if (RR.mode === 'timed' && RR.deadline) { bonus = Math.max(0, Math.ceil((RR.deadline - Date.now()) / 1000)) * 5; }
+      if (h > machineHits || (h === machineHits && m === 0 && machineHits < relevant.size)) beat = 75;
+      pts += bonus + beat;
+      RR.score += pts;
+      const prec = (h + m) ? (h / (h + m)) : 0, rec = relevant.size ? h / relevant.size : 0;
+      const mPrec = machineHits / K, mRec = relevant.size ? machineHits / relevant.size : 0;
+      html = `<p><b>You found ${h} of ${relevant.size} relevant documents${m ? `, picked ${m} distractor${m > 1 ? 's' : ''}` : ''}.</b> +${pts} points${bonus ? `, including +${bonus} time bonus` : ''}${beat ? `, including +75 for beating the machine` : ''}.</p>
+        <p>The cosine retriever took its top ${K} and got <b>${machineHits} of ${relevant.size}</b> right.</p>
+        <p class="rrx-metrics">you&nbsp;&nbsp;precision ${prec.toFixed(2)} &middot; recall ${rec.toFixed(2)}<br>machine&nbsp;&nbsp;precision ${mPrec.toFixed(2)} &middot; recall ${mRec.toFixed(2)}</p>`;
+    }
+    const trap = r.docs.map((d, i) => ({ d, i, s: eng.sims[i] })).filter(x => !x.d.r && eng.topK.has(x.i)).sort((x, y) => y.s - x.s)[0];
+    if (trap) html += `<p class="note">The machine was fooled by D${trap.i + 1} (cosine ${trap.s.toFixed(3)}): it shares the query's words but answers a different question. Similarity is not relevance; production RAG adds a reranker for exactly this.</p>`;
+    else html += `<p class="note">No distractor cracked the machine's top ${K} this round; on clean corpora, cosine alone does fine. Sabotage mode is where it breaks.</p>`;
+    $('rrx-fb').innerHTML = html;
+    RR.revealed = true;
+    if (RR.timerId) { clearInterval(RR.timerId); RR.timerId = null; }
+    paint();
+    $('rrx-fb').innerHTML = html;  // paint() resets the hint; restore the verdict
+  }
+
+  $('tool-body').innerHTML = `
+    <div class="ins-bar">
+      <div class="ins-seg" id="rrx-seg">
+        <button class="seg-btn active" data-mode="solo">Solo</button>
+        <button class="seg-btn" data-mode="timed">Timed</button>
+        <button class="seg-btn" data-mode="duel">Two player</button>
+        <button class="seg-btn" data-mode="sabotage">Sabotage</button>
+      </div>
+      <span class="rrx-desc" id="rrx-desc"></span>
+      <span id="rrx-timer"></span>
+    </div>
+    <div class="emx-canvas">
+      <div class="emx-map-card">
+        <div class="emx-map-head"><span>THE QUERY, THEN THE CORPUS</span><span id="rrx-round"></span></div>
+        <div class="rrx-query" id="rrx-query"></div>
+        <div class="rrx-docs" id="rrx-docs"></div>
+      </div>
+      <div class="emx-side">
+        <div class="emx-card">
+          <div class="h">SCOREBOARD</div>
+          <div class="rrx-scores" id="rrx-scores"></div>
+          <div class="rrx-actions">
+            <button class="ins-btn" id="rrx-check">Check picks</button>
+            <button class="ins-btn ghost" id="rrx-next">Next round</button>
+          </div>
+          <div class="h">VERDICT</div>
+          <div id="rrx-fb"></div>
+        </div>
+      </div>
+    </div>
+    <div class="ins-status">6 documents per round  |  scores are true tf-idf cosine between query and document  |  the machine retrieves top ${K}  |  relevance labels are the ground truth it cannot see</div>`;
+  $('rrx-check').addEventListener('click', check);
+  $('rrx-next').addEventListener('click', next);
+  document.querySelectorAll('#rrx-seg .seg-btn').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
   setMode('solo');
 }
 
@@ -3122,144 +3786,328 @@ function renderRetrievalRace() {
    TOOL: EMBEDDING SPACE EXPLORER (M05)
    ============================================================ */
 function renderEmbeddings() {
+  /* v2 (MD 2026-10-07): real math, instrument UI. tf-idf vectors built live,
+     true cosine similarity, PCA projection with variance explained. */
   const DATASETS = {
     general: { name: 'General topics', cats: {
-      tech: { color:'#0055D4', center:[20,28] }, food: { color:'#D4A017', center:[72,30] },
-      sports: { color:'#5C7A4A', center:[30,72] }, weather: { color:'#7C3AED', center:[78,72] } },
+      tech: { color:'#0055D4', label:'Tech' }, food: { color:'#D4A017', label:'Food' },
+      sports: { color:'#5C7A4A', label:'Sports' }, weather: { color:'#7C3AED', label:'Weather' } },
       sentences: [
-        {t:'tech', s:'GPUs accelerate neural network training.'},
-        {t:'tech', s:'Cloud computing enables elastic scaling.'},
-        {t:'tech', s:'Transformers replaced RNNs for most language tasks.'},
-        {t:'tech', s:'Quantum computers use qubits not bits.'},
-        {t:'food', s:'Sourdough relies on wild yeast fermentation.'},
-        {t:'food', s:'Sushi rice needs the right vinegar ratio.'},
-        {t:'food', s:'Sicilian cannoli are filled just before serving.'},
-        {t:'food', s:'Espresso pulls best between 27 and 32 seconds.'},
-        {t:'sports', s:'Marathon training peaks 3 weeks before race day.'},
-        {t:'sports', s:'Climbers route harder grades on volcanic rock.'},
-        {t:'sports', s:'Soccer formations balance pressing and structure.'},
-        {t:'sports', s:'Olympic divers earn higher scores on entries with no splash.'},
-        {t:'weather', s:'Hurricanes strengthen over warm ocean water.'},
-        {t:'weather', s:'Snowflakes form when ice crystals grow on cloud nuclei.'},
-        {t:'weather', s:'Heat domes block storm systems for days.'},
-        {t:'weather', s:'Tropical thunderstorms peak in late afternoon.'} ] },
+        {t:'tech', s:'Neural networks learn faster on modern GPUs.'},
+        {t:'tech', s:'Serving large models takes clusters of GPUs.'},
+        {t:'tech', s:'Transformer models replaced recurrent networks for language.'},
+        {t:'tech', s:'Cloud servers scale model inference on demand.'},
+        {t:'food', s:'Sourdough bread rises on wild yeast in the dough.'},
+        {t:'food', s:'Bakers proof the dough before the bread goes in the oven.'},
+        {t:'food', s:'A hot oven gives bread its crust and open crumb.'},
+        {t:'food', s:'The baker shapes the loaf after the dough rises.'},
+        {t:'sports', s:'Marathon runners peak their training weeks before the race.'},
+        {t:'sports', s:'Sprinters train explosive starts to win short races.'},
+        {t:'sports', s:'Cyclists race in teams and train at altitude.'},
+        {t:'sports', s:'Swimmers cut training volume before championship races.'},
+        {t:'weather', s:'Warm ocean water fuels hurricane storms.'},
+        {t:'weather', s:'Thunderstorms build from towering afternoon clouds.'},
+        {t:'weather', s:'Cold fronts bring sudden storm winds and rain.'},
+        {t:'weather', s:'Forecasters track storm clouds moving up the coast.'},
+        {t:'tech', s:'A data center network moves model weights between servers.'},
+        {t:'tech', s:'Fine tuning adapts a pretrained model with new data.'},
+        {t:'food', s:'Pizza dough needs a long cold rise for flavor.'},
+        {t:'food', s:'Bakers score the loaf so the crust opens in the oven.'},
+        {t:'sports', s:'Rowers train in teams to hold a race pace.'},
+        {t:'sports', s:'Coaches plan training blocks around race season.'},
+        {t:'weather', s:'A warm front brings low clouds and steady rain.'},
+        {t:'weather', s:'Ocean storms feed on warm water and moist air.'} ] },
     orms: { name: 'OR/MS topics', cats: {
-      sim: { color:'#0055D4', center:[22,30] }, opt: { color:'#D4A017', center:[74,28] },
-      ml: { color:'#7C3AED', center:[26,72] }, sc: { color:'#5C7A4A', center:[76,72] } },
+      sim: { color:'#0055D4', label:'Simulation' }, opt: { color:'#D4A017', label:'Optimization' },
+      ml: { color:'#7C3AED', label:'Machine Learning' }, sc: { color:'#5C7A4A', label:'Supply Chain' } },
       sentences: [
-        {t:'sim', s:'Discrete-event simulation models entity flow through queues and servers.'},
-        {t:'sim', s:'Agent-based simulation captures emergent behavior in heterogeneous populations.'},
-        {t:'sim', s:'A digital twin keeps a live simulation synchronized with a real system.'},
-        {t:'sim', s:'Common random numbers reduce variance in paired-comparison experiments.'},
-        {t:'opt', s:'Linear programming maximizes a linear objective subject to linear constraints.'},
-        {t:'opt', s:'Stochastic programming optimizes decisions under explicit uncertainty.'},
-        {t:'opt', s:'Branch and bound enumerates the integer programming solution space.'},
-        {t:'opt', s:'Column generation is used for large-scale routing and crew scheduling problems.'},
-        {t:'ml', s:'Reinforcement learning trains agents to maximize cumulative reward.'},
-        {t:'ml', s:'Random forests average many decorrelated decision trees.'},
-        {t:'ml', s:'Gradient boosting wins many tabular machine learning competitions.'},
-        {t:'ml', s:'Bayesian optimization tunes expensive black-box hyperparameters.'},
+        {t:'sim', s:'Discrete event simulation models entities flowing through queues.'},
+        {t:'sim', s:'Agent based simulation models emergent behavior in populations.'},
+        {t:'sim', s:'A digital twin keeps a simulation synchronized with the real system.'},
+        {t:'sim', s:'Common random numbers reduce variance across simulation runs.'},
+        {t:'opt', s:'Linear programming maximizes an objective under constraints.'},
+        {t:'opt', s:'Stochastic programming optimizes decisions under uncertainty.'},
+        {t:'opt', s:'Branch and bound searches the integer programming space.'},
+        {t:'opt', s:'Column generation scales optimization to huge scheduling problems.'},
+        {t:'ml', s:'Reinforcement learning trains agents to maximize reward.'},
+        {t:'ml', s:'Random forests average many trees for machine learning.'},
+        {t:'ml', s:'Gradient boosting dominates tabular machine learning contests.'},
+        {t:'ml', s:'Deep learning models learn features from raw data.'},
         {t:'sc', s:'Supply chains balance inventory cost against service level.'},
-        {t:'sc', s:'The bullwhip effect amplifies demand variance upstream.'},
-        {t:'sc', s:'Vendor managed inventory shifts replenishment authority to the supplier.'},
-        {t:'sc', s:'Newsvendor models set order quantity under stochastic demand.'} ] }
+        {t:'sc', s:'The bullwhip effect amplifies demand swings up the supply chain.'},
+        {t:'sc', s:'Vendor managed inventory moves replenishment to the supplier.'},
+        {t:'sc', s:'Newsvendor models set inventory under uncertain demand.'},
+        {t:'sim', s:'Warmup periods let a simulation reach steady state before measurement.'},
+        {t:'sim', s:'Replications of a simulation quantify output uncertainty.'},
+        {t:'opt', s:'Duality theory bounds the optimization objective from both sides.'},
+        {t:'opt', s:'Metaheuristics search large optimization spaces without guarantees.'},
+        {t:'ml', s:'Cross validation estimates how a learning model generalizes.'},
+        {t:'ml', s:'Feature engineering feeds domain signals into the learning model.'},
+        {t:'sc', s:'Safety stock buffers the supply chain against demand surprises.'},
+        {t:'sc', s:'Lead time variability forces higher inventory across the chain.'} ] }
   };
+  const STOP = new Set(('a an the of in on for to and or with under over is are be not no it its this that '
+    + 'when just best between instead against through many most three days').split(' '));
+  const stem = w => w.toLowerCase().replace(/[^a-z0-9]/g, '')
+    .replace(/(ization|izing|ations|ation|ingly|ings|ing|ers|ies|ied|es|ed|er|ly|s)$/, '');
+  const tokenize = s => s.split(/\s+/).map(stem).filter(w => w.length > 2 && !STOP.has(w));
+
+  const S = { ds: 'general', sel: null, cmp: null, query: null, model: null };
+
+  function buildModel(dsKey) {
+    const ds = DATASETS[dsKey];
+    const docsTok = ds.sentences.map(x => tokenize(x.s));
+    const df = {};
+    docsTok.forEach(toks => new Set(toks).forEach(w => df[w] = (df[w] || 0) + 1));
+    const vocab = Object.keys(df).sort();
+    const vIdx = Object.fromEntries(vocab.map((w, i) => [w, i]));
+    const N = docsTok.length;
+    const idf = vocab.map(w => Math.log(N / df[w]) + 1);
+    const vecOf = toks => {
+      const v = new Float64Array(vocab.length);
+      toks.forEach(w => { const i = vIdx[w]; if (i !== undefined) v[i] += 1; });
+      for (let i = 0; i < v.length; i++) v[i] *= idf[i];
+      const n = Math.hypot(...v) || 1;
+      for (let i = 0; i < v.length; i++) v[i] /= n;
+      return v;
+    };
+    const X = docsTok.map(vecOf);
+    // PCA via the n x n gram matrix of mean centered vectors
+    const V = vocab.length, mean = new Float64Array(V);
+    X.forEach(x => { for (let i = 0; i < V; i++) mean[i] += x[i] / N; });
+    const Xc = X.map(x => { const y = new Float64Array(V); for (let i = 0; i < V; i++) y[i] = x[i] - mean[i]; return y; });
+    const K = [...Array(N)].map((_, i) => [...Array(N)].map((_, j) => {
+      let s = 0; for (let k = 0; k < V; k++) s += Xc[i][k] * Xc[j][k]; return s; }));
+    const trace = K.reduce((s, row, i) => s + row[i], 0);
+    function powerIter(Km) {
+      let u = [...Array(N)].map((_, i) => Math.sin(i + 1)); // deterministic start
+      for (let it = 0; it < 120; it++) {
+        const nu = Km.map(row => row.reduce((s, kij, j) => s + kij * u[j], 0));
+        const nn = Math.hypot(...nu) || 1; u = nu.map(x => x / nn);
+      }
+      const lam = u.reduce((s, ui, i) => s + ui * K2u(Km, u, i), 0);
+      return { u, lam };
+    }
+    const K2u = (Km, u, i) => Km[i].reduce((s, kij, j) => s + kij * u[j], 0);
+    const p1 = powerIter(K);
+    const K2 = K.map((row, i) => row.map((kij, j) => kij - p1.lam * p1.u[i] * p1.u[j]));
+    const p2 = powerIter(K2);
+    const coord = (p, i) => Math.sqrt(Math.max(p.lam, 1e-9)) * p.u[i];
+    const pts = Xc.map((_, i) => ({ px: coord(p1, i), py: coord(p2, i) }));
+    // axis loadings so a query vector can be projected onto the same plane
+    const load = p => { const w = new Float64Array(V); const s = Math.sqrt(Math.max(p.lam, 1e-9));
+      for (let k = 0; k < V; k++) { let a = 0; for (let i = 0; i < N; i++) a += Xc[i][k] * p.u[i]; w[k] = a / s; } return w; };
+    const w1 = load(p1), w2 = load(p2);
+    const varShown = trace > 0 ? (p1.lam + p2.lam) / trace : 0;
+    // what each axis MEANS: the strongest positive and negative loading terms
+    const axisTerms = w => {
+      const idx = vocab.map((t, i) => ({ t, v: w[i] })).sort((a, b) => a.v - b.v);
+      return { neg: idx.slice(0, 3).map(x => x.t), pos: idx.slice(-3).reverse().map(x => x.t) };
+    };
+    const ax1 = axisTerms(w1), ax2 = axisTerms(w2);
+    // scale to [10, 90] percent of the plot box
+    const xs = pts.map(p => p.px), ys = pts.map(p => p.py);
+    const sc = (v, arr) => 10 + 80 * ((v - Math.min(...arr)) / ((Math.max(...arr) - Math.min(...arr)) || 1));
+    const dots = ds.sentences.map((x, i) => ({ ...x, vec: X[i], toks: docsTok[i],
+      x: sc(pts[i].px, xs), y: sc(pts[i].py, ys), c: ds.cats[x.t].color }));
+    // nudge apart any dots that landed on top of each other (display only)
+    for (let pass = 0; pass < 6; pass++) {
+      for (let i = 0; i < dots.length; i++) for (let j = i + 1; j < dots.length; j++) {
+        const dx = dots[j].x - dots[i].x, dy = dots[j].y - dots[i].y;
+        const d = Math.hypot(dx, dy);
+        if (d < 3.2) {
+          const ux = d ? dx / d : 1, uy = d ? dy / d : 0, push = (3.2 - d) / 2;
+          dots[i].x -= ux * push; dots[i].y -= uy * push;
+          dots[j].x += ux * push; dots[j].y += uy * push;
+        }
+      }
+    }
+    dots.forEach(d => { d.x = Math.min(94, Math.max(6, d.x)); d.y = Math.min(94, Math.max(6, d.y)); });
+    return { ds, vocab, vIdx, idf, vecOf, mean, w1, w2, xs, ys, sc, dots, varShown, ax1, ax2 };
+  }
+  const cosine = (a, b) => { let s = 0; for (let i = 0; i < a.length; i++) s += a[i] * b[i]; return s; };
+  const shared = (ta, tb) => [...new Set(ta.filter(w => tb.includes(w)))];
+
   $('tool-body').innerHTML = `
-    <div class="emb-toolbar">
-      <div class="emb-seg">
+    <div class="ins-bar">
+      <div class="ins-seg" id="emx-seg">
         <button class="seg-btn active" data-ds="general">General topics</button>
         <button class="seg-btn" data-ds="orms">OR/MS topics</button>
       </div>
-      <div class="emb-search">
-        <svg class="emb-icon"><use href="#i-sparkle"/></svg>
-        <input id="emb-q" type="text" placeholder="Try a semantic query: how fast is a neural net?" />
-        <button id="emb-go">Search</button>
-        <button id="emb-clear" class="ghost">Clear</button>
+      <div class="ins-field grow">
+        <label>QUERY</label>
+        <input id="emx-q" type="text" placeholder="e.g. how do neural networks learn on GPUs?" />
       </div>
+      <button class="ins-btn" id="emx-go">Embed &amp; search</button>
+      <button class="ins-btn ghost" id="emx-clear">Reset</button>
     </div>
-    <div class="emb-canvas">
-      <div class="emb-scatter" id="emb-scatter">
-        <div class="emb-legend" id="emb-legend"></div>
-        <div class="emb-query" id="emb-query"></div>
+    <div class="emx-canvas">
+      <div class="emx-map-card">
+        <div class="emx-map-head"><span>VECTOR SPACE &middot; PCA PROJECTION</span><span id="emx-legend"></span></div>
+        <div class="emx-map" id="emx-map"></div>
       </div>
-      <div class="emb-detail" id="emb-detail">
-        <div class="h">Click any dot</div>
-        <div class="s">Each dot is a sentence embedding (text-embedding-3-small) projected to 2-D. Sentences with related meaning end up near each other. Try the search box to drop a query vector onto the map.</div>
-      </div>
-    </div>`;
-  window.EMB_STATE = { ds: 'general', dots: [], query: null };
-  function rebuild() {
-    const ds = DATASETS[window.EMB_STATE.ds];
-    const labels = { tech:'Tech', food:'Food', sports:'Sports', weather:'Weather', sim:'Simulation', opt:'Optimization', ml:'Machine Learning', sc:'Supply Chain' };
-    $('emb-legend').innerHTML = Object.entries(ds.cats).map(([k,v]) => `<div class="item"><span class="swatch" style="background:${v.color}"></span>${labels[k]||k}</div>`).join('');
-    const seed = 17;
-    const rnd = i => ((Math.sin(i*seed)+1)*0.5);
-    window.EMB_STATE.dots = ds.sentences.map((sObj, i) => {
-      const cat = ds.cats[sObj.t];
-      return { ...sObj, c: cat.color, x: cat.center[0] + (rnd(i*3)-0.5)*22, y: cat.center[1] + (rnd(i*7)-0.5)*22 };
-    });
-    paintScatter();
+      <div class="emx-side" id="emx-side"></div>
+    </div>
+    <div class="ins-status" id="emx-status"></div>`;
+
+  function legend() {
+    const ds = DATASETS[S.ds];
+    $('emx-legend').innerHTML = Object.values(ds.cats).map(c =>
+      `<span class="emx-leg"><span class="sw" style="background:${c.color}"></span>${c.label}</span>`).join('');
   }
-  function paintScatter() {
-    const scatter = $('emb-scatter');
-    Array.from(scatter.querySelectorAll('.emb-dot')).forEach(e => e.remove());
-    window.EMB_STATE.dots.forEach((d, i) => {
-      const el = document.createElement('div');
-      el.className = 'emb-dot'; el.style.left = d.x + '%'; el.style.top = d.y + '%';
-      el.style.background = d.c; el.dataset.idx = i; el.title = d.s;
-      el.addEventListener('click', () => selectDot(i));
-      scatter.appendChild(el);
-    });
-    const q = window.EMB_STATE.query;
-    if (q) {
-      $('emb-query').innerHTML = `<div class="qdot" style="left:${q.x}%;top:${q.y}%;"><span class="qdot-tip">"${q.text}"</span></div>`;
-    } else { $('emb-query').innerHTML = ''; }
+  function status(extra) {
+    const m = S.model;
+    $('emx-status').textContent = `${m.dots.length} sentences  |  ${m.vocab.length} term vocabulary  |  `
+      + `tf-idf vectors, unit normalized  |  cosine similarity  |  PCA 2-D showing `
+      + `${Math.round(m.varShown * 100)}% of variance` + (extra ? `  |  ${extra}` : '');
   }
-  function cos(a, b) { return 1 - (Math.hypot(a.x-b.x, a.y-b.y) / 60); }
-  function selectDot(i) {
-    document.querySelectorAll('.emb-dot').forEach(e => e.classList.remove('near'));
-    const me = window.EMB_STATE.dots[i];
-    const sorted = window.EMB_STATE.dots.map((d, j) => ({ j, dist: Math.hypot(d.x-me.x, d.y-me.y), s: d.s })).filter(x => x.j !== i).sort((a,b)=>a.dist-b.dist).slice(0,3);
-    sorted.forEach(s => document.querySelectorAll('.emb-dot')[s.j].classList.add('near'));
-    document.querySelectorAll('.emb-dot')[i].classList.add('near');
-    $('emb-detail').innerHTML = `
-      <div class="h">Selected</div>
-      <div class="s">${me.s}</div>
-      <div class="h" style="margin-top:10px;">3 Nearest Neighbors <span style="float:right;font-size:10px;color:var(--soft);font-weight:400;letter-spacing:0;text-transform:none;">cosine sim</span></div>
-      <div class="s">${sorted.map(s => `<div class="nn-row"><span>${s.s}</span><span class="nn-sim">${cos(me, window.EMB_STATE.dots[s.j]).toFixed(3)}</span></div>`).join('')}</div>`;
+  function paint() {
+    const m = S.model;
+    const lines = [];
+    if (S.sel != null && S.cmp == null) {
+      rankAgainst(m.dots[S.sel].vec).slice(0, 3).forEach(r => {
+        if (r.i !== S.sel) lines.push([S.sel, r.i]);
+      });
+    }
+    if (S.sel != null && S.cmp != null) lines.push([S.sel, S.cmp]);
+    $('emx-map').innerHTML = `
+      <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+        ${[25,50,75].map(g => `<line x1="${g}" y1="0" x2="${g}" y2="100" stroke="#EDF1F7" stroke-width="0.3"/>
+                               <line x1="0" y1="${g}" x2="100" y2="${g}" stroke="#EDF1F7" stroke-width="0.3"/>`).join('')}
+        ${lines.map(([a, b]) => `<line x1="${m.dots[a].x}" y1="${m.dots[a].y}" x2="${m.dots[b].x}" y2="${m.dots[b].y}"
+            stroke="#0055D4" stroke-width="0.45" stroke-dasharray="1.6 1.2" opacity="0.7"/>`).join('')}
+        ${S.query ? `<line x1="${S.query.x}" y1="${S.query.y}" x2="${m.dots[S.query.top].x}" y2="${m.dots[S.query.top].y}"
+            stroke="#B45309" stroke-width="0.45" stroke-dasharray="1.6 1.2" opacity="0.8"/>` : ''}
+      </svg>
+      ${m.dots.map((d, i) => `<button class="emx-dot ${i === S.sel ? 'sel' : ''} ${i === S.cmp ? 'cmp' : ''}"
+         style="left:${d.x}%;top:${d.y}%;background:${d.c}" data-i="${i}" title="${d.s}"></button>`).join('')}
+      ${S.query ? `<div class="emx-star" style="left:${S.query.x}%;top:${S.query.y}%" title="${S.query.text}">&#9733;</div>` : ''}
+      <span class="emx-axis left" title="strongest terms pulling left">&larr; ${m.ax1.neg.join(' · ')}</span>
+      <span class="emx-axis right" title="strongest terms pulling right">${m.ax1.pos.join(' · ')} &rarr;</span>
+      <span class="emx-axis top" title="strongest terms pulling up">&uarr; ${m.ax2.neg.join(' · ')}</span>
+      <span class="emx-axis bottom" title="strongest terms pulling down">${m.ax2.pos.join(' · ')} &darr;</span>`;
+    $('emx-map').querySelectorAll('.emx-dot').forEach(el =>
+      el.addEventListener('click', e => { e.stopPropagation(); pick(+el.dataset.i); }));
+  }
+  const bar = v => `<span class="emx-bar"><span style="width:${Math.max(2, Math.round(v * 100))}%"></span></span>`;
+  function rankAgainst(vec, excl) {
+    return S.model.dots.map((d, i) => ({ i, d, sim: cosine(vec, d.vec) }))
+      .filter(r => r.i !== excl).sort((a, b) => b.sim - a.sim);
+  }
+  function sidebarDefault() {
+    $('emx-side').innerHTML = `
+      <div class="emx-card">
+        <div class="h">THE MAP IS REAL MATH</div>
+        <p>Every sentence was turned into a tf-idf vector in your browser just now, and PCA flattened those vectors onto this plane. Distance you see is geometry, not decoration.</p>
+        <p><b>Click a dot</b> to rank every other sentence by true cosine similarity.<br>
+           <b>Click a second dot</b> to compare the pair.<br>
+           <b>Type a query</b> to embed it into the same space.</p>
+        <p class="note">The course labs swap in neural embeddings (text-embedding-3-small): same geometry, far richer meaning, 1,536 dimensions instead of ${S.model.vocab.length}.</p>
+      </div>`;
+  }
+  function pick(i) {
+    if (S.sel == null || S.cmp != null || i === S.sel) { S.sel = (i === S.sel ? null : i); S.cmp = null; }
+    else S.cmp = i;
+    S.query = null;
+    paint();
+    if (S.sel == null) { sidebarDefault(); status(); return; }
+    const m = S.model, A = m.dots[S.sel];
+    if (S.cmp == null) {
+      const ranked = rankAgainst(A.vec, S.sel);
+      $('emx-side').innerHTML = `
+        <div class="emx-card">
+          <div class="h">SELECTED</div>
+          <p class="sent">${A.s}</p>
+          <div class="h">EVERY OTHER SENTENCE, RANKED <span class="r">cosine</span></div>
+          ${ranked.map((r, k) => `
+            <div class="emx-row ${k < 3 ? 'top' : ''}">
+              <span class="t">${r.d.s}</span>${bar(r.sim)}<span class="v">${r.sim.toFixed(3)}</span>
+            </div>`).join('')}
+          <div class="h">WHY THE TOP MATCH IS CLOSE</div>
+          <p class="chips">${shared(A.toks, ranked[0].d.toks).map(w => `<span class="chip">${w}</span>`).join('') || '<span class="note">no shared terms: similarity comes from overall weighting</span>'}</p>
+          <div class="h">THE VECTOR UNDER THE GLASS <span class="r">tf-idf weight</span></div>
+          ${(() => {
+            const entries = [...new Set(A.toks)].map(w => ({ w, v: A.vec[m.vIdx[w]] || 0 }))
+              .sort((a, b) => b.v - a.v).slice(0, 6);
+            const mx = entries[0] ? entries[0].v : 1;
+            return entries.map(e => `<div class="emx-row"><span class="t">${e.w}</span>
+              <span class="emx-bar"><span style="width:${Math.max(3, Math.round(e.v / mx * 100))}%"></span></span>
+              <span class="v">${e.v.toFixed(3)}</span></div>`).join('')
+              + `<p class="note">plus ${m.vocab.length - entries.length} dimensions at or near zero. A vector IS just these weights.</p>`;
+          })()}
+        </div>`;
+      status('1 sentence selected, click another to compare');
+    } else {
+      const B = m.dots[S.cmp], sim = cosine(A.vec, B.vec), sh = shared(A.toks, B.toks);
+      $('emx-side').innerHTML = `
+        <div class="emx-card">
+          <div class="h">PAIR COMPARISON</div>
+          <p class="sent">${A.s}</p>
+          <p class="sent">${B.s}</p>
+          <div class="emx-big">${sim.toFixed(3)} <span>cosine similarity</span></div>
+          ${bar(sim)}
+          <div class="h">SHARED TERMS AFTER STEMMING</div>
+          <p class="chips">${sh.map(w => `<span class="chip">${w}</span>`).join('') || '<span class="note">none: these vectors share no vocabulary, so similarity is near zero</span>'}</p>
+          <p class="note">A neural embedding would still see relatedness without shared words; a bag of words model cannot. That gap is exactly why modern RAG uses neural embeddings.</p>
+        </div>`;
+      status('comparing a pair, click any dot to start over');
+    }
   }
   function runSearch() {
-    const text = $('emb-q').value.trim();
+    const text = $('emx-q').value.trim();
     if (!text) return;
-    const tokens = text.toLowerCase().split(/\W+/).filter(Boolean);
-    let best = null;
-    window.EMB_STATE.dots.forEach(d => {
-      const dwords = d.s.toLowerCase().split(/\W+/);
-      const overlap = tokens.filter(t => dwords.some(w => w.startsWith(t.slice(0,4)))).length;
-      if (!best || overlap > best.overlap) best = { d, overlap };
-    });
-    const qx = best.d.x + (Math.random()-0.5)*6, qy = best.d.y + (Math.random()-0.5)*6;
-    window.EMB_STATE.query = { x: qx, y: qy, text };
-    paintScatter();
-    const ranked = window.EMB_STATE.dots.map(d => ({ d, sim: cos({x:qx,y:qy}, d) })).sort((a,b)=>b.sim-a.sim).slice(0,5);
-    $('emb-detail').innerHTML = `
-      <div class="h">Query</div>
-      <div class="s" style="font-style:italic;">"${text}"</div>
-      <div class="h" style="margin-top:10px;">Top 5 retrieved <span style="float:right;font-size:10px;color:var(--soft);font-weight:400;letter-spacing:0;text-transform:none;">cosine sim</span></div>
-      <div class="s">${ranked.map(r => `<div class="nn-row"><span>${r.d.s}</span><span class="nn-sim">${r.sim.toFixed(3)}</span></div>`).join('')}</div>`;
+    const m = S.model, toks = tokenize(text);
+    const known = toks.filter(w => m.vIdx[w] !== undefined);
+    const ignored = [...new Set(toks.filter(w => m.vIdx[w] === undefined))];
+    S.sel = S.cmp = null;
+    if (!known.length) {
+      S.query = null; paint();
+      $('emx-side').innerHTML = `
+        <div class="emx-card">
+          <div class="h">QUERY</div><p class="sent">&ldquo;${text}&rdquo;</p>
+          <p>None of these words exist in this little ${m.vocab.length} term vocabulary, so the query vector is all zeros and retrieval returns nothing.</p>
+          <p class="note">This is the hard limit of word overlap retrieval, and the reason the labs use neural embeddings: they place unseen words by meaning, not by spelling.</p>
+        </div>`;
+      status('query had no in-vocabulary terms'); return;
+    }
+    const qv = m.vecOf(toks);
+    const qc = new Float64Array(qv.length);
+    for (let i = 0; i < qv.length; i++) qc[i] = qv[i] - m.mean[i];
+    let px = 0, py = 0;
+    for (let i = 0; i < qv.length; i++) { px += qc[i] * m.w1[i]; py += qc[i] * m.w2[i]; }
+    const ranked = rankAgainst(qv);
+    S.query = { x: m.sc(px, m.xs), y: m.sc(py, m.ys), text, top: ranked[0].i };
+    paint();
+    $('emx-side').innerHTML = `
+      <div class="emx-card">
+        <div class="h">QUERY, EMBEDDED INTO THE SAME SPACE</div>
+        <p class="sent">&ldquo;${text}&rdquo;</p>
+        ${ignored.length ? `<p class="note">ignored (not in vocabulary): ${ignored.join(', ')}</p>` : ''}
+        <div class="h">TOP 5 RETRIEVED <span class="r">cosine</span></div>
+        ${ranked.slice(0, 5).map((r, k) => `
+          <div class="emx-row ${k === 0 ? 'top' : ''}">
+            <span class="t">${r.d.s}</span>${bar(r.sim)}<span class="v">${r.sim.toFixed(3)}</span>
+          </div>`).join('')}
+        <div class="h">WHY #1 WON</div>
+        <p class="chips">${shared(toks, ranked[0].d.toks).map(w => `<span class="chip">${w}</span>`).join('')}</p>
+      </div>`;
+    status('query embedded and ranked');
   }
-  document.querySelectorAll('.emb-seg .seg-btn').forEach(b => {
-    b.addEventListener('click', () => {
-      document.querySelectorAll('.emb-seg .seg-btn').forEach(x => x.classList.remove('active'));
-      b.classList.add('active'); window.EMB_STATE.ds = b.dataset.ds; window.EMB_STATE.query = null;
-      $('emb-q').value = ''; rebuild();
-      $('emb-detail').innerHTML = `<div class="h">Click any dot</div><div class="s">Each dot is a sentence embedding projected to 2-D. Sentences with related meaning end up near each other.</div>`;
-    });
+  function boot() {
+    S.model = buildModel(S.ds); S.sel = S.cmp = S.query = null;
+    legend(); paint(); sidebarDefault(); status();
+  }
+  document.querySelectorAll('#emx-seg .seg-btn').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('#emx-seg .seg-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active'); S.ds = b.dataset.ds; $('emx-q').value = ''; boot();
+  }));
+  $('emx-go').addEventListener('click', runSearch);
+  $('emx-q').addEventListener('keydown', e => { if (e.key === 'Enter') runSearch(); });
+  $('emx-clear').addEventListener('click', () => { $('emx-q').value = ''; boot(); });
+  $('emx-map') && $('tool-body').addEventListener('click', e => {
+    if (e.target.id === 'emx-map') { S.sel = S.cmp = null; S.query = null; paint(); sidebarDefault(); status(); }
   });
-  $('emb-go').addEventListener('click', runSearch);
-  $('emb-q').addEventListener('keydown', e => { if (e.key === 'Enter') runSearch(); });
-  $('emb-clear').addEventListener('click', () => { $('emb-q').value=''; window.EMB_STATE.query=null; paintScatter(); });
-  rebuild();
+  boot();
 }
 
 /* ============================================================
@@ -3848,8 +4696,16 @@ function applyHash() {
 }
 function autoFillCurrent() {
   if (view.kind !== 'tool') return;
-  const id = view.toolId;
-  if (id === 'prompt-anatomy') {
+  const id = SLUG_TO_ID[view.toolId] || view.toolId;
+  if (id === 'retrieval-race') {
+    const docs = document.querySelectorAll('.rrx-doc');
+    [0, 1, 2].forEach(i => docs[i] && docs[i].click());
+    const btn = document.getElementById('rrx-check');
+    if (btn) setTimeout(() => btn.click(), 30);
+  } else if (id === 'embeddings') {
+    const q = document.getElementById('emx-q'), go = document.getElementById('emx-go');
+    if (q && go) { q.value = 'how do neural networks learn on GPUs?'; go.click(); }
+  } else if (id === 'prompt-anatomy') {
     ['role','task','context','format','examples'].forEach(blockId => {
       const b = document.querySelector('.pa-block[data-id="'+blockId+'"]');
       if (b) b.click();
