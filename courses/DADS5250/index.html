@@ -1923,25 +1923,31 @@ const HELP_SVG = {
     <text x="492" y="38" font-size="9.5" fill="#B45309">your query</text>
   </svg>`,
   'chunking': `<svg viewBox="0 0 640 150" xmlns="http://www.w3.org/2000/svg" font-family="Outfit,sans-serif">
-    <text x="18" y="24" font-size="11" fill="#475569">one long document</text>
-    <rect x="18" y="32" width="604" height="26" rx="6" fill="#fff" stroke="#CFDAEA"/>
-    <g font-size="11" fill="#475569">
-      <text x="18" y="86">cut into chunks</text><text x="140" y="86" fill="#94a3b8">(size = how long, overlap = the shared seam)</text>
-    </g>
+    <text x="18" y="22" font-size="10" font-weight="700" letter-spacing="1.5" fill="#94a3b8" font-family="JetBrains Mono,monospace">THE DOCUMENT, AS ONE STRIP</text>
     <g>
-      <rect x="18"  y="94" width="170" height="30" rx="6" fill="#EEF3FB" stroke="#0055D4"/>
-      <rect x="166" y="94" width="170" height="30" rx="6" fill="#EEF3FB" stroke="#0055D4"/>
-      <rect x="314" y="94" width="170" height="30" rx="6" fill="#EEF3FB" stroke="#0055D4"/>
-      <rect x="462" y="94" width="160" height="30" rx="6" fill="#EEF3FB" stroke="#0055D4"/>
-      <rect x="166" y="94" width="22" height="30" fill="#7C3AED" opacity=".28"/>
-      <rect x="314" y="94" width="22" height="30" fill="#7C3AED" opacity=".28"/>
-      <rect x="462" y="94" width="22" height="30" fill="#7C3AED" opacity=".28"/>
+      <rect x="18" y="34" width="150" height="38" rx="6" fill="#F1F4FA" stroke="#C9D4E6"/>
+      <rect x="156" y="34" width="150" height="38" rx="6" fill="#F1F4FA" stroke="#C9D4E6"/>
+      <rect x="294" y="34" width="150" height="38" rx="6" fill="#EEF3FB" stroke="#0055D4" stroke-width="1.6"/>
+      <rect x="432" y="34" width="150" height="38" rx="6" fill="#F1F4FA" stroke="#C9D4E6"/>
+      <rect x="156" y="34" width="14" height="38" fill="rgba(124,58,237,.22)"/>
+      <rect x="294" y="34" width="14" height="38" fill="rgba(124,58,237,.22)"/>
+      <rect x="432" y="34" width="14" height="38" fill="rgba(124,58,237,.22)"/>
+      <rect x="166" y="27" width="3" height="10" rx="1.5" fill="#D97706"/>
     </g>
-    <g font-size="10" fill="#0055D4" font-weight="700">
-      <text x="103" y="113" text-anchor="middle">chunk 1</text><text x="251" y="113" text-anchor="middle">chunk 2</text>
-      <text x="399" y="113" text-anchor="middle">chunk 3</text><text x="542" y="113" text-anchor="middle">chunk 4</text>
+    <g font-size="10.5" font-weight="700" font-family="JetBrains Mono,monospace" fill="#8795AC">
+      <text x="93" y="57" text-anchor="middle">1</text><text x="231" y="57" text-anchor="middle">2</text>
+      <text x="369" y="57" text-anchor="middle" fill="#0055D4">3</text><text x="507" y="57" text-anchor="middle">4</text>
     </g>
-    <text x="177" y="142" font-size="9.5" fill="#7C3AED">overlap: context survives the cut</text>
+    <text x="369" y="90" text-anchor="middle" font-size="9.5" font-weight="700" fill="#0055D4">RETRIEVED FOR YOUR QUESTION</text>
+    <line x1="18" y1="100" x2="582" y2="100" stroke="#E1E8F2"/>
+    <g font-size="9" fill="#94a3b8" font-family="JetBrains Mono,monospace">
+      <text x="18" y="112">0</text><text x="582" y="112" text-anchor="end">2,025 chars</text>
+    </g>
+    <g font-size="10.5" fill="#475569">
+      <rect x="18" y="126" width="12" height="12" rx="3" fill="rgba(124,58,237,.25)"/><text x="36" y="136">overlap seam: context survives the cut</text>
+      <rect x="268" y="126" width="3" height="12" rx="1.5" fill="#D97706"/><text x="280" y="136">mid-sentence cut</text>
+      <rect x="408" y="126" width="12" height="12" rx="3" fill="#EEF3FB" stroke="#0055D4"/><text x="426" y="136">chunk your question retrieves</text>
+    </g>
   </svg>`,
   'retrieval-race': `<svg viewBox="0 0 640 150" xmlns="http://www.w3.org/2000/svg" font-family="Outfit,sans-serif">
     <rect x="12" y="56" width="150" height="38" rx="19" fill="#0055D4"/>
@@ -1998,9 +2004,9 @@ const TOOL_HELP = {
   'chunking': {
     what: 'RAG never embeds a whole document: it cuts the text into chunks first, and each chunk becomes one searchable vector. Chunk size and overlap decide what retrieval can ever find. Too small, chunks lose their context; too large, retrieval goes blurry. The overlap is the seam that keeps a sentence from being cut off from the context that made it meaningful.',
     svg: 'chunking',
-    steps: ['Pick a strategy and drag size and overlap: the splitter output updates live, with overlap shaded and mid sentence cuts flagged.',
-            'Pick a question in the retrieval preview and watch which chunk wins, with its cosine score.',
-            'Read the verdict: if the cut separated question words from the answer, change the settings until it flips green.'],
+    steps: ['Drag size and overlap: the filmstrip re-cuts the document live, violet seams for overlap, amber ticks where a cut lands mid sentence.',
+            'Pick a question: the winning chunk lights up blue on the strip and in the output below it.',
+            'Read the verdict: if the cut separated the question from its answer, change the settings until it flips green.'],
     example: 'Set size 200 with 0 overlap and find a sentence sliced mid-thought, then add overlap 50 and watch it heal.'
   },
   'retrieval-race': {
