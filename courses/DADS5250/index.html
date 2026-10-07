@@ -1583,6 +1583,10 @@ body {
 .mod-section-h { align-items: baseline; }
 .tool-pre { align-items: stretch; }
 .tool-pre .tool-splash { display: flex; flex-direction: column; justify-content: center; }
+
+.rrx-note { font-size: 11px; color: var(--soft); margin: 4px 0 0; font-family: 'Outfit',sans-serif; }
+.rrx-note b { color: var(--ink); }
+.rrx-startbtn { justify-self: start; margin-top: 4px; }
 </style>
 </head>
 <body>
@@ -1776,7 +1780,7 @@ const SPLASHES = {
   'chain-viz': 'A LangChain chain is just a pipeline: text goes in, each node transforms it, and output comes out. Pick one of four chain types — Q&amp;A, extraction, summarization, or classification — choose a scenario, and step through what happens at each stage.',
   'chunking': 'RAG does not embed whole documents — it cuts them into chunks first, then embeds each one. This lab shows the splitter\'s actual output as you drag size and overlap, and runs a live retrieval preview on top: pick a question and watch which chunk wins, with a verdict on whether the answer survived the cut.',
   'embeddings': 'Every dot on this map is a sentence turned into a real vector, computed live in your browser: tf-idf weights, true cosine similarity, honest PCA projection. Rank neighbors, compare any pair, then embed your own query into the same space and see exactly why the top match won. The labs swap in neural embeddings; the geometry is the same.',
-  'retrieval-race': 'A real race against a real retriever. Every score you see is true tf-idf cosine between the query and each document; the machine takes its top 3 and you try to beat it on actual relevance. Four modes — solo, timed, two player, and sabotage, where keyword lookalikes genuinely outscore the right answers and the machine falls for them.',
+  'retrieval-race': 'A real race against a real retriever. Every score you see is true tf-idf cosine between the query and each document; the machine takes its top 3 and you try to beat it on actual relevance. It opens with a worked example, then three modes — solo, timed, and sabotage, where keyword lookalikes genuinely outscore the right answers and the machine falls for them.',
   'react-player': 'A ReAct agent does not answer in one shot — it reasons, calls a tool, reads the observation, reasons again, and repeats until it has a confident answer. Step through three real multi-step traces: a population lookup, a hospital ED wait-time analysis, and a Python performance diagnosis.',
   'injection': 'Prompt injection is the OWASP #1 LLM risk: an attacker hides malicious instructions inside untrusted input — a user message, a retrieved document, a tool response — hoping the model follows them instead of its system prompt. This lab gives you ten real attack patterns across three tiers of sophistication. Fire them at a vulnerable bot and a hardened one, and read the explanation of why each attack succeeds or fails.',
   'schema-builder': 'Structured output is what makes language models useful inside production pipelines. Instead of returning free text you define a JSON schema and the model fills it in. Click fields from an unstructured invoice to build a typed JSON object and its schema — the exact extraction pattern used in real pipelines.',
@@ -1888,7 +1892,7 @@ const TOOL_HELP = {
   'retrieval-race': {
     what: 'A RAG retriever ranks every chunk by cosine similarity: how aligned the chunk\'s vector is with the query\'s vector. Highest scores get retrieved; everything else stays on the shelf. This game makes you the retriever, and the uncomfortable lesson is that pure similarity sometimes picks a lookalike distractor over the document that actually answers.',
     svg: 'retrieval-race',
-    steps: ['Read the query, then pick the documents that actually answer it.',
+    steps: ['Read the worked example first: it shows a relevant pick, a keyword trap, and how scoring works.',
             'Check: real cosine scores are revealed, the machine\'s top 3 is marked, and you score against the ground truth.',
             'Graduate to sabotage mode and beat the machine: keyword lookalikes outscore right answers there, and it falls for them.'],
     example: 'In sabotage mode, "refund policy for software" loves a hardware refund page: same words, wrong answer.'
@@ -3549,63 +3553,63 @@ function renderChunking() {
    TOOL: RAG RETRIEVAL RACE (M05) — NEW gamified tool
    ============================================================ */
 function renderRetrievalRace() {
-  /* v2 (MD 2026-10-07): a real race against a real retriever. Scores are true
-     tf-idf cosine, the machine's top 3 is marked, and you win by beating it. */
-  const K = 3;  // the retriever returns top K
+  /* v3 (MD 2026-10-07): gentler. Built-in tutorial with a worked example,
+     no two player mode, four short rounds, documents that read in seconds. */
+  const K = 3;
   const NORMAL = [
-    { q: 'How do I reset a customer password in the admin portal?',
-      docs: [
-        { t: 'Admin, then Users, then click the row and choose Reset password: a one time link goes to the user.', r: true },
-        { t: 'Password complexity rules: at least 12 characters, one symbol, one digit, no reuse for 24 cycles.', r: true },
-        { t: 'Quarterly revenue narrative for the EMEA region featured strong growth in financial services.', r: false },
-        { t: 'If the user email bounces, an admin can issue a temporary password from the same row action.', r: true },
-        { t: 'Database migration guide for the legacy billing system, last updated three years ago.', r: false },
-        { t: 'Holiday schedule for the customer support team for the upcoming fiscal year.', r: false } ] },
-    { q: 'What is the recommended retraining cadence for a churn model in production?',
-      docs: [
-        { t: 'Monitor drift weekly on the top features; retrain the churn model when drift passes the threshold.', r: true },
-        { t: 'Default retraining cadence for tabular churn models is monthly, on rolling twelve month windows.', r: true },
-        { t: 'Cookie policy for the marketing website, updated for the latest privacy regulation cycle.', r: false },
-        { t: 'Shadow a challenger model weekly and promote it only when the uplift is statistically significant.', r: true },
-        { t: 'Brand color palette and typography guidelines for product marketing materials.', r: false },
-        { t: 'Internal travel reimbursement form, version 4.2, with updated meal per diems.', r: false } ] },
-    { q: 'What is the response time promise for priority support tickets?',
-      docs: [
-        { t: 'Priority tickets get a first response within one hour, around the clock, every day.', r: true },
-        { t: 'The support satisfaction survey is sent two days after each ticket closes.', r: false },
-        { t: 'Enterprise plans include a four hour resolution target for priority incidents.', r: true },
-        { t: 'Office visitors must sign in at the front desk and wear a badge at all times.', r: false },
-        { t: 'Standard tickets are answered within one business day in order of arrival.', r: true },
-        { t: 'The brand voice guide asks support writers to avoid jargon in replies.', r: false } ] }
+    { q: 'How do I reset a customer password?', docs: [
+      { t: 'Admin, then Users, then Reset password: sends a one time link.', r: true },
+      { t: 'Passwords need 12 characters and at least one symbol.', r: true },
+      { t: 'Holiday schedule for the support team.', r: false },
+      { t: 'If the email bounces, issue a temporary password.', r: true },
+      { t: 'Quarterly revenue report for the EMEA region.', r: false } ] },
+    { q: 'What is the refund window for online orders?', docs: [
+      { t: 'Online orders can be refunded within 30 days of delivery.', r: true },
+      { t: 'Refunds reach the original card in 5 business days.', r: true },
+      { t: 'Our stores stay open late on weekends.', r: false },
+      { t: 'Shipping is free on orders over $50.', r: false },
+      { t: 'Opened items qualify for store credit instead.', r: true } ] },
+    { q: 'When is the churn model retrained?', docs: [
+      { t: 'The churn model retrains monthly on a rolling window.', r: true },
+      { t: 'Retrain early if drift passes the weekly threshold.', r: true },
+      { t: 'The cookie policy was updated last March.', r: false },
+      { t: 'Brand colors and fonts for marketing decks.', r: false },
+      { t: 'A challenger model is promoted only after it wins a shadow test.', r: true } ] },
+    { q: 'What is the response promise for priority tickets?', docs: [
+      { t: 'Priority tickets: first response within one hour, every day.', r: true },
+      { t: 'Enterprise plans add a four hour resolution target.', r: true },
+      { t: 'Standard tickets are answered within one business day.', r: true },
+      { t: 'Visitors must sign in at the front desk.', r: false },
+      { t: 'Support replies should avoid jargon.', r: false } ] }
   ];
   const SABOTAGE = [
-    { q: 'How does the simulation engine route entities through the queue?',
-      docs: [
-        { t: 'Connector priority and destination capacity drive how work items move between stations.', r: true },
-        { t: 'The engine queue is a priority heap: entities with lower priority numbers leave first.', r: true },
-        { t: 'A new simulation routing benchmark dataset is available in the engineering portal for download.', r: false },
-        { t: 'Simulation entities can call external endpoints; see the integration appendix for details.', r: false },
-        { t: 'Queue overflow policy: past capacity, the oldest entity is dropped unless preempt is set.', r: true },
-        { t: 'Routing protocol simulation engines in network labs are unrelated to discrete event queues.', r: false } ] },
-    { q: 'Which metric tracks how an embedding model handles paraphrased feedback?',
-      docs: [
-        { t: 'Sentence pair cosine similarity on a held out paraphrase set is the canonical evaluation.', r: true },
-        { t: 'The customer feedback dashboard tracks satisfaction trend and category level sentiment.', r: false },
-        { t: 'The STS benchmark measures embedding quality on paraphrased and adversarial sentence pairs.', r: true },
-        { t: 'Embedding model latency benchmark: 256 token input, batch 64, reported in milliseconds.', r: false },
-        { t: 'For paraphrase robust retrieval, combine dense vectors with sparse keyword scores.', r: true },
-        { t: 'A customer feedback paraphrase generator shipped as a separate tool; no embedding model involved.', r: false } ] },
-    { q: 'How much memory does the vector index need in production?',
-      docs: [
-        { t: 'Plan roughly four kilobytes per stored vector at 1,536 dimensions in float32, plus graph overhead.', r: true },
-        { t: 'The vector index of the quarterly report lists every figure and the page it appears on.', r: false },
-        { t: 'Product quantization cuts index memory by an order of magnitude at a small recall cost.', r: true },
-        { t: 'In production, memory leaks in the logging agent were fixed in the latest platform release.', r: false },
-        { t: 'Keeping the index in RAM is what makes approximate nearest neighbor search fast.', r: true },
-        { t: 'A memory palace is a mnemonic indexing technique for remembering long vector sequences.', r: false } ] }
+    { q: 'How does the engine route entities through the queue?', docs: [
+      { t: 'Connector priority and station capacity decide where work goes.', r: true },
+      { t: 'The queue is a priority heap: lowest number leaves first.', r: true },
+      { t: 'A new routing benchmark dataset is available for download.', r: false },
+      { t: 'Network routing protocols are a different field entirely.', r: false },
+      { t: 'Past capacity, the oldest entity in the queue is dropped.', r: true } ] },
+    { q: 'Which metric tracks embedding quality on paraphrases?', docs: [
+      { t: 'Cosine similarity on a held out paraphrase set.', r: true },
+      { t: 'The STS benchmark scores paraphrased sentence pairs.', r: true },
+      { t: 'The feedback dashboard tracks satisfaction and sentiment.', r: false },
+      { t: 'Embedding latency is reported in milliseconds.', r: false },
+      { t: 'A paraphrase generator tool shipped for QA teams.', r: false } ] },
+    { q: 'How much memory does the vector index need?', docs: [
+      { t: 'Plan about four kilobytes per stored vector, plus overhead.', r: true },
+      { t: 'Quantization cuts index memory by ten times.', r: true },
+      { t: 'The report index lists every figure by page.', r: false },
+      { t: 'A memory palace is a mnemonic technique.', r: false },
+      { t: 'Keeping the index in RAM keeps search fast.', r: true } ] },
+    { q: 'What grounds the chatbot answers in company policy?', docs: [
+      { t: 'Retrieved policy passages are passed as context with each question.', r: true },
+      { t: 'The grounding wire protects the server rack from surges.', r: false },
+      { t: 'Policy documents are re-embedded nightly after edits.', r: true },
+      { t: 'The company softball policy allows two guests per game.', r: false },
+      { t: 'Answers cite the passage they came from.', r: true } ] }
   ];
   const STOP = new Set(('a an the of in on for to and or with is are be not no it its this that how what '
-    + 'which do does can then choose see new past').split(' '));
+    + 'which do does can then see new past where when i my our your every').split(' '));
   const stem = w => w.toLowerCase().replace(/[^a-z0-9]/g, '')
     .replace(/(ization|ations|ation|ingly|ings|ing|ers|ies|ied|es|ed|er|ly|s)$/, '');
   const tok = s => s.split(/\s+/).map(stem).filter(w => w.length > 2 && !STOP.has(w));
@@ -3625,43 +3629,68 @@ function renderRetrievalRace() {
     return { sims, topK: new Set(topK) };
   }
 
-  const RR = { mode: 'solo', round: 0, score: 0, p1: 0, p2: 0, picks: new Set(),
-    p1Picks: new Set(), p2Picks: new Set(), turn: 1, revealed: false,
-    deadline: 0, timerId: null, deck: NORMAL, eng: null };
+  const RR = { mode: 'solo', round: 0, score: 0, picks: new Set(), revealed: false,
+    deadline: 0, timerId: null, deck: NORMAL, eng: null, intro: true, introSeen: false };
   const DESCS = {
-    solo: 'Pick the documents that actually answer the query. The retriever picks its top 3 by cosine. Beat it.',
-    timed: '30 seconds per round; remaining seconds become bonus points. Misclicks still cost you.',
-    duel: 'Two players alternate picks; each player scores their own hits. Steal the good documents first.',
-    sabotage: 'Distractors share keywords with the query but answer something else. Cosine falls for them. Will you?'
+    solo: 'Pick the documents that answer the query. Then see what the machine retrieved, and whether you beat it.',
+    timed: '45 seconds per round; leftover seconds become bonus points.',
+    sabotage: 'The hard mode: distractors share the query’s words but answer something else. The machine falls for them.'
   };
   function setMode(m) {
     if (RR.timerId) { clearInterval(RR.timerId); RR.timerId = null; }
-    Object.assign(RR, { mode: m, deck: m === 'sabotage' ? SABOTAGE : NORMAL, round: 0,
-      score: 0, p1: 0, p2: 0, turn: 1, revealed: false });
-    RR.picks.clear(); RR.p1Picks.clear(); RR.p2Picks.clear();
+    Object.assign(RR, { mode: m, deck: m === 'sabotage' ? SABOTAGE : NORMAL,
+      round: 0, score: 0, revealed: false, intro: !RR.introSeen });
+    RR.picks.clear();
     document.querySelectorAll('#rrx-seg .seg-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === m));
     $('rrx-desc').textContent = DESCS[m];
     paint(); timer();
   }
   function timer() {
     $('rrx-timer').innerHTML = '';
-    if (RR.mode !== 'timed') return;
-    RR.deadline = Date.now() + 30000;
+    if (RR.mode !== 'timed' || RR.intro) return;
+    RR.deadline = Date.now() + 45000;
     const tick = () => {
       const rem = Math.max(0, Math.ceil((RR.deadline - Date.now()) / 1000));
-      $('rrx-timer').innerHTML = `<div class="rrx-clock${rem <= 5 ? ' warn' : ''}">${rem}s</div>`;
+      $('rrx-timer').innerHTML = `<div class="rrx-clock${rem <= 8 ? ' warn' : ''}">${rem}s</div>`;
       if (rem <= 0 && !RR.revealed) { clearInterval(RR.timerId); RR.timerId = null; check(); }
     };
     tick(); RR.timerId = setInterval(tick, 250);
   }
   function next() {
     RR.round = (RR.round + 1) % RR.deck.length;
-    RR.picks.clear(); RR.p1Picks.clear(); RR.p2Picks.clear();
-    RR.turn = 1; RR.revealed = false;
+    RR.picks.clear(); RR.revealed = false;
     if (RR.timerId) { clearInterval(RR.timerId); RR.timerId = null; }
     paint(); timer();
   }
+  function paintIntro() {
+    $('rrx-round').textContent = 'HOW A ROUND WORKS';
+    $('rrx-query').textContent = 'Example: "Where do I change my shipping address?"';
+    $('rrx-docs').innerHTML = `
+      <div class="rrx-doc rel"><span class="id">D1</span><div class="rbody">
+        <span class="txt">Edit your shipping address under Account, then Addresses.</span>
+        <div class="rmeta"><span class="emx-bar"><span style="width:84%"></span></span>
+        <span class="score">0.84</span><span class="tags"><b class="ok">relevant</b><b class="mach">cosine picked</b></span></div>
+        <p class="rrx-note">This one answers the question. Picking it earns <b>+100</b>.</p></div></div>
+      <div class="rrx-doc dis"><span class="id">D2</span><div class="rbody">
+        <span class="txt">Shipping is free on orders over $50.</span>
+        <div class="rmeta"><span class="emx-bar"><span style="width:41%"></span></span>
+        <span class="score">0.41</span><span class="tags"><b class="no">distractor</b><b class="mach">cosine picked</b></span></div>
+        <p class="rrx-note">Shares the word "shipping" but does not answer. The machine ranks it high anyway; picking it costs <b>&minus;50</b>.</p></div></div>
+      <div class="rrx-doc"><span class="id">D3</span><div class="rbody">
+        <span class="txt">Our returns policy covers 30 days.</span>
+        <div class="rmeta"><span class="emx-bar"><span style="width:6%"></span></span>
+        <span class="score">0.06</span><span class="tags"><b class="no">distractor</b></span></div>
+        <p class="rrx-note">Off topic; low score. Leave it alone.</p></div></div>
+      <button class="ins-btn rrx-startbtn" id="rrx-start">Got it, start round 1</button>`;
+    $('rrx-scores').innerHTML = `<div class="cell"><div class="n">+100</div><div class="l">RELEVANT PICK</div></div>
+      <div class="cell"><div class="n">-50</div><div class="l">DISTRACTOR PICK</div></div>`;
+    $('rrx-fb').innerHTML = `<p><b>Your goal:</b> pick exactly the documents that answer the query.</p>
+      <p>The machine always retrieves its top ${K} by cosine score. Beat its accuracy and you earn <b>+75</b> extra.</p>
+      <p class="note">Scores are real: computed from word overlap between query and document, live.</p>`;
+    $('rrx-start').addEventListener('click', () => { RR.intro = false; RR.introSeen = true; paint(); timer(); });
+  }
   function paint() {
+    if (RR.intro) { paintIntro(); return; }
     const r = RR.deck[RR.round];
     RR.eng = scoreRound(r);
     $('rrx-query').textContent = r.q;
@@ -3670,9 +3699,7 @@ function renderRetrievalRace() {
     if (RR.revealed) order.sort((a, b) => RR.eng.sims[b] - RR.eng.sims[a]);
     $('rrx-docs').innerHTML = order.map(i => {
       const d = r.docs[i];
-      const mine = RR.mode === 'duel'
-        ? (RR.p1Picks.has(i) ? 'p1' : RR.p2Picks.has(i) ? 'p2' : '')
-        : (RR.picks.has(i) ? 'me' : '');
+      const mine = RR.picks.has(i) ? 'me' : '';
       const sim = RR.eng.sims[i];
       const isTopK = RR.eng.topK.has(i);
       return `<div class="rrx-doc ${mine} ${RR.revealed ? (d.r ? 'rel' : 'dis') : ''}" data-i="${i}">
@@ -3685,64 +3712,43 @@ function renderRetrievalRace() {
             <span class="tags">${d.r ? '<b class="ok">relevant</b>' : '<b class="no">distractor</b>'}${isTopK ? '<b class="mach">cosine picked</b>' : ''}</span>
           </div>` : ''}
         </div>
-        ${RR.revealed ? '' : `<span class="pickmark">${mine ? (mine === 'me' ? 'picked' : mine.toUpperCase()) : ''}</span>`}
+        ${RR.revealed ? '' : `<span class="pickmark">${mine ? 'picked' : ''}</span>`}
       </div>`;
     }).join('');
     $('rrx-docs').querySelectorAll('.rrx-doc').forEach(el => el.addEventListener('click', () => {
       if (RR.revealed) return;
       const i = +el.dataset.i;
-      if (RR.mode === 'duel') {
-        const mineSet = RR.turn === 1 ? RR.p1Picks : RR.p2Picks;
-        const otherSet = RR.turn === 1 ? RR.p2Picks : RR.p1Picks;
-        if (otherSet.has(i)) return;
-        if (mineSet.has(i)) mineSet.delete(i);
-        else { mineSet.add(i); RR.turn = RR.turn === 1 ? 2 : 1; }
-      } else {
-        RR.picks.has(i) ? RR.picks.delete(i) : RR.picks.add(i);
-      }
+      RR.picks.has(i) ? RR.picks.delete(i) : RR.picks.add(i);
       paint();
     }));
-    const sb = RR.mode === 'duel'
-      ? `<div class="cell ${RR.turn === 1 ? 'turn' : ''}"><div class="n">${RR.p1}</div><div class="l">PLAYER 1</div></div>
-         <div class="cell ${RR.turn === 2 ? 'turn' : ''}"><div class="n">${RR.p2}</div><div class="l">PLAYER 2</div></div>`
-      : `<div class="cell"><div class="n">${RR.score}</div><div class="l">SCORE</div></div>
-         <div class="cell"><div class="n">${K}</div><div class="l">RETRIEVER TOP K</div></div>`;
-    $('rrx-scores').innerHTML = sb;
-    if (!RR.revealed) $('rrx-fb').innerHTML = `<p class="note">${RR.mode === 'duel' ? `Player ${RR.turn} to pick.` : `Select the documents you believe answer the query, then check.`}</p>`;
+    $('rrx-scores').innerHTML = `<div class="cell"><div class="n">${RR.score}</div><div class="l">SCORE</div></div>
+      <div class="cell"><div class="n">${K}</div><div class="l">RETRIEVER TOP K</div></div>`;
+    if (!RR.revealed) $('rrx-fb').innerHTML = `<p class="note">Select the documents you believe answer the query, then check.</p>`;
   }
   function check() {
-    if (RR.revealed) return;
+    if (RR.revealed || RR.intro) return;
     const r = RR.deck[RR.round], eng = RR.eng;
     const relevant = new Set(r.docs.map((d, i) => d.r ? i : -1).filter(i => i >= 0));
     const machineHits = [...eng.topK].filter(i => relevant.has(i)).length;
-    let html = '';
-    if (RR.mode === 'duel') {
-      const tally = (set) => { let h = 0, m = 0; set.forEach(i => relevant.has(i) ? h++ : m++); return { h, m, pts: Math.max(0, h * 100 - m * 50) }; };
-      const a = tally(RR.p1Picks), b = tally(RR.p2Picks);
-      RR.p1 += a.pts; RR.p2 += b.pts;
-      html = `<p><b>${a.pts === b.pts ? 'Tie round.' : (a.pts > b.pts ? 'Player 1 takes the round.' : 'Player 2 takes the round.')}</b>
-        P1 ${a.h} hits, ${a.m} misses, +${a.pts}. P2 ${b.h} hits, ${b.m} misses, +${b.pts}.</p>`;
-    } else {
-      let h = 0, m = 0; RR.picks.forEach(i => relevant.has(i) ? h++ : m++);
-      let pts = Math.max(0, h * 100 - m * 50), bonus = 0, beat = 0;
-      if (RR.mode === 'timed' && RR.deadline) { bonus = Math.max(0, Math.ceil((RR.deadline - Date.now()) / 1000)) * 5; }
-      if (h > machineHits || (h === machineHits && m === 0 && machineHits < relevant.size)) beat = 75;
-      pts += bonus + beat;
-      RR.score += pts;
-      const prec = (h + m) ? (h / (h + m)) : 0, rec = relevant.size ? h / relevant.size : 0;
-      const mPrec = machineHits / K, mRec = relevant.size ? machineHits / relevant.size : 0;
-      html = `<p><b>You found ${h} of ${relevant.size} relevant documents${m ? `, picked ${m} distractor${m > 1 ? 's' : ''}` : ''}.</b> +${pts} points${bonus ? `, including +${bonus} time bonus` : ''}${beat ? `, including +75 for beating the machine` : ''}.</p>
-        <p>The cosine retriever took its top ${K} and got <b>${machineHits} of ${relevant.size}</b> right.</p>
-        <p class="rrx-metrics">you&nbsp;&nbsp;precision ${prec.toFixed(2)} &middot; recall ${rec.toFixed(2)}<br>machine&nbsp;&nbsp;precision ${mPrec.toFixed(2)} &middot; recall ${mRec.toFixed(2)}</p>`;
-    }
+    let h = 0, m = 0; RR.picks.forEach(i => relevant.has(i) ? h++ : m++);
+    let pts = Math.max(0, h * 100 - m * 50), bonus = 0, beat = 0;
+    if (RR.mode === 'timed' && RR.deadline) { bonus = Math.max(0, Math.ceil((RR.deadline - Date.now()) / 1000)) * 5; }
+    if (h > machineHits || (h === machineHits && m === 0 && machineHits < relevant.size)) beat = 75;
+    pts += bonus + beat;
+    RR.score += pts;
+    const prec = (h + m) ? (h / (h + m)) : 0, rec = relevant.size ? h / relevant.size : 0;
+    const mPrec = machineHits / K, mRec = relevant.size ? machineHits / relevant.size : 0;
+    let html = `<p><b>You found ${h} of ${relevant.size} relevant documents${m ? `, picked ${m} distractor${m > 1 ? 's' : ''}` : ''}.</b> +${pts} points${bonus ? `, including +${bonus} time bonus` : ''}${beat ? `, including +75 for beating the machine` : ''}.</p>
+      <p>The cosine retriever took its top ${K} and got <b>${machineHits} of ${relevant.size}</b> right.</p>
+      <p class="rrx-metrics">you&nbsp;&nbsp;precision ${prec.toFixed(2)} &middot; recall ${rec.toFixed(2)}<br>machine&nbsp;&nbsp;precision ${mPrec.toFixed(2)} &middot; recall ${mRec.toFixed(2)}</p>`;
     const trap = r.docs.map((d, i) => ({ d, i, s: eng.sims[i] })).filter(x => !x.d.r && eng.topK.has(x.i)).sort((x, y) => y.s - x.s)[0];
     if (trap) html += `<p class="note">The machine was fooled by D${trap.i + 1} (cosine ${trap.s.toFixed(3)}): it shares the query's words but answers a different question. Similarity is not relevance; production RAG adds a reranker for exactly this.</p>`;
-    else html += `<p class="note">No distractor cracked the machine's top ${K} this round; on clean corpora, cosine alone does fine. Sabotage mode is where it breaks.</p>`;
+    else html += `<p class="note">No distractor cracked the machine's top ${K} this round. Sabotage mode is where it breaks.</p>`;
     $('rrx-fb').innerHTML = html;
     RR.revealed = true;
     if (RR.timerId) { clearInterval(RR.timerId); RR.timerId = null; }
     paint();
-    $('rrx-fb').innerHTML = html;  // paint() resets the hint; restore the verdict
+    $('rrx-fb').innerHTML = html;
   }
 
   $('tool-body').innerHTML = `
@@ -3750,7 +3756,6 @@ function renderRetrievalRace() {
       <div class="ins-seg" id="rrx-seg">
         <button class="seg-btn active" data-mode="solo">Solo</button>
         <button class="seg-btn" data-mode="timed">Timed</button>
-        <button class="seg-btn" data-mode="duel">Two player</button>
         <button class="seg-btn" data-mode="sabotage">Sabotage</button>
       </div>
       <span class="rrx-desc" id="rrx-desc"></span>
@@ -3775,9 +3780,9 @@ function renderRetrievalRace() {
         </div>
       </div>
     </div>
-    <div class="ins-status">6 documents per round  |  scores are true tf-idf cosine between query and document  |  the machine retrieves top ${K}  |  relevance labels are the ground truth it cannot see</div>`;
+    <div class="ins-status">5 short documents per round, 4 rounds per mode  |  scores are true tf-idf cosine  |  the machine retrieves top ${K}  |  relevance labels are the ground truth it cannot see</div>`;
   $('rrx-check').addEventListener('click', check);
-  $('rrx-next').addEventListener('click', next);
+  $('rrx-next').addEventListener('click', () => { if (!RR.intro) next(); });
   document.querySelectorAll('#rrx-seg .seg-btn').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
   setMode('solo');
 }
@@ -4698,10 +4703,14 @@ function autoFillCurrent() {
   if (view.kind !== 'tool') return;
   const id = SLUG_TO_ID[view.toolId] || view.toolId;
   if (id === 'retrieval-race') {
-    const docs = document.querySelectorAll('.rrx-doc');
-    [0, 1, 2].forEach(i => docs[i] && docs[i].click());
-    const btn = document.getElementById('rrx-check');
-    if (btn) setTimeout(() => btn.click(), 30);
+    const st = document.getElementById('rrx-start');
+    if (st) st.click();
+    setTimeout(() => {
+      const docs = document.querySelectorAll('.rrx-doc');
+      [0, 1, 3].forEach(i => docs[i] && docs[i].click());
+      const btn = document.getElementById('rrx-check');
+      if (btn) btn.click();
+    }, 60);
   } else if (id === 'embeddings') {
     const q = document.getElementById('emx-q'), go = document.getElementById('emx-go');
     if (q && go) { q.value = 'how do neural networks learn on GPUs?'; go.click(); }
