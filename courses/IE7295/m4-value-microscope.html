@@ -1,0 +1,581 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Value Microscope - IE 7295</title><link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script><style>
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;background:#f4f6f8;color:#3d3d3d;font-size:12.5px;line-height:1.5;
+  display:flex;flex-direction:column;overflow:hidden}
+
+.band{flex:0 0 auto;background:linear-gradient(135deg,#C3E3E4 0%,#C1E2E3 100%);
+  padding:9px 16px;position:relative}
+.band::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;
+  background:linear-gradient(90deg,#F5D000 0 33.33%,#E2231A 33.33% 66.66%,#0064B0 66.66% 100%)}
+.band h1{margin:0;font-size:16px;font-weight:700;color:#20484A}
+.band .sub{display:inline-block;background:rgba(255,255,255,.75);color:#3d5f61;
+  padding:2px 9px;border-radius:999px;font-size:11px;margin-top:3px}
+.foot{flex:0 0 auto;border-top:1px solid #E4E9EB;background:#fff;padding:8px 16px;
+  text-align:center;font-size:11px;color:#a8b0b6}
+
+.stage{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:9px;
+  padding:10px 14px}
+.tabs{flex:0 0 auto;display:inline-flex;background:#fff;border:1px solid #E4E9EB;
+  border-radius:999px;padding:3px;align-self:flex-start}
+.tab{font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;color:#5b7175;background:none;
+  border:0;border-radius:999px;padding:7px 20px;cursor:pointer;white-space:nowrap}
+.tab.on{background:linear-gradient(135deg,#006064 0%,#17a2b8 100%);color:#fff}
+
+.cols{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:264px 1fr;gap:10px}
+.side{display:flex;flex-direction:column;gap:8px;min-height:0;overflow:auto;
+  padding-right:2px}
+.main{display:flex;flex-direction:column;gap:9px;min-height:0}
+
+.card{background:#fff;border:1px solid #E4E9EB;border-radius:6px;padding:10px 12px}
+.card.rule{border-left:3px solid #8FC8CA;border-radius:0 6px 6px 0}
+h2{font-size:10.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+  color:#006064;margin:0 0 6px}
+
+.ctl{margin-bottom:9px}
+.ctl:last-child{margin-bottom:0}
+.ctl .lab{display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+  font-size:11px;font-weight:700;color:#20484A;margin-bottom:2px}
+.ctl .val{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;font-weight:700;color:#006064;
+  background:#eef6f6;border-radius:999px;padding:1px 9px}
+.ctl .hint{font-size:10px;color:#a8b0b6;margin-top:3px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:10px;
+  border-radius:999px;margin:6px 0 0;cursor:pointer;outline:none;
+  background:linear-gradient(90deg,#0d5f62 0%,#17a2b8 var(--f,0%),
+             #e2e9ea var(--f,0%),#e2e9ea 100%)}
+input[type=range]::-webkit-slider-runnable-track{height:10px;background:transparent}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;margin-top:-5px;
+  width:20px;height:20px;border-radius:999px;background:#fff;border:2px solid #006064;
+  box-shadow:0 1px 4px rgba(0,0,0,.18)}
+input[type=range]::-moz-range-track{height:10px;background:transparent}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:999px;
+  background:#fff;border:2px solid #006064;box-shadow:0 1px 4px rgba(0,0,0,.18)}
+select{width:100%;font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;font-size:12px;color:#20484A;background:#fff;
+  border:1px solid #E4E9EB;border-radius:6px;padding:7px 9px;margin-top:5px;cursor:pointer}
+select:focus{outline:none;border-color:#8FC8CA}
+.btns{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
+.btn{flex:1 1 0;min-width:76px;font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;font-size:11.5px;font-weight:700;
+  border-radius:999px;padding:7px 0;cursor:pointer;border:1px solid #E4E9EB;
+  background:#fff;color:#20484A}
+.btn:hover{border-color:#8FC8CA;background:#eef6f6}
+.btn.go{border:0;color:#fff;background:linear-gradient(135deg,#006064 0%,#17a2b8 100%)}
+.btn.stop{border:0;color:#fff;background:linear-gradient(135deg,#8b1a1a 0%,#b8433f 100%)}
+.btn:disabled{background:#eef1f2;color:#9aa8ae;cursor:not-allowed;border-color:#E4E9EB}
+
+.eq{position:relative;background:rgba(143,200,202,.13);border-left:3px solid #8FC8CA;
+  border-radius:0 6px 6px 0;padding:11px 42px 11px 15px;text-align:center;
+  min-height:62px;display:flex;flex-direction:column;justify-content:center}
+.eq .cap{font-size:11px;color:#3d3d3d;margin-top:6px}
+
+/* the equation flips to its own explanation, because a student who does not
+   recognise a symbol has nowhere else to go and will not ask */
+.eq-flip{position:absolute;top:9px;right:10px;width:24px;height:24px;padding:0;
+  border:1px solid #8FC8CA;border-radius:999px;background:#fff;color:#006064;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:all .14s}
+.eq-flip:hover{background:#006064;color:#fff;border-color:#006064}
+.eq.back{background:rgba(0,96,100,.07);border-left-color:#006064;text-align:right}
+.eq.back .terms{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;
+  text-align:left;font-size:11.5px;line-height:1.5;color:#3d3d3d;width:100%}
+.eq.back .terms b{color:#006064;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:nowrap;text-align:right}
+.eq.back .lead{font-size:11.5px;color:#3d3d3d;line-height:1.55;margin-bottom:8px;
+  text-align:left}
+.viz{flex:1 1 auto;min-height:0;background:#fff;border:1px solid #E4E9EB;border-radius:6px;
+  padding:12px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.reading{flex:0 0 auto;height:58px;overflow:auto;background:rgba(0,96,100,.07);
+  border-left:3px solid #006064;border-radius:0 6px 6px 0;padding:10px 14px;
+  font-size:12px;line-height:1.55;color:#3d3d3d}
+.reading b{color:#006064;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-weight:700}
+.reads{flex:0 0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.read{background:#fff;border:1px solid #E4E9EB;border-radius:6px;padding:8px 11px}
+.read .k{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  color:#a8b0b6}
+.read .v{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:17px;font-weight:700;color:#20484A;margin-top:1px}
+.read.on .v{color:#006064}
+.read.warn .v{color:#8b1a1a}
+
+.steps{counter-reset:s;margin:0;padding:0;list-style:none}
+.steps li{counter-increment:s;position:relative;padding-left:20px;margin-bottom:5px;
+  font-size:10.5px;line-height:1.45;color:#3d3d3d}
+.steps li:last-child{margin-bottom:0}
+.steps li::before{content:counter(s);position:absolute;left:0;top:1px;width:15px;
+  height:15px;border-radius:999px;background:#006064;color:#fff;font-size:9.5px;
+  font-weight:700;display:flex;align-items:center;justify-content:center}
+.katex{font-size:1.05em}
+
+/* pieces individual tools draw with, all from the same palette */
+.tile{border:1px solid #E4E9EB;border-radius:6px;background:#f7f9f9;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;transition:all .18s}
+.tile .k{font-size:10px;color:#a8b0b6}
+.tile .v{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:22px;font-weight:700;color:#20484A}
+.tile.on{border:2px solid #006064;background:#eef6f6}
+.tile.best{border:2px solid #2e9e6b;background:rgba(0,150,90,.10)}
+.tile.best .v{color:#1d6b4a}
+.tile.bad{border:2px solid #E2231A;background:rgba(226,35,26,.08)}
+.tile.bad .v{color:#8b1a1a}
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:14px;height:100%;
+  width:100%;padding-bottom:22px}
+.bar{flex:1;max-width:92px;display:flex;flex-direction:column;justify-content:flex-end;
+  align-items:center;height:100%;position:relative}
+.bar .fill{width:100%;border-radius:5px 5px 0 0;min-height:3px;
+  background:linear-gradient(180deg,#17a2b8,#0d5f62)}
+.bar .fill.neg{background:linear-gradient(180deg,#d4685f,#8b1a1a)}
+.bar .t{position:absolute;bottom:-19px;font-size:11px;color:#a8b0b6;white-space:nowrap}
+.bar .c{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;font-weight:700;color:#006064;margin-bottom:4px}
+.work{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;color:#3d3d3d;line-height:2.1}
+.work b{color:#006064}
+/* first run: who is playing, then what the tool is for. Same pattern as the
+   Module 1 game, so a student meets one convention across the whole set. */
+.veil{position:fixed;inset:0;background:rgba(32,72,74,.42);z-index:70;display:none;
+  align-items:center;justify-content:center;padding:20px}
+.veil.on{display:flex}
+.dlg{background:#fff;border-radius:10px;padding:22px 26px;max-width:470px;width:100%;
+  box-shadow:0 18px 50px rgba(0,0,0,.24);border-top:3px solid #006064}
+.dlg h2{font-size:16px;font-weight:700;color:#20484A;margin:0;text-transform:none;
+  letter-spacing:0}
+.dlg p{font-size:12.5px;line-height:1.6;color:#3d3d3d;margin:0 0 13px}
+.dlg input{width:100%;font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;font-size:12.5px;color:#20484A;text-align:center;
+  padding:9px 12px;border:1px solid #8FC8CA;border-radius:999px;outline:none}
+.dlg input:focus{border-color:#006064}
+.dlg .go2{margin-top:11px;width:100%;font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+  color:#fff;background:linear-gradient(135deg,#006064 0%,#17a2b8 100%);border:0;
+  border-radius:999px;padding:9px 0;cursor:pointer}
+.dlg .skip{background:none;border:0;color:#9aa5a8;font-size:11px;margin-top:7px;
+  width:100%;cursor:pointer;font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}
+.dlg-head{display:flex;align-items:center;justify-content:space-between;gap:14px;
+  margin-bottom:8px}
+.ring{position:relative;flex:0 0 auto;width:36px;height:36px;padding:0;border:0;
+  background:none;cursor:pointer}
+.ring span{position:absolute;inset:0;display:flex;align-items:center;
+  justify-content:center;font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;color:#006064}
+.ring:hover span{color:#E2231A}
+.introbox{background:rgba(143,200,202,.14);border-left:3px solid #8FC8CA;
+  border-radius:0 6px 6px 0;padding:13px 15px;margin-bottom:4px}
+.introbox li{font-size:12px;line-height:1.5;color:#3d3d3d;margin-bottom:5px;
+  list-style:none;padding-left:14px;position:relative}
+.introbox li:last-child{margin-bottom:0}
+.introbox li::before{content:"";position:absolute;left:0;top:8px;width:5px;height:5px;
+  border-radius:999px;background:#8FC8CA}
+.introbox b{color:#20484A}
+.whois{position:absolute;right:16px;top:9px;display:flex;align-items:center}
+.whois .ul{font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+  color:#fff;background:#006064;border-radius:999px 0 0 999px;padding:3px 8px 3px 10px;
+  display:inline-flex;align-items:center;gap:5px}
+.whois .un{font-size:11px;font-weight:700;color:#006064;background:#eef6f6;
+  border:1px solid #8FC8CA;border-left:0;border-radius:0 999px 999px 0;padding:2px 11px}
+</style></head><body><div class="band"><h1>Value Microscope</h1><div class="sub">Module 4 &middot; policy evaluation, one square at a time</div></div><div class="stage"><div class="tabs"><button class="tab on" data-t="sweep" type="button">Sweeps</button><button class="tab" data-t="cell" type="button">One square</button></div><div class="cols"><div class="side"><div class="card rule" id="controls"></div><div class="card rule" id="says"></div><div class="card rule" id="try"></div></div><div class="main"><div class="card eq" id="eq"></div><div class="viz" id="viz"></div><div class="reading" id="reading"></div><div class="reads" id="reads"></div></div></div></div><div class="foot">IE7295: Applied Reinforcement Learning &middot; Prof. Dehghani</div><div class="veil" id="name-veil"><div class="dlg"><h2>Before you start</h2><p>Put your name in so it appears on the tool. Any screenshot you take for an assignment will then carry it.</p><input type="text" id="name-in" maxlength="40" placeholder="Your name" autocomplete="name" spellcheck="false"><button class="go2" type="button" id="name-go">Start</button><button class="skip" type="button" id="name-skip">Skip</button></div></div><div class="veil" id="intro-veil"><div class="dlg"><div class="dlg-head"><h2 id="intro-hi">How this works</h2><button class="ring" id="intro-skip" type="button" aria-label="Skip"><svg viewBox="0 0 36 36" width="36" height="36"><circle cx="18" cy="18" r="15.5" fill="none" stroke="#dfe8e9" stroke-width="3"/><circle id="intro-ring" cx="18" cy="18" r="15.5" fill="none" stroke="#006064" stroke-width="3" stroke-linecap="round" stroke-dasharray="97.4" stroke-dashoffset="0" transform="rotate(-90 18 18)"/></svg><span id="intro-count">10</span></button></div><div class="introbox" id="intro-body"></div><button class="go2" type="button" id="intro-go">Got it</button></div></div><script>
+var INTRO = ['Value Microscope', [
+  'A four by four grid with a goal, a trap and a wall. Every square holds a value, starting at zero.',
+  '<b>One sweep</b> replaces every value with the same small calculation, once per square.',
+  'Values spread outward one ring per sweep. That is information travelling, not an agent moving.',
+  'Click any square on the <b>One square</b> tab to see the arithmetic behind its number.',
+]];
+
+var R = 4, C = 4;
+var S = {
+  tab: 'sweep', gamma: 90, step: -4, sel: [1, 1], sweeps: 0, delta: 0,
+  V: [], goal: [0, 3], trap: [1, 3], wall: [1, 1],
+  autoOn: false, autoT: null
+};
+
+function reset(){
+  S.V = [];
+  for (var r = 0; r < R; r++){
+    S.V.push([]);
+    for (var c = 0; c < C; c++) S.V[r].push(0);
+  }
+  S.sweeps = 0; S.delta = 0; S.sel = [2, 0];
+  stopAuto();
+}
+function isWall(r, c){ return r === S.wall[0] && c === S.wall[1]; }
+function isTerm(r, c){
+  return (r === S.goal[0] && c === S.goal[1]) || (r === S.trap[0] && c === S.trap[1]);
+}
+function rewardAt(r, c){
+  if (r === S.goal[0] && c === S.goal[1]) return 1;
+  if (r === S.trap[0] && c === S.trap[1]) return -1;
+  return S.step / 100;
+}
+function neighbours(r, c){
+  var out = [];
+  [[-1,0],[1,0],[0,-1],[0,1]].forEach(function(d){
+    var nr = r + d[0], nc = c + d[1];
+    if (nr < 0 || nr >= R || nc < 0 || nc >= C || isWall(nr, nc)){ nr = r; nc = c; }
+    out.push([nr, nc]);
+  });
+  return out;                       // walking into a wall leaves you where you are
+}
+function backup(r, c){
+  // the equal-probability random policy: average over the four moves
+  var g = S.gamma / 100, sum = 0, nb = neighbours(r, c);
+  nb.forEach(function(p){ sum += S.V[p[0]][p[1]]; });
+  return rewardAt(r, c) + g * (sum / 4);
+}
+function sweep(){
+  var next = [], d = 0;
+  for (var r = 0; r < R; r++){
+    next.push([]);
+    for (var c = 0; c < C; c++){
+      if (isWall(r, c) || isTerm(r, c)){ next[r].push(S.V[r][c]); continue; }
+      var v = backup(r, c);
+      d = Math.max(d, Math.abs(v - S.V[r][c]));
+      next[r].push(v);
+    }
+  }
+  // terminals hold the reward itself, which is where the value comes from
+  next[S.goal[0]][S.goal[1]] = 1;
+  next[S.trap[0]][S.trap[1]] = -1;
+  S.V = next; S.sweeps += 1; S.delta = d;
+  render();
+}
+function stopAuto(){ S.autoOn = false; if (S.autoT){ clearInterval(S.autoT); S.autoT = null; } }
+function toggleAuto(){
+  if (S.autoOn){ stopAuto(); render(); return; }
+  S.autoOn = true;
+  S.autoT = setInterval(function(){
+    if (S.delta < 0.001 && S.sweeps > 1){ stopAuto(); render(); return; }
+    if (S.sweeps > 120){ stopAuto(); render(); return; }
+    sweep();
+  }, 160);
+  render();
+}
+function selectCell(r, c){ S.sel = [r, c]; render(); }
+function onInput(id, val){
+  if (id === 'gamma') S.gamma = +val;
+  if (id === 'step') S.step = +val;
+  render();
+}
+function onTab(){ stopAuto(); }
+
+function grid(){
+  var lo = 99, hi = -99;
+  for (var r = 0; r < R; r++) for (var c = 0; c < C; c++){
+    if (isWall(r, c)) continue;
+    lo = Math.min(lo, S.V[r][c]); hi = Math.max(hi, S.V[r][c]);
+  }
+  var span = Math.max(0.2, hi - lo);
+  var out = '<div style="display:grid;grid-template-columns:repeat(' + C +
+            ',88px);grid-template-rows:repeat(' + R + ',72px);gap:7px">';
+  for (var r = 0; r < R; r++){
+    for (var c = 0; c < C; c++){
+      if (isWall(r, c)){
+        out += '<div class="tile" style="background:#dfe6e8;border-color:#cdd6d8"></div>';
+        continue;
+      }
+      var v = S.V[r][c];
+      var t = (v - lo) / span;                      // 0 at the lowest, 1 at the highest
+      var bg = v >= 0 ? 'rgba(29,107,74,' + (0.06 + 0.5 * t).toFixed(2) + ')'
+                      : 'rgba(160,45,45,' + (0.06 + 0.5 * (1 - t)).toFixed(2) + ')';
+      var cls = (r === S.sel[0] && c === S.sel[1]) ? ' on' : '';
+      var tag = (r === S.goal[0] && c === S.goal[1]) ? 'goal'
+              : (r === S.trap[0] && c === S.trap[1]) ? 'trap' : '';
+      out += '<div class="tile' + cls + '" style="cursor:pointer;background:' + bg +
+             '" onclick="selectCell(' + r + ',' + c + ')">' +
+             (tag ? '<div class="k">' + tag + '</div>' : '') +
+             '<div class="v" style="font-size:17px">' + v.toFixed(2) + '</div></div>';
+    }
+  }
+  return out + '</div>';
+}
+
+var TABS = {
+  sweep: {
+    eq: 'V(s) \\leftarrow R(s) + \\gamma \\sum_{s\'} \\tfrac{1}{4} V(s\')',
+    cap: 'Every state takes the average of its four neighbours, discounted, plus its own reward.',
+    explain: ['Policy evaluation for a policy that moves at random. No maximum here, because this policy does not choose.', [
+     ['V(s)', 'the value of this square'],
+     ['R(s)', 'the reward for being on it'],
+     ['gamma', 'how much a neighbour is worth from here'],
+     ['1/4', 'each of the four moves is equally likely under this policy'],
+     ["sum V(s')", 'add up the neighbours, then take the average']]],
+    says: ['One rule, applied everywhere', 'There is no cleverness here. Each sweep ' +
+           'replaces every value with the same small calculation, and repeating it ' +
+           'is what makes the numbers settle.'],
+    steps: ['Everything starts at zero except the goal and the trap, which hold ' +
+            'their own rewards.',
+            'Press <b>One sweep</b>. Only the squares next to the goal and trap ' +
+            'move, because everywhere else is still averaging zeros.',
+            'Keep sweeping. The values spread outward one ring per sweep. That is ' +
+            'information travelling, not the agent moving.',
+            'Watch <b>largest change</b> shrink toward zero. When it stops moving, ' +
+            'the values are the answer for this policy.'],
+    read: function(){
+      if (!S.sweeps) return 'Nothing has been swept yet. Every square is <b>0.00</b> ' +
+        'except the goal at <b>1.00</b> and the trap at <b>-1.00</b>, which are the ' +
+        'only two values anyone told the agent.';
+      var done = S.delta < 0.001;
+      return 'After <b>' + S.sweeps + '</b> sweeps the largest single change was <b>' +
+        S.delta.toFixed(4) + '</b>. ' +
+        (done ? 'That is small enough to call it settled: sweeping again would ' +
+                'change nothing you could see. These are the true values of this ' +
+                'policy.'
+              : 'Values are still moving, so the numbers on screen are a snapshot ' +
+                'of a calculation partway through, not an answer yet.');
+    },
+    controls: function(){
+      return slider('gamma', 'Discount &gamma;', 0, 99, S.gamma,
+                    function(v){ return (v/100).toFixed(2); },
+                    'How much a neighbour is worth from here')
+           + slider('step', 'Step reward', -20, 0, S.step,
+                    function(v){ return (v/100).toFixed(2); },
+                    'The small cost of being anywhere but the ends')
+           + '<div class="btns">'
+           + button(S.autoOn ? 'Stop' : 'Run to settle', 'toggleAuto()', S.autoOn ? 'stop' : 'go')
+           + button('One sweep', 'sweep()', '') + '</div>'
+           + '<div class="btns">' + button('Reset', 'reset();render()', '') + '</div>';
+    },
+    draw: function(){
+      $('viz').innerHTML = grid();
+      $('reads').innerHTML = reads([
+        ['sweeps', String(S.sweeps), ''],
+        ['largest change', S.sweeps ? S.delta.toFixed(4) : '-',
+          S.sweeps && S.delta < 0.001 ? 'on' : ''],
+        ['settled', S.sweeps > 1 && S.delta < 0.001 ? 'yes' : 'no',
+          S.sweeps > 1 && S.delta < 0.001 ? 'on' : ''],
+        ['discount', (S.gamma / 100).toFixed(2), '']
+      ]);
+    }
+  },
+  cell: {
+    eq: 'V(s) \\leftarrow R(s) + \\gamma \\cdot \\mathrm{mean}\\big(V(s_1), V(s_2), V(s_3), V(s_4)\\big)',
+    cap: 'The same rule, for one square, with its actual numbers.',
+    says: ['Look at one square', 'Click any square on the grid to open it up. ' +
+           'The whole sweep is this calculation, done once per square.'],
+    steps: ['Click a square. Its four neighbours and the arithmetic appear here.',
+            'A move into a wall or off the edge leaves the agent where it is, so ' +
+            'that neighbour is the square itself.',
+            'Press <b>One sweep</b> and watch this square\'s number become the ' +
+            'result you were shown.',
+            'Pick a square far from the goal. Early on its neighbours are all zero, ' +
+            'which is why distant squares stay still for several sweeps.'],
+    read: function(){
+      var r = S.sel[0], c = S.sel[1];
+      if (isWall(r, c)) return 'That square is a wall. It has no value because the ' +
+        'agent can never be in it.';
+      if (isTerm(r, c)) return 'That is a terminal square. Its value is just its ' +
+        'reward, <b>' + S.V[r][c].toFixed(2) + '</b>, and the sweep leaves it alone.';
+      var nb = neighbours(r, c), sum = 0;
+      nb.forEach(function(p){ sum += S.V[p[0]][p[1]]; });
+      var g = S.gamma / 100, mean = sum / 4, next = rewardAt(r, c) + g * mean;
+      return 'Its neighbours average <b>' + mean.toFixed(3) + '</b>. Discounted by <b>' +
+        g.toFixed(2) + '</b> that is <b>' + (g * mean).toFixed(3) + '</b>, plus the ' +
+        'step reward of <b>' + rewardAt(r, c).toFixed(2) + '</b>, giving <b>' +
+        next.toFixed(3) + '</b> against its current <b>' + S.V[r][c].toFixed(3) + '</b>.';
+    },
+    controls: function(){
+      return slider('gamma', 'Discount &gamma;', 0, 99, S.gamma,
+                    function(v){ return (v/100).toFixed(2); }, '')
+           + '<div class="btns">' + button('One sweep', 'sweep()', 'go')
+           + button('Reset', 'reset();render()', '') + '</div>';
+    },
+    draw: function(){
+      var r = S.sel[0], c = S.sel[1];
+      var nb = neighbours(r, c), sum = 0;
+      nb.forEach(function(p){ sum += S.V[p[0]][p[1]]; });
+      var g = S.gamma / 100, mean = sum / 4;
+      var names = ['up', 'down', 'left', 'right'];
+      $('viz').innerHTML =
+        '<div style="display:flex;gap:26px;align-items:center">' + grid() +
+        '<div class="work">' +
+          'square <b>(' + r + ', ' + c + ')</b><br>' +
+          names.map(function(n, i){
+            return n + ' &#8594; <b>' + S.V[nb[i][0]][nb[i][1]].toFixed(2) + '</b>';
+          }).join('<br>') +
+          '<br><span style="color:#a8b0b6">' + '&mdash;'.repeat(12) + '</span><br>' +
+          'mean = <b>' + mean.toFixed(3) + '</b><br>' +
+          '&gamma; &times; mean = <b>' + (g * mean).toFixed(3) + '</b><br>' +
+          'R + that = <b>' + (rewardAt(r, c) + g * mean).toFixed(3) + '</b>' +
+        '</div></div>';
+      $('reads').innerHTML = reads([
+        ['square', '(' + r + ', ' + c + ')', ''],
+        ['current V', S.V[r][c].toFixed(3), ''],
+        ['after a sweep', (isTerm(r, c) || isWall(r, c) ? S.V[r][c]
+                           : rewardAt(r, c) + g * mean).toFixed(3), 'on'],
+        ['sweeps', String(S.sweeps), '']
+      ]);
+    }
+  }
+};
+reset();
+
+var $ = function(id){ return document.getElementById(id); };
+
+function slider(id, label, min, max, val, fmt, hint, step){
+  return '<div class="ctl"><div class="lab"><span>' + label + '</span>' +
+         '<span class="val" id="v-' + id + '">' + fmt(val) + '</span></div>' +
+         '<input type="range" id="' + id + '" min="' + min + '" max="' + max +
+         '" step="' + (step || 1) + '" value="' + val + '">' +
+         (hint ? '<div class="hint">' + hint + '</div>' : '') + '</div>';
+}
+function picker(id, label, opts, sel, hint){
+  var o = opts.map(function(p){
+    return '<option value="' + p[0] + '"' + (String(p[0]) === String(sel) ? ' selected' : '') +
+           '>' + p[1] + '</option>'; }).join('');
+  return '<div class="ctl"><div class="lab"><span>' + label + '</span></div>' +
+         '<select id="' + id + '">' + o + '</select>' +
+         (hint ? '<div class="hint">' + hint + '</div>' : '') + '</div>';
+}
+function button(label, fn, kind){
+  return '<button class="btn ' + (kind || '') + '" type="button" onclick="' + fn +
+         '">' + label + '</button>';
+}
+function reads(items){
+  return items.map(function(it){
+    return '<div class="read' + (it[2] ? ' ' + it[2] : '') + '"><div class="k">' +
+           it[0] + '</div><div class="v">' + it[1] + '</div></div>'; }).join('');
+}
+function paintRange(r){
+  var pct = ((+r.value - +r.min) / ((+r.max - +r.min) || 1)) * 100;
+  r.style.setProperty('--f', pct + '%');
+}
+function wire(){
+  [].forEach.call(document.querySelectorAll('input[type=range]'), function(r){
+    paintRange(r);
+    r.addEventListener('input', function(){ paintRange(r); onInput(r.id, +r.value); });
+  });
+  [].forEach.call(document.querySelectorAll('select'), function(s){
+    s.addEventListener('change', function(){ onInput(s.id, s.value); });
+  });
+}
+var FLIP = {};                       // which tabs are currently showing the back
+
+function flipEq(){
+  FLIP[S.tab] = !FLIP[S.tab];
+  render();
+}
+function eqButton(){
+  var back = FLIP[S.tab];
+  var icon = back
+    ? '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" ' +
+      'stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M19 12H5M11 6l-6 6 6 6"/></svg>'
+    : '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" ' +
+      'stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<circle cx="12" cy="12" r="9"/><path d="M9.6 9.2a2.5 2.5 0 1 1 3.2 3.1c-.6.3-.8.7-.8 1.3v.4"/>' +
+      '<path d="M12 17.4h.01"/></svg>';
+  return '<button class="eq-flip" type="button" onclick="flipEq()" title="' +
+         (back ? 'Back to the equation' : 'What does this mean?') + '">' + icon + '</button>';
+}
+
+// Rewriting a panel that has not changed destroys whatever the pointer is on,
+// which is why Stop could not be clicked while a tool was running.
+function setIf(id, html){
+  var el = $(id);
+  if (el.innerHTML !== html) el.innerHTML = html;
+}
+
+function render(){
+  var t = TABS[S.tab];
+  if (t.eq) {
+    $('eq').style.display = '';
+    if (FLIP[S.tab] && t.explain){
+      $('eq').className = 'card eq back';
+      $('eq').innerHTML = eqButton() +
+        '<div class="lead">' + t.explain[0] + '</div><div class="terms">' +
+        t.explain[1].map(function(x){
+          return '<b>' + x[0] + '</b><span>' + x[1] + '</span>'; }).join('') +
+        '</div>';
+    } else {
+      $('eq').className = 'card eq';
+      $('eq').innerHTML = (t.explain ? eqButton() : '') +
+        '$$' + t.eq + '$$<div class="cap">' + t.cap + '</div>';
+    }
+  } else { $('eq').style.display = 'none'; }
+  setIf('says', '<h2>' + t.says[0] + '</h2>' +
+    '<div style="font-size:11.5px;line-height:1.6;color:#3d3d3d">' + t.says[1] + '</div>');
+  setIf('try', '<h2>Try this</h2><ol class="steps">' +
+    t.steps.map(function(x){ return '<li>' + x + '</li>'; }).join('') + '</ol>');
+  setIf('controls', '<h2>Controls</h2>' + t.controls());
+  t.draw();
+  $('reading').innerHTML = t.read();
+  wire();
+  if (window.renderMathInElement && t.eq && !(FLIP[S.tab] && t.explain)){
+    renderMathInElement($('eq'), {
+      delimiters: [{left:'$$', right:'$$', display:true}], throwOnError:false});
+  }
+}
+document.addEventListener('DOMContentLoaded', function(){
+  [].forEach.call(document.querySelectorAll('.tab'), function(b){
+    b.addEventListener('click', function(){
+      var on = document.querySelector('.tab.on');
+      if (on) on.classList.remove('on');
+      b.classList.add('on');
+      S.tab = b.dataset.t;
+      if (typeof onTab === 'function') onTab(S.tab);
+      render();
+    });
+  });
+  function boot(){
+    if (!window.renderMathInElement){ setTimeout(boot, 60); return; }
+    render();
+  }
+  boot();
+});
+
+/* ---- who is playing, and what this is ---------------------------------
+   Asked once, remembered after that. The name goes on the band so it lands
+   inside any screenshot a student takes for an assignment. INTRO is set by
+   each tool: a title and the four lines worth knowing before starting. */
+(function(){
+  var USER = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" ' +
+    'stroke="currentColor" stroke-width="2" stroke-linecap="round" ' +
+    'stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/>' +
+    '<path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>';
+  var nameVeil = $('name-veil'), introVeil = $('intro-veil'),
+      input = $('name-in'), band = document.querySelector('.band');
+  var timer = null, LEN = 97.4, SECS = 10;
+
+  function show(n){
+    var slot = document.getElementById('whois');
+    if (!slot){
+      slot = document.createElement('div');
+      slot.className = 'whois'; slot.id = 'whois';
+      band.appendChild(slot);
+    }
+    slot.innerHTML = n ? '<span class="ul">' + USER + 'User</span>' +
+                         '<span class="un"></span>' : '';
+    if (n) slot.querySelector('.un').textContent = n;
+    var hi = $('intro-hi');
+    if (hi && window.INTRO) hi.textContent = n ? 'Say hi, ' + n : INTRO[0];
+  }
+  function closeIntro(){
+    if (timer){ clearInterval(timer); timer = null; }
+    introVeil.classList.remove('on');
+  }
+  function openIntro(){
+    if (!window.INTRO) return;
+    $('intro-body').innerHTML = '<ul style="margin:0;padding:0">' +
+      INTRO[1].map(function(x){ return '<li>' + x + '</li>'; }).join('') + '</ul>';
+    introVeil.classList.add('on');
+    var left = SECS;
+    $('intro-count').textContent = left;
+    $('intro-ring').style.strokeDashoffset = 0;
+    timer = setInterval(function(){
+      left -= 1;
+      $('intro-count').textContent = Math.max(0, left);
+      $('intro-ring').style.strokeDashoffset = LEN * (SECS - left) / SECS;
+      if (left <= 0) closeIntro();
+    }, 1000);
+  }
+  function done(){
+    var n = input.value.trim().replace(/\s+/g, ' ').slice(0, 40);
+    try { if (n) localStorage.setItem('ie7295-name', n); } catch (e) {}
+    show(n);
+    nameVeil.classList.remove('on');
+    openIntro();
+  }
+  $('name-go').addEventListener('click', done);
+  $('name-skip').addEventListener('click', function(){
+    nameVeil.classList.remove('on'); openIntro();
+  });
+  input.addEventListener('keydown', function(e){ if (e.key === 'Enter') done(); });
+  $('intro-go').addEventListener('click', closeIntro);
+  $('intro-skip').addEventListener('click', closeIntro);
+  introVeil.addEventListener('click', function(e){ if (e.target === introVeil) closeIntro(); });
+
+  var saved = null;
+  try { saved = localStorage.getItem('ie7295-name'); } catch (e) {}
+  if (saved){ show(saved); openIntro(); }          // known already, straight to the intro
+  else { nameVeil.classList.add('on'); setTimeout(function(){ input.focus(); }, 60); }
+})();
+
+</script></body></html>

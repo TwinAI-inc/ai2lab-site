@@ -1,0 +1,571 @@
+<!doctype html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How to Handle Missing Data</title>
+  <style>
+    :root {
+      --background-color: #F0F8FF; /* Light blue */
+      --text-color: #003366; /* Dark blue */
+      --button-bg-color: #003366; /* Same dark blue */
+      --button-text-color: #FFFFFF;
+      --button-hover-bg-color: #005B96; /* Mid blue */
+      --border-radius: 10px;
+      --box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+      --option-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15);
+      --selected-bg-color: #E0F7FA; /* Lightest blue */
+      --inactive-bg-color: #E0E0E0;
+      --inactive-text-color: #A0A0A0;
+      --highlight-color: #007ACC; /* Highlight text in blue */
+      --incorrect-color: #FF6F61;
+      --correct-color: #007ACC;
+      --question-color: #003366;
+      --font-family: 'Poppins', sans-serif;
+      --grey-color: #808080;
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+    body {
+      font-family: var(--font-family);
+      margin: 0;
+      background-color: var(--background-color);
+      color: var(--text-color);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 50px;
+    }
+
+    #prof-dehghani {
+      font-size: 0.9em;
+      font-weight: 400;
+      color: var(--grey-color);
+      text-align: center;
+      margin-bottom: -10px;
+    }
+
+    #title {
+      font-size: 2em;
+      font-weight: 600;
+      color: var(--question-color);
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    #quiz-container, #quiz2-container {
+      max-width: 600px;
+      text-align: left;
+      background: var(--background-color);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: var(--box-shadow);
+    }
+
+    .quiz-question {
+      font-size: 1.5em;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: var(--question-color);
+    }
+
+    .quiz-question span.format {
+      font-style: italic;
+      color: black;
+    }
+
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .quiz-option {
+      background: var(--background-color);
+      color: var(--text-color);
+      border: 2px solid var(--text-color);
+      border-radius: var(--border-radius);
+      padding: 10px 15px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+      box-shadow: var(--option-shadow);
+      line-height: 1.4;
+    }
+
+    .quiz-option span {
+      font-weight: bold;
+      color: var(--highlight-color);
+    }
+
+    .quiz-option:hover:not(.inactive) {
+      background: var(--button-hover-bg-color);
+      color: var(--button-text-color);
+    }
+
+    .quiz-option.selected {
+      background: var(--selected-bg-color);
+      color: var(--text-color);
+    }
+
+    .quiz-option.inactive {
+      background: var(--inactive-bg-color);
+      color: var(--inactive-text-color);
+      pointer-events: none; /* Disable hover and click */
+    }
+
+    #quiz-response, #quiz2-response {
+      font-size: 1em;
+      margin-top: 20px;
+      line-height: 1.5;
+    }
+
+    #quiz-response .emoji, #quiz2-response .emoji {
+      font-size: 1.3em;
+      vertical-align: middle;
+    }
+
+    #quiz-response .highlight, #quiz2-response .highlight {
+      font-weight: bold;
+      color: var(--correct-color);
+    }
+
+    #quiz-response .highlight.incorrect, #quiz2-response .highlight.incorrect {
+      color: var(--incorrect-color);
+    }
+
+    #continue-button, #continue-button-quiz2 {
+      display: block;
+      margin-top: 30px;
+      padding: 10px 25px;
+      background-color: var(--button-bg-color);
+      color: var(--button-text-color);
+      font-size: 1.2em;
+      font-weight: bold;
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      box-shadow: var(--box-shadow);
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    #continue-button:hover, #continue-button-quiz2:hover {
+      background-color: var(--button-hover-bg-color);
+      transform: scale(1.05);
+    }
+  </style>
+<style>body{margin:0;padding:26px 18px;background:#F2F5F6;font-family:Lato, 'Lato Extended', 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;}.ie6600-shell{max-width:1100px;margin:0 auto;background:#FFFFFF;border:1px solid #E4E9EB;border-radius:10px;overflow:hidden;}.ie6600-band{background:linear-gradient(135deg,#D3E4F5 0%,#A6C7E8 100%);padding:16px 24px;}.ie6600-band h1{margin:0;font-size:30px;font-weight:800;color:#14304F;letter-spacing:-.4px;line-height:1.25;}.ie6600-band p{margin:6px 0 0;font-size:12px;color:#2C4C6E;text-transform:uppercase;letter-spacing:1px;font-weight:700;}.ie6600-body{padding:22px 24px 26px;}.ie6600-foot{background:#EBF3FB;border-top:1px solid #E4E9EB;padding:11px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:12px;color:#747474;}.ie6600-foot .code{background:#0B4F9C;color:#FFFFFF;font-weight:800;letter-spacing:.6px;padding:3px 9px;border-radius:4px;}.ie6600-foot .name{font-weight:700;color:#14304F;}</style></head><body><div class="ie6600-shell"><div class="ie6600-band"><h1>How to Handle Missing Data</h1><p>Module 02 &middot; IE6600: Computation and Visualization</p></div><div class="ie6600-body">
+<style>
+  body{
+    background-color:#F2F5F6;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='300' viewBox='0 0 420 300'><defs><linearGradient id='f' x1='0' y1='1' x2='1' y2='0'><stop offset='0' stop-color='white' stop-opacity='.5'/><stop offset='1' stop-color='white' stop-opacity='0'/></linearGradient><mask id='m'><rect width='420' height='300' fill='url(%23f)'/></mask></defs><g mask='url(%23m)' fill='none' stroke-width='2.5' stroke-linecap='round'><path d='M-20 300 C 90 232, 150 268, 250 196 S 380 120, 440 96' stroke='%23F5D000'/><path d='M-20 268 C 80 206, 146 240, 236 168 S 366 96, 440 70' stroke='%23E2231A'/><path d='M-20 236 C 70 180, 140 212, 222 142 S 352 74, 440 46' stroke='%230064B0'/></g></svg>");
+    background-repeat:no-repeat;
+    background-position:left bottom;
+    background-attachment:fixed;
+  }
+  .qz{max-width:880px;margin:0 auto}
+  .qz-split{display:flex;gap:20px;align-items:stretch;min-height:452px}
+  .qz-main{flex:1 1 auto;min-width:0}
+  .qz-side{flex:0 0 268px;align-self:stretch;display:flex;
+           flex-direction:column}
+  @media(max-width:760px){.qz-split{flex-wrap:wrap}.qz-side{flex:1 1 100%;
+    position:static}}
+  .qz-snap{background:#fff;border:1px solid #E2EAF3;border-radius:8px;
+           overflow:hidden}
+  .qz-snap-h{font-size:10.5px;font-weight:800;letter-spacing:.6px;
+             text-transform:uppercase;color:#0B4F9C;background:#F4F8FC;
+             padding:8px 10px;border-bottom:1px solid #E2EAF3}
+  .qz-snap-f{font-size:10.5px;color:#747474;line-height:1.55;padding:8px 10px;
+             border-top:1px solid #E2EAF3;background:#FBFCFD}
+  .vital{background:linear-gradient(180deg,transparent 74%,#F5D000 74%,
+         #F5D000 96%,transparent 96%);padding:0 2px;font-weight:800;
+         color:#14304F}
+  .qz-hero{text-align:center;padding:4px 0 2px}
+  .qz-hero h2{font-size:21px;color:#154173;margin:10px 0 6px;font-weight:800}
+  .qz-hero p{font-size:14px;color:#3d3d3d;line-height:1.7;max-width:470px;
+             margin:0 auto}
+  .qz-name{margin:20px auto 0;max-width:330px;text-align:left}
+  .qz-name label{display:block;font-size:11px;font-weight:800;
+                 letter-spacing:.6px;text-transform:uppercase;color:#0B4F9C;
+                 margin-bottom:5px}
+  .qz-name input{width:100%;font-family:inherit;font-size:14px;color:#3d3d3d;
+                 padding:10px 13px;border:1px solid #A6C7E8;border-radius:8px;
+                 background:#fff}
+  .qz-name input:focus{outline:none;border-color:#0B4F9C;
+                       box-shadow:0 0 0 3px rgba(11,79,156,.12)}
+  .qz-top{display:flex;align-items:center;justify-content:space-between;
+          gap:12px;margin-bottom:10px}
+  .qz-count{font-size:11px;font-weight:800;letter-spacing:.8px;
+            text-transform:uppercase;color:#0B4F9C}
+  .qz-tag{font-size:10.5px;font-weight:800;letter-spacing:.6px;
+          text-transform:uppercase;background:#E7EDF5;color:#0B4F9C;
+          padding:3px 9px;border-radius:999px}
+  .qz-bar{height:5px;background:#E7EDF5;border-radius:999px;overflow:hidden;
+          margin-bottom:20px}
+  .qz-fill{height:100%;width:0;border-radius:999px;transition:width .35s ease;
+           background:linear-gradient(90deg,#F5D000 0%,#E2231A 50%,#0064B0 100%)}
+  .qz-q{font-size:17px;font-weight:700;color:#154173;line-height:1.6;
+        margin-bottom:14px}
+  .qz-chart{background:#fff;border:1px solid #E2EAF3;border-radius:10px;
+            padding:10px 12px 8px;flex:1;display:flex;flex-direction:column;
+            justify-content:center;position:relative}
+  .qz-zoom{position:absolute;top:7px;right:7px;width:26px;height:26px;
+           border-radius:6px;border:1px solid #D3E4F5;background:#fff;
+           color:#0B4F9C;cursor:pointer;display:flex;align-items:center;
+           justify-content:center;padding:0}
+  .qz-zoom:hover{background:#EBF3FB;border-color:#A6C7E8}
+  .qz-modal{display:none;position:fixed;inset:0;background:rgba(20,48,79,.55);
+            z-index:99;align-items:center;justify-content:center;padding:24px}
+  .qz-modal.on{display:flex}
+  .qz-modal-in{background:#fff;border-radius:12px;padding:20px 22px 16px;
+               max-width:860px;width:100%;position:relative}
+  .qz-modal-in svg{width:100%;height:auto}
+  .qz-close{position:absolute;top:10px;right:12px;border:none;background:none;
+            font-size:22px;line-height:1;color:#747474;cursor:pointer}
+  .qz-chart svg{display:block}
+  .qz-opt{display:flex;align-items:flex-start;gap:10px;font-size:14px;
+          color:#3d3d3d;background:#fff;border:1px solid #D3E4F5;
+          border-radius:8px;padding:11px 14px;margin-bottom:9px;cursor:pointer;
+          transition:background .15s,border-color .15s,transform .15s}
+  .qz-opt:hover{background:#F4F8FC;border-color:#A6C7E8;transform:translateX(2px)}
+  .qz-letter{flex-shrink:0;width:21px;height:21px;border-radius:999px;
+             background:#E7EDF5;color:#0B4F9C;font-size:11px;font-weight:800;
+             text-align:center;line-height:21px}
+  .qz-opt.right{border-color:#1B5E43;background:#EFF7F2}
+  .qz-opt.right .qz-letter{background:#1B5E43;color:#fff}
+  .qz-opt.wrong{border-color:#E2231A;background:#FDF1F0}
+  .qz-opt.wrong .qz-letter{background:#E2231A;color:#fff}
+  .qz-opt.dim{opacity:.5}
+  .qz-opt.locked{cursor:default;transform:none}
+  .qz-why{font-size:13.5px;line-height:1.7;border-left:4px solid #0B4F9C;
+          background:#E7EDF5;border-radius:0 6px 6px 0;padding:12px 15px;
+          margin:14px 0 0;display:none}
+  .qz-why.bad{border-left-color:#E2231A;background:#FDF1F0}
+  .qz-verdict{display:flex;align-items:center;gap:7px;font-weight:800;
+              font-size:13px;margin-bottom:5px;color:#1B5E43}
+  .qz-why.bad .qz-verdict{color:#E2231A}
+  .qz-btn{background:#0B4F9C;color:#fff;border:none;border-radius:999px;
+          padding:10px 24px;font-size:14px;font-weight:700;cursor:pointer;
+          font-family:inherit}
+  .qz-btn:hover{background:#154173}
+  .qz-next{display:none;margin-top:16px}
+  .qz-score-bar{display:none;align-items:center;justify-content:space-between;
+                gap:10px;margin-top:22px;padding-top:12px;
+                border-top:1px solid #E2EAF3;font-size:12px;color:#747474}
+  .qz-who{font-weight:700;color:#14304F}
+  .qz-dots{display:flex;gap:5px}
+  .qz-dot{width:9px;height:9px;border-radius:999px;background:#E7EDF5}
+  .qz-dot.ok{background:#1B5E43}
+  .qz-dot.no{background:#E2231A}
+  .qz-done{text-align:center;display:none}
+  .qz-done > img{display:block;margin:0 auto 4px}
+  .qz-named{display:inline-block;font-size:15px;font-weight:800;color:#14304F;
+            background:linear-gradient(180deg,transparent 66%,#F5D000 66%,
+            #F5D000 92%,transparent 92%);padding:0 6px;margin-bottom:6px}
+  .qz-stamp{font-size:11px;color:#8a9199;margin-top:4px;letter-spacing:.3px}
+  .qz-export{margin-top:16px;display:flex;gap:9px;justify-content:center;
+             flex-wrap:wrap}
+  .qz-ghost{background:#fff;color:#0B4F9C;border:1px solid #A6C7E8;
+            padding:8px 18px;font-size:13px}
+  .qz-ghost:hover{background:#EBF3FB;color:#0B4F9C}
+  .qz-score{font-size:40px;font-weight:800;color:#0B4F9C;line-height:1.1}
+  @media print{
+    body{background:#fff!important}
+    .qz-export,.qz-btn{display:none!important}
+    .ie6600-shell{border:none!important;box-shadow:none!important}
+  }
+  .qz-done .lead{font-size:14px;color:#3d3d3d;line-height:1.7;max-width:470px;
+                 margin:8px auto 0}
+  .qz-sum{text-align:left;margin:22px 0 0}
+  .qz-sum h3{font-size:12px;font-weight:800;letter-spacing:.8px;
+             text-transform:uppercase;color:#0B4F9C;margin:0 0 10px;
+             padding-bottom:7px;border-bottom:1px solid #E2EAF3}
+  .qz-take{display:flex;gap:11px;align-items:flex-start;margin-bottom:12px}
+  .qz-take img{flex-shrink:0;margin-top:1px}
+  .qz-take b{display:block;font-size:13.5px;color:#154173}
+  .qz-take span{font-size:13px;color:#3d3d3d;line-height:1.65}
+</style>
+
+<div class="qz">
+  <div id="qz-welcome">
+    <div class="qz-hero">
+      <img src="data:image/png;base64,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" alt="" width="92" height="92">
+      <h2>Before you clean anything</h2>
+      <p>Seven questions on what to do about the gaps in a dataset, and three
+         charts showing what those gaps do to a picture if you ignore them.
+         There is an explanation after every answer, and nothing is submitted
+         anywhere.</p>
+      <div class="qz-name">
+        <label for="qz-input">Your name</label>
+        <input id="qz-input" type="text"
+               placeholder="So the summary can greet you" autocomplete="name">
+      </div>
+      <div style="margin-top:18px">
+        <button class="qz-btn" onclick="qzBegin()">Start the quiz &rsaquo;</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="qz-live" style="display:none">
+    <div class="qz-top">
+      <span class="qz-count" id="qz-count"></span>
+      <span class="qz-tag" id="qz-tag" style="display:none"></span>
+    </div>
+    <div class="qz-bar"><div class="qz-fill" id="qz-fill"></div></div>
+    <div class="qz-split">
+      <div class="qz-main">
+        <div class="qz-q" id="qz-q"></div>
+        <div id="qz-opts"></div>
+        <div class="qz-why" id="qz-why"></div>
+      </div>
+      <div class="qz-side" id="qz-side"></div>
+    </div>
+    <button class="qz-btn qz-next" id="qz-next" onclick="qzNext()">Next question</button>
+    <div class="qz-score-bar" id="qz-scorebar">
+      <span class="qz-who" id="qz-who"></span>
+      <span style="display:flex;align-items:center;gap:9px">
+        <span id="qz-running">0 correct</span>
+        <span class="qz-dots" id="qz-dots"></span>
+      </span>
+    </div>
+  </div>
+
+  <div class="qz-done" id="qz-done">
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAOoklEQVR4nOydW2wcVxmA/zOXvXt93dhukrpJ2rhN24CEEEi9PQClVIhLX0C8gAQvRDyA4KFCCAmhqhLiBQkhHvoAD4gXqkqlUdMHUBFIlIc+pElKRONc6ksc2+uN7d2d2Z2dOZx/7LVnZy8zXs/Onrl8kZONd3Y8nv8//+2c848AMZFGgJhII0HMPpdX6THSUJ4DSp8lhD4OQFKU0hQBIU/ByBOAOwIh7wjZzGuPjZPbEAIIRJzLy+q8YBjfpcT4CgEy3/NgCgd3jIIqCPAvoQEvPzaXfR8CSmQV4NpK9VuGQS+wl0/BEaEU1kWB/Orx45lfQ8CInAJcX688UFfpnwkhz4IHtBgFCgskkXnqyWlyDwJCpILAayvlF5jwP/RK+MiBR2CvCZyhWnXpvyu1lyAgREYBri5XXzUM8jYT/igMAHLwr9QwGq9fWVJ/BwEgEi7gylLlr+yfL4PPUEL+ef54xjNrMwhCbQFYCkeGJXyEUPrMlcXyReCYUCvA1ZXqz2FIwt+HkBevrqg/Ak4JrQu4tlj9jEHoe8AHRjqdeejhSbIInBFKC8BMv6AT448wZOjBS0GpVi4Bh4RSAa4sKz90rOr5ALGqACHnPlyufhM4I3QuYGWFZop6ZZHd8AngDKwYnj+ZPQYcEToLUDSU7/MofIQVigrXVmtfBY4IoQswvgccY2j6T4EjQqUAH6zUHmXj7FHgGErop4AjQqUARNefh0OiNShUag3zq94wXH2mphn7n2kYFA4DC7rED+4qzwEnBC4ILCl0ztAaP9AJnGcXn2x5r6KdqzVowc15NJ3C6lYNtiqaNVaHfFqC6bEkpKT2saHUdPaZOpSZ4Jswvw7juQRM5xMgCd1up3XOECCdFJdHU+IN6xFb1cbDOqV1SZQunSkkLoBPBEoBbq1pL1Q17a3CiCySDldeLDeYYJ1HMY7ghbUq6F1GL5swglOFNGST4v73tpQGLG4o0G28syuCM8eyIEvOtzQhCjCRk2zXrplKiSRlcuvsdOY0+EBgXMDNe9rzTPgXDUrFbsc0DGfh4y3+uKh2Fb55DMvXFosKsBFp/h/dxBL7TC9jj8Jb3FTBDTrtfZ01jZ66ua7+BHwgEArAhP8FpaG9zYTf+3pduOMSG2mqprd8T2CmG0ewFRRocUczX69t18CgrSdPMBdBbGYIY4KyqoMTbsIGpqC+rCngflHonvAvOQrfJfcVreX/IykJ5qbSpjNcZqO+VD3w7/fZ62PMt1u/hxTyMsyMpkwrcntdgWpdbzl/LiVCT1woADu1LwUjri3AYYVPXEQ0jUbr3Z8eTZifw4/OjKda3sN4AoVMLaMfj50e3T1OZJbjWD7Z+hnNWbqHyxsGC7cK0M/IJy40QLKZemvqZ48s0ezbhSWwY6xH1RqtJl8Una+Bp8ibSwXo1+wLLu5sKtFqnpdLtbaYoInT6SqqbqaSVtIJ50sWCD8qwJ0CHMXnSy5GX2Ek0eIq0MTfWK3Cyv0ai/bdF4KWSircXK+CNTbEOsBkTnb8vCDwowBcBYFHDfhkQQAFegsRo/3jYylTgE1QhsWduvnVAsXIvtU6oML8b7XS8dwnJlOuRndCji1AG15E+7Lo7saOs1E6PZp0PM6sGbDijxP4U09OpMyMwg0pWQRe4MICeJXqYRUOraubPBvTuwzz10useNOswPVDUhbg5GQa0nL3S7cWgvH6ZI4c79AV4M6m9lRZ8S7PT7Mgz262u5FjI3b+gRxsszJvqVw3izhuVAGtfD4tw0RWMs/heLzldZIn6cOQFcAUvlr/Bxuxnt0VHNVuFQBB4YyyCSD8wpLv9btl2/nElkIPBnCPzWb7DuRGknwpwNCuZl/4BnjqELE4k+7Tx7ZlEey/c2xSyPatvoWfZOcXhFgBBib8JtkUHzfZ7k5GM84pot/4fqfubGtPl5XBCR/BfHwkNfxI22oncsz0czb4TXy9JDbyny6X6+8yn9+3dFC4bgppOJefEPsz1V6DriWX4nPezTcF2DP77x515OcOMbLHMhIMu+iGP34iw0/eb8cXBfhohxZYqvf3owgfR/5oWmRFFPeXLOyVZodlCHByaoqVnnkL/Kz4YpfGqP41yMsJGAKYFUwwJdisaKC7K/V7ArqpyZzIfj70iT+Txr6oJgXjyH14jgIqwVQu4VsRRmJ2bneR6FF+nj9mKzJt4szVuywmUNlMHlb+jAENMMw+rItJeSdyfQIxhkhIzCWUD7+mvxeoYIVcgstUrxeR7BSKU7YYF3iZIRTywRM+EkkFQFD4KY9ighRz+kG9kZFVAEQUvfn1peC4/DYi3SuYeJVqEZ7W+R6OSCuAfbMHZl7Z5MEtwcBOoKTleyLZ/ZximSJOsqASnBcYcUmkFcC+BhRjwtPH0m3H2b+Hi0Jvrh0sFZNnCYxn+Zvpc0OkY4CYWAEiT6RdgNSn+tt3ISek4I6jSFuAjCz1VXLfLB9sME0lhLb9gUEi0gqAlbvJrOR6q1YddwRtKuauYZzqxW4inz41NvQ1B0ch8s8MkkUcwQJUa2ySSG30PDYh44rjXfM/P5sxN4MEnTgIjDjxU8P2cDuR09hbVZKy1X+xpqSx2UX0BqZHoc3dyrtrGDnaENxCrAB7uNlZjNvIcQYZhTlmKfzgGoP71d7uAz+TTYiHWtPoB7EL2APXHGaSvff3YS8B5NRUGqx7T6w7h7p+np2gXNOh3uBr3iCUFkBjeXpVNcyaPQZ5uF/QzcRfPsUyAtBNQbWcDzuAFVVQmaDPTGfgtG23kAB7Nt8Fu/MPcX+AgYFNHHeY8Ju3GFu4oEDHMjKkXOzLRxOdSYqs3q+bi0h3WGZQZec8MZ6EmbE8K/q0nyOXFoEqdL9ZRL3HbmNe9io0CZUC1Jh5LTeFbxto2L2rIMkguojGMHhL77WSQYWYHetd6EH30ZwMQoXppgDm7CJnRYNQxQA71jzefp+ZTJT6YNeFbyn6fp2gEzJnox8JlQXQHRZ5NvTBBGDYRg6zgJpDgCdxqADh6hbuEFxhS7iGx+vB8XSlDsJHS29vHi1zWDMOlQKIDik2CmtjRztUAwmn85UqWltqZ+5GYjGBXdV4dAGhUQBM1TSXOfaOqsMGm9E7ijXAdG7T0uG7yW6rOMk093ZxSyJ/tzsUCoDT86XKbgBoFQcKQOrQCBrBeACtQbkPa4CKU+ywsQQFjCO/ObuI6WET3iqATUIRBG6xFK+5wLMpatwabl33j2YaAzX7QlBsDIVr/LBHkJsgDfsHo7LZjQfWB+zb0fGhE4UReTf943QyIPAWAEewPQDDRlH2TR8oIBRGp/5BZmv4srM1wCASt5TZhZ9k5x7v0osA4wFehY8EWgFQIPb+/L3aw6AcRjMiK9q0CwtliudCt9ApXUQrsclGvv0dVDQc+YRjIfcisC4Ac357H38UAQrXSRhJ0zQnzMfA4EyeFfTr68waLBUV831KDyqDc4VMS7MJtDS4Kqj1ugCuLO50fXrJX96/byrSj784C/MzGRg2gVWApnCsjLKRKLrMtc0pXdwuzqzIdrXVrF9fKe9bAfzboLtPA7mxWoGzs1lT0TCoy3XYBr66pcK6veewhTvFGqztNODi5RIXChBIF4D7++25N+7J72ezJwZqUznZ9OPIckk9ED61VpSJ6XKwoTS2qsl16QHAUx9gNwROAdBkV201fZxhyx2hA6ewN5mDFgGLRKb4aedVPKgc6USAd4PaCJQLwJtvX3kj7JlyL4IwtCB6MwDscjqvqoi8EBgLgOa407IrnOf3coo1y3x7r7Nhg+gwERgFwKDPXnnDFTwJyTvhI2dZYNZtgShWck9OBX8puJVAKAD6fHu6hkFbZgCdt9GiPHF8pC2gxCrh+ZN5FmuEywJw/9tg6RWjfis4EjHls4JZAfYCdALrBEmHvXz4KDms6RfLdVBY5J9mx4+bmUL41tByrQBYt29O8lgZz8ht5VW3iz2wbOxmEOPTR2bGgrvnzy3cKQAW0K6tKLBUqsEjhQSbUWu9RMzBeVxZE1S4UoB/L2zDL95c3p9jx78nsyK88tKDLOATzYmcMOXgPMCNU/vongI/e2PJ9OWY8jWLMZsVHV69uGKa/Hw63sfiNdzc0VfeWt59sbePbn+PHePjzRpcXa4GdsaNZ7hRgNXt3Qi+m4gX1lSI8R6ObGrvrn31AS3pjjrcBIGzYxLc2ah3NQGPHx/81CnW+d+7cd+xk/gTx3MwOx6OFJEbC/Dyl06Y/XY68cmTGXj2bB4GzY7LNvL3esz3Bw1uFGB+JgW/+cYcPDTZOrI+f24Ufvn1BwPdh4dnuKoDPDKThte+cwbusYAQK4AzY7K52DJmcHB3dzHTmxmVza+YwRNXViJOrAARJ1aAiBMrQMSJFSDicJEF4G4anOyhXd67taHCOJsJ/Ny5MYjxFi4U4M3Lm/Dbv612fI9a1udnUxJ89nQOYryDCxfQadnXPpYK4O2NGsR4SxwDRJxYASJOrAARJ1aAiBMrQMSJFSDixAoQcWIFiDixAkScWAEiTqwAEYd7BSAc7QdpXkq/C5Rxybm6192Ml21uXMwG3lhT23r+NSHg7iFLmgc7h+xdR9uvxZmF9Rr86T+lju8pmg7bCl9NprhQANyR031AHLzRa2+A4YGp8OJhEvi7LJacN44QiC3APi8+OQG3Nu72fPIaPqL9mUe67w5Ky4L5cOdeekCZlmUS3W88Phxqdavm+AC4E+PdG0V94kQWzs2m2Wjv/uwgVOTnHh0BHvBFDde2639gPu/bENOVou3hE0zhF+Zn0g/DgImzgIgT77vihTZb7E/6EysAB+Bj59qfd+RPkBgrAAf0ChgHTawAQwZrAzsd6w8hcgHVuv4gpfEGfyuU/VE16vi000HjiwIwJU+rWrjarA8agZA18AFf0kBJpG9AzKGQBfI6+IBvdvn63eptVuiYgxhHkqwIdNaHIhDiq2NeWFd/rzWM51neMwExbQgCKcqS9M6pqcQF8Ik4Mos4cSk44vwfAAD//7hHnSoAAAAGSURBVAMAFXOb4cKqm/UAAAAASUVORK5CYII=" alt="" width="84" height="84">
+    <div class="qz-named" id="qz-named" style="display:none"></div>
+    <div class="qz-score" id="qz-final"></div>
+    <div class="qz-stamp" id="qz-stamp"></div>
+    <p class="lead" id="qz-msg"></p>
+    <div class="qz-export">
+      <button class="qz-btn qz-ghost" onclick="qzPNG()">Download as PNG</button>
+      <button class="qz-btn qz-ghost" onclick="window.print()">Save as PDF</button>
+    </div>
+    <div class="qz-sum">
+      <h3>What to take away</h3>
+      <div class="qz-take"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAEZ0lEQVR4nO2ZW2hcVRSGvzWJ8dJ6QZF6iYIVtdLOGcSipIIPUn1RFFsLVTFN55yENqgvrRZEtCiCvihSTLWZmVxqUzVaKlIfrKgvGmIVzRlbjNVQqyKkoEkttrnNkjOZ5OxMc5vLGVOa/2n/a++z1vrZe5+z9zowj3mc3ZCieInUXQtaieo1QCUwBPoLEjrCqb4euttPMucEWI6X6FNAFFg4zcgUsB9NJRj8Zy/d7YP8rwIitUvR1LMga/OI1w/ajI5sJdncR8kFWHY9yBuT9HhLpAP4E/T3jOtK0KuAKpDzssb3gjq48Y/yTz0TZVajwtELEYmDrJnYoR8ATbjxfdM+H6m9D02tB1mV1bOb4ZMbOLTrOIEJGE2+E+Rmw3oAHXmCZFNnTtHC0SoktA241bB+ihu7mzwRmnGEyO6s5HfR9/OKnJP3kEx0MNC/AvQdw7oSy0nk7GssvWl7LftpkFcMy4u4sefyDTbRt/MS8Mw419QmkolXiyfAsu8E+dyfJW3DjT+aZ7pTxWgGWZdhw+jwDSSbjxRpCclbRvIdSFlNIblOHqKsFvTrDCtHyjfn7GJSazgaQULfZ1gKdDFu/FeCQKT2RjT1o7fZQAfRVCXJpmOFzYCEHjNYW2DJe+hq/Al4P91GKpDQkxS+hNRY69pM0FBt8ok8WJgAy7kO5IoM+5eB418QNCoWfAYMZNhSllVfVsAM6O0GceluHyFofLvNS/7gOJdyqwABcr1BjlIyqB9LQmMrIK8ZuMggv1EyiBFLCxGAsWRUKRl0wBBzfiEC+o325ZQOi4z234XsgaNTOA0YcqXflJ78BejwNwa7jZJBl483U0Od+QtINh8GPTRK5FIs5y6CRjh6D8glGbY/l+vmVIc548tITp/2vCDixxDZk8ujkwsYGWwFHXsbPYBlB7eUwtHlIPeOElU09V7hAg7u7AU+8Q3SQqTuAoqNW+oXIqGdRpxG3PhfxbkPaGoz6KkMW4KOGIGKhJEB72q5JMN6KavYlKuLqQUkm7yNvME3yCos5wWKhfSVUjJLJ431fNdwovhVCctuBHF8g7bgxgu7nVlOC1Bt+OzBjZtnsCLXhSwnBthGwE5UHyeZML8Zs/Bj3wHyelZZZQzv4sbWBleZs+wtIC+fXtiSBG7s41kUtmpAVmc9fwzEPK68jRszb4NFLi2Go/cjIW/jZR22vM0uX42WFr0TrFaALJqmtHgCdAtuvAHLaQceMvpacWPrghHgYVn11YTO2Qri7YPynJ9H96WrEV07PLFw05oyzr3YE2FeJXdlZkKDK6+Ho4uR0POgq0EWzDD6APAhInvpavRvXiYspw142Deo902ooyQ/OMLRlUioCigzrENo6jA6/CU/tP4xKz+W3Qpi7oE3cWMbgxdQPAiW3Tbx34Nux43X51/cLS0UN/5IeiOPQzZi2Q1nigAPihurOV2E85rPjR7mMix7B0itb1AbN56Y6zPgI/0W0u2c8bAcbwnN+EqdxzzORvwH4yJae/nZz/AAAAAASUVORK5CYII=" alt="" width="26" height="26"><span><b>Measure the gap before you fix it</b>Count the blanks per column and turn them into a percentage. Four missing values and forty percent missing are different problems.</span></div><div class="qz-take"><img src="data:image/png;base64,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" alt="" width="26" height="26"><span><b>Median for numbers, mode for categories</b>The median survives outliers, the mode is the least surprising guess. Neither is a rule, both are a default you can defend.</span></div><div class="qz-take"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAABM0lEQVR4nO3XsU7DMBCA4f+OLBXlBRDP4BU2GBlBYuieSMw8AUS8RvoGlaBbR9hgzTP0OTCqAIkhTQK4cQ75G53zxSc7uQSSJElikkHv5vIboAQ56DfBv4JcUVfrbRHKsO77L35DjsHPaDFwAbL/iznTtqsZsdTV9uPrijvgtk+aoY9QcIpxinGKcYpx2Z8zuOII/OLjnW1yB/ws1uIDFdDeaHYtC5yvpK42TaiZK3zg+2H+IVaMU4xTjFOMy8bcpALsQNwmFaCAuE0qdCNrblI/+HvaBcU4xTjFOMU4xTjFOMU4xTjFOGkcdfk5yAlwBpx+jj4DTw3RfWK+fO/YZUtcQ07/Qj1fdRfg8guQB0bJX1LPHzuOkEwYLZl0f8yJLvFv18Aho+LXyN4y9iqSJEn+mXf17DLBx7uIJAAAAABJRU5ErkJggg==" alt="" width="26" height="26"><span><b>A gap never announces itself on a chart</b>A zero-filled bar, a bar built on half the rows and a line drawn straight through a missing month all look like measured data.</span></div><div class="qz-take"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAEeUlEQVR4nO2Ya2gcVRTH/2emyWKNmxQtWE2CUEtQu5Pmg61ajP0uih8MihJtdyd9gaL4SNvY4qNWawhVxK2ms2m0IrUoaH18KUhRqK0I6c6KVEz90IqKIgYp6qaZHLn3TnYmyW52N5l9iPuDgfM/cx/ncGfOnblAjRr/b6hkI0ei7dD0m6XNfAK2Zf83EohsaAFpnwK0csad0wDugG39GOR0GoKG9KNZghesAvj9oKfTAh3NMB9WgU7BhwEc8TStRiT6UHU+QisfuBxa3ShATcrB22An9krTiPUC9KLrH8PkxWvxzVu/V9cKaHXP+YIfxdjZgcw9afOoEtQErf6ZwKZFEBjmdQA2ZjRpj+Lc8YmMFrbwZeDNbp9qWQF+Xby9rjiG5IGPZzVRvmNKiLaiTzUkYMTuAqhTCXZA2pacbeU9dlzRiUj0zsom0LpuEUCveA6KIzl4Nmd7dW+/11x7VY1RqQSalj8m0nDVH+CJXXn7sLNTtlW0omn5I5VJoH3jFQD5A96J1PBY3n6yDfv77VJjlTsBdkSNX+yKbxFu9h6NfIRb4rKPhC4DOy+grBuZ+FAjGgFoqn8nbOuLosYwzFsBfK4EM5g7kBpKlmcFSIt7wfPRrMEbZjOM2El1mc2z7ss+/JE7IIHotfmEUnwChnkPgFsymtm3QfnhewFaoy5hZ4F0X19aC8O8u7QJtHXVA9jn8/QjNfRD9sbUkN2eVVYHfJ4Bd44SJRAKbwOwTAn+DXr9s1goev3TcixFK0KNT5Qmgcj6KwHa4fPswEj8AhbKiBiDnpo2rpwr6ARIF0sdctVp2AkLQWFbg15ZxWKQ/lKwCRix1QDd5zl4EwKHNvvsblmqg1sBesMnjsBOfIWgsWVZ9X45adqcC0jAiD3o+01Mg53HUSp4UpTVtBK0BpHo/QtLoK3rElkqvRn6kTp4vsBwvsth5yYlx/bKKmn9bgzzTCAU7gNoqRL8E9J/7ikoEDX5hwA2Adzj2oX2ex7Az65ahlBj75zN5z7f0b/3VZ5u2NbbKAeGeGxp2FVp8MQ1SA3/UtwKkLbPC55PlS14gZ140z0IE4RAi15GUSvQ3nMbmI9nNE/eiNTQ1yiGji1L4Fy8Xdp63ScY2T/1E1MYhnkTgC+9SGktkgdOFLYCPBn3iUNFBy9wxk8BOCQvZ9wLpFBs6yTA73hhcNav1dkJRKI9AF3vqr/AzpNFTx5ZvwKgFZ6D2pSvSEgXJftvV62CYW6YO4GOrQ0gTZ2mKfbkennycB7gcU9Ku9Dy65EcFNXIFw/vnVlWpyfgpMXX5hJXnYNtiZJWPKnhf8C8HYD4XD4DUK/0zQeeEAm4J9q0FKFGMW6Ol9iI/erVfXTBtt5DNWDIn6jDmf3ITlyd4x3IBI+qCV5gW+8iA10110vsHUoZsd24oftSVJqOrQ0wTP+pxRn/7ZmnYgcB7FYm9UEP9cEwUVEcXy2Q8NQOnWUFws0i09kHs1UDf4BwS3/+nVgt2ToAYjesAlhshJ/BTvh/PWvUqFEDledfQiVUzwXGK1kAAAAASUVORK5CYII=" alt="" width="26" height="26"><span><b>Ask whether the gap has a shape</b>Missing at random is noise. Missing because something broke is a pattern, and filling it erases the very thing worth knowing.</span></div><div class="qz-take"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAEyElEQVR4nO2ZW4wTZRTHf2e6IOIlxAtyEzEBjYvTioZEJEaNGEQiEAlqBJLaLvugoiIJhPggSiReHkSDUZd22UAwBpAEgkTAKEr0RYJ0uqhERYwiGAFBRBDaHjPtbPstgd3uzNT1YX8v/c6Z+c53/jPzXQs99BAIIUxis25D9V7QGDAcpB44CfwOHALdCbIaJ7X1/yPATgxCZC7IQ8DgKmv9AfomuVOv8vWqP7tHQP30S6nr8yzIPP/N61GQl3FSL/23Auy4jdRtAoacdeVHtLAUK7KdQu4g2eU/E2vsi+YHAYNAxoFOAomdJWQHhTNTaF2xv/YC7MQExFoNXGwkkEGs+WSWba4qRmzWaLTwOsgYI8YRkKk4qW21E2An7kKsjw3PX2hhNtnmFvwQbZgB+jbIRZ7nbzR/O9nlO8MXEG0YAroL5PKSQ1uRyBQyTT90XC+5BOQp0M+BD9D8RrIt2fJ1Oz4MiawDGeV5DiDWLWSaDlSTllW1AFhnJP8duVNjO02+xIzSj4wFWYzUOUSTGxg5s3/RnW3ZB7h9Y693/0C0sKLapKoTYCemA6O95I8jkUnVD3/y7jl89xPp/Q12YlLRdNJHkMhE4Jh3wziiDZPDEyDWYsN6gUzTt1XVKyaXehKx+gHTQL8ygl6GWOuxE9cXzWJMnW/UfAM73ie4ADsRB4aWDD1M/vRbdJVM0zGc1Fqc9M3AknbXxHqvXHbS74B+71lDwZoaXIDIA4axlN0rTxAEJzUHdLbhuYloclrZUq08IJHJwQSUXuH4SvDc+4SBk14KpA3PI+WSiNGGTCTW2CvAG7DGgPQulXVfu+EvOAsrRZlSXJq4OOmfgF3ehb4UcvUdZthhEyJXGcYOwsRJ/QL6Sdmuu7A0IhVx55u2Zq3BQfrAFUbQg4SNauUz0oJWLshR466BHYWo66SJS4yyGTQcss2riCYvAMkVy2X0RGWRoMZD7KoA1UNIebUxgFrgpJvP4e1v5HAkSB/41bCq3ayEgAw+Tw5dFWDtP2fQmqNmWwEEILtB29Y8NxBr7PB7DIV6dzgt7qVdTiKRVv8CMk1ngI2e1QvNz6TW1PV5tNhWEV3v5RBkMWfOjMxj1GPGTixk7OLMP/c8bfsUoLlN3tGIG3AA+dOLqBUSWQhytWedRHNtbz+AgGzLKVBjOa2ziSZvJGxis64DecbwvFJqO4z9gJN+EfiyZEgEZAN2PLx5IdY4FC1sqXz7OPxzbFGYW0pFCw+Dtj2Ra5HIZ6GMSnYihuZ3gFzjeXJo4UH2rMmHuyfONu8FMRZcMgItbAvUqe34CES2gVxZ9mlhKtnmPdWGsLq4gtyKyJ2VTs1I8qfX+jtfivdDIltA3O0mXsy7yTZv6EqYrglwySz7FHFP2MoixhNNVjY91SKRBpBhnuXGGo+TMs+caiTAJbPsC+BxI5sJPqLcWinqEzip7X5S8SfARawPjQTu8xHgjnKxcGa93zT8C2h3cibDfUSojGCtKw77TaOzDU0n6OHyaV20Qf3H8I//N1BEPiI4W4NUDvYGNPc0EnEnnHvajeXV8RuwOdgfJD300M3/UkaTc4DnQczjly6gx4HncNKvddMoxAL/ybuIW3dBdw6jYRz2rgkhRg894JN/AaImbz8MEgLKAAAAAElFTkSuQmCC" alt="" width="26" height="26"><span><b>Write down what you did</b>Every fill and every dropped row changes the answer. The note costs one line and is the difference between a result and a claim.</span></div>
+    </div>
+    <button class="qz-btn" style="margin-top:20px" onclick="qzReset()">Take it again</button>
+  </div>
+</div>
+
+<div class="qz-modal" id="qz-modal" onclick="qzUnzoom()">
+  <div class="qz-modal-in" onclick="event.stopPropagation()">
+    <button class="qz-close" onclick="qzUnzoom()" title="Close">&times;</button>
+    <div id="qz-modal-body"></div>
+  </div>
+</div>
+
+<script>
+var QZ = [{"q": "A <span class=\"vital\">Wait Time</span> column has 30 blank cells, and a handful of orders that took very much longer than the rest. You want to fill the blanks. Which fill keeps a typical wait honest?", "snap": "<div class=\"qz-snap\"><div class=\"qz-snap-h\">Sample of the data</div><div style=\"overflow-x:auto\"><table style=\"border-collapse:collapse;width:100%\"><tr><th style=\"padding:6px 7px;text-align:left;font-size:10px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:#0B4F9C;border-bottom:2px solid #0B4F9C;white-space:nowrap\">Coffee Type</th><th style=\"padding:6px 7px;text-align:left;font-size:10px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:#0B4F9C;border-bottom:2px solid #0B4F9C;white-space:nowrap\">Payment</th><th style=\"padding:6px 7px;text-align:left;font-size:10px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:#0B4F9C;border-bottom:2px solid #0B4F9C;white-space:nowrap;background:#F7FAFD\">Wait</th><th style=\"padding:6px 7px;text-align:left;font-size:10px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:#0B4F9C;border-bottom:2px solid #0B4F9C;white-space:nowrap\">Rating</th></tr><tr><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Iced Latte</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Cash</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap;background:#F7FAFD\">9</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">5</td></tr><tr><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Caramel Macchiato</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Cash</td><td style=\"padding:5px 7px;font-size:11.5px;border-bottom:1px solid #E2EAF3;background:#FDF1F0;color:#E2231A;font-weight:800;text-align:center\">blank</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">5</td></tr><tr><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Mocha</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Mobile Pay</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap;background:#F7FAFD\">6</td><td style=\"padding:5px 7px;font-size:11.5px;border-bottom:1px solid #E2EAF3;background:#FDF1F0;color:#E2231A;font-weight:800;text-align:center\">blank</td></tr><tr><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Caramel Macchiato</td><td style=\"padding:5px 7px;font-size:11.5px;border-bottom:1px solid #E2EAF3;background:#FDF1F0;color:#E2231A;font-weight:800;text-align:center\">blank</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap;background:#F7FAFD\">8</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">3</td></tr><tr><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Flat White</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Credit Card</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap;background:#F7FAFD\">2</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">3</td></tr><tr><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Iced Latte</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Mobile Pay</td><td style=\"padding:5px 7px;font-size:11.5px;border-bottom:1px solid #E2EAF3;background:#FDF1F0;color:#E2231A;font-weight:800;text-align:center\">blank</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">1</td></tr><tr><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Cappuccino</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Cash</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap;background:#F7FAFD\">7</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">5</td></tr></table></div><div class=\"qz-snap-f\">4 blanks in these 7 rows. The rows are real, from the coffee dataset. The gaps are put here for the exercise: the file you download is complete.</div></div>", "options": ["The mean of the column", "The median of the column", "Zero"], "answer": 1, "why": "Those few very long waits drag the mean upward, so filling with the mean invents slow service on 30 orders that were probably normal. The median barely moves when a handful of extreme values are present, which is exactly this situation."}, {"q": "What is usually the best fill for a blank in a <span class=\"vital\">categorical</span> column such as Payment Method?", "snap": "<div class=\"qz-snap\"><div class=\"qz-snap-h\">Sample of the data</div><div style=\"overflow-x:auto\"><table style=\"border-collapse:collapse;width:100%\"><tr><th style=\"padding:6px 7px;text-align:left;font-size:10px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:#0B4F9C;border-bottom:2px solid #0B4F9C;white-space:nowrap\">Coffee Type</th><th style=\"padding:6px 7px;text-align:left;font-size:10px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:#0B4F9C;border-bottom:2px solid #0B4F9C;white-space:nowrap;background:#F7FAFD\">Payment</th><th style=\"padding:6px 7px;text-align:left;font-size:10px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:#0B4F9C;border-bottom:2px solid #0B4F9C;white-space:nowrap\">Wait</th><th style=\"padding:6px 7px;text-align:left;font-size:10px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:#0B4F9C;border-bottom:2px solid #0B4F9C;white-space:nowrap\">Rating</th></tr><tr><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Iced Latte</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap;background:#F7FAFD\">Cash</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">9</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">5</td></tr><tr><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Caramel Macchiato</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap;background:#F7FAFD\">Cash</td><td style=\"padding:5px 7px;font-size:11.5px;border-bottom:1px solid #E2EAF3;background:#FDF1F0;color:#E2231A;font-weight:800;text-align:center\">blank</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">5</td></tr><tr><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Mocha</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap;background:#F7FAFD\">Mobile Pay</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">6</td><td style=\"padding:5px 7px;font-size:11.5px;border-bottom:1px solid #E2EAF3;background:#FDF1F0;color:#E2231A;font-weight:800;text-align:center\">blank</td></tr><tr><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Caramel Macchiato</td><td style=\"padding:5px 7px;font-size:11.5px;border-bottom:1px solid #E2EAF3;background:#FDF1F0;color:#E2231A;font-weight:800;text-align:center\">blank</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">8</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">3</td></tr><tr><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Flat White</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap;background:#F7FAFD\">Credit Card</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">2</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">3</td></tr><tr><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Iced Latte</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap;background:#F7FAFD\">Mobile Pay</td><td style=\"padding:5px 7px;font-size:11.5px;border-bottom:1px solid #E2EAF3;background:#FDF1F0;color:#E2231A;font-weight:800;text-align:center\">blank</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">1</td></tr><tr><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Cappuccino</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap;background:#F7FAFD\">Cash</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">7</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">5</td></tr></table></div><div class=\"qz-snap-f\">4 blanks in these 7 rows. The rows are real, from the coffee dataset. The gaps are put here for the exercise: the file you download is complete.</div></div>", "options": ["The mode, the most common category", "A random category", "Delete the whole column"], "answer": 0, "why": "The mode is the least surprising guess. A random category is worse than leaving the gap: you would be asserting that a particular customer paid by card when you have no idea."}, {"q": "March had blank ratings, and they were <span class=\"vital\">filled with zero</span> before charting. What is this chart now telling a reader?", "chart": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 300 210\" width=\"100%\" height=\"auto\" role=\"img\"><line x1=\"28\" y1=\"14.0\" x2=\"295\" y2=\"14.0\" stroke=\"#E2EAF3\" stroke-width=\"1\"/><text x=\"24\" y=\"16.5\" font-size=\"8.5\" fill=\"#9aa5ae\" text-anchor=\"end\">5</text><line x1=\"28\" y1=\"71.3\" x2=\"295\" y2=\"71.3\" stroke=\"#E2EAF3\" stroke-width=\"1\"/><text x=\"24\" y=\"73.8\" font-size=\"8.5\" fill=\"#9aa5ae\" text-anchor=\"end\">3.3</text><line x1=\"28\" y1=\"128.7\" x2=\"295\" y2=\"128.7\" stroke=\"#E2EAF3\" stroke-width=\"1\"/><text x=\"24\" y=\"131.2\" font-size=\"8.5\" fill=\"#9aa5ae\" text-anchor=\"end\">1.7</text><line x1=\"28\" y1=\"186.0\" x2=\"295\" y2=\"186.0\" stroke=\"#E2EAF3\" stroke-width=\"1\"/><text x=\"24\" y=\"188.5\" font-size=\"8.5\" fill=\"#9aa5ae\" text-anchor=\"end\">0</text><rect x=\"39.8\" y=\"38.1\" width=\"20.0\" height=\"147.9\" rx=\"7.7\" fill=\"#0064B0\"/><text x=\"49.8\" y=\"199\" font-size=\"9\" fill=\"#6b757e\" text-anchor=\"middle\">Jan</text><rect x=\"83.5\" y=\"45.0\" width=\"20.0\" height=\"141.0\" rx=\"7.7\" fill=\"#0064B0\"/><text x=\"93.5\" y=\"199\" font-size=\"9\" fill=\"#6b757e\" text-anchor=\"middle\">Feb</text><rect x=\"127.2\" y=\"124.1\" width=\"20.0\" height=\"61.9\" rx=\"7.7\" fill=\"#E2231A\"/><text x=\"137.2\" y=\"199\" font-size=\"9\" fill=\"#6b757e\" text-anchor=\"middle\">Mar</text><rect x=\"170.8\" y=\"41.5\" width=\"20.0\" height=\"144.5\" rx=\"7.7\" fill=\"#0064B0\"/><text x=\"180.8\" y=\"199\" font-size=\"9\" fill=\"#6b757e\" text-anchor=\"middle\">Apr</text><rect x=\"214.5\" y=\"38.1\" width=\"20.0\" height=\"147.9\" rx=\"7.7\" fill=\"#0064B0\"/><text x=\"224.5\" y=\"199\" font-size=\"9\" fill=\"#6b757e\" text-anchor=\"middle\">May</text><rect x=\"258.2\" y=\"41.5\" width=\"20.0\" height=\"144.5\" rx=\"7.7\" fill=\"#0064B0\"/><text x=\"268.2\" y=\"199\" font-size=\"9\" fill=\"#6b757e\" text-anchor=\"middle\">Jun</text><text x=\"28\" y=\"10\" font-size=\"9\" fill=\"#9aa5ae\">Average order rating by month</text></svg>", "options": ["March was a genuinely terrible month", "The zeros were averaged in and dragged March down", "March had fewer orders than the other months"], "answer": 1, "why": "Zero is not a missing rating, it is the worst possible rating. Averaging it in invents furious customers. Nobody reading this chart would guess that; they would go and investigate March.", "tag": "Visualization"}, {"q": "Every bar here is an average wait time. March is the tallest, but March is <span class=\"vital\">missing 40 percent</span> of its wait times. What is the honest reading?", "chart": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 300 210\" width=\"100%\" height=\"auto\" role=\"img\"><line x1=\"28\" y1=\"14.0\" x2=\"295\" y2=\"14.0\" stroke=\"#E2EAF3\" stroke-width=\"1\"/><text x=\"24\" y=\"16.5\" font-size=\"8.5\" fill=\"#9aa5ae\" text-anchor=\"end\">8</text><line x1=\"28\" y1=\"71.3\" x2=\"295\" y2=\"71.3\" stroke=\"#E2EAF3\" stroke-width=\"1\"/><text x=\"24\" y=\"73.8\" font-size=\"8.5\" fill=\"#9aa5ae\" text-anchor=\"end\">5.3</text><line x1=\"28\" y1=\"128.7\" x2=\"295\" y2=\"128.7\" stroke=\"#E2EAF3\" stroke-width=\"1\"/><text x=\"24\" y=\"131.2\" font-size=\"8.5\" fill=\"#9aa5ae\" text-anchor=\"end\">2.7</text><line x1=\"28\" y1=\"186.0\" x2=\"295\" y2=\"186.0\" stroke=\"#E2EAF3\" stroke-width=\"1\"/><text x=\"24\" y=\"188.5\" font-size=\"8.5\" fill=\"#9aa5ae\" text-anchor=\"end\">0</text><rect x=\"39.8\" y=\"97.9\" width=\"20.0\" height=\"88.1\" rx=\"7.7\" fill=\"#0064B0\"/><text x=\"49.8\" y=\"199\" font-size=\"9\" fill=\"#6b757e\" text-anchor=\"middle\">Jan</text><rect x=\"83.5\" y=\"91.4\" width=\"20.0\" height=\"94.6\" rx=\"7.7\" fill=\"#0064B0\"/><text x=\"93.5\" y=\"199\" font-size=\"9\" fill=\"#6b757e\" text-anchor=\"middle\">Feb</text><rect x=\"127.2\" y=\"37.7\" width=\"20.0\" height=\"148.3\" rx=\"7.7\" fill=\"#0064B0\"/><text x=\"137.2\" y=\"199\" font-size=\"9\" fill=\"#6b757e\" text-anchor=\"middle\">Mar</text><rect x=\"170.8\" y=\"95.7\" width=\"20.0\" height=\"90.3\" rx=\"7.7\" fill=\"#0064B0\"/><text x=\"180.8\" y=\"199\" font-size=\"9\" fill=\"#6b757e\" text-anchor=\"middle\">Apr</text><rect x=\"214.5\" y=\"100.0\" width=\"20.0\" height=\"86.0\" rx=\"7.7\" fill=\"#0064B0\"/><text x=\"224.5\" y=\"199\" font-size=\"9\" fill=\"#6b757e\" text-anchor=\"middle\">May</text><rect x=\"258.2\" y=\"93.5\" width=\"20.0\" height=\"92.5\" rx=\"7.7\" fill=\"#0064B0\"/><text x=\"268.2\" y=\"199\" font-size=\"9\" fill=\"#6b757e\" text-anchor=\"middle\">Jun</text><text x=\"28\" y=\"10\" font-size=\"9\" fill=\"#9aa5ae\">Average wait time by month</text></svg>", "options": ["March was clearly the slowest month", "March rests on far fewer orders, so it swings more and proves less", "The missing rows make March shorter, not taller"], "answer": 1, "why": "The bar is drawn at full height and full confidence from 60 percent of the data. Fewer orders means the average moves more easily, so a tall bar here is weak evidence. Nothing on the chart says so, which is the whole problem.", "tag": "Visualization"}, {"q": "March has <span class=\"vital\">no data at all</span>, marked by the dashed line. The chart was drawn anyway. What has the line done?", "chart": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 300 210\" width=\"100%\" height=\"auto\" role=\"img\"><line x1=\"28\" y1=\"14.0\" x2=\"295\" y2=\"14.0\" stroke=\"#E2EAF3\" stroke-width=\"1\"/><text x=\"24\" y=\"16.5\" font-size=\"8.5\" fill=\"#9aa5ae\" text-anchor=\"end\">5</text><line x1=\"28\" y1=\"71.3\" x2=\"295\" y2=\"71.3\" stroke=\"#E2EAF3\" stroke-width=\"1\"/><text x=\"24\" y=\"73.8\" font-size=\"8.5\" fill=\"#9aa5ae\" text-anchor=\"end\">3.3</text><line x1=\"28\" y1=\"128.7\" x2=\"295\" y2=\"128.7\" stroke=\"#E2EAF3\" stroke-width=\"1\"/><text x=\"24\" y=\"131.2\" font-size=\"8.5\" fill=\"#9aa5ae\" text-anchor=\"end\">1.7</text><line x1=\"28\" y1=\"186.0\" x2=\"295\" y2=\"186.0\" stroke=\"#E2EAF3\" stroke-width=\"1\"/><text x=\"24\" y=\"188.5\" font-size=\"8.5\" fill=\"#9aa5ae\" text-anchor=\"end\">0</text><polyline points=\"28.0,38.1 80.4,45.0 185.2,41.5 237.6,38.1 290.0,41.5\" fill=\"none\" stroke=\"#0064B0\" stroke-width=\"2.2\" stroke-linejoin=\"round\"/><circle cx=\"28.0\" cy=\"38.1\" r=\"3.6\" fill=\"#0064B0\"/><circle cx=\"80.4\" cy=\"45.0\" r=\"3.6\" fill=\"#0064B0\"/><circle cx=\"185.2\" cy=\"41.5\" r=\"3.6\" fill=\"#0064B0\"/><circle cx=\"237.6\" cy=\"38.1\" r=\"3.6\" fill=\"#0064B0\"/><circle cx=\"290.0\" cy=\"41.5\" r=\"3.6\" fill=\"#0064B0\"/><line x1=\"132.8\" y1=\"14\" x2=\"132.8\" y2=\"186\" stroke=\"#C7D3DE\" stroke-width=\"1.1\" stroke-dasharray=\"2.5 2.5\"/><text x=\"28.0\" y=\"199\" font-size=\"9\" fill=\"#6b757e\" text-anchor=\"middle\">Jan</text><text x=\"80.4\" y=\"199\" font-size=\"9\" fill=\"#6b757e\" text-anchor=\"middle\">Feb</text><text x=\"132.8\" y=\"199\" font-size=\"9\" fill=\"#6b757e\" text-anchor=\"middle\">Mar</text><text x=\"185.2\" y=\"199\" font-size=\"9\" fill=\"#6b757e\" text-anchor=\"middle\">Apr</text><text x=\"237.6\" y=\"199\" font-size=\"9\" fill=\"#6b757e\" text-anchor=\"middle\">May</text><text x=\"290.0\" y=\"199\" font-size=\"9\" fill=\"#6b757e\" text-anchor=\"middle\">Jun</text></svg>", "options": ["Skipped March, which the reader can see", "Joined February to April, inventing a smooth March", "Dropped to zero for March"], "answer": 1, "why": "A line chart joins the points it has. With March absent it draws straight from February to April, and that segment looks exactly like measured data. The reader sees a calm March that was never recorded.", "tag": "Visualization"}, {"q": "A column is <span class=\"vital\">60 percent empty</span>. What is usually the right move?", "options": ["Fill it with the mean so no rows are lost", "Drop the column, and say in your notes that you did", "Fill it with zero"], "answer": 1, "why": "Filling 60 percent of a column means most of what you chart is something you made up. Dropping it is honest. Saying you dropped it is what makes it honest."}, {"q": "Why does it matter whether values are <span class=\"vital\">missing at random</span>?", "snap": "<div class=\"qz-snap\"><div class=\"qz-snap-h\">Sample of the data</div><div style=\"overflow-x:auto\"><table style=\"border-collapse:collapse;width:100%\"><tr><th style=\"padding:6px 7px;text-align:left;font-size:10px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:#0B4F9C;border-bottom:2px solid #0B4F9C;white-space:nowrap\">Coffee Type</th><th style=\"padding:6px 7px;text-align:left;font-size:10px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:#0B4F9C;border-bottom:2px solid #0B4F9C;white-space:nowrap\">Payment</th><th style=\"padding:6px 7px;text-align:left;font-size:10px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:#0B4F9C;border-bottom:2px solid #0B4F9C;white-space:nowrap\">Wait</th><th style=\"padding:6px 7px;text-align:left;font-size:10px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:#0B4F9C;border-bottom:2px solid #0B4F9C;white-space:nowrap;background:#F7FAFD\">Rating</th></tr><tr><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Iced Latte</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Cash</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">9</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap;background:#F7FAFD\">5</td></tr><tr><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Caramel Macchiato</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Cash</td><td style=\"padding:5px 7px;font-size:11.5px;border-bottom:1px solid #E2EAF3;background:#FDF1F0;color:#E2231A;font-weight:800;text-align:center\">blank</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap;background:#F7FAFD\">5</td></tr><tr><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Mocha</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Mobile Pay</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">6</td><td style=\"padding:5px 7px;font-size:11.5px;border-bottom:1px solid #E2EAF3;background:#FDF1F0;color:#E2231A;font-weight:800;text-align:center\">blank</td></tr><tr><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Caramel Macchiato</td><td style=\"padding:5px 7px;font-size:11.5px;border-bottom:1px solid #E2EAF3;background:#FDF1F0;color:#E2231A;font-weight:800;text-align:center\">blank</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">8</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap;background:#F7FAFD\">3</td></tr><tr><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Flat White</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Credit Card</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">2</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap;background:#F7FAFD\">3</td></tr><tr><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Iced Latte</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Mobile Pay</td><td style=\"padding:5px 7px;font-size:11.5px;border-bottom:1px solid #E2EAF3;background:#FDF1F0;color:#E2231A;font-weight:800;text-align:center\">blank</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap;background:#F7FAFD\">1</td></tr><tr><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Cappuccino</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">Cash</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap\">7</td><td style=\"padding:5px 7px;font-size:11.5px;color:#3d3d3d;border-bottom:1px solid #E2EAF3;white-space:nowrap;background:#F7FAFD\">5</td></tr></table></div><div class=\"qz-snap-f\">4 blanks in these 7 rows. The rows are real, from the coffee dataset. The gaps are put here for the exercise: the file you download is complete.</div></div>", "options": ["It does not, a gap is a gap", "Non-random gaps bend the answer in one direction", "Random gaps are harder to fill"], "answer": 1, "why": "A blank rating because a customer could not be bothered is noise. A blank because the till crashed all Tuesday is a hole shaped like a Tuesday. Fill the second and you have erased your worst day from the record."}];
+var TICK = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 12.5 9.5 18 20 6.5"/></svg>', CROSS = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>';
+var qzI = 0, qzScore = 0, qzLocked = false, qzName = '', qzMarks = [];
+var qzStamp = '';
+var TAKE = ["Measure the gap before you fix it", "Median for numbers, mode for categories", "A gap never announces itself on a chart", "Ask whether the gap has a shape", "Write down what you did"];
+
+function qzBegin() {
+  qzName = (document.getElementById('qz-input').value || '').trim();
+  document.getElementById('qz-welcome').style.display = 'none';
+  document.getElementById('qz-live').style.display = 'block';
+  document.getElementById('qz-scorebar').style.display = 'flex';
+  document.getElementById('qz-who').textContent = qzName || 'Missing data quiz';
+  qzRender();
+}
+
+function qzDots() {
+  var box = document.getElementById('qz-dots');
+  box.innerHTML = '';
+  for (var i = 0; i < QZ.length; i++) {
+    var d = document.createElement('span');
+    d.className = 'qz-dot' + (qzMarks[i] === true ? ' ok'
+                            : qzMarks[i] === false ? ' no' : '');
+    box.appendChild(d);
+  }
+  document.getElementById('qz-running').textContent = qzScore + ' correct';
+}
+
+function qzRender() {
+  var q = QZ[qzI];
+  qzLocked = false;
+  document.getElementById('qz-count').textContent =
+      'Question ' + (qzI + 1) + ' of ' + QZ.length;
+  var tag = document.getElementById('qz-tag');
+  if (q.tag) { tag.textContent = q.tag; tag.style.display = ''; }
+  else { tag.style.display = 'none'; }
+  document.getElementById('qz-fill').style.width = (qzI / QZ.length * 100) + '%';
+  document.getElementById('qz-q').innerHTML = q.q;
+  var side = document.getElementById('qz-side');
+  var aside = q.chart
+      ? '<div class="qz-chart">' +
+        '<button class="qz-zoom" title="Enlarge" onclick="qzZoom()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 4 4 4 4 9"/><polyline points="15 4 20 4 20 9"/><polyline points="20 15 20 20 15 20"/><polyline points="4 15 4 20 9 20"/></svg></button>'
+        + q.chart + '</div>'
+      : (q.snap || '');
+  side.innerHTML = aside;
+  side.style.display = aside ? 'block' : 'none';
+  var box = document.getElementById('qz-opts');
+  box.innerHTML = '';
+  q.options.forEach(function (text, n) {
+    var d = document.createElement('div');
+    d.className = 'qz-opt';
+    d.innerHTML = '<span class="qz-letter">' + 'ABCD'.charAt(n) +
+                  '</span><span>' + text + '</span>';
+    d.onclick = function () { qzPick(n, d); };
+    box.appendChild(d);
+  });
+  document.getElementById('qz-why').style.display = 'none';
+  document.getElementById('qz-next').style.display = 'none';
+  document.getElementById('qz-next').textContent =
+      (qzI === QZ.length - 1) ? 'See your summary' : 'Next question';
+  qzDots();
+}
+
+function qzPick(n, el) {
+  if (qzLocked) return;
+  qzLocked = true;
+  var q = QZ[qzI], right = (n === q.answer);
+  qzMarks[qzI] = right;
+  if (right) qzScore++;
+  document.querySelectorAll('#qz-opts .qz-opt').forEach(function (o, k) {
+    o.classList.add('locked');
+    if (k === q.answer) o.classList.add('right');
+    else if (k === n) o.classList.add('wrong');
+    else o.classList.add('dim');
+  });
+  var why = document.getElementById('qz-why');
+  why.className = 'qz-why' + (right ? '' : ' bad');
+  why.innerHTML = '<div class="qz-verdict">' + (right ? TICK : CROSS) +
+      (right ? 'Correct' : 'Not quite') + '</div>' + q.why;
+  why.style.display = 'block';
+  document.getElementById('qz-fill').style.width =
+      ((qzI + 1) / QZ.length * 100) + '%';
+  document.getElementById('qz-next').style.display = 'inline-block';
+  qzDots();
+}
+
+function qzNext() {
+  qzI++;
+  if (qzI < QZ.length) {
+    qzRender();
+    document.getElementById('qz-live').scrollIntoView({behavior: 'smooth', block: 'start'});
+    return;
+  }
+  document.getElementById('qz-live').style.display = 'none';
+  document.getElementById('qz-done').style.display = 'block';
+  document.getElementById('qz-final').textContent = qzScore + ' / ' + QZ.length;
+  var nm = document.getElementById('qz-named');
+  if (qzName) { nm.textContent = qzName; nm.style.display = 'inline-block'; }
+  else { nm.style.display = 'none'; }
+  qzStamp = new Date().toLocaleString(undefined, {
+      year: 'numeric', month: 'short', day: 'numeric',
+      hour: '2-digit', minute: '2-digit' });
+  document.getElementById('qz-stamp').textContent = qzStamp;
+  document.getElementById('qz-msg').textContent = qzScore === QZ.length
+      ? 'Every one right. The judgement matters more than the score: on your own data, write down what you did and why.'
+      : 'Read the explanations you missed, then go and look at what is actually missing in the coffee dataset before you pivot it.';
+}
+
+function qzZoom() {
+  var src = document.querySelector('#qz-side .qz-chart > svg');
+  if (!src) return;
+  document.getElementById('qz-modal-body').innerHTML = src.outerHTML;
+  document.getElementById('qz-modal').classList.add('on');
+}
+
+function qzUnzoom() {
+  document.getElementById('qz-modal').classList.remove('on');
+}
+
+function qzPNG() {
+  var W = 900, H = 520, S = 2;              // S: draw at 2x for a sharp file
+  var c = document.createElement('canvas');
+  c.width = W * S; c.height = H * S;
+  var x = c.getContext('2d');
+  x.scale(S, S);
+
+  x.fillStyle = '#FFFFFF'; x.fillRect(0, 0, W, H);
+
+  var g = x.createLinearGradient(0, 0, W, 96);
+  g.addColorStop(0, '#D3E4F5'); g.addColorStop(1, '#A6C7E8');
+  x.fillStyle = g; x.fillRect(0, 0, W, 96);
+  x.fillStyle = '#14304F';
+  x.font = '800 30px Lato, Helvetica, Arial, sans-serif';
+  x.fillText('How to Handle Missing Data', 44, 50);
+  x.fillStyle = '#2C4C6E';
+  x.font = '700 13px Lato, Helvetica, Arial, sans-serif';
+  x.fillText('MODULE 02  ·  IE6600: COMPUTATION AND VISUALIZATION', 44, 74);
+
+  // the three Media Lab marks as a thin rule under the band
+  var marks = ['#F5D000', '#E2231A', '#0064B0'];
+  for (var i = 0; i < 3; i++) {
+    x.fillStyle = marks[i];
+    x.fillRect(44 + i * 70, 112, 60, 4);
+  }
+
+  if (qzName) {
+    x.fillStyle = '#F5D000';
+    var w = x.measureText(qzName).width;
+    x.font = '800 24px Lato, Helvetica, Arial, sans-serif';
+    w = x.measureText(qzName).width;
+    x.fillRect(44, 150, w + 12, 14);
+    x.fillStyle = '#14304F';
+    x.fillText(qzName, 50, 162);
+  }
+
+  x.fillStyle = '#0B4F9C';
+  x.font = '800 62px Lato, Helvetica, Arial, sans-serif';
+  x.fillText(qzScore + ' / ' + QZ.length, 44, 232);
+
+  x.fillStyle = '#747474';
+  x.font = '400 14px Lato, Helvetica, Arial, sans-serif';
+  x.fillText(qzStamp, 44, 260);
+
+  x.fillStyle = '#0B4F9C';
+  x.font = '800 13px Lato, Helvetica, Arial, sans-serif';
+  x.fillText('WHAT TO TAKE AWAY', 44, 300);
+  x.strokeStyle = '#E2EAF3'; x.lineWidth = 1;
+  x.beginPath(); x.moveTo(44, 310); x.lineTo(W - 44, 310); x.stroke();
+
+  var y = 336;
+  TAKE.forEach(function (t, n) {
+    x.fillStyle = '#0B4F9C';
+    x.beginPath(); x.arc(51, y - 5, 3.5, 0, 6.3); x.fill();
+    x.fillStyle = '#154173';
+    x.font = '700 14px Lato, Helvetica, Arial, sans-serif';
+    x.fillText(t, 66, y);
+    y += 26;
+  });
+
+  x.fillStyle = '#EBF3FB'; x.fillRect(0, H - 44, W, 44);
+  x.fillStyle = '#0B4F9C'; x.fillRect(44, H - 33, 66, 22);
+  x.fillStyle = '#FFFFFF';
+  x.font = '800 12px Lato, Helvetica, Arial, sans-serif';
+  x.fillText('IE6600', 55, H - 18);
+  x.fillStyle = '#14304F';
+  x.font = '700 12px Lato, Helvetica, Arial, sans-serif';
+  x.fillText('Computation and Visualization', 120, H - 18);
+  x.fillStyle = '#747474';
+  x.font = '400 12px Lato, Helvetica, Arial, sans-serif';
+  x.fillText('Prof. Dehghani', W - 140, H - 18);
+
+  var a = document.createElement('a');
+  a.download = 'missing-data-quiz'
+      + (qzName ? '-' + qzName.replace(/[^A-Za-z0-9]+/g, '-') : '') + '.png';
+  a.href = c.toDataURL('image/png');
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+function qzReset() {
+  qzI = 0; qzScore = 0; qzMarks = [];
+  document.getElementById('qz-done').style.display = 'none';
+  document.getElementById('qz-live').style.display = 'block';
+  qzRender();
+}
+
+document.getElementById('qz-input').addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') qzBegin();
+});
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape') qzUnzoom();
+});
+</script>
+</div><div class="ie6600-foot"><span><span class="code">IE6600</span> <span class="name">Computation and Visualization</span></span><span>Prof. Dehghani</span></div></div></body></html>

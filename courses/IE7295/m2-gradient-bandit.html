@@ -1,0 +1,796 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Gradient Bandit - IE 7295</title><link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script><style>
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;background:#f4f6f8;color:#3d3d3d;font-size:12.5px;line-height:1.5;
+  display:flex;flex-direction:column;overflow:hidden}
+
+.band{flex:0 0 auto;background:linear-gradient(135deg,#C3E3E4 0%,#C1E2E3 100%);
+  padding:9px 16px;position:relative}
+.band::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;
+  background:linear-gradient(90deg,#F5D000 0 33.33%,#E2231A 33.33% 66.66%,#0064B0 66.66% 100%)}
+.band h1{margin:0;font-size:16px;font-weight:700;color:#20484A}
+.band .sub{display:inline-block;background:rgba(255,255,255,.75);color:#3d5f61;
+  padding:2px 9px;border-radius:999px;font-size:11px;margin-top:3px}
+.foot{flex:0 0 auto;border-top:1px solid #E4E9EB;background:#fff;padding:8px 16px;
+  text-align:center;font-size:11px;color:#a8b0b6}
+
+.stage{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:9px;
+  padding:10px 14px}
+.tabs{flex:0 0 auto;display:inline-flex;background:#fff;border:1px solid #E4E9EB;
+  border-radius:999px;padding:3px;align-self:flex-start}
+.tab{font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;color:#5b7175;background:none;
+  border:0;border-radius:999px;padding:7px 20px;cursor:pointer;white-space:nowrap}
+.tab.on{background:linear-gradient(135deg,#006064 0%,#17a2b8 100%);color:#fff}
+
+.cols{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:264px 1fr;gap:10px}
+.side{display:flex;flex-direction:column;gap:8px;min-height:0;overflow:auto;
+  padding-right:2px}
+.main{display:flex;flex-direction:column;gap:9px;min-height:0}
+
+.card{background:#fff;border:1px solid #E4E9EB;border-radius:6px;padding:10px 12px}
+.card.rule{border-left:3px solid #8FC8CA;border-radius:0 6px 6px 0}
+h2{font-size:10.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+  color:#006064;margin:0 0 6px}
+
+.ctl{margin-bottom:9px}
+.ctl:last-child{margin-bottom:0}
+.ctl .lab{display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+  font-size:11px;font-weight:700;color:#20484A;margin-bottom:2px}
+.ctl .val{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;font-weight:700;color:#006064;
+  background:#eef6f6;border-radius:999px;padding:1px 9px}
+.ctl .hint{font-size:10px;color:#a8b0b6;margin-top:3px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:10px;
+  border-radius:999px;margin:6px 0 0;cursor:pointer;outline:none;
+  background:linear-gradient(90deg,#0d5f62 0%,#17a2b8 var(--f,0%),
+             #e2e9ea var(--f,0%),#e2e9ea 100%)}
+input[type=range]::-webkit-slider-runnable-track{height:10px;background:transparent}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;margin-top:-5px;
+  width:20px;height:20px;border-radius:999px;background:#fff;border:2px solid #006064;
+  box-shadow:0 1px 4px rgba(0,0,0,.18)}
+input[type=range]::-moz-range-track{height:10px;background:transparent}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:999px;
+  background:#fff;border:2px solid #006064;box-shadow:0 1px 4px rgba(0,0,0,.18)}
+select{width:100%;font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;font-size:12px;color:#20484A;background:#fff;
+  border:1px solid #E4E9EB;border-radius:6px;padding:7px 9px;margin-top:5px;cursor:pointer}
+select:focus{outline:none;border-color:#8FC8CA}
+.btns{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
+.btn{flex:1 1 0;min-width:76px;font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;font-size:11.5px;font-weight:700;
+  border-radius:999px;padding:7px 0;cursor:pointer;border:1px solid #E4E9EB;
+  background:#fff;color:#20484A}
+.btn:hover{border-color:#8FC8CA;background:#eef6f6}
+.btn.go{border:0;color:#fff;background:linear-gradient(135deg,#006064 0%,#17a2b8 100%)}
+.btn.stop{border:0;color:#fff;background:linear-gradient(135deg,#8b1a1a 0%,#b8433f 100%)}
+.btn:disabled{background:#eef1f2;color:#9aa8ae;cursor:not-allowed;border-color:#E4E9EB}
+
+.eq{position:relative;background:rgba(143,200,202,.13);border-left:3px solid #8FC8CA;
+  border-radius:0 6px 6px 0;padding:11px 42px 11px 15px;text-align:center;
+  min-height:62px;display:flex;flex-direction:column;justify-content:center}
+.eq .cap{font-size:11px;color:#3d3d3d;margin-top:6px}
+
+/* the equation flips to its own explanation, because a student who does not
+   recognise a symbol has nowhere else to go and will not ask */
+.eq-flip{position:absolute;top:9px;right:10px;width:24px;height:24px;padding:0;
+  border:1px solid #8FC8CA;border-radius:999px;background:#fff;color:#006064;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:all .14s}
+.eq-flip:hover{background:#006064;color:#fff;border-color:#006064}
+.eq.back{background:rgba(0,96,100,.07);border-left-color:#006064;text-align:right}
+.eq.back .terms{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;
+  text-align:left;font-size:11.5px;line-height:1.5;color:#3d3d3d;width:100%}
+.eq.back .terms b{color:#006064;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:nowrap;text-align:right}
+.eq.back .lead{font-size:11.5px;color:#3d3d3d;line-height:1.55;margin-bottom:8px;
+  text-align:left}
+.viz{flex:1 1 auto;min-height:0;background:#fff;border:1px solid #E4E9EB;border-radius:6px;
+  padding:12px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.reading{flex:0 0 auto;height:58px;overflow:auto;background:rgba(0,96,100,.07);
+  border-left:3px solid #006064;border-radius:0 6px 6px 0;padding:10px 14px;
+  font-size:12px;line-height:1.55;color:#3d3d3d}
+.reading b{color:#006064;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-weight:700}
+.reads{flex:0 0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.read{background:#fff;border:1px solid #E4E9EB;border-radius:6px;padding:8px 11px}
+.read .k{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  color:#a8b0b6}
+.read .v{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:17px;font-weight:700;color:#20484A;margin-top:1px}
+.read.on .v{color:#006064}
+.read.warn .v{color:#8b1a1a}
+
+.steps{counter-reset:s;margin:0;padding:0;list-style:none}
+.steps li{counter-increment:s;position:relative;padding-left:20px;margin-bottom:5px;
+  font-size:10.5px;line-height:1.45;color:#3d3d3d}
+.steps li:last-child{margin-bottom:0}
+.steps li::before{content:counter(s);position:absolute;left:0;top:1px;width:15px;
+  height:15px;border-radius:999px;background:#006064;color:#fff;font-size:9.5px;
+  font-weight:700;display:flex;align-items:center;justify-content:center}
+.katex{font-size:1.05em}
+
+/* pieces individual tools draw with, all from the same palette */
+.tile{border:1px solid #E4E9EB;border-radius:6px;background:#f7f9f9;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;transition:all .18s}
+.tile .k{font-size:10px;color:#a8b0b6}
+.tile .v{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:22px;font-weight:700;color:#20484A}
+.tile.on{border:2px solid #006064;background:#eef6f6}
+.tile.best{border:2px solid #2e9e6b;background:rgba(0,150,90,.10)}
+.tile.best .v{color:#1d6b4a}
+.tile.bad{border:2px solid #E2231A;background:rgba(226,35,26,.08)}
+.tile.bad .v{color:#8b1a1a}
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:14px;height:100%;
+  width:100%;padding-bottom:22px}
+.bar{flex:1;max-width:92px;display:flex;flex-direction:column;justify-content:flex-end;
+  align-items:center;height:100%;position:relative}
+.bar .fill{width:100%;border-radius:5px 5px 0 0;min-height:3px;
+  background:linear-gradient(180deg,#17a2b8,#0d5f62)}
+.bar .fill.neg{background:linear-gradient(180deg,#d4685f,#8b1a1a)}
+.bar .t{position:absolute;bottom:-19px;font-size:11px;color:#a8b0b6;white-space:nowrap}
+.bar .c{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;font-weight:700;color:#006064;margin-bottom:4px}
+.work{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;color:#3d3d3d;line-height:2.1}
+.work b{color:#006064}
+/* first run: who is playing, then what the tool is for. Same pattern as the
+   Module 1 game, so a student meets one convention across the whole set. */
+.veil{position:fixed;inset:0;background:rgba(32,72,74,.42);z-index:70;display:none;
+  align-items:center;justify-content:center;padding:20px}
+.veil.on{display:flex}
+.dlg{background:#fff;border-radius:10px;padding:24px 28px;max-width:560px;width:100%;
+  box-shadow:0 18px 50px rgba(0,0,0,.24);border-top:3px solid #006064}
+.dlg h2{font-size:16px;font-weight:700;color:#20484A;margin:0;text-transform:none;
+  letter-spacing:0}
+.dlg p{font-size:12.5px;line-height:1.6;color:#3d3d3d;margin:0 0 13px}
+.dlg input{width:100%;font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;font-size:12.5px;color:#20484A;text-align:center;
+  padding:9px 12px;border:1px solid #8FC8CA;border-radius:999px;outline:none}
+.dlg input:focus{border-color:#006064}
+.dlg .go2{margin-top:11px;width:100%;font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+  color:#fff;background:linear-gradient(135deg,#006064 0%,#17a2b8 100%);border:0;
+  border-radius:999px;padding:9px 0;cursor:pointer}
+.dlg .skip{background:none;border:0;color:#9aa5a8;font-size:11px;margin-top:7px;
+  width:100%;cursor:pointer;font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}
+.dlg-head{display:flex;align-items:center;justify-content:space-between;gap:14px;
+  margin-bottom:8px}
+.ring{position:relative;flex:0 0 auto;width:36px;height:36px;padding:0;border:0;
+  background:none;cursor:pointer}
+.ring span{position:absolute;inset:0;display:flex;align-items:center;
+  justify-content:center;font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;color:#006064}
+.ring:hover span{color:#E2231A}
+.introbox{background:rgba(143,200,202,.14);border-left:3px solid #8FC8CA;
+  border-radius:0 6px 6px 0;padding:13px 15px;margin-bottom:4px}
+.introart{margin:0 0 12px}
+.introbox li{font-size:12.5px;line-height:1.6;color:#3d3d3d;margin-bottom:7px;
+  list-style:none;padding-left:14px;position:relative}
+.introbox li:last-child{margin-bottom:0}
+.introbox li::before{content:"";position:absolute;left:0;top:8px;width:5px;height:5px;
+  border-radius:999px;background:#8FC8CA}
+.introbox b{color:#20484A}
+.whois{position:absolute;right:16px;top:9px;display:flex;align-items:center}
+.whois .ul{font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+  color:#fff;background:#006064;border-radius:999px 0 0 999px;padding:3px 8px 3px 10px;
+  display:inline-flex;align-items:center;gap:5px}
+.whois .un{font-size:11px;font-weight:700;color:#006064;background:#eef6f6;
+  border:1px solid #8FC8CA;border-left:0;border-radius:0 999px 999px 0;padding:2px 11px}
+</style></head><body><div class="band"><h1>Gradient Bandit</h1><div class="sub">Module 2 &middot; preferences, softmax, and one reward moving all of them</div></div><div class="stage"><div class="tabs"><button class="tab on" data-t="soft" type="button">Softmax</button><button class="tab" data-t="update" type="button">The update</button></div><div class="cols"><div class="side"><div class="card rule" id="controls"></div><div class="card rule" id="says"></div><div class="card rule" id="try"></div></div><div class="main"><div class="card eq" id="eq"></div><div class="viz" id="viz"></div><div class="reading" id="reading"></div><div class="reads" id="reads"></div></div></div></div><div class="foot">IE7295: Applied Reinforcement Learning &middot; Prof. Dehghani</div><div class="veil" id="name-veil"><div class="dlg"><h2>Before you start</h2><p>Put your name in so it appears on the tool. Any screenshot you take for an assignment will then carry it.</p><input type="text" id="name-in" maxlength="40" placeholder="Your name" autocomplete="name" spellcheck="false"><button class="go2" type="button" id="name-go">Start</button><button class="skip" type="button" id="name-skip">Skip</button></div></div><div class="veil" id="intro-veil"><div class="dlg"><div class="dlg-head"><h2 id="intro-hi">How this works</h2><button class="ring" id="intro-skip" type="button" aria-label="Skip"><svg viewBox="0 0 36 36" width="36" height="36"><circle cx="18" cy="18" r="15.5" fill="none" stroke="#dfe8e9" stroke-width="3"/><circle id="intro-ring" cx="18" cy="18" r="15.5" fill="none" stroke="#006064" stroke-width="3" stroke-linecap="round" stroke-dasharray="97.4" stroke-dashoffset="0" transform="rotate(-90 18 18)"/></svg><span id="intro-count">10</span></button></div><div class="introbox" id="intro-body"></div><button class="go2" type="button" id="intro-go">Got it</button></div></div><script>
+var INTRO = ['Gradient Bandit', [
+  'This method never estimates what an arm is worth. It keeps a <b>preference</b> for each one.',
+  'A reward above the running average pushes the arm you took up, and every other arm down.',
+  '<b>Softmax</b> turns those preferences into probabilities, which is what the left and right columns show.',
+  'Temperature decides how decisive softmax is on the same evidence.',
+]];
+
+var S = {
+  tab: 'soft', arms: 4, alpha: 10, temp: 100,
+  H: [], P: [], mu: [], baseline: 0, steps: 0, picked: -1, lastR: 0,
+  autoOn: false, autoT: null,
+  hist: [],          // {R, base} per step, for the reward panel
+  angle: 0,          // where the wheel points, in degrees
+  spinMs: 600,       // how long the current wheel movement should take
+  spinEase: 'cubic-bezier(.2,.85,.25,1)',
+  settleTo: 0, settleT: null
+};
+
+function reset(){
+  S.H = []; S.mu = [];
+  for (var i = 0; i < S.arms; i++){
+    S.H.push(0);
+    S.mu.push(Math.round((Math.random() * 4 - 1) * 100) / 100);
+  }
+  S.baseline = 0; S.steps = 0; S.picked = -1; S.lastR = 0;
+  S.hist = []; S.angle = 0; S.spinMs = 600;
+  if (S.settleT){ clearTimeout(S.settleT); S.settleT = null; }
+  softmax();
+  stopAuto();
+}
+function softmax(){
+  var t = Math.max(0.1, S.temp / 100);
+  var m = Math.max.apply(null, S.H);
+  var e = S.H.map(function(h){ return Math.exp((h - m) / t); });   // shifted, so no overflow
+  var sum = e.reduce(function(a, b){ return a + b; }, 0);
+  S.P = e.map(function(x){ return x / sum; });
+}
+function sample(){
+  var r = Math.random(), c = 0;
+  for (var i = 0; i < S.arms; i++){ c += S.P[i]; if (r <= c) return i; }
+  return S.arms - 1;
+}
+function step(){
+  // The arm is chosen HERE, from the probabilities as they stand. The wheel is
+  // animated to this answer afterwards. Doing it the other way round is what
+  // made the old wheel stop on one arm and report another.
+  var a = sample();
+  var R = S.mu[a] + (Math.random() + Math.random() + Math.random() - 1.5) * 0.9;
+  var al = S.alpha / 100;
+  S.steps += 1;
+  S.baseline += (R - S.baseline) / S.steps;          // running average reward
+  for (var i = 0; i < S.arms; i++){
+    // the chosen arm rises by 1 - P, every other falls by its own P
+    S.H[i] += al * (R - S.baseline) * ((i === a ? 1 : 0) - S.P[i]);
+  }
+  softmax();
+  S.picked = a; S.lastR = R;
+  S.hist.push({R: R, base: S.baseline});
+  if (S.hist.length > 120) S.hist.shift();
+  spinTo(a);
+  paint();
+}
+
+/* Repaint the picture and the readouts, and NOTHING else.
+
+   MD: the Stop button did not work. render() rebuilds the controls panel, and
+   during a run step() was calling it sixteen times a second, so the button was
+   destroyed and recreated under the cursor between mousedown and mouseup and
+   the click never landed. Exactly the bug the bandits tool already had. */
+function paint(){
+  var t = TABS[S.tab];
+  if (t && t.draw) t.draw();
+  var rd = $('reading');
+  if (rd && t && t.read) rd.innerHTML = t.read();
+}
+
+/* Point the wheel at the arm already chosen.
+
+   MD wanted it to spin like a real wheel, and to settle rather than stop dead.
+   So a single step takes three or four fast turns, decelerates over about a
+   second and a half, deliberately overshoots the pocket by a few degrees, and
+   then rocks back into it. The overshoot is what makes it read as momentum
+   instead of an animation ending.
+
+   During a Run there is a step every 60ms, so turns and settling are dropped
+   and the wheel simply tracks. */
+function spinTo(a){
+  var start = 0, i;
+  for (i = 0; i < a; i++) start += S.P[i];
+  var centre = (start + S.P[a] / 2) * 360;
+  var target = S.angle - (S.angle % 360) + (360 - centre);
+  if (S.settleT){ clearTimeout(S.settleT); S.settleT = null; }
+
+  if (S.autoOn){
+    S.spinMs = 60;
+    S.spinEase = 'linear';
+    S.angle = target;
+    return;
+  }
+
+  var turns = 3 + Math.floor(Math.random() * 2);
+  var over = 6 + Math.random() * 4;               // past the pocket, then back
+  S.spinMs = 1500;
+  S.spinEase = 'cubic-bezier(.12,.72,.09,1)';     // fast away, long slow down
+  S.settleTo = target + 360 * turns;
+  S.angle = S.settleTo + over;
+  S.settleT = setTimeout(function(){
+    S.spinMs = 430;
+    S.spinEase = 'cubic-bezier(.34,1.4,.64,1)';   // the rock back into place
+    S.angle = S.settleTo;
+    S.settleT = null;
+    paint();
+  }, 1520);
+}
+function stopAuto(){ S.autoOn = false; if (S.autoT){ clearInterval(S.autoT); S.autoT = null; } }
+function toggleAuto(){
+  if (S.autoOn){ stopAuto(); render(); return; }
+  S.autoOn = true;
+  S.autoT = setInterval(function(){
+    if (S.steps >= 400){ stopAuto(); render(); return; }
+    step();               // step() paints; the controls are left alone
+  }, 60);
+  render();
+}
+function onInput(id, val){
+  if (id === 'arms'){ S.arms = +val; reset(); }
+  if (id === 'alpha') S.alpha = +val;
+  if (id === 'temp'){ S.temp = +val; softmax(); }
+  render();
+}
+function onTab(){ stopAuto(); }
+
+function best(){ return S.mu.indexOf(Math.max.apply(null, S.mu)); }
+
+/* MD's own wheel, restored. It was a canvas donut: inner 60 / outer 120, a
+   radial gradient per segment, white dividers, a white badge on each segment
+   carrying the arm number AND its percentage, and a dark centre reading
+   SPIN ME. Those five colours are his too.
+
+   Drawn in SVG rather than canvas so it lives inside the kit's innerHTML
+   render with no canvas lifecycle to manage. The geometry, palette and badges
+   are his; the rotation is the one addition, because he asked for a roulette
+   wheel that spins. */
+var WEDGE = ['#E61E27', '#FFC72C', '#0066CC', '#6BADB1', '#9B59B6',
+             '#E8833A', '#2BB673', '#8E6FBF', '#D64C7F', '#3D9BE9'];
+
+function ringPath(cx, cy, ro, ri, a, b){
+  var A = (a * 360 - 90) * Math.PI / 180, B = (b * 360 - 90) * Math.PI / 180;
+  var big = (b - a) > 0.5 ? 1 : 0;
+  var x1 = cx + ro * Math.cos(A), y1 = cy + ro * Math.sin(A);
+  var x2 = cx + ro * Math.cos(B), y2 = cy + ro * Math.sin(B);
+  var x3 = cx + ri * Math.cos(B), y3 = cy + ri * Math.sin(B);
+  var x4 = cx + ri * Math.cos(A), y4 = cy + ri * Math.sin(A);
+  return 'M ' + x1.toFixed(1) + ' ' + y1.toFixed(1) +
+    ' A ' + ro + ' ' + ro + ' 0 ' + big + ' 1 ' + x2.toFixed(1) + ' ' + y2.toFixed(1) +
+    ' L ' + x3.toFixed(1) + ' ' + y3.toFixed(1) +
+    ' A ' + ri + ' ' + ri + ' 0 ' + big + ' 0 ' + x4.toFixed(1) + ' ' + y4.toFixed(1) + ' Z';
+}
+
+function drawWheel(){
+  var RO = 106, RI = 53, cx = 120, cy = 120, acc = 0, segs = [], badges = [], i;
+  var defs = '<defs><filter id="wsh" x="-30%" y="-30%" width="160%" height="160%">' +
+    '<feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#101828" ' +
+    'flood-opacity="0.22"/></filter>';
+  for (i = 0; i < S.arms; i++){
+    var c = WEDGE[i % WEDGE.length];
+    defs += '<radialGradient id="wg' + i + '" cx="50%" cy="50%" r="50%">' +
+      '<stop offset="' + (RI / RO * 100).toFixed(0) + '%" stop-color="' + c +
+      '" stop-opacity="0.87"/><stop offset="100%" stop-color="' + c + '"/></radialGradient>';
+  }
+  defs += '</defs>';
+
+  for (i = 0; i < S.arms; i++){
+    var a = acc, b = acc + S.P[i];
+    segs.push('<path d="' + ringPath(cx, cy, RO, RI, a, b) + '" fill="url(#wg' + i + ')" ' +
+      'stroke="rgba(255,255,255,.85)" stroke-width="2"/>');
+    if (S.P[i] > 0.05){
+      var mid = ((a + b) / 2 * 360 - 90) * Math.PI / 180;
+      var lr = (RO + RI) / 2;
+      var lx = cx + Math.cos(mid) * lr, ly = cy + Math.sin(mid) * lr;
+      // counter-rotated so the number and percentage stay readable as it spins
+      badges.push('<g transform="rotate(' + (-S.angle).toFixed(1) + ' ' +
+        lx.toFixed(1) + ' ' + ly.toFixed(1) + ')" ' +
+        'style="transition:transform ' + S.spinMs + 'ms ' + S.spinEase + '">' +
+        '<circle cx="' + lx.toFixed(1) + '" cy="' + ly.toFixed(1) + '" r="20" ' +
+          'fill="rgba(255,255,255,.92)"/>' +
+        '<text x="' + lx.toFixed(1) + '" y="' + (ly - 2).toFixed(1) + '" ' +
+          'text-anchor="middle" font-size="15" font-weight="700" fill="' +
+          WEDGE[i % WEDGE.length] + '">' + (i + 1) + '</text>' +
+        '<text x="' + lx.toFixed(1) + '" y="' + (ly + 10).toFixed(1) + '" ' +
+          'text-anchor="middle" font-size="10" font-weight="700" fill="' +
+          WEDGE[i % WEDGE.length] + '">' + (S.P[i] * 100).toFixed(0) + '%</text></g>');
+    }
+    acc = b;
+  }
+
+  return '<div style="text-align:center">' +
+    '<svg viewBox="0 0 240 240" style="width:100%;max-width:236px;height:auto">' + defs +
+      '<circle cx="' + cx + '" cy="' + cy + '" r="' + RO + '" fill="#fff" filter="url(#wsh)"/>' +
+      '<g transform="rotate(' + S.angle.toFixed(1) + ' ' + cx + ' ' + cy + ')" ' +
+        'style="transition:transform ' + S.spinMs + 'ms ' + S.spinEase + '">' +
+        segs.join('') + badges.join('') +
+      '</g>' +
+      '<circle cx="' + cx + '" cy="' + cy + '" r="' + (RI - 2) + '" fill="#2d2d2d"/>' +
+      '<text x="' + cx + '" y="' + (cy - 4) + '" text-anchor="middle" font-size="11" ' +
+        'font-weight="700" fill="#fff" letter-spacing="1">' +
+        (S.picked >= 0 ? 'ARM ' + (S.picked + 1) : 'SPIN ME!') + '</text>' +
+      '<text x="' + cx + '" y="' + (cy + 12) + '" text-anchor="middle" font-size="10" ' +
+        'fill="rgba(255,255,255,.7)">' +
+        (S.picked >= 0 ? (S.P[S.picked] * 100).toFixed(0) + '% chance' : '') + '</text>' +
+      // apex at the BOTTOM so it points into the wheel, not away from it
+      '<polygon points="110,4 130,4 120,28" fill="#2d2d2d"/>' +
+      '<polygon points="114,7 126,7 120,23" fill="#fff"/>' +
+    '</svg></div>';
+}
+
+/* The arithmetic behind the wedge, because "wedge size is the probability"
+   only lands if the numbers that produced it are on screen. */
+function drawMath(){
+  var t = Math.max(0.1, S.temp / 100);
+  var m = Math.max.apply(null, S.H);
+  var e = S.H.map(function(h){ return Math.exp((h - m) / t); });
+  var sum = e.reduce(function(a, b){ return a + b; }, 0);
+  return '<div style="font-family:ui-monospace,Menlo,monospace;font-size:10.5px;' +
+    'color:#4a5a5c;background:#f7f9f9;border:1px solid #E4E9EB;border-radius:6px;' +
+    'padding:8px 10px;margin-top:6px;text-align:left">' +
+    S.H.map(function(h, i){
+      return '<div style="display:flex;justify-content:space-between;gap:8px' +
+        (i === S.picked ? ';color:#006064;font-weight:700' : '') + '">' +
+        '<span>e^H' + (i + 1) + ' = ' + e[i].toFixed(2) + '</span>' +
+        '<span>&divide; ' + sum.toFixed(2) + ' = ' + (S.P[i] * 100).toFixed(1) + '%</span>' +
+      '</div>';
+    }).join('') + '</div>';
+}
+
+/* Reward against the running average. The vertical tick on the newest dot IS
+   the advantage, the term that decides the sign of every update. */
+function drawChart(){
+  var W = 210, H = 150, n = S.hist.length;
+  if (!n)
+    return '<div style="height:' + H + 'px;display:flex;align-items:center;' +
+      'justify-content:center;font-size:11px;color:#a8b0b6;text-align:center;' +
+      'padding:0 6px;line-height:1.6">' +
+      'Rewards appear here.<br>The line is the<br>running average.</div>';
+  var all = [];
+  S.hist.forEach(function(p){ all.push(p.R, p.base); });
+  var lo = Math.min.apply(null, all), hi = Math.max.apply(null, all);
+  if (hi - lo < 1){ hi += 0.5; lo -= 0.5; }
+  var x = function(i){ return 26 + (n < 2 ? 0 : i / (n - 1)) * (W - 34); };
+  var y = function(v){ return 10 + (1 - (v - lo) / (hi - lo)) * (H - 34); };
+  var dots = S.hist.map(function(p, i){
+    return '<circle cx="' + x(i).toFixed(1) + '" cy="' + y(p.R).toFixed(1) +
+      '" r="' + (i === n - 1 ? 3.4 : 1.7) + '" fill="' +
+      (p.R >= p.base ? '#17a2b8' : '#c0504d') + '"/>';
+  }).join('');
+  var line = S.hist.map(function(p, i){
+    return (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(p.base).toFixed(1);
+  }).join(' ');
+  var lastR = S.hist[n - 1].R, lastB = S.hist[n - 1].base;
+  return '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:' + H + 'px">' +
+    '<path d="' + line + '" fill="none" stroke="#20484A" stroke-width="1.6"/>' +
+    dots +
+    '<line x1="' + x(n - 1).toFixed(1) + '" y1="' + y(lastR).toFixed(1) + '" x2="' +
+      x(n - 1).toFixed(1) + '" y2="' + y(lastB).toFixed(1) + '" stroke="' +
+      (lastR >= lastB ? '#17a2b8' : '#c0504d') + '" stroke-width="1.6"/>' +
+    '<text x="3" y="' + (y(hi) + 4).toFixed(1) + '" font-size="9" fill="#a8b0b6">' +
+      hi.toFixed(1) + '</text>' +
+    '<text x="3" y="' + (y(lo) + 4).toFixed(1) + '" font-size="9" fill="#a8b0b6">' +
+      lo.toFixed(1) + '</text>' +
+    '<text x="26" y="' + (H - 3) + '" font-size="9.5" fill="#a8b0b6">' +
+      'dots are rewards, the line is the average</text></svg>';
+}
+
+function panel(title, inner, centre){
+  return '<div><div style="font-size:10px;font-weight:700;letter-spacing:.5px;' +
+    'text-transform:uppercase;color:#a8b0b6;text-align:center;margin-bottom:10px">' +
+    title + '</div>' +
+    // the wheel is the tallest panel, so the other two centre their content
+    // against it while all three headings stay on the same line
+    (centre ? '<div style="min-height:236px;display:flex;flex-direction:column;' +
+              'justify-content:center">' + inner + '</div>' : inner) + '</div>';
+}
+
+function drawSoft(){
+  var span = Math.max(1.2, Math.max.apply(null, S.H.map(Math.abs)) * 1.15);
+  var bars = S.H.map(function(h, i){
+    var w = (Math.abs(h) / span) * 50, pos = h >= 0;
+    return '<div style="display:flex;align-items:center;gap:6px;margin-bottom:7px">' +
+      '<div style="width:34px;font-size:10px;color:' +
+        (i === S.picked ? '#006064' : '#a8b0b6') + '">arm ' + (i + 1) + '</div>' +
+      '<div style="flex:1;height:17px;position:relative;background:#f2f5f6;' +
+        'border-radius:4px">' +
+        '<div style="position:absolute;left:50%;top:0;bottom:0;width:1px;' +
+          'background:#d4dcde"></div>' +
+        '<div style="position:absolute;top:2px;bottom:2px;border-radius:3px;' +
+          (pos ? 'left:50%;' : 'right:50%;') + 'width:' + w.toFixed(1) + '%;' +
+          'background:' + (pos ? '#17a2b8' : '#c0504d') + '"></div>' +
+      '</div>' +
+      '<div style="width:42px;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;' +
+        'font-weight:700;color:#20484A;text-align:right">' + h.toFixed(2) + '</div>' +
+    '</div>';
+  }).join('');
+
+  $('viz').innerHTML =
+    '<div style="display:grid;grid-template-columns:1fr 250px 1fr;gap:24px;' +
+    'width:100%;max-width:980px;align-items:start;justify-items:stretch">' +
+      panel('preference H(a)', bars +
+        '<div style="font-size:10px;color:#a8b0b6;text-align:center;margin-top:6px">' +
+        'left of centre is below zero</div>', true) +
+      panel('softmax &rarr; &pi;(a)', drawWheel() + drawMath()) +
+      panel('reward vs baseline', drawChart(), true) +
+    '</div>';
+
+
+  var b = best();
+  $('reads').innerHTML = reads([
+    ['steps', String(S.steps), ''],
+    ['baseline', S.baseline.toFixed(2), 'on'],
+    ['prob on best arm', (S.P[b] * 100).toFixed(0) + '%', S.P[b] > 0.6 ? 'on' : ''],
+    ['last reward', S.steps ? S.lastR.toFixed(2) : '-',
+      S.steps && S.lastR < S.baseline ? 'warn' : '']
+  ]);
+}
+
+var TABS = {
+  soft: {
+    eq: '\\pi_t(a) = \\frac{e^{H_t(a)}}{\\sum_b e^{H_t(b)}}',
+    cap: 'Preferences are not probabilities. Softmax turns one into the other.',
+    explain: ['Softmax takes any set of numbers and turns them into probabilities that sum to one, keeping their order.', [
+     ['H(a)', 'the preference for arm a, any real number'],
+     ['e^H', 'exponentiating makes everything positive'],
+     ['sum', 'dividing by the total is what forces them to sum to 1'],
+     ['pi(a)', 'the probability of choosing a on this step'],
+     ['', 'a preference of 0 is not "no chance": it is just the middle']]],
+    says: ['Preferences, not values', 'This method never estimates what an arm is ' +
+           'worth. It keeps a preference, and raises or lowers it depending on ' +
+           'whether the reward beat the average.'],
+    steps: ['All preferences start at zero, so softmax gives every arm the same ' +
+            'probability. Nothing is preferred yet.',
+            'Press <b>One step</b> a few times. Watch a preference bar cross the ' +
+            'centre line, and the probability bar beside it grow.',
+            'Drag <b>temperature</b> down to 0.20. The same preferences now produce ' +
+            'far sharper probabilities: the agent commits harder on the same evidence.',
+            'Press <b>Run</b> and watch <b>&pi; on best arm</b> climb. Stalling below ' +
+            '100% is softmax keeping some exploration alive on purpose.'],
+    read: function(){
+      if (!S.steps) return 'Every preference is <b>0.00</b>, so softmax spreads ' +
+        'probability evenly at <b>' + (100 / S.arms).toFixed(0) + '%</b> each. ' +
+        'Until something is tried there is no reason to prefer anything.';
+      var b = best(), lead = S.P.indexOf(Math.max.apply(null, S.P));
+      var beat = S.lastR > S.baseline;
+      return 'The last pull paid <b>' + S.lastR.toFixed(2) + '</b> against a baseline ' +
+        'of <b>' + S.baseline.toFixed(2) + '</b>, so arm <b>' + (S.picked + 1) +
+        '</b> was pushed ' + (beat ? '<b>up</b> and every other arm down. '
+                                   : '<b>down</b> and every other arm up. ') +
+        'Arm <b>' + (lead + 1) + '</b> now holds <b>' + (S.P[lead] * 100).toFixed(0) +
+        '%</b> of the probability' +
+        (lead === b ? ', and it is the genuinely best arm.'
+                    : ', but the best arm is actually <b>' + (b + 1) + '</b>.');
+    },
+    controls: function(){
+      return slider('arms', 'Number of arms', 2, 6, S.arms, function(v){ return String(v); }, '')
+           + slider('alpha', 'Step size &alpha;', 1, 50, S.alpha,
+                    function(v){ return (v/100).toFixed(2); },
+                    'How hard each reward moves the preferences')
+           + slider('temp', 'Temperature', 10, 300, S.temp,
+                    function(v){ return (v/100).toFixed(2); },
+                    'Low makes softmax decisive, high keeps it hesitant')
+           + '<div class="btns">'
+           + button(S.autoOn ? 'Stop' : 'Run', 'toggleAuto()', S.autoOn ? 'stop' : 'go')
+           + button('One step', 'step()', '') + '</div>'
+           + '<div class="btns">' + button('New problem', 'reset();render()', '') + '</div>';
+    },
+    draw: drawSoft
+  },
+  update: {
+    eq: 'H_{t+1}(a) = H_t(a) + \\alpha\\,(R_t - \\bar{R}_t)\\,' +
+        '\\big(\\mathbb{1}_{a = A_t} - \\pi_t(a)\\big)',
+    cap: 'One reward moves every preference, not only the arm that earned it.',
+    explain: ['The bracket is what makes the other arms move. For the arm taken it is nearly 1, for everything else it is negative.', [
+     ['alpha', 'step size: how far one reward moves things'],
+     ['R - Rbar', 'the advantage, positive only if this beat the running average'],
+     ['1 if a = A', 'one for the arm actually taken, zero for the rest'],
+     ['- pi(a)', 'every arm loses its own share of the probability'],
+     ['', 'so raising one arm necessarily lowers all the others']]],
+    says: ['Why the others move too', 'Probabilities have to sum to one. Raising the ' +
+           'arm you took means lowering everything else, and the amount each one ' +
+           'loses is exactly its own current probability.'],
+    steps: ['Take a step, then read the four numbers here. They are the pieces of ' +
+            'the equation above, in order.',
+            'Notice the sign of <b>R - baseline</b>. A reward below average pushes ' +
+            'the chosen arm <b>down</b>, which is the method admitting a mistake.',
+            'Turn <b>&alpha;</b> up to 0.50 and step again. The same reward now moves ' +
+            'the preferences much further, and the run gets noisier.',
+            'The baseline is just the average reward so far. Without it, every ' +
+            'reward would look good and every preference would drift upward together.'],
+    read: function(){
+      if (!S.steps) return 'Nothing has been taken yet, so there is no reward to ' +
+        'compare against a baseline and no preference has moved.';
+      var d = S.lastR - S.baseline, al = S.alpha / 100;
+      var moved = al * d * (1 - S.P[S.picked]);
+      return 'Arm <b>' + (S.picked + 1) + '</b> paid <b>' + S.lastR.toFixed(2) +
+        '</b>, the baseline is <b>' + S.baseline.toFixed(2) + '</b>, so the ' +
+        'advantage is <b>' + d.toFixed(2) + '</b>. Multiplied by &alpha; = <b>' +
+        al.toFixed(2) + '</b> and by (1 - &pi;) = <b>' +
+        (1 - S.P[S.picked]).toFixed(2) + '</b>, its preference moved by <b>' +
+        moved.toFixed(3) + '</b>. ' +
+        (d >= 0 ? 'Every other arm moved the other way.'
+                : 'Because the advantage was negative, the arm taken went down and ' +
+                  'the others went up.');
+    },
+    controls: function(){
+      return slider('alpha', 'Step size &alpha;', 1, 50, S.alpha,
+                    function(v){ return (v/100).toFixed(2); },
+                    'The multiplier on every preference move')
+           + '<div class="btns">'
+           + button(S.autoOn ? 'Stop' : 'Run', 'toggleAuto()', S.autoOn ? 'stop' : 'go')
+           + button('One step', 'step()', '') + '</div>'
+           + '<div class="btns">' + button('New problem', 'reset();render()', '') + '</div>';
+    },
+    draw: function(){
+      var d = S.steps ? S.lastR - S.baseline : 0, al = S.alpha / 100;
+      $('viz').innerHTML =
+        '<div class="work" style="font-size:14px;line-height:2.4">' +
+        'chosen arm &nbsp; <b>' + (S.steps ? 'A = ' + (S.picked + 1) : '-') + '</b><br>' +
+        'reward &nbsp; R = <b>' + (S.steps ? S.lastR.toFixed(2) : '-') + '</b><br>' +
+        'baseline &nbsp; R&#772; = <b>' + S.baseline.toFixed(2) + '</b><br>' +
+        'advantage &nbsp; R - R&#772; = <b>' + (S.steps ? d.toFixed(2) : '-') + '</b><br>' +
+        '<span style="color:#a8b0b6">' + '&mdash;'.repeat(18) + '</span><br>' +
+        'chosen arm moves by <b>' +
+          (S.steps ? (al * d * (1 - S.P[S.picked])).toFixed(3) : '-') + '</b><br>' +
+        'each other arm by <b>' +
+          (S.steps ? (-al * d * S.P[(S.picked + 1) % S.arms]).toFixed(3) : '-') +
+        '</b> and similar</div>';
+      var b = best();
+      $('reads').innerHTML = reads([
+        ['steps', String(S.steps), ''],
+        ['advantage', S.steps ? d.toFixed(2) : '-', d < 0 ? 'warn' : 'on'],
+        ['step size', al.toFixed(2), ''],
+        ['prob on best arm', (S.P[b] * 100).toFixed(0) + '%', '']
+      ]);
+    }
+  }
+};
+reset();
+
+var $ = function(id){ return document.getElementById(id); };
+
+function slider(id, label, min, max, val, fmt, hint, step){
+  return '<div class="ctl"><div class="lab"><span>' + label + '</span>' +
+         '<span class="val" id="v-' + id + '">' + fmt(val) + '</span></div>' +
+         '<input type="range" id="' + id + '" min="' + min + '" max="' + max +
+         '" step="' + (step || 1) + '" value="' + val + '">' +
+         (hint ? '<div class="hint">' + hint + '</div>' : '') + '</div>';
+}
+function picker(id, label, opts, sel, hint){
+  var o = opts.map(function(p){
+    return '<option value="' + p[0] + '"' + (String(p[0]) === String(sel) ? ' selected' : '') +
+           '>' + p[1] + '</option>'; }).join('');
+  return '<div class="ctl"><div class="lab"><span>' + label + '</span></div>' +
+         '<select id="' + id + '">' + o + '</select>' +
+         (hint ? '<div class="hint">' + hint + '</div>' : '') + '</div>';
+}
+function button(label, fn, kind){
+  return '<button class="btn ' + (kind || '') + '" type="button" onclick="' + fn +
+         '">' + label + '</button>';
+}
+function reads(items){
+  return items.map(function(it){
+    return '<div class="read' + (it[2] ? ' ' + it[2] : '') + '"><div class="k">' +
+           it[0] + '</div><div class="v">' + it[1] + '</div></div>'; }).join('');
+}
+function paintRange(r){
+  var pct = ((+r.value - +r.min) / ((+r.max - +r.min) || 1)) * 100;
+  r.style.setProperty('--f', pct + '%');
+}
+function wire(){
+  [].forEach.call(document.querySelectorAll('input[type=range]'), function(r){
+    paintRange(r);
+    r.addEventListener('input', function(){ paintRange(r); onInput(r.id, +r.value); });
+  });
+  [].forEach.call(document.querySelectorAll('select'), function(s){
+    s.addEventListener('change', function(){ onInput(s.id, s.value); });
+  });
+}
+var FLIP = {};                       // which tabs are currently showing the back
+
+function flipEq(){
+  FLIP[S.tab] = !FLIP[S.tab];
+  render();
+}
+function eqButton(){
+  var back = FLIP[S.tab];
+  var icon = back
+    ? '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" ' +
+      'stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M19 12H5M11 6l-6 6 6 6"/></svg>'
+    : '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" ' +
+      'stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<circle cx="12" cy="12" r="9"/><path d="M9.6 9.2a2.5 2.5 0 1 1 3.2 3.1c-.6.3-.8.7-.8 1.3v.4"/>' +
+      '<path d="M12 17.4h.01"/></svg>';
+  return '<button class="eq-flip" type="button" onclick="flipEq()" title="' +
+         (back ? 'Back to the equation' : 'What does this mean?') + '">' + icon + '</button>';
+}
+
+// Rewriting a panel that has not changed destroys whatever the pointer is on,
+// which is why Stop could not be clicked while a tool was running.
+function setIf(id, html){
+  var el = $(id);
+  if (el.innerHTML !== html) el.innerHTML = html;
+}
+
+function render(){
+  var t = TABS[S.tab];
+  if (t.eq) {
+    $('eq').style.display = '';
+    if (FLIP[S.tab] && t.explain){
+      $('eq').className = 'card eq back';
+      $('eq').innerHTML = eqButton() +
+        '<div class="lead">' + t.explain[0] + '</div><div class="terms">' +
+        t.explain[1].map(function(x){
+          return '<b>' + x[0] + '</b><span>' + x[1] + '</span>'; }).join('') +
+        '</div>';
+    } else {
+      $('eq').className = 'card eq';
+      $('eq').innerHTML = (t.explain ? eqButton() : '') +
+        '$$' + t.eq + '$$<div class="cap">' + t.cap + '</div>';
+    }
+  } else { $('eq').style.display = 'none'; }
+  setIf('says', '<h2>' + t.says[0] + '</h2>' +
+    '<div style="font-size:11.5px;line-height:1.6;color:#3d3d3d">' + t.says[1] + '</div>');
+  setIf('try', '<h2>Try this</h2><ol class="steps">' +
+    t.steps.map(function(x){ return '<li>' + x + '</li>'; }).join('') + '</ol>');
+  setIf('controls', '<h2>Controls</h2>' + t.controls());
+  t.draw();
+  $('reading').innerHTML = t.read();
+  wire();
+  if (window.renderMathInElement && t.eq && !(FLIP[S.tab] && t.explain)){
+    renderMathInElement($('eq'), {
+      delimiters: [{left:'$$', right:'$$', display:true}], throwOnError:false});
+  }
+}
+document.addEventListener('DOMContentLoaded', function(){
+  [].forEach.call(document.querySelectorAll('.tab'), function(b){
+    b.addEventListener('click', function(){
+      var on = document.querySelector('.tab.on');
+      if (on) on.classList.remove('on');
+      b.classList.add('on');
+      S.tab = b.dataset.t;
+      if (typeof onTab === 'function') onTab(S.tab);
+      render();
+    });
+  });
+  function boot(){
+    if (!window.renderMathInElement){ setTimeout(boot, 60); return; }
+    render();
+  }
+  boot();
+});
+
+/* ---- who is playing, and what this is ---------------------------------
+   Asked once, remembered after that. The name goes on the band so it lands
+   inside any screenshot a student takes for an assignment. INTRO is set by
+   each tool: a title and the four lines worth knowing before starting. */
+(function(){
+  var USER = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" ' +
+    'stroke="currentColor" stroke-width="2" stroke-linecap="round" ' +
+    'stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/>' +
+    '<path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>';
+  var nameVeil = $('name-veil'), introVeil = $('intro-veil'),
+      input = $('name-in'), band = document.querySelector('.band');
+  var timer = null, LEN = 97.4, SECS = (window.INTRO_SECS || 20);
+
+  function show(n){
+    var slot = document.getElementById('whois');
+    if (!slot){
+      slot = document.createElement('div');
+      slot.className = 'whois'; slot.id = 'whois';
+      band.appendChild(slot);
+    }
+    slot.innerHTML = n ? '<span class="ul">' + USER + 'User</span>' +
+                         '<span class="un"></span>' : '';
+    if (n) slot.querySelector('.un').textContent = n;
+    var hi = $('intro-hi');
+    if (hi && window.INTRO) hi.textContent = n ? 'Say hi, ' + n : INTRO[0];
+  }
+  function closeIntro(){
+    if (timer){ clearInterval(timer); timer = null; }
+    introVeil.classList.remove('on');
+  }
+  function openIntro(){
+    if (!window.INTRO) return;
+    $('intro-body').innerHTML =
+      (INTRO[2] ? '<div class="introart">' + INTRO[2] + '</div>' : '') +
+      '<ul style="margin:0;padding:0">' +
+      INTRO[1].map(function(x){ return '<li>' + x + '</li>'; }).join('') + '</ul>';
+    introVeil.classList.add('on');
+    var left = SECS;
+    $('intro-count').textContent = left;
+    $('intro-ring').style.strokeDashoffset = 0;
+    timer = setInterval(function(){
+      left -= 1;
+      $('intro-count').textContent = Math.max(0, left);
+      $('intro-ring').style.strokeDashoffset = LEN * (SECS - left) / SECS;
+      if (left <= 0) closeIntro();
+    }, 1000);
+  }
+  function done(){
+    var n = input.value.trim().replace(/\s+/g, ' ').slice(0, 40);
+    try { if (n) localStorage.setItem('ie7295-name', n); } catch (e) {}
+    show(n);
+    nameVeil.classList.remove('on');
+    openIntro();
+  }
+  $('name-go').addEventListener('click', done);
+  $('name-skip').addEventListener('click', function(){
+    nameVeil.classList.remove('on'); openIntro();
+  });
+  input.addEventListener('keydown', function(e){ if (e.key === 'Enter') done(); });
+  $('intro-go').addEventListener('click', closeIntro);
+  $('intro-skip').addEventListener('click', closeIntro);
+  introVeil.addEventListener('click', function(e){ if (e.target === introVeil) closeIntro(); });
+
+  var saved = null;
+  try { saved = localStorage.getItem('ie7295-name'); } catch (e) {}
+  if (saved){ show(saved); openIntro(); }          // known already, straight to the intro
+  else { nameVeil.classList.add('on'); setTimeout(function(){ input.focus(); }, 60); }
+})();
+
+</script></body></html>

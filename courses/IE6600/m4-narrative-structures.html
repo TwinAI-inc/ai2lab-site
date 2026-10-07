@@ -1,0 +1,1135 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Narrative Structures: Telling the Story in the Data</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--ac:#0B4F9C;--dp:#154173;--bd:#D3E4F5;--mi:#A6C7E8;--tn:#E7EDF5;
+--pa:#FBFCFD;--ik:#3d3d3d;--mu:#a8b0b6;--bc:#747474;--ln:#E4E9EB;
+--ye:#F5D000;--rd:#E2231A;--gr:#1B5E43;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font:15px/1.6 Lato,Helvetica,Arial,sans-serif;color:var(--ik);background:#F0F4F8;padding:26px 16px}
+.shell{max-width:1060px;margin:0 auto;background:#fff;border-radius:8px;overflow:hidden;
+ box-shadow:0 1px 3px rgba(20,48,79,.10)}
+.band{background:linear-gradient(135deg,var(--bd),var(--mi));padding:18px 26px}
+.band h1{font-size:24px;font-weight:900;color:var(--dp)}
+.band p{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#2C4C6E;margin-top:3px}
+.steps{display:flex;gap:0;border-bottom:1px solid var(--ln);background:var(--pa)}
+.stp{flex:1;padding:11px 8px;text-align:center;font-size:12.5px;font-weight:700;color:var(--mu);
+ border-bottom:3px solid transparent;cursor:pointer;user-select:none}
+.stp.on{color:var(--ac);border-bottom-color:var(--ac);background:#fff}
+.stp.done{color:var(--gr)}
+.stp small{display:block;font-size:10.5px;font-weight:400;color:var(--mu)}
+.pane{padding:22px 26px;display:none}
+.pane.on{display:block}
+h2{font-size:18px;color:var(--dp);margin-bottom:5px}
+.sub{font-size:13.5px;color:var(--bc);margin-bottom:16px}
+.split{display:flex;gap:20px;flex-wrap:wrap}
+.chart{flex:1 1 470px;min-width:330px}
+.side{flex:1 1 280px;min-width:250px}
+svg{display:block;background:#fff;border:1px solid var(--ln);border-radius:6px}
+.gl{stroke:#E4E9EB;stroke-width:1}
+.ax{stroke:#9AA7B2;stroke-width:1.5}
+.bar{fill:var(--ac);transition:y .5s cubic-bezier(.4,0,.2,1),height .5s cubic-bezier(.4,0,.2,1),fill .25s}
+.tick,.clab,.leg{font:11px Lato,sans-serif;fill:#747474}
+.tick{text-anchor:end}
+.clab,.leg{text-anchor:middle}
+.leg{text-anchor:start}
+.vlab{font:700 11.5px Lato,sans-serif;fill:var(--dp);text-anchor:middle}
+.ttl{font:700 15px Lato,sans-serif;fill:var(--dp)}
+.hot{cursor:pointer}
+.hot:hover .bar{fill:#0d5fbd}
+.hot rect[fill="transparent"]{transition:fill .15s}
+.hot:hover rect[fill="transparent"]{fill:rgba(11,79,156,.07)}
+.hot.picked rect[fill="transparent"]{fill:rgba(11,79,156,.12)}
+.info{background:var(--tn);border-left:4px solid var(--ac);border-radius:0 6px 6px 0;padding:14px 16px;min-height:190px}
+.info .k{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ac)}
+.info h3{font-size:16px;color:var(--dp);margin:4px 0 6px}
+.info .ch{display:inline-block;background:#fff;border:1px solid var(--mi);border-radius:999px;
+ padding:2px 10px;font-size:11.5px;font-weight:700;color:var(--dp);margin-bottom:8px}
+.info p{font-size:13.5px;color:var(--ik)}
+.rk{display:inline-block;background:var(--dp);color:#fff;border-radius:999px;padding:1px 8px;
+ font-size:11px;font-weight:700;margin-left:5px}
+.dots{display:flex;gap:6px;margin:14px 0 0;flex-wrap:wrap}
+.dot{width:11px;height:11px;border-radius:999px;border:2px solid var(--mi);background:#fff}
+.dot.on{background:var(--ac);border-color:var(--ac)}
+.hint{font-size:12px;color:var(--bc);margin-top:8px}
+.ctrl{display:flex;align-items:center;gap:12px;margin:14px 0 6px;flex-wrap:wrap}
+.ctrl label{font-size:13px;font-weight:700;color:var(--dp)}
+input[type=range]{flex:1;min-width:180px;accent-color:var(--ac)}
+.val{font:700 14px Lato;color:var(--ac);min-width:74px}
+.warnbox{background:#FDF0EF;border-left:4px solid var(--rd);border-radius:0 6px 6px 0;padding:12px 15px;margin-top:12px;font-size:13.5px}
+.okbox{background:#EAF3EE;border-left:4px solid var(--gr);border-radius:0 6px 6px 0;padding:12px 15px;margin-top:12px;font-size:13.5px}
+.chrow{display:flex;gap:16px;flex-wrap:wrap;margin-top:6px}
+.chcard{flex:1 1 200px;border:1px solid var(--ln);border-radius:6px;padding:12px;text-align:center;cursor:pointer}
+.chcard.sel{border-color:var(--ac);background:var(--tn)}
+.chcard h4{font-size:13.5px;color:var(--dp)}
+.chcard .rk2{font-size:11px;color:var(--bc);margin-top:3px}
+
+/* ---- the welcome screen -------------------------------------------------
+   MD, 2026-09-28: better icons on the buttons, something that responds to the
+   mouse, and generally more professional. The icons are drawn inline rather
+   than pulled from a set so they share the tool's line weight and recolour
+   with it. The three dots in the hero are the MIT Media Lab yellow, red and
+   blue, which the course design system allows as marks and nowhere else. */
+.hero{max-width:820px;margin:4px auto 0;text-align:center}
+.heroArt{display:flex;justify-content:center;margin-bottom:4px}
+.heroArt .ha{animation:rise .7s cubic-bezier(.2,.8,.3,1) both}
+.heroArt .b1{animation-delay:.05s}.heroArt .b2{animation-delay:.13s}.heroArt .b3{animation-delay:.21s}
+.heroArt .d1{animation-delay:.30s}.heroArt .d2{animation-delay:.37s}.heroArt .d3{animation-delay:.44s}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.nmwrap{position:relative}
+.nmi{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:20px;height:20px;color:var(--mu);pointer-events:none}
+.nm .nmwrap input{padding-left:46px;transition:border-color .18s, box-shadow .18s}
+.nm .nmwrap input:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 4px rgba(11,79,156,.12)}
+.modes{display:flex;gap:16px;margin-top:20px}
+.mode{position:relative;flex:1 1 260px;display:flex;align-items:flex-start;gap:14px;
+ border:1px solid var(--ln);background:#fff;border-radius:12px;padding:18px 16px;
+ cursor:pointer;text-align:left;font:inherit;overflow:hidden;
+ transition:transform .18s cubic-bezier(.2,.8,.3,1), box-shadow .18s, border-color .18s}
+.mode::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--ac);
+ transform:scaleY(0);transform-origin:top;transition:transform .22s cubic-bezier(.2,.8,.3,1)}
+.mode.alt::before{background:var(--gr)}
+.mode:hover{transform:translateY(-3px);border-color:transparent;box-shadow:0 10px 24px rgba(20,48,79,.13)}
+.mode:hover::before{transform:scaleY(1)}
+.mode:focus-visible{outline:3px solid rgba(11,79,156,.35);outline-offset:2px}
+.mIcon{flex:0 0 46px;height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+ background:var(--tn);color:var(--ac);transition:background .2s,color .2s,transform .25s}
+.mode.alt .mIcon{background:#EAF3EE;color:var(--gr)}
+.mode:hover .mIcon{transform:rotate(-4deg) scale(1.06)}
+.mIcon svg{width:26px;height:26px}
+.mIcon .mg{opacity:0;transition:opacity .25s .05s}
+.mode:hover .mIcon .mg{opacity:1}
+.mIcon .tk1,.mIcon .tk2{stroke-dasharray:14;stroke-dashoffset:14;transition:stroke-dashoffset .3s}
+.mode:hover .mIcon .tk1{stroke-dashoffset:0}
+.mode:hover .mIcon .tk2{stroke-dashoffset:0;transition-delay:.09s}
+.mTxt{flex:1;min-width:0}
+.mTxt b{display:block;font-size:16.5px;color:var(--dp);margin-bottom:3px}
+.ms{display:block;font-size:12.5px;color:var(--bc);line-height:1.5}
+.mchip{display:inline-block;margin-top:9px;font-size:11px;font-weight:700;
+ color:var(--ac);background:var(--tn);border-radius:999px;padding:2px 10px}
+.mode.alt .mchip{color:var(--gr);background:#EAF3EE}
+.mArr{width:20px;height:20px;color:var(--mu);flex:0 0 20px;margin-top:13px;
+ opacity:0;transform:translateX(-6px);transition:opacity .2s,transform .2s,color .2s}
+.mode:hover .mArr{opacity:1;transform:none;color:var(--ac)}
+.mode.alt:hover .mArr{color:var(--gr)}
+.hnote{margin-top:16px;font-size:12px;color:var(--mu)}
+.mlrule{display:flex;gap:4px;margin-top:10px}
+.mlrule i{height:4px;width:34px;border-radius:2px;display:block}
+@media (prefers-reduced-motion:reduce){.heroArt .ha{animation:none}.mode,.mIcon,.mArr{transition:none}}
+.nm{margin:16px 0 6px;text-align:left;max-width:420px;margin-left:auto;margin-right:auto}
+.nm label{display:block;font-size:11.5px;font-weight:700;letter-spacing:.06em;
+ text-transform:uppercase;color:var(--ac);margin-bottom:4px}
+.nm input{width:100%;padding:10px 13px;border:1px solid var(--mi);border-radius:6px;
+ font:15px Lato;color:var(--ik)}
+.modes{display:flex;gap:14px;margin-top:18px;flex-wrap:wrap}
+.mode{flex:1 1 200px;border:1px solid var(--mi);background:#fff;border-radius:8px;
+ padding:16px 14px;cursor:pointer;text-align:left;font:inherit}
+.mode:hover{border-color:var(--ac);background:var(--tn)}
+.mode b{display:block;font-size:16px;color:var(--dp);margin-bottom:3px}
+.mode span{font-size:12.5px;color:var(--bc)}
+.cert{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.dec{margin-bottom:12px}
+.dl{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--bc);margin-bottom:4px}
+.seg{display:flex;border:1px solid var(--ln);border-radius:999px;overflow:hidden}
+.seg button{flex:1;border:0;background:#fff;padding:7px 6px;font:700 12.5px Lato;color:var(--bc);cursor:pointer}
+.seg button.on{background:var(--ac);color:#fff}
+.btn{display:inline-block;background:var(--ac);color:#fff;border:0;border-radius:999px;
+ padding:10px 24px;font:700 14px Lato;cursor:pointer;margin-top:14px}
+.btn:disabled{background:#B8C4CE;cursor:not-allowed}
+.btn.ghost{background:#fff;color:var(--dp);border:1px solid var(--mi)}
+.prog{display:flex;gap:5px;margin-bottom:14px}
+.pg{flex:1;height:5px;border-radius:999px;background:var(--ln)}
+.pg.done{background:var(--gr)} .pg.now{background:var(--ac)}
+.qhead{margin-bottom:8px}
+.qtag{display:inline-block;background:var(--tn);color:var(--ac);border-radius:999px;
+ padding:3px 12px;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.qrow{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start}
+.qmain{flex:1 1 380px;min-width:300px}
+.qside{flex:0 1 330px;min-width:250px}
+.qside svg{border:1px solid var(--ln);border-radius:6px;background:var(--pa);padding:4px}
+.ltr{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;
+ border-radius:999px;background:var(--tn);color:var(--ac);font-weight:700;font-size:12.5px;
+ margin-right:11px;flex-shrink:0}
+.opt{display:flex;align-items:center}
+.opt.right .ltr{background:var(--gr);color:#fff}
+.opt.wrong .ltr{background:var(--rd);color:#fff}
+.q{font-size:16.5px;font-weight:700;color:var(--dp);margin-bottom:12px}
+.opt{display:block;border:1px solid var(--ln);border-radius:6px;padding:11px 14px;margin-bottom:9px;
+ cursor:pointer;font-size:14px;background:#fff}
+.opt:hover{border-color:var(--mi)}
+.opt.right{border-color:var(--gr);background:#EAF3EE}
+.opt.wrong{border-color:var(--rd);background:#FDF0EF}
+.why{background:var(--tn);border-left:4px solid var(--ac);border-radius:0 6px 6px 0;
+ padding:12px 15px;margin-top:10px;font-size:13.5px;display:none}
+.vital{color:var(--ac);font-weight:700}
+.qz-snap{margin:10px 0;border:1px solid var(--ln);border-radius:6px;overflow:hidden}
+.qz-snap-h{background:var(--tn);padding:6px 11px;font-size:11px;font-weight:700;
+ letter-spacing:.05em;text-transform:uppercase;color:var(--ac)}
+.score{font-size:15px;font-weight:700;color:var(--dp)}
+.foot{background:#EBF3FB;border-top:1px solid var(--ln);padding:11px 26px;display:flex;
+ justify-content:space-between;font-size:12px;color:var(--bc)}
+.code{background:var(--ac);color:#fff;font-weight:700;padding:2px 8px;border-radius:4px}
+.cite{font-size:11.5px;color:var(--bc);margin-top:10px}
+
+/* Decisions step, compacted 2026-10-02 so the whole step fits one screen.
+   Scoped to #p2: the other panes keep the single-column side panel. */
+#p2 .chart{flex:1 1 430px;min-width:320px}
+#p2 .side{flex:1 1 360px;min-width:330px;display:grid;
+          grid-template-columns:1fr 1fr;gap:9px 14px;align-content:start}
+#p2 .dec{margin-bottom:0}
+#p2 .dl{font-size:11px;margin-bottom:3px}
+#p2 .seg button{padding:5px 4px;font-size:11.5px}
+#p2 .info,#p2 .btn{grid-column:1 / -1}
+#p2 .info{margin-top:2px}
+</style></head><body><style>
+/* Additions for this tool only. Everything above is the Chart Explorer's
+   stylesheet, unchanged, so the two tools are one design system. */
+.lab{display:flex;gap:16px;flex-wrap:wrap;margin-top:4px}
+.labcard{flex:1 1 190px;border:1px solid var(--ln);border-radius:8px;padding:14px;background:#fff}
+.labcard .n{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;
+ border-radius:999px;background:var(--tn);color:var(--ac);font:800 12.5px Lato;margin-bottom:8px}
+.labcard b{display:block;font-size:14.5px;color:var(--dp);margin-bottom:3px}
+.labcard span{font-size:12.5px;color:var(--bc);line-height:1.55}
+.timer{text-align:center;border:1px solid var(--mi);border-radius:10px;padding:18px;background:var(--pa)}
+.tnum{font:900 54px Lato;color:var(--ac);letter-spacing:.02em;line-height:1.1}
+.tnum.low{color:var(--rd)}
+.ba{display:flex;gap:18px;flex-wrap:wrap;align-items:stretch;margin-top:6px}
+.bacol{flex:1 1 300px;min-width:270px;border:1px solid var(--ln);border-radius:8px;overflow:hidden;
+ display:flex;flex-direction:column}
+.bacol .h{padding:7px 12px;font-size:11px;font-weight:700;letter-spacing:.06em;
+ text-transform:uppercase}
+.bacol.before .h{background:#F4F6F8;color:var(--bc)}
+.bacol.after  .h{background:#EAF3EE;color:var(--gr)}
+.bacol .bd{padding:13px;flex:1}
+.bacol .note{font-size:12.5px;color:var(--bc);padding:0 13px 12px}
+.bacol.after .note{color:var(--gr);font-weight:700}
+.veil{position:relative;cursor:pointer}
+.veil .cover{position:absolute;inset:0;background:var(--tn);border-radius:6px;
+ display:flex;align-items:center;justify-content:center;font:700 13px Lato;color:var(--ac);
+ transition:opacity .25s}
+.veil.open .cover{opacity:0;pointer-events:none}
+.exnav{display:flex;gap:7px;flex-wrap:wrap;margin:2px 0 16px}
+.exnav button{border:1px solid var(--ln);background:#fff;border-radius:999px;
+ padding:6px 13px;font:700 12.5px Lato;color:var(--bc);cursor:pointer}
+.exnav button.on{background:var(--ac);border-color:var(--ac);color:#fff}
+.habit{display:flex;gap:16px;flex-wrap:wrap;margin-top:4px}
+.habit .hc{flex:1 1 220px;border:1px solid var(--ln);border-radius:8px;padding:16px;background:#fff}
+.habit .hc b{display:block;font-size:15.5px;color:var(--dp);margin-bottom:4px}
+.habit .hc p{font-size:13px;color:var(--bc);line-height:1.6}
+.habit .hc .eg{margin-top:9px;font-size:12.5px;color:var(--ik);background:var(--tn);
+ border-radius:6px;padding:8px 10px}
+.srcbox{border:1px solid var(--ln);border-radius:8px;padding:14px 16px;margin-top:14px;background:var(--pa)}
+.srcbox .k{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+ color:var(--ac);margin-bottom:6px}
+.srcbox p{font-size:13px;color:var(--ik);line-height:1.65;margin-bottom:7px}
+.srcbox a{color:var(--ac)}
+
+/* ---- the hero mark, this tool only ------------------------------------
+   MD, 2026-10-05: "the design of the home page, can you make a customized
+   design, I mean the animation on the top of it."
+
+   The Chart Explorer's hero is three bars and three dots, which is right for
+   a tool about chart anatomy and says nothing about this one. This draws the
+   three act arc instead: a line that sets up, falls into trouble, and
+   resolves higher than it started. It draws itself left to right, the area
+   under it fades in behind, and the three act nodes arrive in order so the
+   shape of a story is the first thing on the screen.
+
+   The three nodes are the MIT Media Lab yellow, red and blue, which the
+   course design system allows as marks. They are the only place those three
+   appear on this screen apart from the rule in the header band. */
+.arcwrap{position:relative}
+.arcpath{fill:none;stroke:var(--ac);stroke-width:3;stroke-linecap:round;
+ stroke-dasharray:640;stroke-dashoffset:640;
+ animation:arcDraw 1.6s cubic-bezier(.4,0,.2,1) .15s forwards}
+@keyframes arcDraw{to{stroke-dashoffset:0}}
+.arcfill{opacity:0;animation:arcFade .9s ease 1.05s forwards}
+@keyframes arcFade{to{opacity:.5}}
+.nd{opacity:0;transform-box:fill-box;transform-origin:center;
+ animation:ndPop .5s cubic-bezier(.2,.8,.3,1) forwards}
+@keyframes ndPop{0%{opacity:0;transform:scale(.25)}
+                 62%{opacity:1;transform:scale(1.18)}
+                 100%{opacity:1;transform:scale(1)}}
+.nd1{animation-delay:.45s}.nd2{animation-delay:1.00s}.nd3{animation-delay:1.55s}
+.ndl{opacity:0;animation:arcFade .5s ease forwards;font:700 8.5px Lato,sans-serif;
+ fill:#2C4C6E;text-anchor:middle}
+.ndl1{animation-delay:.60s}.ndl2{animation-delay:1.15s}.ndl3{animation-delay:1.70s}
+@media (prefers-reduced-motion:reduce){
+  .arcpath{stroke-dashoffset:0;animation:none}
+  .arcfill{opacity:.5;animation:none}
+  .nd,.ndl{opacity:1;animation:none}
+}
+
+/* ---- step 2, rebuilt -------------------------------------------------
+   MD, 2026-10-05: "this one is so crowded and not even visible, please
+   redesign it, split it in 2 to 3, add graphics or visuals."
+
+   It was one tall text box and one cramped figure in a narrow rail. It is
+   now three numbered panels, each one a single idea with its own drawing
+   above the words: what the effect is, what was measured, and the number
+   that was never measured. */
+.twocol{display:flex;gap:18px;flex-wrap:wrap}
+.pcard{flex:1 1 420px;min-width:330px;border:1px solid var(--ln);border-radius:10px;
+ padding:16px 18px;background:#fff;margin-bottom:16px}
+.pcard.warn3{flex:1 1 100%;border-left:4px solid var(--rd)}
+.ph{display:flex;align-items:center;gap:10px;font-size:15.5px;font-weight:700;
+ color:var(--dp);margin-bottom:12px}
+.pn{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;
+ border-radius:999px;background:var(--tn);color:var(--ac);font:800 12.5px Lato;flex-shrink:0}
+.pn.alt{background:#FDF0EF;color:var(--rd)}
+.pcard p{font-size:13.5px;color:var(--ik);line-height:1.65}
+svg.flat{border:0;background:transparent;border-radius:0}
+.fc{font:700 12px Lato;fill:#154173;text-anchor:middle}
+.fcw{font:700 12.5px Lato;fill:#fff;text-anchor:middle}
+.fcs{font:400 10px Lato;fill:#C3D7EE;text-anchor:middle}
+.fcg{font:700 12px Lato;fill:#1B5E43;text-anchor:middle}
+.fl{font:700 11px Lato;fill:#747474}
+.fk{font:400 10px Lato;fill:#a8b0b6}
+.fcc{font:400 10.5px Lato;fill:#747474;text-anchor:middle}
+.big{font:900 34px Lato;text-anchor:middle}
+/* the hero mark is art, not a chart, so it loses the global svg frame */
+.heroArt svg{border:0;background:transparent}
+
+/* ---- the learning steps are slides ------------------------------------
+   MD, 2026-10-05: "I want the learning part to be like a slide show, fix
+   slide size design, and even if I want to make it a screenshot I can make
+   it a screenshot."
+
+   Every learning step is now one 16:9 frame at a FIXED 1000 by 563, laid
+   out once and then scaled as a whole to whatever width the window gives
+   it. Nothing reflows, so the composition a student screenshots on a laptop
+   is the composition that was designed, and all four steps are the same
+   size as each other. The step navigation sits OUTSIDE the frame, so a
+   screenshot of the slide carries no interface chrome.
+
+   The quiz is deliberately not a slide: its height changes as explanations
+   open, and clipping an answer to keep a ratio would be the ratio winning
+   over the content. */
+.stage{position:relative;width:100%;overflow:hidden}
+.slide{position:absolute;top:0;left:0;width:960px;height:540px;
+ transform-origin:top left;background:#fff;border:1px solid var(--ln);
+ border-radius:10px;padding:26px 30px 40px;overflow:hidden}
+
+/* MD, 2026-10-05: "the fonts are very small, you are not managing the
+   margins well at all."
+   He was right, and the cause was the scale rather than the type. The frame
+   was authored at 1000 by 563 and then had to come down to about 0.80 to
+   clear a 800px tall window, which shrinks every font and every margin by
+   the same fifth. Three changes together: the frame is now 960 by 540, the
+   header band and step rail go compact the moment a step opens so there is
+   more height to give the frame, and every size inside the frame is set for
+   being read at that scale rather than at 1.0. */
+.slide h2{font-size:27px;margin-bottom:5px;line-height:1.25}
+.slide .sub{font-size:16px;margin-bottom:11px;line-height:1.55}
+.sfoot{position:absolute;left:30px;right:30px;bottom:12px;display:flex;
+ justify-content:space-between;align-items:center;font-size:12.5px;color:var(--mu);
+ border-top:1px solid var(--ln);padding-top:8px}
+.sfoot b{font-weight:700;color:var(--bc)}
+.sfoot a{color:var(--ac)}
+.sfoot i{color:var(--mu)}
+.navbar{display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap}
+.navbar .btn{margin-top:0}
+.navhint{font-size:12px;color:var(--mu)}
+
+/* the shell goes compact once a step is open, to buy the frame its height */
+body.instep{padding:12px 16px}
+body.instep .band{padding:9px 26px;display:flex;align-items:center;gap:14px}
+body.instep .band h1{font-size:17px}
+body.instep .band p{margin-top:0;font-size:10.5px}
+body.instep .band .mlrule{margin-top:0;margin-left:auto}
+body.instep .band .mlrule i{width:24px;height:3px}
+body.instep .stp{padding:7px 8px;font-size:12px}
+body.instep .stp small{font-size:10px}
+body.instep .pane{padding:14px 26px}
+
+.slide .twocol{gap:16px}
+.slide .pcard{padding:11px 15px;margin-bottom:6px}
+.slide .pcard.warn3{margin-bottom:0}
+.slide .pcard p{font-size:16px;line-height:1.45}
+.slide .ph{font-size:18.5px;margin-bottom:8px}
+.slide .pn{width:28px;height:28px;font-size:13.5px}
+.slide .cite{font-size:13px;margin-top:8px}
+.slide .lab{gap:14px}
+.slide .labcard{padding:12px 14px;flex:1 1 200px}
+.slide .labcard b{font-size:17px;margin-bottom:4px}
+.slide .labcard span{font-size:15px;line-height:1.5}
+.slide .labcard .n{width:28px;height:28px;font-size:13.5px;margin-bottom:7px}
+.slide .info{padding:13px 16px}
+.slide .info h3{font-size:18.5px}
+.slide .info p{font-size:16px;line-height:1.55}
+.slide .info .k{font-size:13px}
+.slide .dl{font-size:14px}
+.slide .tnum{font-size:50px}
+.slide .hint{font-size:14px}
+.slide .habit{gap:14px}
+.slide .habit .hc{padding:12px 13px}
+.slide .habit .hc b{font-size:18.5px}
+.slide .habit .hc p{font-size:15.5px;line-height:1.45}
+.slide .habit .hc .eg{font-size:15px;padding:8px 11px;margin-top:6px}
+.slide .exnav button{font-size:15px;padding:7px 14px}
+.slide .bacol .h{font-size:13px;padding:8px 13px}
+.slide .bacol .bd{padding:9px}
+.slide .bacol .bd svg{max-width:355px;margin:0 auto}
+.slide .bacol .note{font-size:15px;padding:0 13px 11px}
+.slide .veil .cover{font-size:16px}
+.slide .srcbox{padding:10px 15px;margin-top:6px}
+.slide .srcbox p{font-size:15.5px;line-height:1.6}
+.slide .srcbox .k{font-size:13px}
+.slide .btn{font-size:14px}
+
+
+/* ---- fit to the window, and a real full screen ------------------------
+   MD, 2026-10-05: "I still need to scroll down to see the page, and there
+   is no full screen button."
+
+   Scaling the frame to the WIDTH alone was only half the job: on a laptop
+   the band, the step rail, the frame and the navigation together came to
+   more than the window height, so the page still scrolled. fitSlides now
+   takes the smaller of the width ratio and the leftover height ratio, so a
+   learning step always sits inside one screen with nothing below the fold.
+
+   Full screen uses the browser's own Fullscreen API on the shell, so the
+   step rail and the next button come with it and the deck stays navigable.
+   Arrow keys move between steps once a step is open, which is what anyone
+   presenting will reach for. */
+.shell:fullscreen{max-width:none;width:100%;height:100%;border-radius:0;
+ display:flex;flex-direction:column}
+.shell:fullscreen .pane.on{flex:1;display:flex;flex-direction:column;justify-content:center}
+.shell:fullscreen .foot{margin-top:auto}
+.shell:-webkit-full-screen{max-width:none;width:100%;height:100%;border-radius:0}
+.fsbtn{display:inline-flex;align-items:center;gap:7px;background:#fff;color:var(--dp);
+ border:1px solid var(--mi);border-radius:999px;padding:9px 16px;font:700 12.5px Lato;
+ cursor:pointer}
+.fsbtn:hover{border-color:var(--ac);background:var(--tn)}
+.fsbtn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;
+ stroke-linecap:round;stroke-linejoin:round}
+</style>
+<div class="shell">
+ <div class="band"><h1>Narrative Structures</h1>
+  <p>Module 05 &middot; IE6600: Computation and Visualization</p><div class="mlrule"><i style="background:#F5D000"></i><i style="background:#E2231A"></i><i style="background:#0064B0"></i></div></div>
+ <div class="steps" id="steps" style="display:none">
+  <div class="stp on" data-s="0">1. Impact Lab<small>the card exchange</small></div>
+  <div class="stp" data-s="1">2. Why it works<small>what the research says</small></div>
+  <div class="stp" data-s="2">3. Five makeovers<small>before and after</small></div>
+  <div class="stp" data-s="3">4. Three habits<small>what to do every time</small></div>
+  <div class="stp" data-s="4">5. Quiz<small>seven questions</small></div>
+ </div>
+
+ <div class="pane on" id="pw">
+  <div class="hero">
+   <div class="heroArt arcwrap" aria-hidden="true">
+    <svg viewBox="0 0 250 118" width="262" height="124" role="img"
+         aria-label="A story arc: setup, tension, resolution">
+     <defs><linearGradient id="agr" x1="0" y1="0" x2="0" y2="1">
+       <stop offset="0" stop-color="#0B4F9C" stop-opacity=".30"/>
+       <stop offset="1" stop-color="#0B4F9C" stop-opacity="0"/>
+     </linearGradient></defs>
+     <line x1="14" y1="100" x2="238" y2="100" stroke="#A6C7E8" stroke-width="2"/>
+     <path class="arcfill" d="M24,66 C52,58 72,88 100,86 S168,46 226,26 L226,100 L24,100 Z"
+           fill="url(#agr)"/>
+     <path class="arcpath" d="M24,66 C52,58 72,88 100,86 S168,46 226,26"/>
+     <circle class="nd nd1" cx="24"  cy="66" r="7.5" fill="#F5D000"/>
+     <circle class="nd nd2" cx="100" cy="86" r="7.5" fill="#E2231A"/>
+     <circle class="nd nd3" cx="226" cy="26" r="9"   fill="#0064B0"/>
+     <text class="ndl ndl1" x="24"  y="84">SETUP</text>
+     <text class="ndl ndl2" x="100" y="104">TENSION</text>
+     <text class="ndl ndl3" x="206" y="14">RESOLUTION</text>
+    </svg>
+   </div>
+   <h2>How do you want to go through this?</h2>
+   <div class="sub">Learning mode walks through the in-class activity, the research behind it,
+     and five charts rebuilt one decision at a time. Quiz mode goes straight to the
+     questions. Either way you can download a certificate at the end.</div>
+
+   <div class="nm">
+    <label for="nm">Your name</label>
+    <div class="nmwrap">
+     <svg class="nmi" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+       <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+     </svg>
+     <input id="nm" placeholder="So the certificate has your name on it">
+    </div>
+   </div>
+
+   <div class="modes">
+    <button class="mode" id="mLearn">
+     <span class="mIcon">
+      <svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="5" width="21" height="17" rx="2"/><path d="M7 17l4-5 3 3 4-6"/>
+        <circle class="mg" cx="24" cy="23" r="6"/><path class="mg" d="M28.5 27.5L32 31"/>
+      </svg></span>
+     <span class="mTxt"><b>Learning mode</b>
+      <span class="ms">Four steps through the material, then the questions.</span>
+      <span class="mchip">about 15 minutes</span></span>
+     <svg class="mArr" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+       <path d="M5 12h13M12 5l7 7-7 7"/></svg>
+    </button>
+
+    <button class="mode alt" id="mQuiz">
+     <span class="mIcon">
+      <svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <rect x="6" y="3" width="22" height="28" rx="3"/>
+        <path class="tk1" d="M11 11l2.4 2.4L18 9"/><path class="tk2" d="M11 19l2.4 2.4L18 17"/>
+        <path d="M21 11h3M21 19h3M11 26h11"/>
+      </svg></span>
+     <span class="mTxt"><b>Quiz mode</b>
+      <span class="ms">Seven questions, an explanation after each one.</span>
+      <span class="mchip">about 5 minutes</span></span>
+     <svg class="mArr" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+       <path d="M5 12h13M12 5l7 7-7 7"/></svg>
+    </button>
+   </div>
+   <div class="hnote">Nothing is sent anywhere. You can switch modes at any point.</div>
+  </div>
+ </div>
+
+ <!-- ===================== 1. Impact Lab ===================== -->
+ <div class="pane" id="p0">
+  <div class="stage"><div class="slide">
+  <h2>Impact Lab: the card exchange</h2>
+  <div class="sub">This is the in-class activity. You get a card with a question on it, you
+   answer it out loud to one person, you swap cards, and you move on. The whole thing
+   runs five minutes.</div>
+  <div class="lab">
+   <div class="labcard"><span class="n">1</span><b>Five minutes total</b>
+    <span>Keep moving. The clock is the point, not an obstacle.</span></div>
+   <div class="labcard"><span class="n">2</span><b>Five or six people</b>
+    <span>Swap your card every time, so the question changes under you.</span></div>
+   <div class="labcard"><span class="n">3</span><b>Thirty to sixty seconds</b>
+    <span>Long enough for a claim and a reason. Not long enough to hedge.</span></div>
+  </div>
+  <div class="split" style="margin-top:14px;gap:16px">
+   <div style="flex:1 1 520px;min-width:420px">
+    <div class="info" style="min-height:0">
+     <div class="k">Why the constraints</div>
+     <h3>A short clock forces you to lead with the point</h3>
+     <p>Given ten minutes most people describe their method and run out of time
+      before the finding. Given forty seconds you say the finding first, because
+      there is room for nothing else.</p>
+    </div>
+   </div>
+   <div style="flex:0 1 250px;min-width:230px">
+    <div class="timer">
+     <div class="dl">Activity timer</div>
+     <div class="tnum" id="tnum">5:00</div>
+     <button class="btn" id="tbtn" style="margin-top:8px">Start activity</button>
+     <button class="btn ghost" id="treset" style="margin-top:7px;display:none">Reset</button>
+     <div class="hint" id="thint">Click to begin the countdown.</div>
+    </div>
+   </div>
+  </div>
+  <div class="sfoot"><span><b>Impact Lab: the card exchange</b></span><span>1 of 4</span></div>
+  </div></div>
+  <div class="navbar"><button class="btn" id="go1">Next: why it works &rsaquo;</button><button class="fsbtn"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>Full screen</button><span class="navhint">Step 1 of 4. Fixed frame, so every screenshot is the same shape. Arrow keys move between steps.</span></div>
+ </div>
+
+ <!-- ===================== 2. Why it works ===================== -->
+ <div class="pane" id="p1">
+  <div class="stage"><div class="slide">
+  <h2>Why a story moves an audience that a table does not</h2>
+  <div class="sub">One finding here was measured. One number never was.</div>
+
+  <div class="twocol">
+   <div class="pcard">
+    <div class="ph"><span class="pn">1</span>What the effect is</div>
+    <svg viewBox="0 0 430 96" width="100%" class="flat">
+     <rect x="4" y="24" width="118" height="46" rx="8" fill="#E7EDF5"/>
+     <text x="63" y="51" class="fc">You read</text>
+     <text x="63" y="66" class="fc">a story</text>
+     <path d="M130 53h26" stroke="#A6C7E8" stroke-width="2.5" stroke-linecap="round"/>
+     <path d="M151 47l7 6-7 6" fill="none" stroke="#A6C7E8" stroke-width="2.5"
+           stroke-linecap="round" stroke-linejoin="round"/>
+     <rect x="164" y="24" width="118" height="58" rx="8" fill="#0B4F9C"/>
+     <text x="223" y="46" class="fcw">you are</text>
+     <text x="223" y="61" class="fcw">transported</text>
+     <text x="223" y="74" class="fcs">absorbed in it</text>
+     <path d="M290 53h26" stroke="#A6C7E8" stroke-width="2.5" stroke-linecap="round"/>
+     <path d="M311 47l7 6-7 6" fill="none" stroke="#A6C7E8" stroke-width="2.5"
+           stroke-linecap="round" stroke-linejoin="round"/>
+     <rect x="324" y="30" width="102" height="46" rx="8" fill="#EAF3EE"/>
+     <text x="375" y="51" class="fcg">you argue</text>
+     <text x="375" y="66" class="fcg">back less</text>
+    </svg>
+    <p>Green and Brock called the middle box <b>transportation</b>. It is the mechanism, not the result.</p>
+   </div>
+
+   <div class="pcard">
+    <div class="ph"><span class="pn">2</span>What they actually measured</div>
+    <svg viewBox="0 0 430 106" width="100%" class="flat">
+     <text x="4" y="12" class="fl">Belief shift toward the story</text>
+     <rect x="4"   y="19" width="300" height="17" rx="4" fill="#0B4F9C"/>
+     <rect x="304" y="19" width="122" height="17" rx="4" fill="#E4E9EB"/>
+     <text x="4" y="56" class="fl">Counterarguments the reader produced</text>
+     <rect x="4"   y="63" width="106" height="17" rx="4" fill="#0B4F9C"/>
+     <rect x="110" y="63" width="316" height="17" rx="4" fill="#E4E9EB"/>
+     <rect x="4" y="93" width="11" height="11" rx="2" fill="#0B4F9C"/>
+     <text x="21" y="102" class="fk">more transported</text>
+     <rect x="136" y="93" width="11" height="11" rx="2" fill="#E4E9EB"/>
+     <text x="153" y="102" class="fk">less transported</text>
+    </svg>
+    <p>More transported readers shifted further toward the story and produced <b>fewer</b> counterarguments, fact or fiction.</p>
+    
+   </div>
+  </div>
+
+  <div class="pcard warn3">
+   <div class="ph"><span class="pn alt">3</span>The number with nothing behind it</div>
+   <div class="split" style="gap:22px">
+    <div style="flex:1 1 250px;min-width:240px">
+     <svg viewBox="0 0 400 80" width="100%" class="flat">
+      <rect x="2" y="2" width="192" height="76" rx="8" fill="#FDF0EF"/>
+      <text x="98" y="40" class="big" fill="#E2231A">22x</text>
+      <text x="98" y="58" class="fcc">the claim</text>
+      <text x="98" y="70" class="fcc">no study cited anywhere</text>
+      <rect x="206" y="2" width="192" height="76" rx="8" fill="#EAF3EE"/>
+      <text x="302" y="40" class="big" fill="#1B5E43">12x</text>
+      <text x="302" y="58" class="fcc">what 63 against 5 gives</text>
+      <text x="302" y="70" class="fcc">the exercise behind it</text>
+     </svg>
+    </div>
+    <div style="flex:1 1 360px;min-width:300px">
+     <p>"Stories are 22 times more memorable than facts" is attributed to Jennifer Aaker at Stanford, and the Stanford page repeating it cites no study. <b>Name the person, not research.</b></p>
+    </div>
+   </div>
+  </div>
+  <div class="sfoot"><span><b>Why it works</b></span><span style="flex:1;text-align:center;padding:0 14px">Green, M. C., and Brock, T. C. (2000). <i>Journal of Personality and Social Psychology</i>, 79(5), 701 to 721. <a href="https://doi.org/10.1037/0022-3514.79.5.701" target="_blank">DOI</a> &middot; <a href="https://researchconnect.buffalo.edu/en/publications/the-role-of-transportation-in-the-persuasiveness-of-public-narrat/" target="_blank">open record</a>. Paywalled at APA, read it through the NU library.</span><span>2 of 4</span></div>
+  </div></div>
+  <div class="navbar"><button class="btn" id="go2">Next: five makeovers &rsaquo;</button><button class="fsbtn"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>Full screen</button><span class="navhint">Step 2 of 4. Fixed frame, so every screenshot is the same shape. Arrow keys move between steps.</span></div>
+ </div>
+
+ <!-- ===================== 3. Five makeovers ===================== -->
+ <div class="pane" id="p2">
+  <div class="stage"><div class="slide">
+  <h2>Five charts, rebuilt one decision at a time</h2>
+  <div class="sub">Same numbers, different presentation. Click the right panel to reveal it. The figures are illustrative.</div>
+  <div class="exnav" id="exnav"></div>
+  <div id="exbox"></div>
+  <div class="sfoot"><span><b>Five makeovers</b></span><span>3 of 4</span></div>
+  </div></div>
+  <div class="navbar"><button class="btn" id="go3">Next: three habits &rsaquo;</button><button class="fsbtn"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>Full screen</button><span class="navhint">Step 3 of 4. Fixed frame, so every screenshot is the same shape. Arrow keys move between steps.</span></div>
+ </div>
+
+ <!-- ===================== 4. Three habits ===================== -->
+ <div class="pane" id="p3">
+  <div class="stage"><div class="slide">
+  <h2>Three habits that do most of the work</h2>
+  <div class="sub">Everything in the five makeovers reduces to these. They are worth more
+   than any template.</div>
+  <div class="habit">
+   <div class="hc"><b>Be specific</b>
+    <p>Say what you concluded, in a sentence someone could disagree with.</p>
+    <div class="eg">"Q4 2024 Revenue" <b>becomes</b><br>"Q4 was our best quarter, and the holiday launch is why."</div></div>
+   <div class="hc"><b>Add context</b>
+    <p>A number alone has no direction. Give it something to measure against.</p>
+    <div class="eg">"4.2 out of 5" <b>becomes</b><br>"4.2 out of 5, up from 3.5, the highest in five years."</div></div>
+   <div class="hc"><b>Make it memorable</b>
+    <p>Decide what they should still know tomorrow and put it first. Equal
+     emphasis is also a decision.</p>
+    <div class="eg">four metrics in one size <b>becomes</b><br>one of them large, the others beneath it.</div></div>
+  </div>
+
+  <div class="srcbox">
+   <div class="k">Where this goes next</div>
+   <p>Lab 5 builds all three as code: setup and tension and resolution, the inverted pyramid, progressive disclosure, and before and after.</p>
+  </div>
+  <div class="sfoot"><span><b>Three habits</b></span><span>4 of 4</span></div>
+  </div></div>
+  <div class="navbar"><button class="btn" id="go4">Next: the questions &rsaquo;</button><button class="fsbtn"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>Full screen</button><span class="navhint">Step 4 of 4. Fixed frame, so every screenshot is the same shape. Arrow keys move between steps.</span></div>
+ </div>
+
+ <!-- ===================== 5. Quiz ===================== -->
+ <div class="pane" id="p4">
+  <h2>Questions</h2>
+  <div class="sub">There are seven, and you get an explanation after each one. Nothing is sent
+   anywhere, so answer honestly and take it again if you want to.</div>
+  <div id="qbox"></div>
+  <div style="display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap">
+   <button class="btn" id="qnext" style="display:none">Next question &rsaquo;</button>
+   <span class="score" id="sc"></span></div>
+ </div>
+
+ <div class="foot"><span><span class="code">IE6600</span> Computation and Visualization</span>
+  <span>Prof. Dehghani</span></div>
+</div>
+<script>
+var A='#0B4F9C', D='#154173', G='#C3CFDA', R='#E2231A', GR='#1B5E43', Y='#F5D000';
+var uName='', stamp='', step=0;
+
+/* ---------------------------------------------------------------- figures
+   Every before and after is drawn here rather than screenshotted, so the
+   two halves differ only in the decisions being taught and nothing else. */
+function svg(inner,h){
+  return '<svg viewBox="0 0 320 '+(h||190)+'" width="100%">'+inner+'</svg>';
+}
+function bars(vals,hl,top){
+  var s='', base=165, max=top||2.2;
+  for(var i=0;i<vals.length;i++){
+    var h=(vals[i]/max)*118, x=38+i*62, y=base-h;
+    s+='<rect x="'+x+'" y="'+y+'" width="40" height="'+h+'" rx="3" fill="'+
+       (hl===i?A:(hl==null?A:G))+'"/>';
+    s+='<text x="'+(x+20)+'" y="'+(base+16)+'" font-size="10.5" fill="#747474" text-anchor="middle">Q'+(i+1)+'</text>';
+  }
+  s+='<line x1="30" y1="'+base+'" x2="300" y2="'+base+'" stroke="#9AA7B2" stroke-width="1.5"/>';
+  return s;
+}
+function donut(segs,cx,cy,r,w){
+  var C=2*Math.PI*r, off=0, s='';
+  segs.forEach(function(sg){
+    var len=C*sg.p;
+    s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+sg.c+
+       '" stroke-width="'+w+'" stroke-dasharray="'+len+' '+(C-len)+
+       '" stroke-dashoffset="'+(-off)+'" transform="rotate(-90 '+cx+' '+cy+')"/>';
+    off+=len;
+  });
+  return s;
+}
+
+var EX=[
+{ tab:'Chart titles',
+  bt:'A title that names the variable',
+  bb:svg('<text x="30" y="22" font-size="12.5" font-weight="700" fill="#154173">Q4 2024 Revenue</text>'+
+         bars([1.2,1.4,1.3,2.0],null)),
+  bn:'Describes the contents. The reader still has to find the point themselves.',
+  at:'A title that states the finding',
+  ab:svg('<text x="30" y="20" font-size="12.5" font-weight="700" fill="#154173">Record quarter: Q4 reached $2M</text>'+
+         '<text x="30" y="36" font-size="10.5" fill="#747474">Holiday demand plus the new product launch</text>'+
+         bars([1.2,1.4,1.3,2.0],3)),
+  an:'Says what happened and why. The grey bars make the comparison without a word.' },
+
+{ tab:'Context',
+  bt:'A number with nothing to measure it against',
+  bb:svg('<text x="30" y="26" font-size="11" fill="#747474">Customer satisfaction</text>'+
+         '<text x="30" y="84" font-size="46" font-weight="800" fill="#0B4F9C">4.2</text>'+
+         '<text x="112" y="84" font-size="20" fill="#a8b0b6">/ 5</text>', 140),
+  bn:'Good or bad? Nobody reading this can tell.',
+  at:'The same number, given a direction',
+  ab:svg('<text x="30" y="26" font-size="11" fill="#747474">Customer satisfaction</text>'+
+         '<text x="30" y="84" font-size="46" font-weight="800" fill="#0B4F9C">4.2</text>'+
+         '<text x="112" y="84" font-size="20" fill="#a8b0b6">/ 5</text>'+
+         '<path d="M132 70 l8 -12 l8 12 z" fill="'+GR+'"/>'+
+         '<text x="152" y="72" font-size="13" font-weight="700" fill="'+GR+'">up 0.7 on last year</text>'+
+         '<rect x="30" y="100" width="258" height="24" rx="4" fill="#EAF3EE"/>'+
+         '<text x="40" y="117" font-size="12" font-weight="700" fill="'+GR+'">The highest it has been in five years</text>', 140),
+  an:'One comparison turns a reading into a result.' },
+
+{ tab:'Emphasis',
+  bt:'Four numbers, all the same size',
+  bb:svg('<text x="30" y="34" font-size="15" fill="#3d3d3d">Sales $450K</text>'+
+         '<text x="30" y="64" font-size="15" fill="#3d3d3d">Costs $320K</text>'+
+         '<text x="30" y="94" font-size="15" fill="#3d3d3d">Profit $130K</text>'+
+         '<text x="30" y="124" font-size="15" fill="#3d3d3d">Margin 15%</text>', 150),
+  bn:'Equal weight is a decision too, and it tells the reader nothing is more important than anything else.',
+  at:'One number carries the point',
+  ab:svg('<text x="30" y="52" font-size="44" font-weight="800" fill="#0B4F9C">15%</text>'+
+         '<text x="140" y="40" font-size="13" font-weight="700" fill="#154173">margin</text>'+
+         '<text x="140" y="58" font-size="11.5" fill="#747474">the best the company has run</text>'+
+         '<line x1="30" y1="76" x2="290" y2="76" stroke="#E4E9EB"/>'+
+         '<text x="30" y="100" font-size="12.5" fill="#747474">Sales $450K</text>'+
+         '<text x="150" y="100" font-size="12.5" fill="#747474">Costs $320K</text>'+
+         '<text x="30" y="122" font-size="12.5" fill="#747474">Profit $130K</text>', 150),
+  an:'The supporting numbers are still there. They are just no longer competing.' },
+
+{ tab:'Donut charts',
+  bt:'Five segments, no focus',
+  bb:svg(donut([{p:0.14,c:'#0B4F9C'},{p:0.20,c:'#4A86C8'},{p:0.29,c:'#89B4DE'},
+                {p:0.11,c:'#B9D2EC'},{p:0.26,c:'#DDE8F5'}],95,92,52,26)+
+         '<text x="165" y="48" font-size="11.5" fill="#747474">New 14%</text>'+
+         '<text x="165" y="68" font-size="11.5" fill="#747474">Active 20%</text>'+
+         '<text x="165" y="88" font-size="11.5" fill="#747474">Premium 29%</text>'+
+         '<text x="165" y="108" font-size="11.5" fill="#747474">Basic 11%</text>'+
+         '<text x="165" y="128" font-size="11.5" fill="#747474">Inactive 26%</text>', 185),
+  bn:'Five slices of similar size. The eye has nothing to land on.',
+  at:'Two groups, and the number that matters in the middle',
+  ab:svg(donut([{p:0.72,c:'#0B4F9C'},{p:0.28,c:'#DDE8F5'}],95,92,52,26)+
+         '<text x="95" y="88" font-size="26" font-weight="800" fill="#0B4F9C" text-anchor="middle">72%</text>'+
+         '<text x="95" y="106" font-size="10.5" fill="#747474" text-anchor="middle">of revenue</text>'+
+         '<text x="165" y="60" font-size="12" font-weight="700" fill="#154173">Premium users</text>'+
+         '<text x="165" y="78" font-size="11.5" fill="#747474">29% of the base,</text>'+
+         '<text x="165" y="94" font-size="11.5" fill="#747474">72% of the revenue</text>'+
+         '<rect x="165" y="108" width="140" height="42" rx="5" fill="#EAF3EE"/>'+
+         '<text x="174" y="124" font-size="11" font-weight="700" fill="'+GR+'">So: put retention</text>'+
+         '<text x="174" y="139" font-size="11" font-weight="700" fill="'+GR+'">spend on premium</text>', 185),
+  an:'Group the slices until one number carries the argument, then say what to do about it.' },
+
+{ tab:'Scatter plots',
+  bt:'A cloud of points',
+  bb:svg('<text x="30" y="20" font-size="12.5" font-weight="700" fill="#154173">Price against quality</text>'+
+         (function(){var p='',xs=[40,62,78,95,112,130,148,165,183,200,218,236,252,268];
+          var ys=[142,136,128,132,120,115,108,112,96,92,84,88,74,68];
+          for(var i=0;i<xs.length;i++) p+='<circle cx="'+xs[i]+'" cy="'+ys[i]+'" r="5" fill="'+A+'" opacity=".55"/>';
+          return p;})()+
+         '<line x1="30" y1="160" x2="300" y2="160" stroke="#9AA7B2" stroke-width="1.5"/>'+
+         '<line x1="30" y1="160" x2="30" y2="40" stroke="#9AA7B2" stroke-width="1.5"/>', 180),
+  bn:'The relationship is in there. The chart is not pointing at it.',
+  at:'The same points, with the finding drawn on',
+  ab:svg('<text x="30" y="18" font-size="12.5" font-weight="700" fill="#154173">Paying more does buy quality, up to a point</text>'+
+         '<rect x="178" y="58" width="104" height="48" rx="5" fill="#F5D000" opacity=".22"/>'+
+         (function(){var p='',xs=[40,62,78,95,112,130,148,165,183,200,218,236,252,268];
+          var ys=[142,136,128,132,120,115,108,112,96,92,84,88,74,68];
+          for(var i=0;i<xs.length;i++) p+='<circle cx="'+xs[i]+'" cy="'+ys[i]+'" r="5" fill="'+A+'" opacity=".55"/>';
+          return p;})()+
+         '<line x1="36" y1="146" x2="272" y2="70" stroke="'+GR+'" stroke-width="2" stroke-dasharray="5 4"/>'+
+         '<text x="186" y="52" font-size="11" font-weight="700" fill="#154173">best value sits here</text>'+
+         '<text x="40" y="36" font-size="11.5" font-weight="700" fill="'+GR+'">r = 0.89</text>'+
+         '<line x1="30" y1="160" x2="300" y2="160" stroke="#9AA7B2" stroke-width="1.5"/>'+
+         '<line x1="30" y1="160" x2="30" y2="40" stroke="#9AA7B2" stroke-width="1.5"/>', 180),
+  an:'A trend line, one highlighted region and the correlation. The reader is told where to look.' }
+];
+
+var exi=0;
+function renderEx(){
+  var n=document.getElementById('exnav'); n.innerHTML='';
+  EX.forEach(function(e,i){
+    n.innerHTML+='<button data-i="'+i+'"'+(i===exi?' class="on"':'')+'>'+(i+1)+'. '+e.tab+'</button>';
+  });
+  n.querySelectorAll('button').forEach(function(b){
+    b.onclick=function(){ exi=+b.getAttribute('data-i'); renderEx(); };
+  });
+  var e=EX[exi];
+  document.getElementById('exbox').innerHTML=
+    '<div class="ba">'+
+     '<div class="bacol before"><div class="h">Before</div>'+
+      '<div class="bd">'+e.bb+'</div><div class="note">'+e.bn+'</div></div>'+
+     '<div class="bacol after"><div class="h">After</div>'+
+      '<div class="bd veil" id="veil"><div class="cover">Click to reveal</div>'+e.ab+'</div>'+
+      '<div class="note" id="anote" style="visibility:hidden">'+e.an+'</div></div>'+
+    '</div>';
+  var v=document.getElementById('veil');
+  v.onclick=function(){ v.classList.add('open');
+    document.getElementById('anote').style.visibility='visible'; };
+}
+
+/* ---------------------------------------------------------------- timer */
+var tleft=300, tid=null;
+function tshow(){
+  var m=Math.floor(tleft/60), s=tleft%60;
+  var el=document.getElementById('tnum');
+  el.textContent=m+':'+(s<10?'0':'')+s;
+  el.className='tnum'+(tleft<=60?' low':'');
+}
+document.getElementById('tbtn').onclick=function(){
+  if(tid){ clearInterval(tid); tid=null; this.textContent='Resume'; return; }
+  this.textContent='Pause';
+  document.getElementById('treset').style.display='inline-block';
+  document.getElementById('thint').textContent='Swap cards every thirty to sixty seconds.';
+  tid=setInterval(function(){
+    tleft--; tshow();
+    if(tleft<=0){ clearInterval(tid); tid=null;
+      document.getElementById('tbtn').textContent='Time';
+      document.getElementById('thint').textContent='Time is up. Keep the card you are holding.'; }
+  },1000);
+};
+document.getElementById('treset').onclick=function(){
+  if(tid){clearInterval(tid);tid=null;}
+  tleft=300; tshow();
+  document.getElementById('tbtn').textContent='Start activity';
+  document.getElementById('thint').textContent='Click to begin the countdown.';
+};
+
+/* ---------------------------------------------------------------- panes */
+function go(i){
+  step=i;
+  document.getElementById('pw').classList.remove('on');
+  ['p0','p1','p2','p3','p4'].forEach(function(id,j){
+    document.getElementById(id).classList.toggle('on',j===i);});
+  document.querySelectorAll('.stp').forEach(function(s,j){s.classList.toggle('on',j===i);});
+  if(i===2) renderEx();
+  document.body.classList.add('instep');
+  window.scrollTo(0,0);
+  fitSlides();
+}
+function startMode(which){
+  uName=(document.getElementById('nm').value||'').trim();
+  stamp=new Date().toLocaleString(undefined,{year:'numeric',month:'short',
+        day:'numeric',hour:'2-digit',minute:'2-digit'});
+  document.getElementById('pw').classList.remove('on');
+  document.getElementById('steps').style.display='flex';
+  if(which==='quiz'){ go(4); renderQ(); } else { go(0); }
+}
+document.getElementById('mLearn').onclick=function(){startMode('learn');};
+document.getElementById('mQuiz').onclick=function(){startMode('quiz');};
+document.getElementById('go1').onclick=function(){go(1);};
+document.getElementById('go2').onclick=function(){go(2);};
+document.getElementById('go3').onclick=function(){go(3);};
+document.getElementById('go4').onclick=function(){go(4);renderQ();};
+document.querySelectorAll('.stp').forEach(function(s){
+  s.onclick=function(){ var i=+s.getAttribute('data-s'); go(i); if(i===4) renderQ(); };
+});
+
+/* ---------------------------------------------------------------- quiz */
+var QZ=[
+{tag:'Titles',
+ q:'Which of these is doing the work a chart title is supposed to do?',
+ options:['"Q4 2024 Revenue"',
+          '"Record quarter: Q4 reached $2M"',
+          '"Revenue by quarter, 2024, in millions of dollars"',
+          '"Quarterly Performance Dashboard"'],
+ answer:1,
+ why:'A title should state what you concluded, in a sentence someone could disagree with. The other three name the contents, which the axes already do.'},
+{tag:'Context',
+ q:'A slide reads "Customer satisfaction: 4.2 out of 5". What is the single most useful thing to add?',
+ options:['The number of people surveyed',
+          'A comparison, such as last year or the target',
+          'A colored background so it stands out',
+          'The exact survey questions'],
+ answer:1,
+ why:'Sample size and method matter, but they belong in a note. Without something to measure 4.2 against, the reader cannot tell whether it is good news, and that is the first thing they want to know.'},
+{tag:'Emphasis',
+ q:'Four metrics are shown in the same size and weight. What has that design decided?',
+ options:['Nothing, it is a neutral presentation',
+          'That all four are equally important',
+          'That the reader should pick their own',
+          'That the data is incomplete'],
+ answer:1,
+ why:'There is no neutral option. Equal emphasis is a claim that nothing matters more than anything else, and it is usually not what the author believes.'},
+{tag:'Part to whole',
+ q:'A donut has five slices between 11 and 29 percent and no clear focus. What fixes it?',
+ options:['Use brighter colors for each slice',
+          'Switch to a pie chart',
+          'Group the slices so one number carries the point',
+          'Add the percentages as labels'],
+ answer:2,
+ why:'Labels and color do not create a focus, they only decorate the lack of one. Grouping the base into premium against everyone else turns five similar numbers into one argument.'},
+{tag:'Scatter plots',
+ q:'A scatter plot shows a real relationship but readers keep missing it. What helps most?',
+ options:['Make the points larger',
+          'Add a trend line and mark the region that matters',
+          'Switch to a bar chart',
+          'Sort the points'],
+ answer:1,
+ why:'The relationship is already in the data. A trend line and one highlighted region tell the reader where to look, which is what they were missing.'},
+{tag:'The research',
+ q:'Green and Brock (2000) measured something specific about readers absorbed in a narrative. What was it?',
+ options:['They remembered 22 times more detail',
+          'They produced fewer counterarguments against the story',
+          'They read faster',
+          'They preferred fiction to fact'],
+ answer:1,
+ why:'Transportation was associated with belief shift toward the story and with producing fewer counterarguments, whether the story was presented as fact or as fiction. The 22 times figure comes from somewhere else entirely.'},
+{tag:'Citing a number',
+ q:'You want to use "stories are 22 times more memorable than facts" on a slide. What is the honest way to do it?',
+ options:['Use it as is, Stanford says so',
+          'Attribute it to Jennifer Aaker and say it is a claim, not a measured result',
+          'Round it down to 20 times to be safe',
+          'Drop any number and say stories are more memorable'],
+ answer:1,
+ why:'The figure is attributed to a named person at Stanford, and no study is cited for it anywhere, including on the Stanford page that repeats it. Naming the source and its status is honest. Rounding it invents precision you do not have, and in a course on data communication the standard you apply to your own numbers is the point.'}
+];
+var TAKE=['Lead with the finding, not the variable name',
+          'A number alone has no direction, give it a comparison',
+          'Equal emphasis is also a decision',
+          'Group the slices until one number carries the point',
+          'Cite the number or do not use it'];
+
+var qi=0, score=0, locked=false;
+function renderQ(){
+  var q=QZ[qi], b=document.getElementById('qbox');
+  var h='<div class="prog">';
+  for(var k=0;k<QZ.length;k++)
+    h+='<span class="pg'+(k<qi?' done':k===qi?' now':'')+'"></span>';
+  h+='</div>';
+  h+='<div class="qhead"><span class="qtag">'+(q.tag||'Question')+'</span></div>';
+  h+='<div class="qrow"><div class="qmain"><div class="q">'+(qi+1)+'. '+q.q+'</div>';
+  for(var i=0;i<q.options.length;i++)
+    h+='<div class="opt" data-i="'+i+'"><span class="ltr">'+
+       String.fromCharCode(65+i)+'</span><span>'+q.options[i]+'</span></div>';
+  h+='</div><div class="qside">'+(FIG[qi]||'')+'</div></div>';
+  h+='<div class="why" id="why"></div>';
+  b.innerHTML=h; locked=false;
+  document.getElementById('qnext').style.display='none';
+  document.getElementById('sc').textContent='Question '+(qi+1)+' of '+QZ.length+(qi?'   Score '+score+'/'+qi:'');
+  b.querySelectorAll('.opt').forEach(function(o){
+    o.addEventListener('click',function(){
+      if(locked) return; locked=true;
+      var pick=+o.getAttribute('data-i');
+      if(pick===q.answer){score++;o.classList.add('right');}
+      else{o.classList.add('wrong');b.querySelectorAll('.opt')[q.answer].classList.add('right');}
+      var w=document.getElementById('why');
+      w.innerHTML='<b>Why.</b> '+q.why; w.style.display='block';
+      document.getElementById('sc').textContent='Question '+(qi+1)+' of '+QZ.length+'   Score '+score+'/'+(qi+1);
+      var nx=document.getElementById('qnext');
+      nx.style.display='inline-block';
+      nx.textContent=(qi<QZ.length-1)?'Next question ›':'See your result ›';
+    });
+  });
+}
+document.getElementById('qnext').onclick=function(){
+  if(qi<QZ.length-1){ qi++; renderQ(); return; }
+  var b=document.getElementById('qbox');
+  var pct=Math.round(score/QZ.length*100);
+  b.innerHTML='<h2 style="margin-bottom:6px">You scored '+score+' out of '+QZ.length+'</h2>'+
+   '<div class="sub">'+(pct>=86?'That is a strong pass.':pct>=57?
+     'Worth another run through the makeovers.':
+     'Go back through learning mode, the five makeovers in particular.')+'</div>'+
+   '<div class="info" style="min-height:0"><div class="k">What to take away</div>'+
+   '<ul style="margin:8px 0 0 18px;font-size:13.5px;line-height:1.8">'+
+   TAKE.map(function(t){return '<li>'+t+'</li>';}).join('')+'</ul></div>'+
+   '<div class="cert">'+
+   '<button class="btn" id="cdl">Download your certificate</button>'+
+   '<button class="btn ghost" id="cag">Take it again</button></div>'+
+   '<div class="hint">The certificate is a PNG with your name, your score and the time on '+
+   'it. Module 5 asks you to attach it to the discussion.</div>';
+  document.getElementById('qnext').style.display='none';
+  document.getElementById('sc').textContent='';
+  document.getElementById('cdl').onclick=certPNG;
+  document.getElementById('cag').onclick=function(){qi=0;score=0;renderQ();};
+};
+
+/* One small figure per question, drawn rather than described. */
+function sv(inner,h){return '<svg viewBox="0 0 300 '+(h||140)+'" width="100%" style="max-width:320px">'+inner+'</svg>';}
+var FIG=[
+ sv('<text x="8" y="18" font-size="11" font-weight="700" fill="'+D+'">names the contents</text>'+
+    '<rect x="8" y="26" width="150" height="9" rx="2" fill="'+G+'"/>'+
+    '<text x="8" y="68" font-size="11" font-weight="700" fill="'+D+'">states the finding</text>'+
+    '<rect x="8" y="76" width="240" height="9" rx="2" fill="'+A+'"/>'+
+    '<text x="8" y="112" font-size="10.5" fill="#747474">the axes already name the contents</text>',130),
+ sv('<text x="8" y="40" font-size="34" font-weight="800" fill="'+A+'">4.2</text>'+
+    '<text x="66" y="40" font-size="15" fill="#a8b0b6">/ 5</text>'+
+    '<text x="110" y="40" font-size="26" fill="#a8b0b6">?</text>'+
+    '<line x1="8" y1="58" x2="290" y2="58" stroke="#E4E9EB"/>'+
+    '<text x="8" y="84" font-size="11.5" fill="#747474">up from 3.5</text>'+
+    '<text x="8" y="104" font-size="11.5" fill="#747474">target was 4.0</text>'+
+    '<text x="8" y="124" font-size="11.5" fill="#747474">field average 3.9</text>',140),
+ sv([0,1,2,3].map(function(i){return '<rect x="8" y="'+(14+i*26)+'" width="150" height="12" rx="2" fill="'+G+'"/>';}).join('')+
+    '<text x="170" y="26" font-size="11" fill="#747474">all one size</text>'+
+    '<rect x="8" y="124" width="60" height="14" rx="2" fill="'+A+'"/>'+
+    '<text x="76" y="135" font-size="11" fill="#747474">one chosen</text>',150),
+ sv(donut([{p:0.14,c:'#0B4F9C'},{p:0.20,c:'#4A86C8'},{p:0.29,c:'#89B4DE'},
+           {p:0.11,c:'#B9D2EC'},{p:0.26,c:'#DDE8F5'}],70,70,42,20)+
+    donut([{p:0.72,c:'#0B4F9C'},{p:0.28,c:'#DDE8F5'}],210,70,42,20)+
+    '<text x="70" y="128" font-size="10.5" fill="#747474" text-anchor="middle">five slices</text>'+
+    '<text x="210" y="128" font-size="10.5" fill="#747474" text-anchor="middle">two groups</text>',140),
+ sv((function(){var p='',xs=[26,48,66,86,104,124,144,162,182,202,222,242];
+     var ys=[104,98,92,96,86,80,74,78,64,60,52,46];
+     for(var i=0;i<xs.length;i++) p+='<circle cx="'+xs[i]+'" cy="'+ys[i]+'" r="4" fill="'+A+'" opacity=".5"/>';
+     return p;})()+
+    '<line x1="24" y1="108" x2="248" y2="46" stroke="'+GR+'" stroke-width="2" stroke-dasharray="5 4"/>'+
+    '<text x="8" y="130" font-size="10.5" fill="#747474">a line tells the reader where to look</text>',140),
+ sv('<text x="8" y="20" font-size="11" font-weight="700" fill="'+D+'">what was measured</text>'+
+    '<text x="8" y="44" font-size="11" fill="#747474">belief shift</text>'+
+    '<rect x="8" y="52" width="200" height="12" rx="2" fill="'+A+'"/>'+
+    '<text x="8" y="84" font-size="11" fill="#747474">counterarguments</text>'+
+    '<rect x="8" y="92" width="70" height="12" rx="2" fill="'+A+'"/>'+
+    '<text x="8" y="126" font-size="10.5" fill="#a8b0b6">Green and Brock, 2000</text>',140),
+ sv('<rect x="8" y="16" width="284" height="44" rx="5" fill="#FDF0EF"/>'+
+    '<text x="20" y="36" font-size="13" font-weight="800" fill="'+R+'">22x more memorable</text>'+
+    '<text x="20" y="52" font-size="10.5" fill="#747474">no study cited, anywhere</text>'+
+    '<rect x="8" y="72" width="284" height="44" rx="5" fill="#EAF3EE"/>'+
+    '<text x="20" y="92" font-size="12" font-weight="800" fill="'+GR+'">Green and Brock, 2000</text>'+
+    '<text x="20" y="108" font-size="10.5" fill="#747474">JPSP 79(5), 701 to 721</text>',130)
+];
+
+/* ------------------------------------------------------- the certificate */
+function certPNG(){
+  var W=900,H=520,S=2,c=document.createElement('canvas');
+  c.width=W*S; c.height=H*S; var x=c.getContext('2d'); x.scale(S,S);
+  x.fillStyle='#FFFFFF'; x.fillRect(0,0,W,H);
+  var g=x.createLinearGradient(0,0,W,96);
+  g.addColorStop(0,'#D3E4F5'); g.addColorStop(1,'#A6C7E8');
+  x.fillStyle=g; x.fillRect(0,0,W,96);
+  x.fillStyle='#14304F'; x.font='800 30px Lato, Helvetica, Arial, sans-serif';
+  x.fillText('Narrative Structures', 44, 50);
+  x.fillStyle='#2C4C6E'; x.font='700 13px Lato, Helvetica, Arial, sans-serif';
+  x.fillText('MODULE 05  ·  IE6600: COMPUTATION AND VISUALIZATION', 44, 74);
+  var marks=['#F5D000','#E2231A','#0064B0'];
+  for(var i=0;i<3;i++){ x.fillStyle=marks[i]; x.fillRect(44+i*70,112,60,4); }
+  if(uName){
+    x.font='800 24px Lato, Helvetica, Arial, sans-serif';
+    var w=x.measureText(uName).width;
+    x.fillStyle='#F5D000'; x.fillRect(44,150,w+12,14);
+    x.fillStyle='#14304F'; x.fillText(uName,50,162);
+  }
+  x.fillStyle='#0B4F9C'; x.font='800 62px Lato, Helvetica, Arial, sans-serif';
+  x.fillText(score+' / '+QZ.length, 44, 232);
+  x.fillStyle='#747474'; x.font='400 14px Lato, Helvetica, Arial, sans-serif';
+  x.fillText(stamp, 44, 260);
+  x.fillStyle='#0B4F9C'; x.font='800 13px Lato, Helvetica, Arial, sans-serif';
+  x.fillText('WHAT TO TAKE AWAY', 44, 300);
+  x.strokeStyle='#E2EAF3'; x.lineWidth=1;
+  x.beginPath(); x.moveTo(44,310); x.lineTo(W-44,310); x.stroke();
+  var y=336;
+  TAKE.forEach(function(t){
+    x.fillStyle='#0B4F9C'; x.beginPath(); x.arc(51,y-5,3.5,0,6.3); x.fill();
+    x.fillStyle='#154173'; x.font='700 14px Lato, Helvetica, Arial, sans-serif';
+    x.fillText(t,66,y); y+=26;
+  });
+  x.fillStyle='#EBF3FB'; x.fillRect(0,H-44,W,44);
+  x.fillStyle='#0B4F9C'; x.fillRect(44,H-33,66,22);
+  x.fillStyle='#FFFFFF'; x.font='800 12px Lato, Helvetica, Arial, sans-serif';
+  x.fillText('IE6600',55,H-18);
+  x.fillStyle='#14304F'; x.font='700 12px Lato, Helvetica, Arial, sans-serif';
+  x.fillText('Computation and Visualization',120,H-18);
+  x.fillStyle='#747474'; x.font='400 12px Lato, Helvetica, Arial, sans-serif';
+  x.fillText('Prof. Dehghani',W-140,H-18);
+  var a=document.createElement('a');
+  a.download='narrative-structures'+(uName?'-'+uName.replace(/[^A-Za-z0-9]+/g,'-'):'')+'.png';
+  a.href=c.toDataURL('image/png');
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+
+/* ---------------------------------------------------- slide scaling
+   The frame is authored once at 1000 by 563 and scaled as a unit, so the
+   layout is identical at every window width. Done with a transform rather
+   than with relative units because relative units reflow, and a step that
+   reflows is not a slide.
+
+   The scale is the SMALLER of what the width allows and what the leftover
+   height allows, measured from the real positions of the step rail, the
+   navigation bar and the footer. That is what keeps a step on one screen
+   instead of running under the fold. */
+function fitSlides(){
+  var st=document.querySelectorAll('.stage');
+  for(var i=0;i<st.length;i++){
+    var s=st[i], sl=s.querySelector('.slide');
+    if(!sl) continue;
+    var pane=s.parentNode;
+    var visible=pane.classList.contains('on');
+    var top=s.getBoundingClientRect().top+(window.pageYOffset||0);
+    var nav=pane.querySelector('.navbar');
+    var foot=document.querySelector('.foot');
+    // measured, not guessed: the nav bar and its gap, the shell footer, and
+    // whatever padding the body itself puts under the shell
+    var bp=parseFloat(getComputedStyle(document.body).paddingBottom)||0;
+    var below=(nav?nav.offsetHeight+14:0)+(foot?foot.offsetHeight:0)+bp+16;
+    var availH=(window.innerHeight||600)-top-below;
+    var kw=s.clientWidth/960;
+    var kh=availH/540;
+    var k=Math.min(kw, kh>0.3?kh:kw);
+    if(!visible) k=kw;             // hidden panes measure nothing useful
+    k=Math.max(0.34, Math.min(k, 1.6));
+    sl.style.transform='scale('+k+')';
+    sl.style.left=Math.max(0,(s.clientWidth-960*k)/2)+'px';
+    s.style.height=(540*k)+'px';
+  }
+}
+window.addEventListener('resize',fitSlides);
+
+/* full screen, on the shell so the rail and the next button come along */
+function toggleFS(){
+  var el=document.querySelector('.shell');
+  var on=document.fullscreenElement||document.webkitFullscreenElement;
+  if(!on){ (el.requestFullscreen||el.webkitRequestFullscreen||function(){}).call(el); }
+  else   { (document.exitFullscreen||document.webkitExitFullscreen||function(){}).call(document); }
+}
+document.addEventListener('fullscreenchange',function(){setTimeout(fitSlides,80);});
+document.addEventListener('webkitfullscreenchange',function(){setTimeout(fitSlides,80);});
+document.querySelectorAll('.fsbtn').forEach(function(b){b.onclick=toggleFS;});
+
+/* arrow keys, once a step is open */
+document.addEventListener('keydown',function(e){
+  if(document.getElementById('pw').classList.contains('on')) return;
+  if(e.key==='ArrowRight'&&step<4){ go(step+1); if(step===4) renderQ(); }
+  if(e.key==='ArrowLeft' &&step>0){ go(step-1); }
+});
+
+
+tshow();
+fitSlides();
+</script></body></html>

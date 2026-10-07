@@ -1,0 +1,13 @@
+
+# local secrets
+.gemini*
+**/key
+talks/**/_*.html
+.DS_Store
+
+# reference papers kept local (not published)
+talks/from-graph-to-crew/assets/papers/*.pdf
+
+# sparkhub deck copy: keep helpers/PDFs out
+sparkhub/talks/**/_*.html
+sparkhub/talks/from-graph-to-crew/assets/papers/*.pdf

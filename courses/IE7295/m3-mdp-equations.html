@@ -1,0 +1,1131 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>MDP Equations - IE 7295</title><link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script><style>
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;background:#f4f6f8;color:#3d3d3d;font-size:12.5px;line-height:1.5;
+  display:flex;flex-direction:column;overflow:hidden}
+
+.band{flex:0 0 auto;background:linear-gradient(135deg,#C3E3E4 0%,#C1E2E3 100%);
+  padding:9px 16px;position:relative}
+.band::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;
+  background:linear-gradient(90deg,#F5D000 0 33.33%,#E2231A 33.33% 66.66%,#0064B0 66.66% 100%)}
+.band h1{margin:0;font-size:16px;font-weight:700;color:#20484A}
+.band .sub{display:inline-block;background:rgba(255,255,255,.75);color:#3d5f61;
+  padding:2px 9px;border-radius:999px;font-size:11px;margin-top:3px}
+.foot{flex:0 0 auto;border-top:1px solid #E4E9EB;background:#fff;padding:8px 16px;
+  text-align:center;font-size:11px;color:#a8b0b6}
+
+.stage{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:9px;
+  padding:10px 14px}
+
+/* tabs: one segmented control, and it is the only navigation in the tool */
+.tabs{flex:0 0 auto;display:inline-flex;background:#fff;border:1px solid #E4E9EB;
+  border-radius:999px;padding:3px;align-self:flex-start}
+.tab{font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;color:#5b7175;background:none;
+  border:0;border-radius:999px;padding:7px 20px;cursor:pointer;white-space:nowrap}
+.tab.on{background:linear-gradient(135deg,#006064 0%,#17a2b8 100%);color:#fff}
+
+.cols{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:264px 1fr;gap:10px}
+.side{display:flex;flex-direction:column;gap:8px;min-height:0}
+.main{display:flex;flex-direction:column;gap:9px;min-height:0}
+
+.card{background:#fff;border:1px solid #E4E9EB;border-radius:6px;padding:11px 13px}
+.card.rule{border-left:3px solid #8FC8CA;border-radius:0 6px 6px 0}
+h2{font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+  color:#006064;margin:0 0 7px}
+
+/* controls */
+.ctl{margin-bottom:11px}
+.ctl:last-child{margin-bottom:0}
+.ctl .lab{display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+  font-size:11px;font-weight:700;color:#20484A;margin-bottom:2px}
+.ctl .val{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;font-weight:700;color:#006064;
+  background:#eef6f6;border-radius:999px;padding:1px 9px}
+.ctl .hint{font-size:10px;color:#a8b0b6;margin-top:3px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:10px;
+  border-radius:999px;margin:7px 0 0;cursor:pointer;outline:none;
+  background:linear-gradient(90deg,#0d5f62 0%,#17a2b8 var(--f,0%),
+             #e2e9ea var(--f,0%),#e2e9ea 100%)}
+input[type=range]::-webkit-slider-runnable-track{height:10px;background:transparent}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;margin-top:-5px;
+  width:20px;height:20px;border-radius:999px;background:#fff;border:2px solid #006064;
+  box-shadow:0 1px 4px rgba(0,0,0,.18)}
+input[type=range]::-moz-range-track{height:10px;background:transparent}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:999px;
+  background:#fff;border:2px solid #006064;box-shadow:0 1px 4px rgba(0,0,0,.18)}
+select{width:100%;font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;font-size:12px;color:#20484A;background:#fff;
+  border:1px solid #E4E9EB;border-radius:6px;padding:7px 9px;margin-top:5px;cursor:pointer}
+select:focus{outline:none;border-color:#8FC8CA}
+.btns{display:flex;gap:7px;margin-top:11px}
+.btn{flex:1;font-family:Lato,'Lato Extended','Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;font-size:11.5px;font-weight:700;border-radius:999px;
+  padding:8px 0;cursor:pointer;border:1px solid #E4E9EB;background:#fff;color:#20484A}
+.btn:hover{border-color:#8FC8CA;background:#eef6f6}
+.btn.go{border:0;color:#fff;background:linear-gradient(135deg,#006064 0%,#17a2b8 100%)}
+
+/* the equation sits above the picture it describes, never in a separate tab */
+.eq{background:rgba(143,200,202,.13);border-left:3px solid #8FC8CA;border-radius:0 6px 6px 0;
+  padding:11px 15px;text-align:center}
+.eq .cap{font-size:11px;color:#3d3d3d;margin-top:6px}
+
+.viz{flex:1 1 auto;min-height:0;overflow:hidden;display:flex;background:#fff;border:1px solid #E4E9EB;border-radius:6px;
+  padding:12px;display:flex;align-items:center;justify-content:center}
+
+/* the four numbers a student is meant to watch, never more */
+.reads{flex:0 0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.read{background:#fff;border:1px solid #E4E9EB;border-radius:6px;padding:8px 11px}
+.read .k{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  color:#a8b0b6}
+.read .v{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:17px;font-weight:700;color:#20484A;margin-top:1px}
+.read.on .v{color:#006064}
+
+/* transition: the state and where it can land */
+.grid4{display:grid;grid-template-columns:repeat(3,140px);grid-template-rows:repeat(3,116px);gap:12px}
+.cellbox{border:1px solid #E4E9EB;border-radius:6px;background:#f7f9f9;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;font-size:11px;
+  transition:background .18s,border-color .18s}
+.cellbox.here{background:#20484A;border-color:#20484A;color:#fff}
+.cellbox.here .nm{color:#fff}
+.cellbox .nm{font-weight:700;color:#20484A;font-size:12.5px}
+.cellbox .p{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-weight:700;color:#006064;font-size:24px;margin-top:3px}
+.cellbox .r{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;color:#a8b0b6}
+.cellbox.blank{border:0;background:none}
+
+/* return: one bar per step, so the decay is visible rather than described */
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:14px;height:100%;
+  width:100%;padding-bottom:22px}
+.bar{flex:1;max-width:92px;display:flex;flex-direction:column;justify-content:flex-end;
+  align-items:center;height:100%;position:relative}
+.bar .fill{width:100%;border-radius:5px 5px 0 0;
+  background:linear-gradient(180deg,#17a2b8,#0d5f62);min-height:3px}
+.bar .t{position:absolute;bottom:-19px;font-size:11px;color:#a8b0b6;white-space:nowrap}
+.bar .c{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;font-weight:700;color:#006064;margin-bottom:4px}
+
+/* bellman: the state under update, and the neighbours it is choosing between */
+.bell{display:flex;align-items:center;gap:18px}
+.node{width:124px;height:92px;border:1px solid #E4E9EB;border-radius:6px;background:#f7f9f9;
+  display:flex;flex-direction:column;align-items:center;justify-content:center}
+.node .k{font-size:10px;color:#a8b0b6}
+.node .v{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:24px;font-weight:700;color:#20484A}
+.node.self{border:2px solid #006064;background:#eef6f6}
+.node.best{border:2px solid #2e9e6b;background:rgba(0,150,90,.10)}
+.node.best .v{color:#1d6b4a}
+.nbrs{display:grid;grid-template-columns:repeat(2,124px);gap:10px}
+.arrowcol{display:flex;flex-direction:column;align-items:center;color:#8FC8CA;font-size:11px}
+.work{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;color:#3d3d3d;line-height:2.1}
+.work b{color:#006064}
+.katex{font-size:1.05em}
+
+/* the left column can outgrow the window once it carries instructions */
+.side{overflow:auto;padding-right:2px}
+
+/* what the numbers on screen mean, right now, in a sentence. This is the
+   part a student actually needs and the old tool never had. */
+.reading{flex:0 0 auto;background:rgba(0,96,100,.07);border-left:3px solid #006064;
+  border-radius:0 6px 6px 0;padding:9px 14px;font-size:12px;line-height:1.55;color:#3d3d3d}
+.reading b{color:#006064;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-weight:700}
+
+.steps{counter-reset:s;margin:0;padding:0;list-style:none}
+.steps li{counter-increment:s;position:relative;padding-left:21px;margin-bottom:6px;
+  font-size:11px;line-height:1.45;color:#3d3d3d}
+.steps li:last-child{margin-bottom:0}
+.steps li::before{content:counter(s);position:absolute;left:0;top:1px;width:15px;
+  height:15px;border-radius:999px;background:#006064;color:#fff;font-size:9.5px;
+  font-weight:700;display:flex;align-items:center;justify-content:center}
+
+/* ---- the Build tab -------------------------------------------------------
+   The tiles, the slots the equation is assembled into, and the backup diagram
+   that fills in one layer per piece. The diagram is the equation drawn, so the
+   two have to complete together or neither teaches anything. */
+.bld{display:flex;flex-direction:column;gap:7px}
+.bld .goal{font-size:11.5px;color:#5b666e;line-height:1.6}
+.bld .goal b{color:#20484A}
+.slots{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:5px;
+  min-height:44px;padding:4px 0}
+.lhs{font-family:KaTeX_Math,KaTeX_Main,Cambria,serif;font-size:19px;color:#20484A;
+  margin-right:2px}
+.slot{min-width:54px;min-height:38px;border:1px dashed #cdd8d9;border-radius:4px;
+  display:inline-flex;align-items:center;justify-content:center;padding:3px 9px;
+  cursor:pointer;background:#fff;font-family:KaTeX_Math,KaTeX_Main,Cambria,serif}
+.slot.full{border-style:solid;border-color:#8FC8CA;background:rgba(143,200,202,.16)}
+.slot.next{border-color:#006064;background:rgba(0,96,100,.06)}
+.slot .ph{font-size:10.5px;color:#b6c0c2;letter-spacing:.4px}
+.tray{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;padding:2px 0}
+.tile{font-family:inherit;border:1px solid #E4E9EB;background:#fff;border-radius:4px;
+  padding:6px 11px;cursor:pointer;min-height:36px;display:inline-flex;align-items:center}
+.tile:hover{border-color:#8FC8CA}
+.tile.used{opacity:.28;pointer-events:none}
+.tile.shake{animation:sh .28s}
+@keyframes sh{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}
+  75%{transform:translateX(4px)}}
+.lvls{display:flex;flex-direction:column;gap:5px}
+.lvl{display:flex;align-items:center;gap:8px;border:1px solid #E4E9EB;border-radius:4px;
+  padding:6px 9px;cursor:pointer;background:#fff;font-size:11.5px;color:#5b7175;
+  text-align:left;font-family:inherit;width:100%}
+.lvl:hover{border-color:#8FC8CA}
+.lvl.on{border-color:#8FC8CA;background:rgba(143,200,202,.16);color:#20484A;font-weight:700}
+.lvl .n{flex:0 0 auto;width:19px;height:19px;border-radius:999px;background:#EDF3F3;
+  color:#5b7175;display:inline-flex;align-items:center;justify-content:center;font-size:10.5px;
+  font-weight:700}
+.lvl.on .n{background:linear-gradient(135deg,#006064 0%,#17a2b8 100%);color:#fff}
+.lvl.done .n{background:#006064;color:#fff}
+.lvl.done{color:#20484A}
+.bkp{background:#FCFDFD;border:1px solid #E4E9EB;border-radius:6px;padding:4px;
+  flex:1 1 auto;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+/* height:0 with flex:1 is what stops an SVG with a viewBox from claiming its
+   natural aspect height and pushing the equation panel off the screen */
+/* the SVG is absolutely positioned inside a bounded box. A viewBox'd SVG left
+   in normal flow claims its natural aspect height and pushes everything else
+   off the screen; flex:1 with height:0 collapses it to nothing instead. */
+.bkp .pane{flex:1 1 auto;min-height:0;position:relative}
+.bkp .pane svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.bkp .ttl{font-size:10.5px;letter-spacing:.5px;text-transform:uppercase;color:#006064;
+  font-weight:700;padding:5px 7px 0}
+.done-note{background:rgba(29,107,74,.09);border-left:3px solid #1d6b4a;border-radius:0 4px 4px 0;
+  padding:8px 11px;font-size:11.5px;color:#1d6b4a;line-height:1.6}
+.miss{background:rgba(226,35,26,.07);border-left:3px solid #E2231A;border-radius:0 4px 4px 0;
+  padding:8px 11px;font-size:11.5px;color:#a3271f;line-height:1.6}
+
+
+/* the equation panel keeps its height whatever the diagram asks for */
+.main > .card.eq{flex:0 0 auto}
+.main > .reading,.main > .reads{flex:0 0 auto}
+
+/* .viz was centring its children, which collapsed the diagram to the height of
+   its own title. The diagram has to stretch to the card. */
+.viz{align-items:stretch}
+
+/* the completed state: the whole picture goes to the accent, and the equation
+   it drew is written underneath it */
+.bkp.is-done{border-color:#8FC8CA;background:#F7FCFC}
+.bkp.is-done .bk-e{stroke:#4d9ba2}
+.bkp.is-done .bk-s{stroke:#006064;fill:#EFF8F8}
+.bkp.is-done .bk-a{fill:#006064}
+.bkp.is-done .bk-band{fill:rgba(143,200,202,.17)}
+.bkp .ttl{display:flex;align-items:center;gap:8px}
+.pill-done{background:linear-gradient(135deg,#17a2b8 0%,#006064 100%);color:#fff;
+  border-radius:999px;padding:1px 9px;font-size:10px;letter-spacing:.6px}
+.bdone{flex:0 0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  border-top:1px solid rgba(0,96,100,.14);margin-top:4px;padding:8px 8px 4px}
+.bdone .tick{flex:0 0 auto;width:20px;height:20px;border-radius:999px;background:#006064;
+  color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:12px}
+.bdone .fx{flex:1 1 auto;min-width:0;overflow-x:auto}
+.bdone .cap2{flex:0 0 auto;font-size:10.5px;letter-spacing:.6px;text-transform:uppercase;
+  color:#7d9799}
+
+.nextlv{flex:0 0 auto;font-family:inherit;font-size:12px;font-weight:700;border:0;
+  border-radius:999px;padding:6px 15px;cursor:pointer;
+  background:linear-gradient(135deg,#17a2b8 0%,#006064 100%);color:#fff}
+.nextlv:hover{filter:brightness(1.08)}
+
+/* the prompt, with the three identity colours as a 22px rule beside it */
+.bld .goal{display:flex;align-items:flex-start;gap:11px;text-align:left}
+.bld .mlrule{flex:0 0 auto;width:4px;height:34px;border-radius:2px;margin-top:2px;
+  background:linear-gradient(180deg,#F5D000 0 33.33%,#E2231A 33.33% 66.66%,#0064B0 66.66% 100%)}
+.bld .gq{font-size:15px;font-weight:700;color:#20484A;line-height:1.45}
+.bld .gs{font-size:11px;color:#8b999e;margin-top:2px}
+
+/* the name gate, the submit bar and the score card */
+.namebar{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:12px}
+.namebar input{font-family:inherit;font-size:13px;padding:8px 12px;border:1px solid #E4E9EB;
+  border-radius:999px;min-width:260px;color:#20484A;background:#fff}
+.namebar input:focus{outline:none;border-color:#8FC8CA}
+.btn-go{font-family:inherit;font-size:12.5px;font-weight:700;border:0;border-radius:999px;
+  padding:8px 18px;cursor:pointer;background:linear-gradient(135deg,#17a2b8 0%,#006064 100%);
+  color:#fff}
+.btn-go[disabled]{opacity:.38;cursor:not-allowed}
+.btn-go.ghost{background:#fff;border:1px solid #E4E9EB;color:#5b7175}
+.subbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:9px;
+  border-top:1px solid #EFF3F4;padding-top:9px}
+.verd{flex:1 1 auto;min-width:200px;font-size:12px;color:#7d8f91;text-align:left}
+.verd.ok{color:#1d6b4a;font-weight:700}
+.verd.no{color:#a3271f}
+
+.score{font-size:12px}
+.sc-h{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.sc-n{font-size:14px;font-weight:700;color:#20484A}
+.sc-s{font-size:10.5px;color:#a8b8ba}
+.sc-big{margin-left:auto;white-space:nowrap;font-size:20px;font-weight:700;color:#006064;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.sc-t{width:100%;border-collapse:collapse;font-size:11px}
+.sc-t th{text-align:left;color:#20484A;font-weight:700;padding:4px 5px;
+  border-bottom:1px solid #E4E9EB}
+.sc-t td{padding:4px 5px;border-bottom:1px solid #F2F5F6;color:#5b666e}
+.ok-p{color:#1d6b4a;font-weight:700}
+.no-p{color:#a8b8ba}
+.sc-f{margin-top:9px;font-size:11px;color:#5b666e;line-height:1.6;
+  background:rgba(143,200,202,.16);border-radius:4px;padding:7px 9px}
+</style></head><body>
+<div class="band"><h1>MDP Equations</h1>
+  <div class="sub">Module 3 &middot; the three equations chapter 3 is built on</div></div>
+
+<div class="stage">
+  <div class="tabs">
+    <button class="tab on" data-t="trans" type="button">Transition</button>
+    <button class="tab" data-t="ret" type="button">Return</button>
+    <button class="tab" data-t="bell" type="button">Bellman</button>
+    <button class="tab" data-t="build" type="button">Build</button>
+  </div>
+
+  <div class="cols">
+    <div class="side">
+      <div class="card rule" id="controls"></div>
+      <div class="card rule" id="says"></div>
+      <div class="card rule" id="try"></div>
+    </div>
+    <div class="main">
+      <div class="card eq" id="eq"></div>
+      <div class="viz" id="viz"></div>
+      <div class="reading" id="reading"></div>
+      <div class="reads" id="reads"></div>
+    </div>
+  </div>
+</div>
+
+<div class="foot">IE7295: Applied Reinforcement Learning &middot; Prof. Dehghani</div>
+<script>
+var S = {
+  /* Build opens first: it is the tab the tool was rebuilt around. The other
+     three are still one click away, and ?tab=trans deep links to any of them. */
+  tab: (location.search.match(/tab=(\w+)/) || [])[1] || 'build',
+  main: 80, side: 10, action: 'Up',
+  gammaR: 90, steps: 5, seq: 'const',
+  gammaB: 90, reward: -1, V: 0, iter: 0, last: 0,
+  NB: [5, 3, 2, 4]
+};
+var $ = function(id){ return document.getElementById(id); };
+
+function slider(id, label, min, max, val, fmt, hint){
+  return '<div class="ctl"><div class="lab"><span>' + label + '</span>' +
+         '<span class="val" id="v-' + id + '">' + fmt(val) + '</span></div>' +
+         '<input type="range" id="' + id + '" min="' + min + '" max="' + max +
+         '" value="' + val + '">' +
+         (hint ? '<div class="hint">' + hint + '</div>' : '') + '</div>';
+}
+function picker(id, label, opts, sel, hint){
+  var o = opts.map(function(p){
+    return '<option value="' + p[0] + '"' + (p[0] === sel ? ' selected' : '') +
+           '>' + p[1] + '</option>'; }).join('');
+  return '<div class="ctl"><div class="lab"><span>' + label + '</span></div>' +
+         '<select id="' + id + '">' + o + '</select>' +
+         (hint ? '<div class="hint">' + hint + '</div>' : '') + '</div>';
+}
+function reads(items){
+  return items.map(function(it){
+    return '<div class="read' + (it[2] ? ' on' : '') + '"><div class="k">' + it[0] +
+           '</div><div class="v">' + it[1] + '</div></div>'; }).join('');
+}
+function paintRange(r){
+  var pct = ((+r.value - +r.min) / ((+r.max - +r.min) || 1)) * 100;
+  r.style.setProperty('--f', pct + '%');
+}
+function wire(){
+  [].forEach.call(document.querySelectorAll('input[type=range]'), function(r){
+    paintRange(r);
+    r.addEventListener('input', function(){ paintRange(r); onInput(r.id, +r.value); });
+  });
+  [].forEach.call(document.querySelectorAll('select'), function(s){
+    s.addEventListener('change', function(){ onInput(s.id, s.value); });
+  });
+}
+
+function onInput(id, val){
+  if (id === 'main'){ S.main = val; if (S.main + 2 * S.side > 100) S.side = Math.floor((100 - S.main) / 2); }
+  if (id === 'side'){ S.side = val; if (S.main + 2 * S.side > 100) S.main = 100 - 2 * S.side; }
+  if (id === 'action') S.action = val;
+  if (id === 'gammaR') S.gammaR = val;
+  if (id === 'steps')  S.steps = val;
+  if (id === 'seq')    S.seq = val;
+  if (id === 'gammaB') S.gammaB = val;
+  if (id === 'reward') S.reward = +val;
+  render();
+}
+
+/* ---- transition ------------------------------------------------------- */
+function transProbs(){
+  var p = S.main / 100, q = S.side / 100, back = Math.max(0, 1 - p - 2 * q);
+  return [p, q, q, back];
+}
+function drawTrans(){
+  var pr = transProbs(), dirs = ['Up', 'Right', 'Down', 'Left'];
+  var i = dirs.indexOf(S.action);
+  var by = {};                                   // probability by compass point
+  by[dirs[i]] = pr[0];
+  by[dirs[(i + 1) % 4]] = pr[1];
+  by[dirs[(i + 3) % 4]] = pr[2];
+  by[dirs[(i + 2) % 4]] = pr[3];
+
+  function box(d){
+    var v = by[d] || 0;
+    return '<div class="cellbox"><div class="nm">' + d + '</div>' +
+           '<div class="p">' + v.toFixed(2) + '</div>' +
+           '<div class="r">r = -1</div></div>';
+  }
+  $('viz').innerHTML =
+    '<div class="grid4">' +
+      '<div class="cellbox blank"></div>' + box('Up') + '<div class="cellbox blank"></div>' +
+      box('Left') +
+      '<div class="cellbox here"><div class="nm">s</div><div class="r" style="color:#cfe6e7">now here</div></div>' +
+      box('Right') +
+      '<div class="cellbox blank"></div>' + box('Down') + '<div class="cellbox blank"></div>' +
+    '</div>';
+
+  var H = 0;
+  pr.forEach(function(v){ if (v > 0) H -= v * Math.log2(v); });
+  var tot = pr.reduce(function(a, b){ return a + b; }, 0);
+  $('reads').innerHTML = reads([
+    ['total p', tot.toFixed(2), Math.abs(tot - 1) < 0.005],
+    ['expected r', '-1.00', false],
+    ['entropy', H.toFixed(2), false],
+    ['largest p', Math.max.apply(null, pr).toFixed(2), false]
+  ]);
+}
+
+/* ---- return ----------------------------------------------------------- */
+function rewardsFor(){
+  var n = S.steps, out = [];
+  for (var k = 0; k < n; k++){
+    if (S.seq === 'const') out.push(-1);
+    else if (S.seq === 'up') out.push(k + 1);
+    else out.push(k === n - 1 ? 10 : 0);
+  }
+  return out;
+}
+function drawReturn(){
+  var g = S.gammaR / 100, rs = rewardsFor(), G = 0, terms = [];
+  rs.forEach(function(r, k){
+    var c = Math.pow(g, k) * r;
+    G += c; terms.push(c);
+  });
+  var peak = Math.max.apply(null, terms.map(Math.abs)) || 1;
+  $('viz').innerHTML = '<div class="bars">' + terms.map(function(c, k){
+    var h = (Math.abs(c) / peak) * 100;
+    return '<div class="bar"><div class="c">' + c.toFixed(2) + '</div>' +
+           '<div class="fill" style="height:' + h.toFixed(1) + '%"></div>' +
+           '<div class="t">t+' + (k + 1) + '</div></div>';
+  }).join('') + '</div>';
+  $('reads').innerHTML = reads([
+    ['return G', G.toFixed(2), true],
+    ['gamma^n', Math.pow(g, S.steps).toFixed(2), false],
+    ['steps', String(S.steps), false],
+    ['mean r', (rs.reduce(function(a,b){return a+b;},0) / rs.length).toFixed(2), false]
+  ]);
+}
+
+/* ---- bellman ---------------------------------------------------------- */
+function drawBellman(){
+  var g = S.gammaB / 100, best = Math.max.apply(null, S.NB);
+  var next = S.reward + g * best;
+  $('viz').innerHTML =
+    '<div class="bell">' +
+      '<div class="node self"><div class="k">V(s)</div><div class="v">' +
+        S.V.toFixed(2) + '</div></div>' +
+      '<div class="arrowcol">&#8592;<div style="font-size:10px">max</div></div>' +
+      '<div class="nbrs">' + S.NB.map(function(v, i){
+        return '<div class="node' + (v === best ? ' best' : '') + '">' +
+               '<div class="k">V(s\'' + (i + 1) + ')</div><div class="v">' +
+               v.toFixed(2) + '</div></div>'; }).join('') + '</div>' +
+      '<div class="work">R(s) = <b>' + S.reward.toFixed(2) + '</b><br>' +
+        'max V(s\') = <b>' + best.toFixed(2) + '</b><br>' +
+        '&gamma; max V(s\') = <b>' + (g * best).toFixed(2) + '</b><br>' +
+        'new V(s) = <b>' + next.toFixed(2) + '</b></div>' +
+    '</div>';
+  $('reads').innerHTML = reads([
+    ['iteration', String(S.iter), false],
+    ['new V(s)', next.toFixed(2), true],
+    ['change', Math.abs(next - S.V).toFixed(2), false],
+    ['settled', Math.abs(next - S.V) < 0.01 && S.iter > 0 ? 'yes' : 'no',
+      Math.abs(next - S.V) < 0.01 && S.iter > 0]
+  ]);
+}
+function stepBellman(){
+  var g = S.gammaB / 100;
+  S.last = S.V;
+  S.V = S.reward + g * Math.max.apply(null, S.NB);
+  S.iter += 1;
+  render();
+}
+function resetBellman(){ S.V = 0; S.iter = 0; render(); }
+function randomise(){
+  S.main = 50 + Math.floor(Math.random() * 45);
+  S.side = Math.floor(Math.random() * Math.floor((100 - S.main) / 2 + 1));
+  render();
+}
+
+/* ---- what changes per tab --------------------------------------------- */
+var TABS = {
+  trans: {
+    eq: 'p(s\', r \\mid s, a) = \\Pr\\{S_t = s\',\\, R_t = r \\mid S_{t-1} = s,\\, A_{t-1} = a\\}',
+    cap: 'The chance of landing in s\' and collecting r, given you were in s and chose a.',
+    says: ['Actions do not always work', 'Everything downstream in this course ' +
+           'exists because of the gap between the action chosen and what actually ' +
+           'happened.'],
+    steps: ['The dark square is the agent now; the four around it are where one ' +
+            'move might land it.',
+            'Pick an action, then drag <b>Intended direction</b> down to 50% and ' +
+            'watch probability leak into the sideways squares.',
+            'Watch <b>entropy</b> at the bottom. It is near zero when the outcome ' +
+            'is close to certain, and largest when every square is equally likely.',
+            'Push <b>sideways slip</b> up until the intended square is no longer ' +
+            'the most likely one. That is a world where planning barely helps.'],
+    read: function(){
+      var pr = transProbs(), H = 0;
+      pr.forEach(function(v){ if (v > 0) H -= v * Math.log2(v); });
+      var certain = H < 0.6, chaos = H > 1.6;
+      return 'Choosing <b>' + S.action + '</b> puts the agent where it meant to go ' +
+        '<b>' + (pr[0] * 100).toFixed(0) + '%</b> of the time, sideways <b>' +
+        (pr[1] * 200).toFixed(0) + '%</b>, and backwards <b>' +
+        (pr[3] * 100).toFixed(0) + '%</b>. Entropy <b>' + H.toFixed(2) + '</b>: ' +
+        (certain ? 'the outcome is close to certain, so a plan made here will ' +
+                   'usually survive contact with the environment.'
+         : chaos ? 'the outcome is close to a coin toss, so the action barely ' +
+                   'determines what happens and the agent must rely on trying often.'
+         : 'the action mostly works but not reliably, which is the case this ' +
+           'whole course is written for.');
+    },
+    controls: function(){
+      return slider('main', 'Intended direction', 0, 100, S.main,
+                    function(v){ return v + '%'; }, 'How often the action does what you asked')
+           + slider('side', 'Sideways slip', 0, 50, S.side,
+                    function(v){ return v + '%'; }, 'Each side, so twice this in total')
+           + picker('action', 'Action chosen',
+                    [['Up','Up'],['Right','Right'],['Down','Down'],['Left','Left']], S.action)
+           + '<div class="btns"><button class="btn" type="button" onclick="randomise()">Randomise</button></div>';
+    },
+    draw: drawTrans
+  },
+  ret: {
+    eq: 'G_t = R_{t+1} + \\gamma R_{t+2} + \\gamma^{2} R_{t+3} + \\cdots' +
+        ' = \\sum_{k=0}^{\\infty} \\gamma^{k} R_{t+k+1}',
+    cap: 'The return is everything still to come, with later rewards worth less.',
+    says: ['Why discount at all', 'Gamma decides how far ahead the agent cares: near ' +
+           'zero it takes whatever is in front of it, near one it waits.'],
+    steps: ['Each bar is one future reward after discounting. The number on top ' +
+            'is what that reward is actually worth today.',
+            'Drag <b>&gamma;</b> to 0.50 and watch the far bars collapse. Then take ' +
+            'it to 0.99 and watch them come back almost level.',
+            'Switch the sequence to <b>Nothing, then +10</b>. At low &gamma; the ' +
+            'return is near zero, because a payoff that far away is worth almost ' +
+            'nothing to a myopic agent.',
+            'Compare <b>return G</b> with the plain sum of the rewards. The gap ' +
+            'between them is exactly what discounting costs.'],
+    read: function(){
+      var g = S.gammaR / 100, rs = rewardsFor(), G = 0, plain = 0;
+      rs.forEach(function(r, k){ G += Math.pow(g, k) * r; plain += r; });
+      var lastW = Math.pow(g, S.steps - 1);
+      return 'At <b>&gamma; = ' + g.toFixed(2) + '</b> the reward ' + S.steps +
+        ' steps out counts for <b>' + (lastW * 100).toFixed(0) + '%</b> of its face ' +
+        'value. The rewards add up to <b>' + plain.toFixed(2) + '</b> undiscounted, ' +
+        'but the return is <b>' + G.toFixed(2) + '</b>. ' +
+        (g < 0.4 ? 'This agent is myopic: it will trade almost any future for a ' +
+                   'small gain now.'
+         : g > 0.94 ? 'This agent is patient enough to accept a long run of losses ' +
+                      'for a payoff at the end.'
+         : 'A middling &gamma; like this is the usual choice, and the reason most ' +
+           'agents look a little short-sighted.');
+    },
+    controls: function(){
+      return slider('gammaR', 'Discount &gamma;', 0, 100, S.gammaR,
+                    function(v){ return (v/100).toFixed(2); }, '0 is myopic, 1 is far-sighted')
+           + slider('steps', 'Steps ahead', 3, 8, S.steps,
+                    function(v){ return String(v); }, 'How many rewards to add up')
+           + picker('seq', 'Reward sequence',
+                    [['const','Constant, -1 each step'],['up','Increasing, 1 2 3 ...'],
+                     ['goal','Nothing, then +10 at the end']], S.seq);
+    },
+    draw: drawReturn
+  },
+  bell: {
+    eq: 'V(s) = R(s) + \\gamma \\max_{s\'} V(s\')',
+    cap: 'A state is worth what it pays now, plus the discounted value of the best place it leads.',
+    says: ['Values defined by other values', 'Nothing here is measured directly. Each ' +
+           'state borrows its value from its best neighbour, which borrowed from its own.'],
+    steps: ['The teal box on the left is the state being updated. The four on the ' +
+            'right are where it can go, and the green one is the best of them.',
+            'Press <b>Step</b> once. V(s) jumps from 0 to R plus a discounted ' +
+            'share of the best neighbour. The arithmetic is written beside it.',
+            'Press <b>Step</b> again. Nothing moves, and <b>settled</b> turns to ' +
+            'yes. With the neighbours held fixed there is only one answer.',
+            'Change the reward to <b>Goal, +10</b> and press Step. The state is now ' +
+            'worth more than any neighbour, which is how value spreads outward ' +
+            'from a goal in a real grid.'],
+    read: function(){
+      var g = S.gammaB / 100, best = Math.max.apply(null, S.NB);
+      var next = S.reward + g * best, d = Math.abs(next - S.V);
+      return 'The best neighbour is worth <b>' + best.toFixed(2) + '</b>. Discounted ' +
+        'by <b>' + g.toFixed(2) + '</b> it contributes <b>' + (g * best).toFixed(2) +
+        '</b>, and adding the reward of <b>' + S.reward.toFixed(2) + '</b> makes ' +
+        'this state worth <b>' + next.toFixed(2) + '</b>. ' +
+        (S.iter === 0 ? 'Press Step to apply it.'
+         : d < 0.01 ? 'It has stopped changing, so this is the fixed point of the ' +
+                      'equation for these neighbours.'
+         : 'That is <b>' + d.toFixed(2) + '</b> away from the current value, so it ' +
+           'has not settled yet.');
+    },
+    controls: function(){
+      return slider('gammaB', 'Discount &gamma;', 0, 100, S.gammaB,
+                    function(v){ return (v/100).toFixed(2); }, 'How much the neighbour is worth here')
+           + picker('reward', 'Reward in this state',
+                    [['-1','Step cost, -1'],['0','Neutral, 0'],['10','Goal, +10']],
+                    String(S.reward))
+           + '<div class="btns"><button class="btn go" type="button" onclick="stepBellman()">Step</button>' +
+             '<button class="btn" type="button" onclick="resetBellman()">Reset</button></div>';
+    },
+    draw: drawBellman
+  }
+};
+
+/* ============================================================================
+   BUILD: assemble the equation, and the backup diagram builds with it.
+
+   MD, 2026-09-20: the diagram has to complete as the tiles land. That is the
+   whole point of the tab. A backup diagram IS the equation drawn, so a student
+   who places the sum over actions and sees the action branches appear has
+   learned what that symbol does, which no amount of prose achieves.
+
+   Each piece carries a `show` key. Placing it adds that key to the set of
+   things the diagram draws, so the two halves cannot drift apart.
+   ========================================================================= */
+/* MD, 2026-09-20: back to marking each piece as it lands. No submit step and
+   no score card. Finishing a level is its own acknowledgement. */
+var B = { lvl: 0, slots: [], cleared: [], misses: 0, note: null };
+
+var LEVELS = [
+  { name: 'Down to the actions',
+    q: 'What is a state worth, if all you know is what each of its actions is worth?',
+    lhs: 'v_\\pi(s) =',
+    shape: 'sa',
+    pieces: [
+      { t: '\\sum_a', show: 'arcs1',
+        why: 'Every action available in <b>s</b>. The branches appear, one per action.' },
+      { t: '\\pi(a \\mid s)', show: 'w1',
+        why: 'How often the policy takes each branch. Across the actions these weights add to 1.' },
+      { t: 'q_\\pi(s,a)', show: 'leaf',
+        why: 'What each branch is worth. The diagram stops at the actions, which is exactly what this equation does.' }
+    ],
+    decoys: ['\\max_a', '\\sum_{s\',r}', 'p(s\',r \\mid s,a)'],
+    done: 'A state value is the policy&rsquo;s own average over its action values. ' +
+          'Nothing about the environment appears yet.' },
+
+  { name: 'Forward to the next state',
+    q: 'What is one action worth, when the environment decides where you land?',
+    lhs: 'q_\\pi(s,a) =',
+    shape: 'as',
+    pieces: [
+      { t: '\\sum_{s\',r}', show: 'arcs1',
+        why: 'Every place this action could land, and what it pays. Now the branches leave an action, not a state.' },
+      { t: 'p(s\',r \\mid s,a)', show: 'w1',
+        why: 'How likely each landing is. This is the model of the world, and the only place it appears.' },
+      { t: '[\\, r + \\gamma\\, v_\\pi(s\') \\,]', show: 'leaf',
+        why: 'What you collect on the way, plus the discounted value of where you end up.' }
+    ],
+    decoys: ['\\sum_a', '\\pi(a \\mid s)', '\\max_{a\'}'],
+    done: 'One step forward. Notice <b>r</b> sits inside the sum: the reward depends on ' +
+          'the whole transition, not just on the action.' },
+
+  { name: 'Bellman for v',
+    q: 'Write the value of a state without ever mentioning <b>q</b>.',
+    lhs: 'v_\\pi(s) =',
+    shape: 'sas',
+    pieces: [
+      { t: '\\sum_a', show: 'arcs1', why: 'Down to the actions again.' },
+      { t: '\\pi(a \\mid s)', show: 'w1', why: 'Weighted by how often the policy picks each one.' },
+      { t: '\\sum_{s\',r}', show: 'arcs2',
+        why: 'And now forward from every action. This is the second layer, and it is why the diagram has two.' },
+      { t: 'p(s\',r \\mid s,a)', show: 'w2', why: 'Weighted by the model.' },
+      { t: '[\\, r + \\gamma\\, v_\\pi(s\') \\,]', show: 'leaf',
+        why: 'The same question one step on. <b>That</b> is the recursion, and it is what makes this solvable.' }
+    ],
+    decoys: ['\\max_a', 'q_\\pi(s,a)', '[\\, r + \\gamma\\, v_\\pi(s) \\,]'],
+    done: 'The two previous levels, joined. One step down, one step forward, and you are ' +
+          'back at a state value one time step later.' },
+
+  { name: 'Bellman optimality for v',
+    q: 'Same equation, but the agent stops hedging. What is the one thing that changes?',
+    lhs: 'v_*(s) =',
+    shape: 'sas',
+    pieces: [
+      { t: '\\max_a', show: 'arcs1,max1',
+        why: 'The branches are still there, but the arc across them says you take the best one, not the average.' },
+      { t: '\\sum_{s\',r}', show: 'arcs2', why: 'Forward from that action.' },
+      { t: 'p(s\',r \\mid s,a)', show: 'w2',
+        why: 'The environment still gets its say. You choose the action, not where it lands.' },
+      { t: '[\\, r + \\gamma\\, v_*(s\') \\,]', show: 'leaf', why: 'And the best you can do from there.' }
+    ],
+    decoys: ['\\sum_a', '\\pi(a \\mid s)', '[\\, r + \\gamma\\, v_\\pi(s\') \\,]'],
+    done: 'Hold this beside level 3. The only change is that ' +
+          '<span class="ktx">\\sum_a \\pi(a|s)</span> became ' +
+          '<span class="ktx">\\max_a</span>. An optimal policy never hedges, so there is ' +
+          'no distribution left to average over.' },
+
+  { name: 'Bellman optimality for q',
+    q: 'Write <b>q</b> so that picking an action needs no model at all.',
+    lhs: 'q_*(s,a) =',
+    shape: 'as',
+    pieces: [
+      { t: '\\sum_{s\',r}', show: 'arcs1', why: 'Where this action can land.' },
+      { t: 'p(s\',r \\mid s,a)', show: 'w1', why: 'How likely each landing is.' },
+      { t: 'r + \\gamma', show: 'leaf', pre: '[', why: 'What you collect, discounted.' },
+      { t: '\\max_{a\'} q_*(s\',a\')', show: 'max2', post: ']',
+        why: 'And at the state you land in, the best action there. The max has moved to the bottom of the diagram.' }
+    ],
+    decoys: ['\\max_a', '\\pi(a\' \\mid s\')', 'v_*(s\')'],
+    done: 'The max sits one layer lower than it did in level 4. That is the whole difference ' +
+          'between the two optimality equations, and it is why <b>q</b> needs no model at ' +
+          'action-selection time: the best action is read straight off.' }
+];
+
+
+/* why a given piece is not the one the equation wants next. These are the
+   mistakes people actually make, which is why each gets its own sentence. */
+var WHYNOT = {
+  '\\max_a': 'That belongs to an optimality equation. This one averages over what the policy does.',
+  '\\sum_a': 'That sums over actions. Look at what this equation is summing over here.',
+  '\\pi(a \\mid s)': 'The policy weight only appears where the sum is over actions.',
+  'q_\\pi(s,a)': 'An action value cannot sit here. This equation is being written in terms of state values.',
+  'p(s\',r \\mid s,a)': 'The model only appears after a sum over next states and rewards.',
+  '\\sum_{s\',r}': 'That sums over next states. Look at what this equation is summing over here.',
+  '\\max_{a\'}': 'The primed action belongs at the state you land in, not here.',
+  '[\\, r + \\gamma\\, v_\\pi(s) \\,]': 'The next state has to be <b>s&prime;</b>. With <b>s</b> the recursion never moves forward and nothing can be computed.',
+  '[\\, r + \\gamma\\, v_\\pi(s\') \\,]': 'That is the value under &pi;. This equation is about the optimal value.',
+  '\\pi(a\' \\mid s\')': 'Averaging at the next state gives you the Bellman equation for q under &pi;, not the optimality equation.',
+  'v_*(s\')': 'A state value here loses the action you are asking about. The equation needs the best action at s&prime;.'
+};
+
+function ktx(tex, display) {
+  try { return katex.renderToString(tex, { throwOnError: false, displayMode: !!display }); }
+  catch (e) { return tex; }
+}
+
+/* deterministic shuffle, so the tray does not reorder itself on every redraw */
+function trayFor(L, i) {
+  var all = L.pieces.map(function (p) { return p.t; }).concat(L.decoys);
+  return all.slice().sort(function (a, b) {
+    return ((a.length * 7 + i) % 11) - ((b.length * 7 + i) % 11) || (a < b ? -1 : 1);
+  });
+}
+
+/* ---- the backup diagram -------------------------------------------------
+   Drawn large, in layers, with the piece you just placed lit in the accent and
+   everything before it settled into grey. The layer bands and their labels are
+   what tie the picture to the equation: the band says "action", and the symbol
+   that drew it was the sum over actions. */
+var BK = { INK: '#20484A', TEAL: '#006064', LIT: '#17a2b8', GREY: '#9fb0b2',
+           FILL: '#E7F2F2' };
+
+function bkArrow(x1, y1, x2, y2, lit, r2, col) {
+  var dx = x2 - x1, dy = y2 - y1, L = Math.sqrt(dx * dx + dy * dy) || 1;
+  var ux = dx / L, uy = dy / L, ex = x2 - ux * (r2 + 3), ey = y2 - uy * (r2 + 3);
+  return '<line class="bk-e' + (lit ? ' lit' : '') + '" x1="' + x1 + '" y1="' + y1 +
+         '" x2="' + ex + '" y2="' + ey + '"' +
+         (col ? ' style="stroke:' + col + ';stroke-width:2.2"' : '') +
+         ' marker-end="url(#bkar' + (lit ? 'L' : '') + ')"/>';
+}
+function bkNode(x, y, kind, lit, label) {
+  /* an action dot that carries its own name has to be big enough to hold it.
+     It stays solid, so the state/action distinction survives. */
+  var r = kind === 's' ? 17 : (label ? 15 : 10);
+  var s = kind === 's'
+    ? '<circle class="bk-s' + (lit ? ' lit' : '') + '" cx="' + x + '" cy="' + y + '" r="' + r + '"/>'
+    : '<circle class="bk-a' + (lit ? ' lit' : '') + '" cx="' + x + '" cy="' + y + '" r="' + r + '"/>';
+  if (label) s += '<text class="bk-nl" x="' + x + '" y="' + (y + (kind === 's' ? 5 : 4)) +
+                  '" fill="' + (kind === 's' ? BK.INK : '#fff') + '">' + label + '</text>';
+  return s;
+}
+function bkBand(y, h, label, W) {
+  return '<rect class="bk-band" x="0" y="' + (y - h / 2) + '" width="' + W + '" height="' + h +
+         '" rx="7"/><text class="bk-bl" x="11" y="' + (y - h / 2 + 15) + '">' + label + '</text>';
+}
+/* Sutton and Barto draw the max as a small arc across the branches where they
+   leave the parent, not as a span across the children. The old version drew a
+   shallow line the full width of the diagram, which read as a stray rule. */
+function bkCap(px, py, kids, t, label, lit) {
+  var y = py + (kids[0].y - py) * t;
+  var xs = kids.map(function (k) { return px + (k.x - px) * t; });
+  var xa = Math.min.apply(null, xs), xb = Math.max.apply(null, xs);
+  var mid = (xa + xb) / 2, bulge = y + 15;
+  return '<path class="bk-cap' + (lit ? ' lit' : '') + '" d="M' + xa + ',' + y + ' Q' + mid +
+         ',' + bulge + ' ' + xb + ',' + y + '"/>' +
+         (label ? bkChip(mid, bulge + 13, label, lit, label, 'bk-max', 6.9) : '');
+}
+/* a weight sits on its branch, so it gets a small ground to stand on */
+/* a real subscript, not the unicode character: in Cambria those render at full
+   height and a1 reads as two symbols rather than one indexed one */
+function sb(base, n, rest) {
+  return base + '<tspan class="bk-sub" dy="4">' + n + '</tspan>' +
+         (rest ? '<tspan dy="-4">' + rest + '</tspan>' : '');
+}
+/* MD, 2026-09-20: every label goes in its own small rounded box, so nothing
+   ever sits on a branch and has to be read through it. */
+var ML = ['#F5D000', '#E2231A', '#0064B0'];
+function bkChip(x, y, t, lit, plain, cls, cw, pip) {
+  var p = plain || String(t).replace(/<[^>]*>/g, '');
+  var w = p.length * (cw || 6.6) + 13, hh = 21;
+  /* MD, 2026-09-20: no pip on the box. The branch colour goes on the box edge
+     and on the branch itself. It stays off the text: #F5D000 as type on white
+     is about 1.7:1, which is unreadable, and the house rule keeps these three
+     as marks rather than surfaces. */
+  return '<rect class="bk-chip' + (lit ? ' lit' : '') + '" x="' + (x - w / 2) + '" y="' +
+         (y - hh / 2) + '" width="' + w + '" height="' + hh + '" rx="5"' +
+         (pip ? ' style="stroke:' + pip + ';stroke-width:1.6"' : '') + '/>' +
+
+         '<text class="' + (cls || 'bk-w') + (lit ? ' lit' : '') + '" x="' + x +
+         '" y="' + (y + 5) + '" text-anchor="middle">' + t + '</text>';
+}
+function bkTxt(x, y, t, cls, anchor) {
+  return '<text class="' + (cls || 'bk-w') + '" x="' + x + '" y="' + y + '" text-anchor="' +
+         (anchor || 'middle') + '">' + t + '</text>';
+}
+
+var BK_CSS =
+  '<style>' +
+  '.bk-e{stroke:' + BK.GREY + ';stroke-width:1.9;fill:none}' +
+  '.bk-e.lit{stroke:' + BK.LIT + ';stroke-width:2.6}' +
+  '.bk-s{fill:#fff;stroke:' + BK.INK + ';stroke-width:2.2}' +
+  '.bk-s.lit{stroke:' + BK.LIT + ';fill:' + BK.FILL + '}' +
+  '.bk-a{fill:' + BK.INK + '}' +
+  '.bk-a.lit{fill:' + BK.LIT + '}' +
+  '.bk-nl{font:400 14px KaTeX_Math,KaTeX_Main,Cambria,serif;text-anchor:middle}' +
+  '.bk-band{fill:rgba(143,200,202,.11)}' +
+  '.bk-bl{font:700 10px Lato,Helvetica,sans-serif;fill:#a8b8ba;letter-spacing:.9px;' +
+  'text-transform:uppercase}' +
+  '.bk-w{font:400 14px KaTeX_Math,KaTeX_Main,Cambria,serif;fill:' + BK.TEAL + '}' +
+  '.bk-chip{fill:#FFFFFF;stroke:rgba(143,200,202,.65);stroke-width:1}' +
+  '.bk-chip.lit{stroke:' + BK.LIT + '}' +
+  '.bk-max{font:700 12.5px Lato,Helvetica,sans-serif;fill:' + BK.TEAL + ';text-anchor:middle}' +
+  '.bk-nm{font:400 14px KaTeX_Math,KaTeX_Main,Cambria,serif;fill:#20484A}' +
+  '.bk-sub{font-size:.68em}' +
+  '.bk-r{font:400 13.5px KaTeX_Math,KaTeX_Main,Cambria,serif;fill:#7d8f91;text-anchor:middle}' +
+  '.bk-leaf{font:400 15px KaTeX_Math,KaTeX_Main,Cambria,serif;fill:#5b666e}' +
+  '.bk-hint{font:12px Lato,Helvetica,sans-serif;fill:#c3ccce;text-anchor:middle}' +
+  '.bk-cap{stroke:' + BK.GREY + ';stroke-width:2;fill:none}' +
+  '.bk-cap.lit{stroke:' + BK.TEAL + ';stroke-width:2.6}' +
+  '.bk-max{font:700 13px Lato,Helvetica,sans-serif;fill:' + BK.GREY + ';text-anchor:middle}' +
+  '.bk-max.lit{fill:' + BK.TEAL + '}' +
+  '.lit{animation:bkin .34s ease-out}' +
+  '@keyframes bkin{from{opacity:0;transform:scale(.88)}to{opacity:1;transform:scale(1)}}' +
+  '</style>' +
+  '<defs>' +
+  '<marker id="bkar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5.5" markerHeight="5.5" ' +
+  'orient="auto-start-reverse" markerUnits="strokeWidth">' +
+  '<path d="M0,0 L10,5 L0,10 z" fill="context-stroke" stroke="none"/></marker>' +
+  '<marker id="bkarL" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5.5" markerHeight="5.5" ' +
+  'orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="' + BK.LIT + '"/></marker>' +
+  '</defs>';
+
+function drawBackup(L, seen, lit, done) {
+  lit = lit || {};
+  var two = L.shape === 'sas' || seen.max2;
+  /* the one-layer shapes need less height, and unused height in a viewBox
+     only letterboxes the picture into a smaller drawing */
+  /* the card is wide and short, so the viewBox is kept wide and short too. A
+     tall viewBox only letterboxes into a small drawing with dead air either
+     side, which is what made the two-layer levels look shrunken. */
+  var W = 940, H = two ? 248 : (L.shape === 'sa' ? 176 : 198), g = [];
+  var cx = W / 2, rootY = two ? 32 : 46;
+  var l1Y = two ? 120 : 124, l2Y = 208;
+  var rootKind = L.shape.charAt(0), l1Kind = L.shape.charAt(1);
+  var xs1 = [cx - 250, cx, cx + 250];
+  var SUB = ['1', '2', '3'], lab = [];
+
+  g.push(bkBand(rootY, 50, rootKind === 's' ? 'state' : 'state and action', W));
+  if (seen.arcs1) g.push(bkBand(l1Y, 50, l1Kind === 'a' ? 'action' : 'next state', W));
+  if (seen.arcs2) g.push(bkBand(l2Y, 50, 'next state', W));
+  else if (seen.max2) g.push(bkBand(l1Y + 58, 50, 'best action there', W));
+
+  /* ---- branches ---- */
+  if (seen.arcs1) {
+    xs1.forEach(function (x, i) {
+      g.push(bkArrow(cx, rootY, x, l1Y, !!lit.arcs1, l1Kind === 's' ? 17 : 15, ML[i]));
+    });
+  }
+  if (seen.arcs2) {
+    xs1.forEach(function (x, i) {
+      g.push(bkArrow(x, l1Y, x - 100, l2Y, !!lit.arcs2, 17, ML[i]));
+      g.push(bkArrow(x, l1Y, x + 100, l2Y, !!lit.arcs2, 17, ML[i]));
+    });
+  }
+  if (seen.max2) {
+    xs1.forEach(function (x, i) {
+      g.push(bkArrow(x, l1Y, x - 42, l1Y + 58, !!lit.max2, 10));
+      g.push(bkArrow(x, l1Y, x + 42, l1Y + 58, !!lit.max2, 10));
+      g.push(bkNode(x - 42, l1Y + 58, 'a', !!lit.max2));
+      g.push(bkNode(x + 42, l1Y + 58, 'a', !!lit.max2));
+      /* the max is taken at every next state, so every one gets the arc. The
+         word is written once, on the middle, so three of it do not shout. */
+      g.push(bkCap(x, l1Y, [{ x: x - 42, y: l1Y + 58 }, { x: x + 42, y: l1Y + 58 }],
+                   0.52, i === 1 ? 'max' : '', !!lit.max2));
+    });
+  }
+  if (seen.max1 && seen.arcs1) {
+    g.push(bkCap(cx, rootY, xs1.map(function (x) { return { x: x, y: l1Y }; }), 0.42,
+                 'max', !!lit.max1));
+  }
+
+  /* ---- every branch carries its own weight, on the branch ---- */
+  if (seen.w1) {
+    xs1.forEach(function (x, i) {
+      if (l1Kind === 's' && seen.leaf) return;   /* the combined p, r box covers it */
+      var wlab = (l1Kind === 'a') ? sb('π(a', SUB[i], '|s)') : 'p';
+      var plain = (l1Kind === 'a') ? 'π(a' + SUB[i] + '|s)' : 'p';
+      lab.push(bkChip((cx + x) / 2, (rootY + l1Y) / 2, wlab, !!lit.w1, plain,
+                      null, null, ML[i]));
+    });
+  }
+  /* one box per transition. p and r come out of the same p(s',r | s,a), so two
+     boxes on one arrow was two boxes too many. */
+  if (seen.w2) {
+    var both = seen.leaf;
+    xs1.forEach(function (x, i) {
+      var t = both ? 'p, r' : 'p';
+      lab.push(bkChip(x - 52, (l1Y + l2Y) / 2, t, !!(lit.w2 || lit.leaf), t, null, null, ML[i]));
+      lab.push(bkChip(x + 52, (l1Y + l2Y) / 2, t, !!(lit.w2 || lit.leaf), t, null, null, ML[i]));
+    });
+  }
+  if (seen.w1 && seen.leaf && !seen.arcs2 && l1Kind === 's') {
+    /* the one-layer shapes carry p and r on the same arrow too */
+    xs1.forEach(function (x, i) {
+      lab.push(bkChip((cx + x) / 2, (rootY + l1Y) / 2, sb('p, r', SUB[i]), !!lit.leaf,
+                      'p, r' + SUB[i], null, null, ML[i]));
+    });
+  }
+
+  /* ---- nodes ---- */
+  g.push(bkNode(cx, rootY, rootKind, false, rootKind === 's' ? 's' : ''));
+  if (rootKind === 'a') lab.push(bkChip(cx + 40, rootY, 's, a', false, 's, a', 'bk-nm'));
+
+  if (seen.arcs1) {
+    xs1.forEach(function (x, i) {
+      g.push(bkNode(x, l1Y, l1Kind, !!(lit.arcs1 || (L.shape === 'sa' && lit.leaf)),
+                    l1Kind === 's' ? sb('s′', SUB[i]) : sb('a', SUB[i])));
+
+    });
+  }
+  if (seen.arcs2) {
+    xs1.forEach(function (x) {
+      g.push(bkNode(x - 100, l2Y, 's', !!lit.arcs2, 's′'));
+      g.push(bkNode(x + 100, l2Y, 's', !!lit.arcs2, 's′'));
+    });
+  }
+
+  /* ---- what each leaf is worth, under the leaf it belongs to ---- */
+  if (seen.leaf) {
+    var cls = 'bk-leaf' + (lit.leaf ? ' lit' : '');
+    if (L.shape === 'sa') {
+      /* nothing written here: the action nodes are the action values, and
+         three q labels under three dots was clutter */
+    } else {
+      lab.push(bkChip(cx, H - 13, L.leafText || '', !!lit.leaf, L.leafText || '',
+                      'bk-leaf', 6.4));
+    }
+  }
+  if (!seen.arcs1) g.push(bkTxt(cx, l1Y, 'place the first piece and this fills in', 'bk-hint'));
+  g = g.concat(lab);   /* labels last, so they sit on top of every line */
+
+  /* when the last piece lands, the diagram settles into the accent and the
+     finished equation is written under it, so the two are seen as one thing */
+  var banner = done
+    ? '<div class="bdone"><span class="tick">&#10003;</span>' +
+      '<span class="fx">' + ktx(L.lhs + ' ' + L.pieces.map(function (q) {
+        return (q.pre || '') + q.t + (q.post || '');
+      }).join('\\,')) + '</span>' +
+      (B.lvl < LEVELS.length - 1
+        ? '<button class="nextlv" type="button">Next level &#8594;</button>'
+        : '<button class="nextlv" type="button">Start again</button>') + '</div>'
+    : '';
+  return '<div class="bkp' + (done ? ' is-done' : '') + '">' +
+         '<div class="ttl">Backup diagram' +
+         (done ? '<span class="pill-done">complete</span>' : '') + '</div>' +
+         '<div class="pane"><svg viewBox="0 0 ' + W + ' ' + H + '" ' +
+         'preserveAspectRatio="xMidYMid meet" role="img" aria-label="backup diagram">' +
+         BK_CSS + g.join('') + '</svg></div>' + banner + '</div>';
+}
+
+/* ---- the tab ------------------------------------------------------------ */
+function seenSet() {
+  var L = LEVELS[B.lvl], seen = {};
+  B.slots.forEach(function (v, i) {
+    if (v === null) return;
+    L.pieces[i].show.split(',').forEach(function (k) { seen[k] = true; });
+  });
+  return seen;
+}
+function resetLevel(n) {
+  B.lvl = n;
+  B.slots = LEVELS[n].pieces.map(function () { return null; });
+  B.note = null;
+  B.lit = {};
+}
+/* the keys the most recently placed piece switched on, so only that part of
+   the diagram is drawn in the accent */
+function litSet(i) {
+  var lit = {};
+  if (i != null && i >= 0) {
+    LEVELS[B.lvl].pieces[i].show.split(',').forEach(function (k) { lit[k] = true; });
+  }
+  return lit;
+}
+function buildEqHTML() {
+  var L = LEVELS[B.lvl], next = B.slots.indexOf(null);
+  var h = '<div class="bld"><div class="goal"><span class="mlrule"></span>' +
+          '<div><div class="gq">' + L.q + '</div>' +
+          '<div class="gs">Level ' + (B.lvl + 1) + ' of ' + LEVELS.length + ' &middot; <b>' +
+          L.name + '</b> &middot; click the pieces in the order they appear</div></div></div>' +
+          '<div class="slots"><span class="lhs">' + ktx(L.lhs) + '</span>';
+  L.pieces.forEach(function (p, i) {
+    if (p.pre) h += '<span class="lhs">' + p.pre + '</span>';
+    h += '<span class="slot ' + (B.slots[i] ? 'full' : (i === next ? 'next' : '')) +
+         '" data-s="' + i + '">' +
+         (B.slots[i] ? ktx(p.t) : '<span class="ph">' + (i + 1) + '</span>') + '</span>';
+    if (p.post) h += '<span class="lhs">' + p.post + '</span>';
+  });
+  h += '</div><div class="tray">';
+  trayFor(L, B.lvl).forEach(function (t) {
+    var used = B.slots.indexOf(t) >= 0;
+    h += '<button class="tile ' + (used ? 'used' : '') + '" type="button" data-t="' +
+         encodeURIComponent(t) + '">' + ktx(t) + '</button>';
+  });
+  return h + '</div></div>';
+}
+
+TABS.build = {
+  eqHTML: buildEqHTML,
+  get says() {
+    var L = LEVELS[B.lvl], k = B.slots.indexOf(null);
+    if (k < 0) return ['Why it is that', L.done];
+    if (B.note) return ['What that piece does', B.note];
+    return ['What you are building', L.q];
+  },
+  steps: ['Place the pieces left to right. The slot outlined in teal is the one ' +
+          'the equation wants next.',
+          'Watch the <b>backup diagram</b> on the right. Every piece you place draws ' +
+          'another part of it, because the diagram is this equation drawn.',
+          'A wrong piece is not punished, it is explained. Click a placed piece to ' +
+          'take it back.',
+          'Five levels. Level 4 is level 3 with one symbol changed, and level 5 moves ' +
+          'that symbol one layer down.'],
+  controls: function () {
+    return '<h2>Levels</h2><div class="lvls">' + LEVELS.map(function (L, i) {
+      return '<button class="lvl ' + (i === B.lvl ? 'on' : '') +
+             (B.cleared.indexOf(i) >= 0 ? ' done' : '') + '" type="button" data-l="' + i +
+             '"><span class="n">' + (i + 1) + '</span>' + L.name + '</button>';
+    }).join('') + '</div>';
+  },
+  draw: function () {
+    var L = LEVELS[B.lvl];
+    L.leafText = ['q\u03c0(s,a)', 'r + \u03b3 v\u03c0(s\u2032)', 'r + \u03b3 v\u03c0(s\u2032)',
+                  'r + \u03b3 v\u2217(s\u2032)', 'r + \u03b3 max q\u2217(s\u2032,a\u2032)'][B.lvl];
+    L.leafOnArc = (B.lvl === 2 || B.lvl === 3);
+    $('viz').innerHTML = drawBackup(L, seenSet(), B.lit || {},
+                                    B.slots.indexOf(null) < 0);
+    $('reads').innerHTML = [
+      ['level', (B.lvl + 1) + ' / ' + LEVELS.length],
+      ['pieces placed', B.slots.filter(Boolean).length + ' / ' + B.slots.length],
+      ['levels built', B.cleared.length + ' / ' + LEVELS.length],
+      ['wrong pieces', String(B.misses)]
+    ].map(function (r) {
+      return '<div class="read"><div class="k">' + r[0] + '</div><div class="v">' +
+             r[1] + '</div></div>';
+    }).join('');
+  },
+  read: function () {
+    var L = LEVELS[B.lvl], k = B.slots.indexOf(null);
+    if (k < 0) return '<b>Level ' + (B.lvl + 1) + ' built.</b> ' + L.done;
+    if (B.note && B.note.indexOf('<b>Not yet') === 0) return B.note;
+    return 'Piece <b>' + (k + 1) + '</b> of <b>' + B.slots.length + '</b>. ' +
+           'Every piece draws another layer of the diagram.';
+  },
+  wire: function () {
+    [].forEach.call(document.querySelectorAll('.lvl'), function (b) {
+      b.addEventListener('click', function () { resetLevel(+b.dataset.l); render(); });
+    });
+    [].forEach.call(document.querySelectorAll('.tile'), function (b) {
+      b.addEventListener('click', function () {
+        var t = decodeURIComponent(b.dataset.t), L = LEVELS[B.lvl], k = B.slots.indexOf(null);
+        if (k < 0) return;
+        if (t !== L.pieces[k].t) {
+          B.misses++;
+          B.note = '<b>Not yet.</b> ' + (WHYNOT[t] ||
+            'That piece belongs somewhere else in this equation.');
+          b.classList.add('shake');
+          render();
+          return;
+        }
+        B.slots[k] = t;
+        B.note = L.pieces[k].why;
+        B.lit = litSet(k);
+        if (B.slots.indexOf(null) < 0 && B.cleared.indexOf(B.lvl) < 0) B.cleared.push(B.lvl);
+        render();
+      });
+    });
+    [].forEach.call(document.querySelectorAll('.nextlv'), function (b) {
+      b.addEventListener('click', function () {
+        resetLevel((B.lvl + 1) % LEVELS.length);
+        render();
+      });
+    });
+    [].forEach.call(document.querySelectorAll('.slot.full'), function (s) {
+      s.addEventListener('click', function () {
+        B.slots[+s.dataset.s] = null;
+        B.note = null;
+        B.lit = {};
+        render();
+      });
+    });
+  }
+};
+resetLevel(0);
+
+
+function render(){
+  var t = TABS[S.tab];
+  /* the Build tab draws its own equation panel, because what sits there is a
+     row of slots being filled rather than one finished formula */
+  $('eq').innerHTML = t.eqHTML ? t.eqHTML()
+    : '$$' + t.eq + '$$<div class="cap">' + t.cap + '</div>';
+  $('says').innerHTML = '<h2>' + t.says[0] + '</h2>' +
+    '<div style="font-size:11.5px;line-height:1.6;color:#3d3d3d">' + t.says[1] + '</div>';
+  $('try').innerHTML = '<h2>Try this</h2><ol class="steps">' +
+    t.steps.map(function(x){ return '<li>' + x + '</li>'; }).join('') + '</ol>';
+  $('controls').innerHTML = '<h2>Controls</h2>' + t.controls();
+  t.draw();
+  $('reading').innerHTML = t.read();
+  wire();
+  if (t.wire) t.wire();
+  if (window.renderMathInElement && !t.eqHTML){
+    renderMathInElement($('eq'), {
+      delimiters: [{left:'$$', right:'$$', display:true}], throwOnError:false});
+  }
+  /* any \class="ktx" span carries raw TeX that still needs rendering */
+  if (window.katex){
+    [].forEach.call(document.querySelectorAll('.ktx'), function(e){
+      if (e.dataset.done) return;
+      e.innerHTML = ktx(e.textContent); e.dataset.done = '1';
+    });
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  var on = document.querySelector('.tab.on');
+  if (on) on.classList.remove('on');
+  var want = document.querySelector('.tab[data-t="' + S.tab + '"]');
+  (want || document.querySelector('.tab')).classList.add('on');
+  if (!want) S.tab = 'trans';
+  [].forEach.call(document.querySelectorAll('.tab'), function(b){
+    b.addEventListener('click', function(){
+      document.querySelector('.tab.on').classList.remove('on');
+      b.classList.add('on');
+      S.tab = b.dataset.t;
+      render();
+    });
+  });
+  var waited = 0;
+  function boot(){
+    /* the CDN is not guaranteed. After three seconds, draw anyway: every tab
+       degrades to plain text rather than to a blank page. */
+    if (!window.renderMathInElement && waited < 3000){
+      waited += 60; setTimeout(boot, 60); return;
+    }
+    render();
+  }
+  boot();
+});
+</script></body></html>
