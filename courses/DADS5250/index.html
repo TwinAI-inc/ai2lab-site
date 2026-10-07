@@ -1587,6 +1587,8 @@ body {
 .rrx-note { font-size: 11px; color: var(--soft); margin: 4px 0 0; font-family: 'Outfit',sans-serif; }
 .rrx-note b { color: var(--ink); }
 .rrx-startbtn { justify-self: start; margin-top: 4px; }
+#emx-c3d { width: 100%; height: 100%; display: block; cursor: grab; }
+#emx-c3d:active { cursor: grabbing; }
 </style>
 </head>
 <body>
@@ -1779,7 +1781,7 @@ const SPLASHES = {
   'prompt-anatomy': 'A well-engineered prompt has structure: role, task, context, format, and examples — each component adds a different kind of guidance. Toggle blocks on and off, watch the quality score update, and compare a bare task against a fully-built prompt to see how much each piece contributes.',
   'chain-viz': 'A LangChain chain is just a pipeline: text goes in, each node transforms it, and output comes out. Pick one of four chain types — Q&amp;A, extraction, summarization, or classification — choose a scenario, and step through what happens at each stage.',
   'chunking': 'RAG does not embed whole documents — it cuts them into chunks first, then embeds each one. This lab shows the splitter\'s actual output as you drag size and overlap, and runs a live retrieval preview on top: pick a question and watch which chunk wins, with a verdict on whether the answer survived the cut.',
-  'embeddings': 'Every dot on this map is a sentence turned into a real vector, computed live in your browser: tf-idf weights, true cosine similarity, honest PCA projection. Rank neighbors, compare any pair, then embed your own query into the same space and see exactly why the top match won. The labs swap in neural embeddings; the geometry is the same.',
+  'embeddings': 'Every dot on this map is a sentence turned into a real vector, computed live in your browser: tf-idf weights, true cosine similarity, honest PCA projection. Spin the space in true 3-D, rank neighbors, compare any pair, then embed your own query and watch it land among its meaning-mates. The labs swap in neural embeddings; the geometry is the same.',
   'retrieval-race': 'A real race against a real retriever. Every score you see is true tf-idf cosine between the query and each document; the machine takes its top 3 and you try to beat it on actual relevance. It opens with a worked example, then three modes — solo, timed, and sabotage, where keyword lookalikes genuinely outscore the right answers and the machine falls for them.',
   'react-player': 'A ReAct agent does not answer in one shot — it reasons, calls a tool, reads the observation, reasons again, and repeats until it has a confident answer. Step through three real multi-step traces: a population lookup, a hospital ED wait-time analysis, and a Python performance diagnosis.',
   'injection': 'Prompt injection is the OWASP #1 LLM risk: an attacker hides malicious instructions inside untrusted input — a user message, a retrieved document, a tool response — hoping the model follows them instead of its system prompt. This lab gives you ten real attack patterns across three tiers of sophistication. Fire them at a vulnerable bot and a hardened one, and read the explanation of why each attack succeeds or fails.',
@@ -1876,7 +1878,7 @@ const TOOL_HELP = {
   'embeddings': {
     what: 'An embedding model turns a piece of text into a vector: a long list of numbers that encodes its meaning. Texts that mean similar things get similar numbers, so they land close together in space. That single trick powers semantic search and RAG: your question becomes a point on the same map, and the nearest chunks are the relevant ones.',
     svg: 'embeddings',
-    steps: ['Click any dot: every other sentence gets ranked by true cosine similarity, with the shared terms that explain the score.',
+    steps: ['Drag the 3-D space to spin it; watch the four topic clusters separate in depth. Click any dot to rank every other sentence by true cosine similarity.',
             'Click a second dot to compare the pair: one number, and exactly why.',
             'Type a query to embed it into the same space; the star lands on the map and the top 5 are retrieved with scores.'],
     example: 'Type "my package never arrived" and watch it land beside delivery complaints that share no words with it.'
@@ -3857,7 +3859,8 @@ function renderEmbeddings() {
     .replace(/(ization|izing|ations|ation|ingly|ings|ing|ers|ies|ied|es|ed|er|ly|s)$/, '');
   const tokenize = s => s.split(/\s+/).map(stem).filter(w => w.length > 2 && !STOP.has(w));
 
-  const S = { ds: 'general', sel: null, cmp: null, query: null, model: null };
+  const S = { ds: 'general', sel: null, cmp: null, query: null, model: null,
+    view: '3d', rot: { yaw: 0.7, pitch: 0.35, auto: true }, raf: 0 };
 
   function buildModel(dsKey) {
     const ds = DATASETS[dsKey];
@@ -3897,13 +3900,16 @@ function renderEmbeddings() {
     const p1 = powerIter(K);
     const K2 = K.map((row, i) => row.map((kij, j) => kij - p1.lam * p1.u[i] * p1.u[j]));
     const p2 = powerIter(K2);
+    const K3 = K2.map((row, i) => row.map((kij, j) => kij - p2.lam * p2.u[i] * p2.u[j]));
+    const p3 = powerIter(K3);
     const coord = (p, i) => Math.sqrt(Math.max(p.lam, 1e-9)) * p.u[i];
-    const pts = Xc.map((_, i) => ({ px: coord(p1, i), py: coord(p2, i) }));
+    const pts = Xc.map((_, i) => ({ px: coord(p1, i), py: coord(p2, i), pz: coord(p3, i) }));
     // axis loadings so a query vector can be projected onto the same plane
     const load = p => { const w = new Float64Array(V); const s = Math.sqrt(Math.max(p.lam, 1e-9));
       for (let k = 0; k < V; k++) { let a = 0; for (let i = 0; i < N; i++) a += Xc[i][k] * p.u[i]; w[k] = a / s; } return w; };
-    const w1 = load(p1), w2 = load(p2);
+    const w1 = load(p1), w2 = load(p2), w3 = load(p3);
     const varShown = trace > 0 ? (p1.lam + p2.lam) / trace : 0;
+    const varShown3 = trace > 0 ? (p1.lam + p2.lam + p3.lam) / trace : 0;
     // what each axis MEANS: the strongest positive and negative loading terms
     const axisTerms = w => {
       const idx = vocab.map((t, i) => ({ t, v: w[i] })).sort((a, b) => a.v - b.v);
@@ -3911,10 +3917,12 @@ function renderEmbeddings() {
     };
     const ax1 = axisTerms(w1), ax2 = axisTerms(w2);
     // scale to [10, 90] percent of the plot box
-    const xs = pts.map(p => p.px), ys = pts.map(p => p.py);
+    const xs = pts.map(p => p.px), ys = pts.map(p => p.py), zs = pts.map(p => p.pz);
     const sc = (v, arr) => 10 + 80 * ((v - Math.min(...arr)) / ((Math.max(...arr) - Math.min(...arr)) || 1));
+    const n11 = (v, arr) => -1 + 2 * ((v - Math.min(...arr)) / ((Math.max(...arr) - Math.min(...arr)) || 1));
     const dots = ds.sentences.map((x, i) => ({ ...x, vec: X[i], toks: docsTok[i],
-      x: sc(pts[i].px, xs), y: sc(pts[i].py, ys), c: ds.cats[x.t].color }));
+      x: sc(pts[i].px, xs), y: sc(pts[i].py, ys), c: ds.cats[x.t].color,
+      rx: n11(pts[i].px, xs), ry: n11(pts[i].py, ys), rz: n11(pts[i].pz, zs) }));
     // nudge apart any dots that landed on top of each other (display only)
     for (let pass = 0; pass < 6; pass++) {
       for (let i = 0; i < dots.length; i++) for (let j = i + 1; j < dots.length; j++) {
@@ -3928,7 +3936,7 @@ function renderEmbeddings() {
       }
     }
     dots.forEach(d => { d.x = Math.min(94, Math.max(6, d.x)); d.y = Math.min(94, Math.max(6, d.y)); });
-    return { ds, vocab, vIdx, idf, vecOf, mean, w1, w2, xs, ys, sc, dots, varShown, ax1, ax2 };
+    return { ds, vocab, vIdx, idf, vecOf, mean, w1, w2, w3, xs, ys, zs, sc, n11, dots, varShown, varShown3, ax1, ax2 };
   }
   const cosine = (a, b) => { let s = 0; for (let i = 0; i < a.length; i++) s += a[i] * b[i]; return s; };
   const shared = (ta, tb) => [...new Set(ta.filter(w => tb.includes(w)))];
@@ -3938,6 +3946,10 @@ function renderEmbeddings() {
       <div class="ins-seg" id="emx-seg">
         <button class="seg-btn active" data-ds="general">General topics</button>
         <button class="seg-btn" data-ds="orms">OR/MS topics</button>
+      </div>
+      <div class="ins-seg" id="emx-view">
+        <button class="seg-btn" data-v="2d">2-D</button>
+        <button class="seg-btn active" data-v="3d">3-D</button>
       </div>
       <div class="ins-field grow">
         <label>QUERY</label>
@@ -3962,11 +3974,14 @@ function renderEmbeddings() {
   }
   function status(extra) {
     const m = S.model;
+    const dim = S.view === '3d'
+      ? `PCA 3-D showing ${Math.round(m.varShown3 * 100)}% of variance`
+      : `PCA 2-D showing ${Math.round(m.varShown * 100)}% of variance`;
     $('emx-status').textContent = `${m.dots.length} sentences  |  ${m.vocab.length} term vocabulary  |  `
-      + `tf-idf vectors, unit normalized  |  cosine similarity  |  PCA 2-D showing `
-      + `${Math.round(m.varShown * 100)}% of variance` + (extra ? `  |  ${extra}` : '');
+      + `tf-idf vectors, unit normalized  |  cosine similarity  |  ${dim}` + (extra ? `  |  ${extra}` : '');
   }
   function paint() {
+    if (S.view === '3d') { paint3d(); return; }
     const m = S.model;
     const lines = [];
     if (S.sel != null && S.cmp == null) {
@@ -3993,6 +4008,94 @@ function renderEmbeddings() {
       <span class="emx-axis bottom" title="strongest terms pulling down">${m.ax2.pos.join(' · ')} &darr;</span>`;
     $('emx-map').querySelectorAll('.emx-dot').forEach(el =>
       el.addEventListener('click', e => { e.stopPropagation(); pick(+el.dataset.i); }));
+  }
+  /* ---- 3-D view (MD 2026-10-07): true third principal component on a
+     rotatable canvas. Drag to spin; it idles in a slow turn until touched. ---- */
+  function project(d, rot, wpx, hpx) {
+    const cy = Math.cos(rot.yaw), sy = Math.sin(rot.yaw);
+    const cp = Math.cos(rot.pitch), sp = Math.sin(rot.pitch);
+    const x1 = d.rx * cy + d.rz * sy, z1 = -d.rx * sy + d.rz * cy;
+    const y2 = d.ry * cp - z1 * sp,  z2 = d.ry * sp + z1 * cp;
+    const dist = 3.1, f = 2.0;
+    const s = f / (dist - z2);
+    return { x: wpx / 2 + x1 * s * wpx * 0.42, y: hpx / 2 - y2 * s * hpx * 0.42, depth: z2, s };
+  }
+  function paint3d() {
+    const m = S.model;
+    $('emx-map').innerHTML = `<canvas id="emx-c3d"></canvas>
+      <span class="emx-axis bottom">drag to rotate &middot; click a dot to inspect</span>`;
+    const cv = document.getElementById('emx-c3d');
+    const draw = () => {
+      if (!cv.isConnected) return;
+      const wpx = cv.clientWidth, hpx = cv.clientHeight;
+      if (cv.width !== wpx * 2) { cv.width = wpx * 2; cv.height = hpx * 2; }
+      const ctx = cv.getContext('2d');
+      ctx.setTransform(2, 0, 0, 2, 0, 0);
+      ctx.clearRect(0, 0, wpx, hpx);
+      if (S.rot.auto) S.rot.yaw += 0.0035;
+      // cube frame
+      ctx.strokeStyle = '#E3E9F2'; ctx.lineWidth = 1;
+      const C = [];
+      for (const a of [-1, 1]) for (const b of [-1, 1]) for (const c of [-1, 1])
+        C.push(project({ rx: a, ry: b, rz: c }, S.rot, wpx, hpx));
+      const E = [[0,1],[0,2],[0,4],[1,3],[1,5],[2,3],[2,6],[3,7],[4,5],[4,6],[5,7],[6,7]];
+      E.forEach(([a, b]) => { ctx.beginPath(); ctx.moveTo(C[a].x, C[a].y); ctx.lineTo(C[b].x, C[b].y); ctx.stroke(); });
+      // neighbor / compare lines
+      const P = m.dots.map(d => project(d, S.rot, wpx, hpx));
+      const link = (a, b, color) => { ctx.strokeStyle = color; ctx.setLineDash([5, 4]); ctx.lineWidth = 1.4;
+        ctx.beginPath(); ctx.moveTo(P[a].x, P[a].y); ctx.lineTo(P[b].x, P[b].y); ctx.stroke(); ctx.setLineDash([]); };
+      if (S.sel != null && S.cmp == null)
+        rankAgainst(m.dots[S.sel].vec, S.sel).slice(0, 3).forEach(r => link(S.sel, r.i, 'rgba(0,85,212,.55)'));
+      if (S.sel != null && S.cmp != null) link(S.sel, S.cmp, 'rgba(0,85,212,.75)');
+      // dots back-to-front
+      const order = P.map((p, i) => ({ p, i })).sort((a, b) => a.p.depth - b.p.depth);
+      order.forEach(({ p, i }) => {
+        const d = m.dots[i];
+        const r = 4.5 + 3.5 * ((p.depth + 1.4) / 2.8);
+        ctx.globalAlpha = 0.45 + 0.55 * ((p.depth + 1.4) / 2.8);
+        ctx.fillStyle = d.c;
+        ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, 7); ctx.fill();
+        ctx.lineWidth = 2; ctx.strokeStyle = '#fff'; ctx.stroke();
+        if (i === S.sel || i === S.cmp) {
+          ctx.strokeStyle = i === S.sel ? 'rgba(0,85,212,.8)' : 'rgba(13,148,136,.8)';
+          ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(p.x, p.y, r + 4, 0, 7); ctx.stroke();
+        }
+        ctx.globalAlpha = 1;
+      });
+      // query star in the same space
+      if (S.query && S.query.r3) {
+        const qp = project(S.query.r3, S.rot, wpx, hpx);
+        ctx.fillStyle = '#B45309'; ctx.font = '700 20px Outfit, sans-serif';
+        ctx.textAlign = 'center'; ctx.fillText('\u2605', qp.x, qp.y + 7);
+      }
+      S.raf = requestAnimationFrame(draw);
+    };
+    cancelAnimationFrame(S.raf);
+    draw();
+    let drag = null;
+    cv.addEventListener('mousedown', e => { drag = { x: e.clientX, y: e.clientY, moved: false }; });
+    window.addEventListener('mousemove', e => {
+      if (!drag) return;
+      const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+      if (Math.abs(dx) + Math.abs(dy) > 3) { drag.moved = true; S.rot.auto = false; }
+      S.rot.yaw += dx * 0.008;
+      S.rot.pitch = Math.max(-1.25, Math.min(1.25, S.rot.pitch + dy * 0.008));
+      drag.x = e.clientX; drag.y = e.clientY;
+    });
+    window.addEventListener('mouseup', () => { drag = null; });
+    cv.addEventListener('click', e => {
+      if (drag && drag.moved) return;
+      const rect = cv.getBoundingClientRect();
+      const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+      const m2 = S.model;
+      let best = null;
+      m2.dots.forEach((d, i) => {
+        const p = project(d, S.rot, cv.clientWidth, cv.clientHeight);
+        const dist = Math.hypot(p.x - mx, p.y - my);
+        if (dist < 14 && (!best || dist < best.dist)) best = { i, dist };
+      });
+      if (best) pick(best.i);
+    });
   }
   const bar = v => `<span class="emx-bar"><span style="width:${Math.max(2, Math.round(v * 100))}%"></span></span>`;
   function rankAgainst(vec, excl) {
@@ -4078,10 +4181,11 @@ function renderEmbeddings() {
     const qv = m.vecOf(toks);
     const qc = new Float64Array(qv.length);
     for (let i = 0; i < qv.length; i++) qc[i] = qv[i] - m.mean[i];
-    let px = 0, py = 0;
-    for (let i = 0; i < qv.length; i++) { px += qc[i] * m.w1[i]; py += qc[i] * m.w2[i]; }
+    let px = 0, py = 0, pz = 0;
+    for (let i = 0; i < qv.length; i++) { px += qc[i] * m.w1[i]; py += qc[i] * m.w2[i]; pz += qc[i] * m.w3[i]; }
     const ranked = rankAgainst(qv);
-    S.query = { x: m.sc(px, m.xs), y: m.sc(py, m.ys), text, top: ranked[0].i };
+    S.query = { x: m.sc(px, m.xs), y: m.sc(py, m.ys), text, top: ranked[0].i,
+      r3: { rx: m.n11(px, m.xs), ry: m.n11(py, m.ys), rz: m.n11(pz, m.zs) } };
     paint();
     $('emx-side').innerHTML = `
       <div class="emx-card">
@@ -4102,6 +4206,12 @@ function renderEmbeddings() {
     S.model = buildModel(S.ds); S.sel = S.cmp = S.query = null;
     legend(); paint(); sidebarDefault(); status();
   }
+  document.querySelectorAll('#emx-view .seg-btn').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('#emx-view .seg-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active'); S.view = b.dataset.v;
+    cancelAnimationFrame(S.raf);
+    paint(); status();
+  }));
   document.querySelectorAll('#emx-seg .seg-btn').forEach(b => b.addEventListener('click', () => {
     document.querySelectorAll('#emx-seg .seg-btn').forEach(x => x.classList.remove('active'));
     b.classList.add('active'); S.ds = b.dataset.ds; $('emx-q').value = ''; boot();
