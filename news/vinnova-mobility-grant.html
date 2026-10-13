@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vinnova International Mobility Grant | Prof. Mohammad Dehghani</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --neu-red: #C41230;
+            --navy: #1a1a2e;
+            --text-primary: #16181d;
+            --text-secondary: #5c6676;
+            --bg-light: #f7f8fa;
+            --border-color: #e6e9ef;
+        }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg-light); color: var(--text-primary); line-height: 1.75; }
+        h1, h2, .tl-date, .article-label { font-family: 'Outfit', sans-serif; }
+
+        .header { background: rgba(255,255,255,0.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border-color); padding: 14px 0; position: sticky; top: 0; z-index: 20; }
+        .header-container { max-width: 860px; margin: 0 auto; padding: 0 28px; display: flex; justify-content: space-between; align-items: center; }
+        .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--text-secondary); text-decoration: none; font-size: 13.5px; font-weight: 600; transition: color 0.2s; }
+        .back-link:hover { color: var(--neu-red); }
+        .back-link svg { width: 17px; height: 17px; }
+
+        .article { max-width: 860px; margin: 0 auto; padding: 56px 28px 90px; }
+        .article-label { display: inline-block; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.6px; color: var(--neu-red); margin-bottom: 18px; }
+        .article-title { font-size: 2.6rem; font-weight: 800; line-height: 1.16; letter-spacing: -0.5px; color: var(--navy); margin-bottom: 18px; }
+        .article-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 34px; }
+        .meta-chip { font-size: 12.5px; font-weight: 500; color: var(--text-secondary); background: white; border: 1px solid var(--border-color); border-radius: 100px; padding: 5px 14px; }
+
+        .hero-card { border-radius: 16px; overflow: hidden; box-shadow: 0 14px 40px rgba(26,26,46,0.12); margin-bottom: 44px; }
+        .hero-card img { width: 100%; max-height: 440px; object-fit: cover; display: block; }
+
+        .lede { font-size: 1.18rem; line-height: 1.8; color: #2a2f3a; margin-bottom: 14px; }
+        .lede strong { color: var(--navy); font-weight: 600; }
+
+        .section-h { font-size: 1.3rem; font-weight: 700; color: var(--navy); letter-spacing: -0.2px; margin: 46px 0 18px; display: flex; align-items: center; gap: 10px; }
+        .section-h::before { content: ""; width: 22px; height: 3px; border-radius: 2px; background: var(--neu-red); }
+
+        .glance-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        @media (max-width: 640px) { .glance-grid { grid-template-columns: 1fr; } }
+        .glance-card { background: white; border: 1px solid var(--border-color); border-radius: 14px; padding: 24px 26px; box-shadow: 0 4px 16px rgba(26,26,46,0.05); }
+        .glance-icon { width: 42px; height: 42px; border-radius: 10px; background: #fef2f2; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
+        .glance-icon svg { width: 21px; height: 21px; stroke: var(--neu-red); }
+        .glance-title { font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 15.5px; color: var(--navy); margin-bottom: 6px; }
+        .glance-text { font-size: 14px; color: #3c4453; line-height: 1.65; }
+
+        .collab-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        @media (max-width: 640px) { .collab-grid { grid-template-columns: 1fr; } .article-title { font-size: 2rem; } }
+        .collab-card { background: white; border: 1px solid var(--border-color); border-radius: 14px; padding: 24px; display: flex; align-items: flex-start; gap: 16px; box-shadow: 0 4px 16px rgba(26,26,46,0.05); }
+        .collab-avatar { width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, #1a1a2e, #3b3b5c); color: white; display: flex; align-items: center; justify-content: center; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 17px; flex-shrink: 0; }
+        .collab-name { font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 16.5px; color: var(--navy); }
+        .collab-role { font-size: 13px; color: var(--text-secondary); line-height: 1.55; margin: 3px 0 8px; }
+        .collab-link { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; color: #0a66c2; text-decoration: none; background: #eef5fc; border-radius: 100px; padding: 4px 12px; }
+        .collab-link:hover { background: #e0eefa; }
+        .collab-link svg { width: 12px; height: 12px; }
+
+        .lockup { background: white; border: 1px solid var(--border-color); border-radius: 14px; margin-top: 52px; padding: 30px 20px; display: flex; align-items: center; justify-content: center; gap: 30px; box-shadow: 0 4px 16px rgba(26,26,46,0.05); }
+        .lockup img { height: 32px; width: auto; object-fit: contain; }
+        .lockup .div { width: 1px; height: 46px; background: #d4d9e0; }
+        @media (max-width: 640px) { .lockup { gap: 16px; } .lockup img { height: 24px; } }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="header-container">
+            <a href="../index.html" class="back-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                Back to Home
+            </a>
+        </div>
+    </header>
+
+    <article class="article">
+        <span class="article-label">Research Funding</span>
+        <h1 class="article-title">Prof. Dehghani Awarded Vinnova International Mobility Grant</h1>
+        <div class="article-meta">
+            <span class="meta-chip">October 2026</span>
+            <span class="meta-chip">Vinnova, Sweden's Innovation Agency</span>
+            <span class="meta-chip">With Chalmers University of Technology</span>
+        </div>
+
+        <div class="hero-card">
+            <img src="../assets/news/vinnova_chalmers.jpg" alt="Digital twin engineering collaboration">
+        </div>
+
+        <p class="lede"><strong>Prof. Mohammad Dehghani</strong> has been awarded a <strong>2026 International Mobility grant</strong> from <strong>Vinnova</strong>, Sweden's national innovation agency. The grant establishes a funded research exchange between Prof. Dehghani and the production systems group at <strong>Chalmers University of Technology</strong> in Gothenburg, Sweden.</p>
+
+        <h2 class="section-h">Project at a Glance</h2>
+        <div class="glance-grid">
+            <div class="glance-card">
+                <div class="glance-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+                <div class="glance-title">Project Goal</div>
+                <div class="glance-text">Expand joint research on digital twins and simulation based decision making for production systems.</div>
+            </div>
+            <div class="glance-card">
+                <div class="glance-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+                <div class="glance-title">Partnership</div>
+                <div class="glance-text">A funded research exchange between Northeastern University and Chalmers University of Technology in Gothenburg, Sweden.</div>
+            </div>
+            <div class="glance-card">
+                <div class="glance-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+                <div class="glance-title">Project Period</div>
+                <div class="glance-text">Starting November 2026, with a research exchange and collaborative work through 2027.</div>
+            </div>
+            <div class="glance-card">
+                <div class="glance-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+                <div class="glance-title">Expected Outcomes</div>
+                <div class="glance-text">Joint publications and follow-on research proposals building on the collaboration.</div>
+            </div>
+        </div>
+
+        <h2 class="section-h">Collaborators</h2>
+        <div class="collab-grid">
+            <div class="collab-card">
+                <div class="collab-avatar">BJ</div>
+                <div>
+                    <div class="collab-name">Prof. Bj&ouml;rn Johansson</div>
+                    <div class="collab-role">Professor, Sustainable Production<br>Chalmers University of Technology</div>
+                    <a class="collab-link" href="https://www.linkedin.com/in/bj%C3%B6rn-johansson-4283b74/" target="_blank" rel="noopener">
+                        LinkedIn
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    </a>
+                </div>
+            </div>
+            <div class="collab-card">
+                <div class="collab-avatar">FM</div>
+                <div>
+                    <div class="collab-name">Dr. Fabio Marco Monetti</div>
+                    <div class="collab-role">Postdoctoral Researcher, Production Systems<br>Chalmers University of Technology</div>
+                    <a class="collab-link" href="https://www.linkedin.com/in/fabiommonetti/" target="_blank" rel="noopener">
+                        LinkedIn
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="lockup">
+            <img src="../assets/logos/vinnova_logo.png" alt="Vinnova">
+            <div class="div"></div>
+            <img src="../assets/logos/neu_N_monogram.png" alt="Northeastern University">
+            <div class="div"></div>
+            <img src="../assets/logos/chalmers_wordmark.png" alt="Chalmers University of Technology" style="height:22px">
+        </div>
+    </article>
+
+</body>
+</html>
