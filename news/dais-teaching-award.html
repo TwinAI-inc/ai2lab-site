@@ -14,6 +14,7 @@
 
         :root {
             --neu-red: #C41230;
+            --neu-red-dark: #a00f28;
             --text-primary: #1a1a2e;
             --text-secondary: #64748b;
             --bg-light: #fafbfc;
@@ -72,16 +73,23 @@
         }
 
         .article-label {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
             font-size: 11px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: var(--neu-red);
             background: #fef2f2;
-            padding: 5px 12px;
-            border-radius: 4px;
+            padding: 6px 14px;
+            border-radius: 999px;
             margin-bottom: 20px;
+        }
+
+        .article-label svg {
+            width: 13px;
+            height: 13px;
         }
 
         .article-title {
@@ -89,6 +97,7 @@
             font-weight: 700;
             line-height: 1.3;
             margin-bottom: 15px;
+            letter-spacing: -0.02em;
         }
 
         .article-meta {
@@ -97,13 +106,105 @@
             margin-bottom: 30px;
         }
 
+        /* ── Hero: award photo with the portrait masked into the corner ── */
+        .hero {
+            position: relative;
+            margin-bottom: 0;
+        }
+
         .article-image {
+            display: block;
             width: 100%;
             max-height: 500px;
             object-fit: cover;
             object-position: top;
-            border-radius: 12px;
-            margin-bottom: 35px;
+            border-radius: 16px;
+        }
+
+        /* A soft scrim so the white avatar ring never sits on a busy, bright
+           patch of the award photo. */
+        .hero::after {
+            content: "";
+            position: absolute;
+            inset: auto 0 0 0;
+            height: 45%;
+            border-radius: 0 0 16px 16px;
+            background: linear-gradient(to top, rgba(10, 12, 24, 0.55), transparent);
+            pointer-events: none;
+        }
+
+        .avatar {
+            position: absolute;
+            left: 36px;
+            bottom: -44px;
+            width: 132px;
+            height: 132px;
+            border-radius: 50%;
+            /* The portrait is a full length shot, so zoom past the suit and
+               sit the crop on the face, which is high in the frame. */
+            background-image: url("../assets/news/md-headshot-2026.jpg");
+            background-size: 178%;
+            background-position: 50% 13%;
+            background-repeat: no-repeat;
+            border: 5px solid white;
+            box-shadow: 0 10px 30px rgba(16, 24, 40, 0.22);
+            /* Longhand, not the `background` shorthand: the shorthand would
+               reset background-image set above and leave an empty circle. */
+            background-color: var(--bg-light);
+            z-index: 2;
+        }
+
+        .byline {
+            display: flex;
+            align-items: flex-end;
+            gap: 18px;
+            padding: 0 0 0 190px;
+            min-height: 60px;
+            margin-bottom: 34px;
+        }
+
+        .byline-name {
+            font-size: 1.05rem;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .byline-role {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* ── Fact chips ── */
+        .facts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 34px;
+        }
+
+        .fact {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .fact strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .fact svg {
+            width: 14px;
+            height: 14px;
+            color: var(--neu-red);
         }
 
         .article-content {
@@ -116,6 +217,16 @@
         }
 
         .article-content strong {
+            color: var(--text-primary);
+        }
+
+        .pullquote {
+            border-left: 3px solid var(--neu-red);
+            padding: 4px 0 4px 20px;
+            margin: 30px 0;
+            font-size: 1.15rem;
+            font-weight: 500;
+            line-height: 1.6;
             color: var(--text-primary);
         }
 
@@ -153,12 +264,44 @@
         }
 
         .source-link:hover {
-            background: #a00f28;
+            background: var(--neu-red-dark);
         }
 
         .source-link svg {
             width: 14px;
             height: 14px;
+        }
+
+        /* ── Narrow screens: stack the portrait above the byline ── */
+        @media (max-width: 640px) {
+            .article {
+                padding: 36px 20px 60px;
+            }
+
+            .article-title {
+                font-size: 1.6rem;
+            }
+
+            .avatar {
+                left: 50%;
+                transform: translateX(-50%);
+                width: 104px;
+                height: 104px;
+                bottom: -36px;
+            }
+
+            .byline {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                padding: 48px 0 0;
+                gap: 4px;
+            }
+
+            .source-box {
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
@@ -174,25 +317,55 @@
     </header>
 
     <article class="article">
-        <span class="article-label">Award 2025</span>
+        <span class="article-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+            Award 2025
+        </span>
         <h1 class="article-title">Prof. Dehghani Receives DAIS Data Analytics Teaching Award</h1>
-        <p class="article-meta">May 2025 | IISE Annual Conference & Expo</p>
+        <p class="article-meta">May 2025 | IISE Annual Conference &amp; Expo</p>
 
-        <img src="../assets/news/DAIS.jpg" alt="DAIS Data Analytics Teaching Award" class="article-image">
+        <div class="hero">
+            <img src="../assets/news/DAIS.jpg" alt="Mohammad Dehghani receiving the DAIS Data Analytics Teaching Award at the IISE Annual Conference" class="article-image">
+            <div class="avatar" role="img" aria-label="Portrait of Mohammad Dehghani"></div>
+        </div>
+
+        <div class="byline">
+            <div>
+                <div class="byline-name">Mohammad Dehghani</div>
+                <div class="byline-role">Teaching Professor, Mechanical and Industrial Engineering<br>Northeastern University</div>
+            </div>
+        </div>
+
+        <div class="facts">
+            <span class="fact">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg>
+                Awarded by <strong>IISE DAIS Division</strong>
+            </span>
+            <span class="fact">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg>
+                <strong>May 2025</strong>
+            </span>
+            <span class="fact">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
+                Sustained excellence in teaching
+            </span>
+        </div>
 
         <div class="article-content">
-            <p>Congratulations to Associate Teaching Professor <strong>Mohammad Dehghani</strong> for receiving the <strong>Data Analytics & Information Systems (DAIS) Data Analytics Teaching Award</strong>!</p>
+            <p>Congratulations to Associate Teaching Professor <strong>Mohammad Dehghani</strong> for receiving the <strong>Data Analytics &amp; Information Systems (DAIS) Data Analytics Teaching Award</strong>!</p>
 
             <p>The award is given by the DAIS division of the <strong>Institute of Industrial and Systems Engineers (IISE)</strong>, the premier national society for industrial engineering. The award recognizes individual faculty for sustained performance of excellence in teaching DAIS-related courses.</p>
 
-            <p>Prof. Dehghani was honored for this award at the <strong>IISE Annual 2025 Conference & Expo</strong>. His dedication to teaching data analytics, simulation, and applied AI courses has made a significant impact on students in the Mechanical and Industrial Engineering department at Northeastern University.</p>
+            <div class="pullquote">Recognized for sustained performance of excellence in teaching data analytics and information systems.</div>
+
+            <p>Prof. Dehghani was honored for this award at the <strong>IISE Annual 2025 Conference &amp; Expo</strong>. His dedication to teaching data analytics, simulation, and applied AI courses has made a significant impact on students in the Mechanical and Industrial Engineering department at Northeastern University.</p>
 
             <p>This recognition highlights the importance of quality instruction in preparing the next generation of industrial engineers with strong data analytics and information systems skills.</p>
         </div>
 
         <div class="source-box">
             <p>Learn more about the DAIS Teaching Award from IISE</p>
-            <a href="https://www.iise.org/Details.aspx?id=52582" target="_blank" class="source-link">
+            <a href="https://www.iise.org/Details.aspx?id=52582" target="_blank" rel="noopener noreferrer" class="source-link">
                 View Award Details
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
             </a>

@@ -7,12 +7,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      # Azure SWA rejects an upload over 250 MB. sparkhub/ is ~29 MB and has
+      # its own SWA and its own domain (sparkhub.ai2lab.ai), deployed by the
+      # job below, so shipping a second copy inside the main site wasted the
+      # budget and broke every deploy from 2026-06-26 on. The main site only
+      # ever links to sparkhub by absolute URL, so dropping it here changes
+      # nothing a visitor can see.
+      - name: Stage the site without the separately deployed sparkhub
+        run: |
+          mkdir -p _site
+          rsync -a --exclude '.git' --exclude '.github' --exclude '_site' --exclude 'sparkhub' ./ _site/
+          echo "staged size:"
+          du -sh _site
+
       - uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          app_location: "/"
+          app_location: "_site"
           output_location: ""
           skip_app_build: true
 
