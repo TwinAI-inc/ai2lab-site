@@ -1,0 +1,36 @@
+{
+ "bluebikes": {
+  "title": "Bluebikes station at Lansdowne May 2026.jpg",
+  "artist": "4300streetcar",
+  "lic": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File%3ABluebikes_station_at_Lansdowne_May_2026.jpg"
+ },
+ "boston": {
+  "title": "Boston City Hall - Boston, MA - DSC04704.JPG",
+  "artist": "Daderot",
+  "lic": "CC0",
+  "page": "https://commons.wikimedia.org/wiki/File%3ABoston_City_Hall_-_Boston%2C_MA_-_DSC04704.JPG"
+ },
+ "google": {
+  "title": "Google Headquarters in Ireland Building Sign.jpg",
+  "artist": "OutreachPete",
+  "lic": "CC BY 2.0",
+  "page": "https://commons.wikimedia.org/wiki/File%3AGoogle_Headquarters_in_Ireland_Building_Sign.jpg"
+ },
+ "logo_bluebikes": {
+  "title": "Bluebikes Logo.svg",
+  "lic": "Public domain",
+  "page": "https://commons.wikimedia.org/wiki/File%3ABluebikes_Logo.svg"
+ },
+ "logo_boston": {
+  "title": "Seal of Boston, Massachusetts color.png",
+  "lic": "Public domain",
+  "page": "https://commons.wikimedia.org/wiki/File%3ASeal_of_Boston%2C_Massachusetts_color.png"
+ },
+ "banner": {
+  "title": "Boston Panorama Charles River.jpg",
+  "artist": "Ranjansanjeev",
+  "lic": "CC BY-SA 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File%3ABoston_Panorama_Charles_River.jpg"
+ }
+}
