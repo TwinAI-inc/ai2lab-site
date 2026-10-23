@@ -1,0 +1,497 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GenAI Workshop 1: Interactive Charts</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"><style>
+*,*::before,*::after { box-sizing: border-box; }
+:root {
+  --ink:   #16233B;
+  --body:  #53627B;
+  --mute:  #8995AB;
+  --line:  rgba(255,255,255,.72);
+  --edge:  rgba(22,35,59,.08);
+  --glass: rgba(255,255,255,.62);
+  --solid: rgba(255,255,255,.86);
+  --accent: #0B4F9C;
+  --wash1: #DCEAF7; --wash2: #EAF1FA; --wash3: #F6F2FB;
+  --shadow: 0 10px 34px rgba(16,32,60,.10), 0 2px 6px rgba(16,32,60,.05);
+  --radius: 20px;
+}
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; min-height: 100vh; color: var(--ink);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial,
+               sans-serif;
+  line-height: 1.65; font-size: 15px;
+  background:
+    radial-gradient(900px 520px at 12% -8%, #CFE4F6 0%, transparent 62%),
+    radial-gradient(760px 480px at 88% 2%,  #E9E2FA 0%, transparent 60%),
+    radial-gradient(900px 600px at 60% 100%, #DFF1F3 0%, transparent 62%),
+    linear-gradient(180deg, var(--wash1) 0%, var(--wash2) 42%,
+                            var(--wash3) 100%);
+  background-attachment: fixed;
+}
+/* MD, 2026-10-22: "keep things in one filled page, I don't need
+   to scroll, we can use this page much better." Wider column and
+   a tighter hero, so a tab fits a laptop screen. */
+.wrap { max-width: 1180px; margin: 0 auto; padding: 22px 22px 30px; }
+
+/* ---------------------------------------------------------------- header */
+.hero { padding: 0 4px 12px; }
+.kicker {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--glass); border: 1px solid var(--line);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  color: var(--accent); border-radius: 999px; padding: 5px 14px 5px 11px;
+  font-size: 11.5px; font-weight: 700; letter-spacing: .4px;
+  text-transform: uppercase;
+}
+h1 { margin: 9px 0 4px; font-size: 28px; line-height: 1.14;
+     letter-spacing: -.6px; font-weight: 800; color: var(--ink); }
+.stand { margin: 0; font-size: 15px; color: var(--body); max-width: 72ch; }
+
+/* ----------------------------------------------------------------- glass */
+.card {
+  background: var(--glass); border: 1px solid var(--line);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(140%);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 20px 22px; margin: 0 0 14px;
+}
+.card.tight { padding: 16px 18px; }
+h2 { margin: 0 0 4px; font-size: 19px; font-weight: 800; letter-spacing: -.2px; }
+.lead { margin: 0 0 14px; font-size: 14px; color: var(--body); }
+
+.chip {
+  display: inline-block; background: var(--solid); border: 1px solid var(--line);
+  border-radius: 999px; padding: 4px 12px; font-size: 11.5px; font-weight: 700;
+  color: var(--accent); letter-spacing: .3px;
+}
+.row { display: flex; flex-wrap: wrap; gap: 9px; align-items: center; }
+
+/* ---------------------------------------------------------- personaliser */
+.opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px,1fr));
+        gap: 14px; }
+.opt > .lbl { display: flex; align-items: center; gap: 7px; font-size: 11.5px;
+        font-weight: 700; letter-spacing: .5px; text-transform: uppercase;
+        color: var(--mute); margin: 0 0 8px; }
+.pick { display: flex; flex-wrap: wrap; gap: 7px; }
+.pick button {
+  font: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer;
+  color: var(--ink); background: var(--solid); border: 1px solid var(--line);
+  border-radius: 12px; padding: 7px 12px; display: inline-flex;
+  align-items: center; gap: 7px; transition: transform .15s ease,
+  box-shadow .15s ease, border-color .15s ease;
+}
+.pick button:hover { transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(16,32,60,.10); }
+.pick button[aria-pressed="true"] {
+  border-color: var(--accent); color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+.sw { display: inline-flex; gap: 2px; }
+.sw i { width: 9px; height: 15px; border-radius: 3px; display: block; }
+.note { font-size: 12px; color: var(--mute); margin: 10px 0 0; }
+
+/* ------------------------------------------------------------------ step */
+.step { position: relative; }
+.step .head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+        margin: 0 0 6px; }
+.skills { display: flex; flex-wrap: wrap; gap: 7px; margin: 10px 0 0; }
+.skill { display: inline-flex; align-items: center; gap: 6px;
+  background: var(--solid); border: 1px solid var(--line); border-radius: 999px;
+  padding: 5px 12px; font-size: 11.5px; font-weight: 600; color: var(--body); }
+.skill svg { color: var(--accent); }
+
+.prompt {
+  position: relative; margin: 14px 0 0;
+  background: linear-gradient(180deg, rgba(255,255,255,.90),
+                                      rgba(255,255,255,.74));
+  border: 1px solid var(--line); border-left: 3px solid var(--accent);
+  border-radius: 14px; padding: 15px 17px 16px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.9);
+}
+.prompt pre {
+  margin: 0; white-space: pre-wrap; word-break: break-word;
+  font-family: 'SF Mono', ui-monospace, Menlo, Consolas, monospace;
+  font-size: 12.3px; line-height: 1.6; color: #263349;
+  /* two columns on a wide screen: a 40 line prompt reads in half
+     the height, which is what keeps a step on one screen */
+  column-width: 46ch; column-gap: 30px; column-rule: 1px solid var(--edge);
+  max-height: 38vh; overflow: auto; padding-right: 108px;
+}
+.prompt.open pre { max-height: none; }
+@media (max-width: 900px) { .prompt pre { column-width: auto; } }
+.copy {
+  position: absolute; top: 12px; right: 12px; font: inherit; font-size: 12px;
+  font-weight: 700; cursor: pointer; color: #fff; background: var(--accent);
+  border: 0; border-radius: 10px; padding: 7px 14px; display: inline-flex;
+  align-items: center; gap: 6px; box-shadow: 0 4px 14px rgba(16,32,60,.16);
+  transition: background .2s ease, transform .15s ease; }
+.copy:hover { transform: translateY(-1px); }
+.copy.done { background: #15803D; }
+.more { font: inherit; font-size: 12px; font-weight: 700; cursor: pointer;
+  color: var(--accent); background: none; border: 0; padding: 6px 0 0; }
+
+/* ----------------------------------------------------------------- misc */
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
+         gap: 12px; }
+.two { display: grid; grid-template-columns: 1.15fr 1fr; gap: 14px;
+       align-items: start; }
+.two > .card { margin: 0; }
+@media (max-width: 900px) { .two { grid-template-columns: 1fr; } }
+.mini { background: var(--solid); border: 1px solid var(--line);
+        border-radius: 14px; padding: 13px 15px; }
+.mini b { display: flex; align-items: center; gap: 8px; font-size: 13px;
+        margin: 0 0 3px; }
+.mini b svg { color: var(--accent); }
+.mini span { font-size: 12.5px; color: var(--body); }
+.dl { display: inline-flex; align-items: center; gap: 8px; font-size: 13px;
+  font-weight: 700; color: #fff; background: var(--accent); border-radius: 12px;
+  padding: 9px 16px; text-decoration: none;
+  box-shadow: 0 6px 18px rgba(16,32,60,.16); }
+.warnbox { background: rgba(255,251,235,.78); border: 1px solid rgba(217,180,74,.35);
+  border-left: 3px solid #B88A1B; border-radius: 14px; padding: 13px 16px;
+  font-size: 13px; margin: 14px 0 0; }
+.foot { display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
+        justify-content: space-between; font-size: 12px; color: var(--mute);
+        padding: 11px 4px 0; margin: 12px 0 0;
+        border-top: 1px solid var(--edge); }
+.foot b { color: var(--accent); }
+.foot .right { display: flex; align-items: center; gap: 12px; }
+
+/* ------------------------------------------------------------------ tabs */
+/* MD, 2026-10-22: "it is going to be tab by tab, step by step." One screen
+   per step, so a student is never scrolling past three prompts to reach the
+   one they are on. The rail is sticky because the steps are long. */
+.rail {
+  position: sticky; top: 12px; z-index: 20; display: flex; flex-wrap: wrap;
+  gap: 7px; padding: 7px; margin: 0 0 14px;
+  background: var(--glass); border: 1px solid var(--line);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(140%);
+  border-radius: 16px; box-shadow: var(--shadow);
+}
+.rail button {
+  font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer;
+  color: var(--body); background: transparent; border: 1px solid transparent;
+  border-radius: 11px; padding: 8px 14px; display: inline-flex;
+  align-items: center; gap: 7px;
+  transition: background .18s ease, color .18s ease, box-shadow .18s ease;
+}
+.rail button:hover { background: rgba(255,255,255,.7); color: var(--ink); }
+.rail button[aria-current="true"] {
+  background: var(--accent); color: #fff;
+  box-shadow: 0 4px 14px rgba(16,32,60,.18);
+}
+.rail .num {
+  width: 19px; height: 19px; border-radius: 999px; font-size: 11px;
+  font-weight: 800; display: inline-flex; align-items: center;
+  justify-content: center; background: rgba(22,35,59,.08); color: inherit;
+}
+.rail button[aria-current="true"] .num { background: rgba(255,255,255,.26); }
+.panel { display: none; animation: rise .32s ease both; }
+.panel.on { display: block; }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); }
+                  to   { opacity: 1; transform: none; } }
+.nav { display: flex; justify-content: space-between; gap: 10px;
+       margin: 4px 0 0; }
+.nav button {
+  font: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+  border-radius: 12px; padding: 10px 17px; display: inline-flex;
+  align-items: center; gap: 8px; transition: transform .15s ease;
+}
+.nav button:hover { transform: translateY(-1px); }
+.nav .back { color: var(--body); background: var(--solid);
+             border: 1px solid var(--line); }
+.nav .next { color: #fff; background: var(--accent); border: 0;
+             box-shadow: 0 6px 18px rgba(16,32,60,.16); }
+.nav .spacer { visibility: hidden; }
+
+@media (max-width: 560px) {
+  h1 { font-size: 27px; } .wrap { padding: 20px 14px 40px; }
+  .card { padding: 18px 16px; }
+  .rail { position: static; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style></head><body><div class="wrap"><div class="hero"><span class="kicker"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path d="M12 2c.5 5 4.5 9 10 10-5.5 1-9.5 5-10 10-.5-5-4.5-9-10-10 5.5-1 9.5-5 10-10z" fill="currentColor"/></svg> GenAI Workshop 1 &middot; Module 08</span><h1>Interactive charts, built by prompt</h1><p class="stand">Draw a chart, make it explorable, then make it good enough to put in front of a room. The model writes the code. The design decisions, and telling whether it got them right, are yours.</p></div><nav class="rail"><button type="button" data-go="start" aria-current="true" onclick="go('start')">Start</button><button type="button" data-go="s1" aria-current="false" onclick="go('s1')"><span class="num">1</span>Draw it</button><button type="button" data-go="s2" aria-current="false" onclick="go('s2')"><span class="num">2</span>Make it explorable</button><button type="button" data-go="s3" aria-current="false" onclick="go('s3')"><span class="num">3</span>Make it good</button><button type="button" data-go="check" aria-current="false" onclick="go('check')">Check it</button></nav><div class="panel on" id="start"><div class="two"><div class="card"><div class="row" style="margin-bottom:4px"><span class="chip">Make it yours</span></div><h2>Four choices, and every prompt below rewrites itself</h2><p class="lead">Pick four things. All three prompts rewrite themselves as you choose, so what you copy is already yours.</p><div class="opts"><div class="opt"><div class="lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="9" r="1.1"/><circle cx="15" cy="9" r="1.1"/><circle cx="9.5" cy="15" r="1.1"/></svg>Palette</div><div class="pick"><button type="button" aria-pressed="true" onclick="choose('palette','ocean',this)"><span class="sw"><i style="background:#0B4F9C"></i><i style="background:#1B9AAA"></i><i style="background:#7FD1E0"></i><i style="background:#DCEBF2"></i></span>Ocean</button><button type="button" aria-pressed="false" onclick="choose('palette','sunset',this)"><span class="sw"><i style="background:#7C2D12"></i><i style="background:#C2410C"></i><i style="background:#F59E0B"></i><i style="background:#FDE8C8"></i></span>Sunset</button><button type="button" aria-pressed="false" onclick="choose('palette','forest',this)"><span class="sw"><i style="background:#14532D"></i><i style="background:#16A34A"></i><i style="background:#86EFAC"></i><i style="background:#E3F6E8"></i></span>Forest</button><button type="button" aria-pressed="false" onclick="choose('palette','violet',this)"><span class="sw"><i style="background:#4C1D95"></i><i style="background:#7C3AED"></i><i style="background:#C4B5FD"></i><i style="background:#EFE9FD"></i></span>Violet</button><button type="button" aria-pressed="false" onclick="choose('palette','slate',this)"><span class="sw"><i style="background:#0F172A"></i><i style="background:#475569"></i><i style="background:#94A3B8"></i><i style="background:#E6EAF0"></i></span>Graphite</button></div></div><div class="opt"><div class="lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M5 6h14M12 6v13M9 19h6"/></svg>Typeface</div><div class="pick"><button type="button" aria-pressed="true" onclick="choose('font','inter',this)">Inter</button><button type="button" aria-pressed="false" onclick="choose('font','grotesk',this)">Space Grotesk</button><button type="button" aria-pressed="false" onclick="choose('font','serif',this)">Source Serif</button><button type="button" aria-pressed="false" onclick="choose('font','plex',this)">IBM Plex Sans</button></div></div><div class="opt"><div class="lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Style</div><div class="pick"><button type="button" aria-pressed="false" onclick="choose('style','minimal',this)">Minimal</button><button type="button" aria-pressed="true" onclick="choose('style','glass',this)">Glass</button><button type="button" aria-pressed="false" onclick="choose('style','editorial',this)">Editorial</button><button type="button" aria-pressed="false" onclick="choose('style','bold',this)">Bold</button></div></div><div class="opt"><div class="lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M12 3 14.4 9H21l-5.3 3.9 2 6.4L12 15.6 6.3 19.3l2-6.4L3 9h6.6z"/></svg>Chart</div><div class="pick"><button type="button" aria-pressed="true" onclick="choose('chart','treemap',this)">Treemap</button><button type="button" aria-pressed="false" onclick="choose('chart','sunburst',this)">Donut and sunburst</button><button type="button" aria-pressed="false" onclick="choose('chart','sankey',this)">Sankey</button><button type="button" aria-pressed="false" onclick="choose('chart','bump',this)">Bump chart</button></div></div></div><p class="note">A choice does not change what the data says. It changes how hard the finding is to see, which is the argument of this course.</p></div><div class="card"><div class="row" style="margin-bottom:4px"><span class="chip">The data</span></div><h2>One table, three charts</h2><p class="lead">Download <code>M08_[Synthetic]_Streaming_Revenue.csv</code> from the module. Upload it to the model, or put it beside your HTML file and let the page fetch it.</p><div class="grid2"><div class="mini"><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M17 5H7l6 7-6 7h10"/></svg>The columns</b><span>region, country, category, revenue_musd, revenue_prior_musd, subscribers_thousands, gross_margin_pct, growth_pct</span></div><div class="mini"><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>The argument in it</b><span>The region with the largest revenue has the lowest growth, and the smallest has the highest. If a chart comes back implying the opposite, it is wrong.</span></div></div><div class="warnbox"><b>This data is synthetic.</b> Generated for this workshop from a fixed seed. Not a real company and not a real measurement, so it is not evidence about anything outside this room.</div></div></div><div class="nav"><span class="spacer"></span><button class="next" type="button" onclick="go('s1')">Start step 1 &rarr;</button></div></div><div class="panel" id="s1"><div class="card step"><div class="head"><span class="chip">Step 1</span><h2>Draw it</h2></div><p class="lead">One chart, reading correctly, with a tooltip that tells the truth.</p><div class="skills"><span class="skill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>The encoding</span><span class="skill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="m4 4 6.5 16 2.3-6.2L19 11.4z"/></svg>A real tooltip</span><span class="skill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="9" r="1.1"/><circle cx="15" cy="9" r="1.1"/><circle cx="9.5" cy="15" r="1.1"/></svg>One colour rule</span><span class="skill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M5 6h14M12 6v13M9 19h6"/></svg>A type scale</span></div><div class="prompt"><button class="copy" type="button" onclick="copyPrompt('p1',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="m4 4 6.5 16 2.3-6.2L19 11.4z"/></svg>Copy</button><pre id="p1" data-tpl="I have a CSV called {{DATA}}. Columns:
+region, country, category, revenue_musd, revenue_prior_musd,
+subscribers_thousands, gross_margin_pct, growth_pct.
+
+Build a standalone HTML file with ONE interactive {{CHART_NAME}}.
+{{CHART_SPEC}}
+
+LOOK
+- Typeface {{FONT_NAME}} ({{FONT_STACK}}), loaded from Google Fonts
+- Palette {{PALETTE_NAME}}: {{PALETTE_HEX}}
+- Style: {{STYLE_SPEC}}
+- Title 22px, standfirst 14px #5A6B80, labels 12px
+
+TOOLTIP
+- Follows the cursor, 180ms fade, never leaves the viewport
+- Shows the full path, the value to one decimal, and its share of the parent
+- Never shows a raw column name. Write &quot;Revenue&quot;, not &quot;revenue_musd&quot;
+
+RULES
+- Vanilla JavaScript and SVG. No chart library, no CDN except the font
+- Read the CSV with fetch from the same folder, and show a readable message
+  if the file is missing
+- Responsive from 360px to 1400px
+- Title the chart with the finding, not with the variable name
+
+Give me the complete file in one block."></pre></div><button class="more" type="button" onclick="expand(this)">Show the whole prompt</button></div><div class="nav"><button class="back" type="button" onclick="go('start')">&larr; Back</button><button class="next" type="button" onclick="go('s2')">Step 2 &rarr;</button></div></div><div class="panel" id="s2"><div class="card step"><div class="head"><span class="chip">Step 2</span><h2>Make it explorable</h2></div><p class="lead">Filters, and a toggle that redraws the same chart on a different measure. This is where a picture becomes a tool.</p><div class="skills"><span class="skill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M3 5h18l-7 8v6l-4 2v-8z"/></svg>Filters</span><span class="skill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M7 9h12l-3-3M17 15H5l3 3"/></svg>Measure toggle</span><span class="skill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M9 7h11M9 12h11M9 17h11"/><circle cx="5" cy="7" r="1.4"/><circle cx="5" cy="12" r="1.4"/><circle cx="5" cy="17" r="1.4"/></svg>Clickable legend</span><span class="skill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M3 12h4l3-7 4 14 3-7h4"/></svg>Transitions</span></div><div class="prompt"><button class="copy" type="button" onclick="copyPrompt('p2',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="m4 4 6.5 16 2.3-6.2L19 11.4z"/></svg>Copy</button><pre id="p2" data-tpl="Edit the file from step 1. Do not start again, and keep the
+look exactly as it is.
+
+ADD A MEASURE TOGGLE
+- A segmented control above the chart: Revenue | Growth | Subscribers |
+  Margin
+- It redraws the SAME chart on revenue_musd, growth_pct,
+  subscribers_thousands and gross_margin_pct
+- Growth and margin are rates, not totals, so switch the colour scale from
+  sequential to diverging around the mean and say so in the key
+- 350ms eased transition between measures, no full redraw flash
+
+ADD FILTERS
+- A region filter as {{PALETTE_NAME}} chips, multi select, all on by default
+- A category filter in the same style
+- A &quot;reset&quot; control that returns everything to the default state
+- The title updates to say what is currently shown
+
+ADD A CLICKABLE LEGEND
+- Click a key entry to hide that series, click again to bring it back
+- Hidden entries go to 25% opacity rather than disappearing
+
+KEEP
+- The tooltip from step 1, now showing the measure currently selected
+- Every control reachable by keyboard, with a visible focus ring
+
+Give me the complete updated file."></pre></div><button class="more" type="button" onclick="expand(this)">Show the whole prompt</button></div><div class="nav"><button class="back" type="button" onclick="go('s1')">&larr; Step 1</button><button class="next" type="button" onclick="go('s3')">Step 3 &rarr;</button></div></div><div class="panel" id="s3"><div class="card step"><div class="head"><span class="chip">Step 3</span><h2>Make it good</h2></div><p class="lead">The difference between a chart that works and one you would put in front of a room.</p><div class="skills"><span class="skill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M12 3 14.4 9H21l-5.3 3.9 2 6.4L12 15.6 6.3 19.3l2-6.4L3 9h6.6z"/></svg>Icons</span><span class="skill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="m4 4 6.5 16 2.3-6.2L19 11.4z"/></svg>Tooltip polish</span><span class="skill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><circle cx="12" cy="4.5" r="1.8"/><path d="M4.5 8.2h15M12 8.6V15m0 0-3 5.5M12 15l3 5.5"/></svg>Accessibility</span><span class="skill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><circle cx="12" cy="12" r="9"/><path d="M8.5 15.5 15.5 8.5"/></svg>Empty states</span></div><div class="prompt"><button class="copy" type="button" onclick="copyPrompt('p3',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="m4 4 6.5 16 2.3-6.2L19 11.4z"/></svg>Copy</button><pre id="p3" data-tpl="Edit the file from step 2. Keep the behaviour, raise the
+finish.
+
+ICONS
+- Inline SVG only, 16px, 1.75 stroke, rounded caps, currentColor
+- One per control: a funnel on the filter, arrows on the toggle, a circular
+  arrow on reset. No emoji, no icon font
+
+TOOLTIP
+- Two tiers: the value large and bold, the context small and muted under it
+- Include the rank, as &quot;3rd of 14&quot;
+- A 1px hairline border and a soft shadow, matching {{STYLE_NAME}}
+
+EMPTY AND EDGE STATES
+- If a filter combination leaves no rows, show a short line saying so and a
+  reset control, not an empty frame
+- Handle a zero and a negative value without breaking the scale
+
+MOTION
+- Everything eases on 250ms to 350ms
+- Respect prefers-reduced-motion and drop to instant when it is set
+
+ACCESSIBILITY
+- The chart has a text alternative naming the top three and the bottom three
+- Contrast at least 4.5:1 for every label against what sits behind it
+- Full keyboard path through the controls and the marks
+
+FINALLY
+- Print, under the chart, the one sentence the chart is making.
+
+Give me the complete updated file."></pre></div><button class="more" type="button" onclick="expand(this)">Show the whole prompt</button></div><div class="nav"><button class="back" type="button" onclick="go('s2')">&larr; Step 2</button><button class="next" type="button" onclick="go('check')">Check it &rarr;</button></div></div><div class="panel" id="check"><div class="card"><div class="row" style="margin-bottom:4px"><span class="chip">Before you believe it</span></div><h2>Four checks the model will not do for you</h2><p class="lead">All four of these render perfectly and report no error, which is exactly why they have to be checked by hand.</p><div class="grid2"><div class="mini"><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Does the channel carry the number</b><span>Area, angle or length has to move with the value. Equal shapes for unequal numbers means the model ignored your measure.</span></div><div class="mini"><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M17 5H7l6 7-6 7h10"/></svg>Do the parts add up</b><span>If a breakdown totals more than its parent, a row is counted twice. This renders perfectly and reports no error.</span></div><div class="mini"><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="9" r="1.1"/><circle cx="15" cy="9" r="1.1"/><circle cx="9.5" cy="15" r="1.1"/></svg>Is the colour scale the right kind</b><span>Sequential on a total, diverging on a rate, categorical on names. A rainbow on an ordered measure is the most common thing to come back.</span></div><div class="mini"><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M5 6h14M12 6v13M9 19h6"/></svg>Does the title state a finding</b><span>This data has one in it: the largest region grows the slowest and the smallest grows the fastest. Ask again until the title says something like that.</span></div></div></div><div class="nav"><button class="back" type="button" onclick="go('s3')">&larr; Step 3</button><span class="spacer"></span></div></div><div class="foot"><span><b>IE6600</b> Computation and Visualization &middot; Prof. Dehghani</span><span class="right"><span>Built at</span><a href="https://ai2lab.ai" target="_blank" rel="noopener" style="display:inline-block;line-height:0"><img src="data:image/png;base64,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" alt="AI2 Lab" height="34" style="height:34px;width:auto;display:block"></a></span></div></div><script>
+const CFG = {
+"data": "M08_[Synthetic]_Streaming_Revenue.csv",
+"palettes": {
+"ocean": {
+"label": "Ocean",
+"accent": "#0B4F9C",
+"hex": [
+"#0B4F9C",
+"#1B9AAA",
+"#7FD1E0",
+"#DCEBF2"
+]
+},
+"sunset": {
+"label": "Sunset",
+"accent": "#C2410C",
+"hex": [
+"#7C2D12",
+"#C2410C",
+"#F59E0B",
+"#FDE8C8"
+]
+},
+"forest": {
+"label": "Forest",
+"accent": "#166534",
+"hex": [
+"#14532D",
+"#16A34A",
+"#86EFAC",
+"#E3F6E8"
+]
+},
+"violet": {
+"label": "Violet",
+"accent": "#6D28D9",
+"hex": [
+"#4C1D95",
+"#7C3AED",
+"#C4B5FD",
+"#EFE9FD"
+]
+},
+"slate": {
+"label": "Graphite",
+"accent": "#334155",
+"hex": [
+"#0F172A",
+"#475569",
+"#94A3B8",
+"#E6EAF0"
+]
+}
+},
+"fonts": {
+"inter": {
+"label": "Inter",
+"stack": "Inter, system-ui, sans-serif",
+"why": "neutral, dense, reads small"
+},
+"grotesk": {
+"label": "Space Grotesk",
+"stack": "'Space Grotesk', Inter, sans-serif",
+"why": "geometric, modern, wide numerals"
+},
+"serif": {
+"label": "Source Serif",
+"stack": "'Source Serif 4', Georgia, serif",
+"why": "editorial, for a chart that sits in prose"
+},
+"plex": {
+"label": "IBM Plex Sans",
+"stack": "'IBM Plex Sans', Inter, sans-serif",
+"why": "technical, clear at small sizes"
+}
+},
+"styles": {
+"minimal": {
+"label": "Minimal",
+"spec": "flat surfaces, 4px radii, hairline #E4E9EB borders, no shadows, generous white space, labels in 11px uppercase with 0.5px tracking"
+},
+"glass": {
+"label": "Glass",
+"spec": "translucent white cards at 70% opacity over a soft colour wash, 16px radii, 1px white inner border, a 0 8px 28px rgba(15,23,42,.10) shadow, and a frosted blur behind the tooltip"
+},
+"editorial": {
+"label": "Editorial",
+"spec": "no card at all: the chart sits on the page, separated by 1px rules, with a serif title at 26px, a 15px standfirst and wide margins"
+},
+"bold": {
+"label": "Bold",
+"spec": "high contrast, 20px radii, heavy 800 weights, oversized value labels at 28px, a solid colour header strip above the chart"
+}
+},
+"charts": {
+"treemap": {
+"label": "Treemap",
+"spec": "region > country > category, area carries revenue_musd"
+},
+"sunburst": {
+"label": "Donut and sunburst",
+"spec": "inner ring region, outer ring category, revenue_musd by angle"
+},
+"sankey": {
+"label": "Sankey",
+"spec": "region on the left, category on the right, revenue_musd as flow width"
+},
+"bump": {
+"label": "Bump chart",
+"spec": "rank by revenue against rank by growth_pct, one line per region"
+}
+}
+};
+const state = { palette: 'ocean', font: 'inter', style: 'glass',
+                chart: 'treemap' };
+
+function tokens() {
+  const p = CFG.palettes[state.palette];
+  const f = CFG.fonts[state.font];
+  const s = CFG.styles[state.style];
+  const c = CFG.charts[state.chart];
+  return {
+    '{{DATA}}': CFG.data,
+    '{{PALETTE_NAME}}': p.label,
+    '{{PALETTE_HEX}}': p.hex.join(', ') + ' (darkest to lightest)',
+    '{{FONT_NAME}}': f.label,
+    '{{FONT_STACK}}': f.stack,
+    '{{STYLE_NAME}}': s.label,
+    '{{STYLE_SPEC}}': s.spec,
+    '{{CHART_NAME}}': c.label.toLowerCase(),
+    '{{CHART_SPEC}}': c.spec
+  };
+}
+
+function render() {
+  const t = tokens();
+  document.querySelectorAll('pre[data-tpl]').forEach(function (pre) {
+    let text = pre.getAttribute('data-tpl');
+    Object.keys(t).forEach(function (k) { text = text.split(k).join(t[k]); });
+    pre.textContent = text;
+  });
+  const accent = CFG.palettes[state.palette].accent;
+  document.documentElement.style.setProperty('--accent', accent);
+}
+
+function choose(group, value, btn) {
+  state[group] = value;
+  btn.parentNode.querySelectorAll('button').forEach(function (b) {
+    b.setAttribute('aria-pressed', String(b === btn));
+  });
+  render();
+}
+
+function copyPrompt(id, btn) {
+  const text = document.getElementById(id).textContent;
+  function done() {
+    const was = btn.innerHTML;
+    btn.innerHTML = 'Copied';
+    btn.classList.add('done');
+    setTimeout(function () { btn.innerHTML = was; btn.classList.remove('done'); },
+               1700);
+  }
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(done, fallback);
+  } else { fallback(); }
+  function fallback() {
+    // file:// and plain http have no clipboard API, and a student who saves
+    // this page to disk should still be able to copy
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); done(); }
+    finally { document.body.removeChild(ta); }
+  }
+}
+
+function expand(btn) {
+  const box = btn.previousElementSibling;
+  const open = box.classList.toggle('open');
+  btn.textContent = open ? 'Show less' : 'Show the whole prompt';
+}
+
+function go(id) {
+  document.querySelectorAll('.panel').forEach(function (p) {
+    p.classList.toggle('on', p.id === id);
+  });
+  document.querySelectorAll('.rail button').forEach(function (b) {
+    b.setAttribute('aria-current', String(b.dataset.go === id));
+  });
+  if (history.replaceState) { history.replaceState(null, '', '#' + id); }
+  var rail = document.querySelector('.rail');
+  var top = rail ? rail.getBoundingClientRect().top + window.scrollY - 12 : 0;
+  if (window.scrollY > top) { window.scrollTo({ top: top, behavior: 'smooth' }); }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  render();
+  // a step can be linked to directly, which is how a student picks up where
+  // they left off after closing the tab
+  var id = (location.hash || '').replace('#', '');
+  if (id && document.getElementById(id)) { go(id); }
+});
+</script></body></html>
